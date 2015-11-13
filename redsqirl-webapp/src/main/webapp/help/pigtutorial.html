@@ -13,26 +13,18 @@
   <ol>
       <li>Create Ssh Connections to remote
     servers</li>
-    <li>Copying files from remote servers to
+
+    <li>Copy files from remote servers to
     Hadoop File system</li>
 
-    <li>build workflows that perform queries
+    <li>Change your footer menu</li>
+
+    <li>Build workflows that perform queries
     over data sets</li>
 
     <li>Learn how to use some of the actions
     that are available in the Pig Package</li>
   </ol>
-
-
-  <p>The actions footer, is the little frame on the bottom left of
-  your screen. Click the green information symbol. Once the
-  configuration popup has appeared in the new tab field enter a
-  name and click the &ldquo;+&rdquo; symbol. Once the new tab has
-  been created click on the link and click the checkbox beside all
-  the pig actions and the source action and then ok.</p>
-
-  <p>The new tab that was just created should be
-  on the footer now with the actions selected</p>
 
   <h2>Pig Workflow</h2>
 
@@ -45,54 +37,60 @@
 
   <p>It will show how to connect to remote servers
   and copying files from the remote server to the Hadoop file
-  system and to show how one would use the Pig Package to query
-  files and get results.</p>
+  system.</p>
   
 
   <ol>
-    <li>Click on Remote File System</li>
+    <li>Click on Remote File System.</li>
     <li>Click the plus symbol to create a new
-    ssh connection to a remote server</li>
+    ssh connection to a remote server.</li>
   	<li><ul>
     <li>Host : localhost</li>
     <li>Port : (do not select)</li>
     <li>Password : Give your password</li>
     <li>Save (do not select)</li>
   </ul></li>
-    <li>change the working directory to tutorialdata in the Red Sqirl home
+    <li>Change the working directory to tutorialdata in the Red Sqirl home
     directory via the path that is above listed directories and click the search
-    symbol</li>
+    symbol.</li>
 
 
-    <li>from the remote file system tab that
+    <li>From the remote file system tab that
     should display the &ldquo;/${redsqirl_home}/tutorialdata/&rdquo; directory
     on localhost ,
     drag the file &ldquo;pig_tutorial_data.txt&rdquo; to the hadoop file
     system tab.</li>
 
-    <li>locate the &ldquo;pig_tutorial_data.txt&rdquo;
+    <li>Locate the &ldquo;pig_tutorial_data.txt&rdquo;
     file on the hadoop file system tab (might have to click the
-    search beside the current path)</li>
+    search beside the current path).</li>
 
-    <li>click the plus symbol to create a new
-    file/directory on hadoop file system and give it a
-    name.</li>
+    <li>Click the plus symbol to create a new
+    directory on hadoop file system and give it the name
+    &ldquo;pig_tutorial_data.mrtxt&rdquo;.</li>
 
-    <li>click the checkbox beside the
-    &ldquo;pig_tutorial_data.txt&rdquo; file and then click the move symbol
+    <li>Click the checkbox beside the
+    &ldquo;pig_tutorial_data.txt&rdquo; folder and then click the move symbol
     under the current working directory.</li>
 
-    <li>in the new window click the radio
-    button beside the new file that was created and click
-    ok.</li>
+    <li>In the new window click the radio
+    button beside &ldquo;pig_tutorial_data.mrtxt&rdquo; folder and click
+    OK.</li>
   </ol>
-  -->
-  <p>You will need one file to complete this tutorial.
-  <ul>
-      <li>pig_tutorial_data.txt</li>
-  </ul>
- Transfer this file onto the hadoop file system into a new directory.
- </p>
+
+  <h3>Change your footer</h3>
+
+  <p>The action footer is the little frame on the bottom left of
+  the FlowChart tab. Click the green information symbol. Once the
+  configuration popup has appeared in the left column click &ldquo;+&rdquo;,
+  enter &ldquo;extraPig&rdquo; and click the &ldquo;...&rdquo; symbol. Then click the checkbox beside
+  all the pig actions and the source action and then click OK.</p>
+
+  <p>You should see a new footer tab called &ldquo;extraPig&rdquo;.</p>
+
+  <p>To remove this new menu, go back to the footer editor. Click on the check
+  box beside &ldquo;extraPig&rdquo; and click on the Delete button.</p>
+
   <h3>Create a Workflow</h3>
  
   <p>On the last page of every pig action there are options for the output of
@@ -111,39 +109,47 @@
   for source.</p>
 
   <ol>
-    <li>in the actions footer drag a new source
-    icon onto the canvas.</li>
-    <li>double click to open source and select
-    hdfs as the data type then click next,</li>
+    <li>In the actions footer drag a new source icon onto the canvas.</li>
+    <li>Double click to open source.</li>
+    <li>Name the action &ldquo;communication&ldquo;.</li>
+    <li>Comment the action &ldquo;Configure tutorial data&ldquo;.</li>
+    <li>Click OK.</li>
 
-    <li>select &ldquo; text map reduce
-    type&rdquo; as the data subtype and click next</li>
+    <li>Select &ldquo;Hadoop Distributed File System&ldquo; as the data type
+    then click next.</li>
 
-    <li>on the data set screen select
-    path.</li>
-    
-    <li>click the radio button beside the
-    directory that contains the &ldquo;export.txt&rdquo; file and
-    then ok</li>
+    <li>Select &ldquo;TEXT MAP-REDUCE DIRECTORY&rdquo; as the data subtype and
+    click next.</li>
 
-    <li>On the feature title line, click on the edit button and paste &ldquo;subscriber_number String , Friend String ,
+    <li>On the data set screen, click on the path field or on the button.</li>
+
+    <li>Click on the radio button beside &ldquo;pig_tutorial_data.mrtxt&rdquo;-
+    if you cannot find it refresh the view by clicking on the search button-
+    and click OK.</li>
+
+    <li>At this stage, you will see the data correctly display on the
+    screen, the name of the fields are &ldquo;Field1 Long, Field2 Long...&rdquo;</li>
+    <li>On the feature title line, click on the edit button. Once it appears you
+    can choose &ldquo;Change Header&rdquo; and paste &ldquo;subscriber_number STRING , Friend STRING ,
     offpeak_voice INT , offpeak_sms INT , offpeak_mms INT
     ,peak_voice INT,peak_sms INT , peak_mms INT , sna_weight INT ,
     subscriber_onnet INT ,friend_onnet INT&rdquo; into the value
-    field</li>
+    field. Click OK.</li>
 
-    <li>click apply and then ok</li>
+    <li>click OK to exit from the Configuration Window.</li>
+
+    <li>If you leave the mouse cursor on the source action you will be able to
+    see some configuration details</li>
+
+    <li>Save the Workflow by going into File &gt; Save, name it
+    &ldquo;pig_tutorial&rdquo;. By default it is saved in redsqirl-save HDFS
+    directory and the file will have the extension &lsquo;.rs&rsquo;. Click OK
+    to save.</li>
+
+
   </ol>
 
   
-
-  <p>PLEASE NOTE:
-  It is advised that you save the workflow after each
-  action is configured. To do this, select the save icon above the
-  canvas. It will ask for a name to save the workflow as. Input a
-  name and click ok at the bottom of the page. The default
-  extension of a workflow file is &lsquo;.rs&rsquo;</p>
-
   <h4>Setup a Pig Aggregator Action</h4>
   
   <p>
@@ -155,179 +161,153 @@
   attributes or all (default if none is selected).</p>
 
   <ol>
-    <li>drag a pig aggregator action to the
-    canvas</li>
+    <li>Drag a pig aggregator action to the
+    canvas.</li>
     
     <li>Create a link between the source that
     was just configured and the new pig aggregator action by
-    clicking inside the source action and then clicking on the pig
-    aggregator action</li>
+    clicking between the image and the arc of the source action and then clicking on the pig
+    aggregator image.</li>
 
-    <li>Open the new pig
-    aggregator click ok to the element id pop up or change
-    it</li>
+    <li>Open the new pig aggregator click, name the element &ldquo;nl_sum&rdquo;
+    and Click OK.</li>
 
-    <li>click the field
+    <li>Select
     &ldquo;subscriber_number&rdquo; in the Group by interaction and
-    click ok and then next</li>
+    click next.</li>
 
     <li>Select the copy from the dropdown menu
-    on the generator interaction and click ok</li>
+    on the generator interaction and click OK.</li>
 
-    <li>on the bottom of the table click the
+    <li>On the top of the table click the
     &ldquo;+&rdquo; symbol to add a new row to the
-    table</li>
+    table.</li>
 
-    <li>Click in the Operation field of the new
+    <li>Click on the pen in Operation field of the new
     row and click the &ldquo;SUM()&rdquo; function and add the
     parameters &ldquo;offpeak_voice&rdquo; and
     &ldquo;peak_voice&rdquo;. In the between the parameters add a
     &ldquo;+&rdquo; symbol so that the operation would read
     &ldquo;SUM(offpeak_voice + peak_voice)&rdquo;and click
-    ok</li>
+    OK.</li>
 
-    <li>once the operation field add a name
-    like &ldquo;total_voice&rdquo; for the new column and change
-    the type to DOUBLE and click next and then ok.</li>
+    <li>once the operation field add the name
+    &ldquo;total_voice&rdquo; for the new column, change
+    the type to DOUBLE and click next.</li>
 
-    <li>Click the save Icon to save the
-    workflow, giving it a name</li>
+    <li>The next page sort the data, we won't sort by clicking next.</li>
+    
+    <li>The following page is about filter and format, click OK to leave the
+    default parameters.</li> 
 
-    <li>on the top of the screen on the main
-    menu, click project and then run to run the
-    workflow</li>
+    <li>In Project, click &ldquo;Save and Run&rdquo; to run the workflow.</li>
+
+    <li>To see the results, leave your mouse on the action &gt; Options &gt; Data
+    Output.</li>
   </ol>
 
 
   <ol>
     <li>Drop another pig aggregator onto the
-    canvas</li>
+    canvas.</li>
 
-    <li>Again make a link between the source
-    and the new pig aggregator</li>
+    <li>Make a link between the source and the new pig aggregator.</li>
 
-    <li>change the element if required and
-    click ok</li>
+    <li>Open it, and give it the name "comm_groupbyall" and click OK.</li>
 
-    <li>This time leave the group by list alone
-    so nothing is selected and click ok</li>
+    <li>This time leave the group by list alone so nothing is selected and click
+    next.</li>
 
-    <li>On this page we don&rsquo;t want to
-    click any of the generators so all we do is create a new
-    row</li>
+    <li>Create a new row (+ button).</li>
 
-    <li>in this new row click the operation
-    field and then click &ldquo;AVG()&rdquo; function from the
-    functions list.</li>
+    <li>In this new row write &ldquo;AVG(communication.offpeak_voice +
+    communication.peak_voice)&rdquo;.</li>
 
-    <li>The field we want to calculate the
-    average is the sum of &ldquo;offpeak_voice&rdquo; and
-    &ldquo;peak_voice&rdquo; field so enter the editor above and
-    inside the brackets click both these fields and put a
-    &ldquo;+&rdquo; symbol between them so the operation reads
-    &ldquo;AVG(offpeak_voice + peak_voice)&rdquo;.</li>
+    <li>Call the field &ldquo;total_voice_avg&rdquo; and select the DOUBLE type.</li>
 
-    <li>Enter the title field and give it a
-    title</li>
-
-    <li>once the title is complete
-    click ok and next on the page, then click ok on the final
-    page</li>
+    <li>Click next, next then OK on the final page.</li>
   </ol>
 
   <h4>Perform a Pig Join Action</h4>  
 
-  <p>
-  To make
-  each dataset interactable with each other it is necessary to
+  <p> To make each dataset interactable with each other it is necessary to
   perform a join on them.</p>
 
   
 
   <ol>
-    <li>to do this we drop a pig join
-    onto the canvas</li>
+    <li>Drop a pig join onto the canvas.</li>
     
-    <li>create a link from the pig aggregator
-    that contains the sum of &ldquo;total_voice&rdquo; to the new
-    pig join action</li>
+    <li>Create a link from &ldquo;comm_groupbyall&rdquo; to the new
+    pig join action.</li>
 
-    <li>create another link from the pig
-    aggregator that contains the average of
-    &ldquo;total_voice&rdquo; to the new pig join</li>
+    <li>Create a link from &ldquo;nl_sum&rdquo; to the new
+    pig join action.</li>
 
-    <li>double click the pig join and change
-    the element if necessary</li>
+    <li>Double click the pig join and call it &ldquo;nl_vs_total&rdquo;.</li>
 	
-	<li>The first page list the table aliases, click next</li>
+    <li>The first page list the table aliases, click next.</li>
 
-    <li>on the first page we see a generator
-    interaction, make sure that &ldquo;copy&rdquo; is selected as
-    the generator and click ok</li>
+    <li>On the following page, make sure that &ldquo;copy&rdquo; is selected as
+    the generator and click OK.</li>
 
-    <li>change the newly generated fields as
-    required/wanted</li>
-
-    <li>click ok to proceed to the next
-    page</li>
+    <li>Click next.</li>
 
     <li>This page has two interaction that
-    specify the join type and the fields to join on , we use the
+    specify the join type and the fields to join on, we use the
     default join type which is &ldquo;Join&rdquo; so this does not
-    need to be changed</li>
+    need to be changed.</li>
 
-    <li>to specify the fields that we use to
-    join click inside the &ldquo;Join_field&rdquo; box on one of
-    and input &ldquo;1&rdquo; inside the editor. This condition will join
-    the two tables together</li>
+    <li>In join field type &ldquo;1&rdquo; in the two rowss. This condition will join
+    the two tables together.</li>
 
-    <li>do the same for the second
-    row</li>
-
-    <li>click next to proceed to the next page
-    and then click ok</li>
+    <li>Click next, next then OK on the final page.</li>
   </ol>
 
   
   <h4>Filter a Data set</h4>  
 
-  <p>
-  Now we want
-  to make a condition to see what subscribers have a higher total
-  of total voice calls than the average of the entire
-  dataset.</p>
+  <p> Now we want to make a condition to see what subscribers have a higher
+  total voice calls than the average of the entire dataset. The easiest would be
+  to add the condition in Join but we will create a new select for demonstration
+  purposes.</p>
 
 
   <ol>
-    <li>Drop a new pig select action onto the
-    canvas</li>
+    <li>Drop a new pig select action onto the canvas.</li>
     
-    <li>create a link from the pig join action
+    <li>Create a link from the pig join action
     to the new pig select action</li>
 
-    <li>open it and change the element id if
-    required</li>
+    <li>Open it and change the element id to be &ldquo;high_voice&rdquo;.</li>
 
-    <li>On the first page of the generator the
-    copy generator needs to used</li>
+    <li>Use the copy generator and click next.</li>
 
-    <li>click next to proceed to the next
-    page</li>
+    <li>In the Sorting page, select &ldquo;nl_sum_total_voice&rdquo; and
+    &ldquo;DESCENDING&rdquo; order. Click Next.</li>
 
-    <li>click in the editor interaction and
-    click the field that represents the sum of
-    &ldquo;total_voice&rdquo; for each subscriber</li>
+    <li>Click on the Pen in the Condition and write &ldquo;nl_sum_total_voice
+    &gt; comm_groupbyall_total_voice_av&rdquo;.</li>
 
-    <li>Now add the &ldquo;&gt;&rdquo;
-    symbol to the end</li>
 
-    <li>next we add the average of &ldquo;total_voice&rdquo;</li>
+    <li>Click OK and then finish the action by clicking OK.</li>
 
-    <li>click ok and then finish the
-    action by clicking ok</li>
+    <li>If we want to save temporary result, we can 
   </ol>
 
-  
+  <p>We would like now to keep &ldquo;nl_vis_total&rdquo; intermediate result
+  before running the workflow.</p>
+
+  <ol>
+      <li>Leave you mouse on &ldquo;nl_vs_total&rdquo; icon &gt; Options &gt; Data Output</li>
+      <li>Select &ldquo;BUFFERED&rdquo; instead of &ldquo;TEMPORARY&rdquo;.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>You can now &ldquo;Save and Run&rdquo;</p> 
+
+  <p>Once you are happy with the result you can clean all the data generated by
+  this workflow by clicking on Project &gt; Clean Project.</p>
 
   <h4>Summary of workflow</h4>
 
@@ -336,26 +316,18 @@
   <p>In this workflow we have</p>
 
   <ol>
-    <li>Configured source for a hdfs
-    file</li>
+    <li>configured source for a hdfs file</li>
 
-    <li>selected the sum of two
-    columns</li>
+    <li>selected the sum of two columns</li>
 
-    <li>gotten the average of a
-    column</li>
+    <li>gotten the average of a column</li>
 
-    <li>Gotten the sum of a column when
-    grouping by another</li>
+    <li>gotten the sum of a column when grouping by another</li>
 
     <li>joined the two tables</li>
 
-    <li>filtered a table with a
-    condition</li>
+    <li>filtered a table with a condition</li>
   </ol>
 
-  
-
-  
 </body>
 </html>

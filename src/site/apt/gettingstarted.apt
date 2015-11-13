@@ -120,14 +120,19 @@ hadoop_home=/home/hadoop
 
 ----------------------------------------
 
-* Extras
 
-** Packages
+* Packages
 
   You can now install extra packages for the system. Please refer to the
 {{{./packagemanagement.html}Package Management}} section.
 
 
+* Next Step
+
+  Once Red Sqirl is installed, you can find user tutorials in the User Guide,
+ {{{./help/buildingworkflow.html}canvas section}}.
+
+* Extras
 
 ** System properties
 

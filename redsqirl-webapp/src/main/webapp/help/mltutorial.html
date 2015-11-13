@@ -8,10 +8,10 @@
 <body>
   <h1>Machine Learning Tutorial</h1>
 
-  <p>This workflow will demonstarte how to run a Logistic Regression in Red
-  Sqirl. The Spark Logistic Regression from the SparkML package or the Hama
-  Logistic Regression from the Hama package can be used.
-  </p>
+  <p>This workflow will demonstrate how to run a Logistic Regression in Red
+  Sqirl and create an evaluation method. The Spark Logistic Regression from the
+  SparkML package or the Hama Logistic Regression from the Hama package can be
+  used.  </p>
 
   <p>You will need two files to complete this tutorial.
   <ul>
@@ -19,115 +19,267 @@
       <li>ml_tutorial_prediction_data.txt</li>
   </ul>
   Transfer these files onto the hadoop file system into two new
-  directories.
+  directories &ldquo;ml_tutorial_training_data.mrtxt&rdquo; and &ldquo;ml_tutorial_prediction_data.mrtxt&rdquo;.
   </p>      
 
-  <h2>Hama/Spark Workflow</h2>
+
+  <h2>Goals:</h2>
+
+  <ol>
+      <li>Build a Logisitic Regression</li>
+
+      <li>Build a reusable evaluation method</li>
+
+  </ol>
+
+  <h2>Build a Logistic Regression Model</h2>
 
 
   <p>This workflow will demonstrate the Hama/Spark
   Logistic regression action. This action allows us to run logistic
-  regression over a data set. It&rsquo;s inputs are the training
-  set and the prediction dataset. That means that two source
+  regression over a data set. Its inputs are the training
+  and the prediction dataset. That means that two source
   actions are needed.</p>
 
-  <p> Use &ldquo;,&rdquo; as the delimiter and
+  <p>The following will load or training and prediction data sets.</p>
+  <ol>
+      <li>Create a new canvas by clicking the
+      plus symbol on the canvas tabs bar</li>
+      <li>Drag a Pig Text Source, double click on it, name it
+  &ldquo;iris_train&rdquo;</li>
+  <li>Select &ldquo;ml_tutorial_training_data.mrtxt&rdquo; path.</li>
+    <li> Use &ldquo;,&rdquo; as the delimiter and
   &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
-  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header in both source
-  actions.</p>
+  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header.</li>
 
-  
+  <li>Drag a Pig Text Source, double click on it, name it
+  &ldquo;iris_predict&rdquo;</li>
+  <li>Select &ldquo;ml_tutorial_prediction_data.mrtxt&rdquo; path.</li>
+  <li> Use &ldquo;,&rdquo; as the delimiter and
+  &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
+  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header.</li>
+  </ol>
 
-  <ul>
-    <li>Create a new canvas by clicking the
-    plus symbol on the canvas tabs bar</li>
-  </ul>
+  <p>We add the action we use in the footer with the following.</p>
+  <ol>
 
-  <ul>
-    <li>create the two source actions with the
-    two files provided</li>
+    <li>On the actions footer below click the actions property Icon.</li>
 
-    <li>On the actions footer below click the
-    actions property Icon</li>
+    <li>Add a tab &ldquo;ML&rdquo;.</li>
 
-    <li>Either edit the current actions tab by
-    click the title of it or create a new tab by inputting the new
-    tab title in the field provided and click the &ldquo;i&rdquo;
-    symbol</li>
+    <li>Click on the &ldquo;...&rdquo; and select 
+    &ldquo;hama_logistic_regression&rdquo;/&ldquo;spark_logistic_regression&rdquo;
+    on the right column and then click OK.</li>
 
-    <li>once in a configurable tab , click the
-    checkbox beside &ldquo;hama_logistic_regression&rdquo;/&ldquo;spark_logistic_regression&rdquo; and then
-    ok</li>
+  </ol>
+  <p>Finally we configure the model.</p>
+  <ol>
+    <li>Make sure you are on the &ldquo;ML&rdquo; tab and drag your action to
+    the canvas.</li>
 
-    <li>make sure you are on tab that was just
-    configures to include hama/spark logistic regression and drag it to
-    the canvas</li>
-
-    <li>select the source that is set to use
-    the training file and create a link to the
+    <li>Select the source &ldquo;iris_train&rdquo; and create a link to the
     new &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action.</li>
-  </ul>
 
-  <ul>
-    <li>a new window should appear and ask you to
+    <li>A new window should appear and ask you to
     select whether it is a training data set or a prediction data
-    set, select training and then click ok</li>
-  </ul>
+    set, select training and then click OK.</li>
 
-  <ul>
-    <li>select the source that is set to use
-    the prediction file and create a link to the
-    &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action</li>
-  </ul>
+    <li>Select the source &ldquo;iris_predict&rdquo; and create a link to the
+    new &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action.</li>
 
-  <ul>
-    <li>in this window select prediction and then
-    click ok</li>
-  </ul>
+    <li>In this window select prediction and then click OK.</li>
 
-  <ul>
-    <li>once the &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action
-    has the two required inputs , open it and change the element id
-    if required</li>
+    <li>Once the &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action
+    has the two required inputs , open it and name it &ldquo;iris_model&rdquo;.</li>
 
-    <li>the first page with list three
-    interactions : Label , ID and Label Value.</li>
+    <li>The first page with list three interactions : Label , ID and Label Value.</li>
 
-    <li>in the Label interaction select
-    churner</li>
+    <li>In the Id interaction select &ldquo;ID&rdquo;.</li> 
 
-    <li>in the Id interaction select
-    ID</li> 
+    <li>In the Label interaction select &ldquo;SPECIES&rdquo;.</li>
 
-    <li>finally in the Label Value interaction
+    <li>Finally in the Label Value interaction
     input &ldquo;Iris-setosa&rdquo; as the value without quotes.</li>
 
-    <li>click next to see the Model settings
+    <li>Click next to see the Model settings
     such as predictors and parameters for running the
     model.</li>
 
     <li>For the purposes of the tutorial we
-    will leave these interactions alone and just click next and
-    ok</li>
-  </ul>
+    will leave these interactions alone and just click next.</li>
 
-  <ul>
-    <li>Run the workflow</li>
-  </ul>
+    <li>If you are using Spark, change the partition to be 1.</li>
+
+    <li>Click OK.</li>
+
+    <li>Save the workflow as &ldquo;ml_tutorial&rdquo;.</li>
+
+    <li>Run the workflow.</li>
+
+  </ol>
 
   
+  <h2>Build an Evaluation Method</h2>
+  
+  <p>First we need to join the score we obtain with the predictive data.</p>
+  <ol>
+      <li>Drag a Spark or Pig Join.</li>
+
+      <li>Select the source &ldquo;iris_predict&rdquo; and create a link to the
+    new join action.</li>
+
+      <li>Select the LR model &ldquo;iris_model&rdquo; and create a link to the
+    new join action.</li>
+
+      <li>Open the new Join action.</li>
+      <li>Open it and name it &ldquo;score_vs_value&rdquo;.</li>
+      <li>Click next on the first page.</li>
+      <li>On the second page create two new fields.
+      <ul>
+	  <li>&ldquo;iris_model.score&rdquo;, name it &ldquo;score&rdquo;, give it a FLOAT type</li>
+	  <li>In Spark use the expression &ldquo;IF(iris_predict.SPECIES =
+	  'Iris-setosa',1,0)&rdquo;, name it &ldquo;value&rdquo;, give it a INT
+	  type. If you use Pig use &ldquo;CASE WHEN iris_predict.SPECIES ==
+	  'Iris-setosa' THEN 1 ELSE 0 END&rdquo;</li>
+      </ul></li>
+      <li>Click next.</li>
+      <li>Join on ID and label. The table should look like
+      <ul>
+	  <li>iris_predict, iris_predict.ID</li>
+	  <li>iris_model, iris_model.label</li>
+      </ul>
+      </li>
+      <li>Click next.</li>
+      <li>Click next.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>We will now separate our score in 10 bins of same size ranked on the score.
+  We expect to see a high accuracy on high scores.</p>
+  <ol>
+      <li>Drag a Spark or Pig Volume Binning.</li>
+      <li>Select the &ldquo;score_vs_value&rdquo; and create a link to the
+    new binning action.</li>
+      <li>Open it and name it &ldquo;bin_score&rdquo;.</li>
+      <li>Choose &ldquo;score&rdquo; in the binning field.</li>
+      <li>Type 10 for the number of bins.</li>
+      <li>Click next.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>We will calculate some global parameter of the model such as how many score
+  do we have and how many items were to be predicted.</p>
+  <ol>
+      <li>Drag a Spark or Pig aggregator.</li>
+      <li>Select the &ldquo;score_vs_value&rdquo; and create a link to the
+    new aggregator action.</li>
+      <li>Open it and name it &ldquo;score_glob_prop&rdquo;.</li>
+      <li>Click next.</li>
+      <li>On the second page create two new fields
+	<ul>
+	    <li>SUM(1), TOTAL_SCORED, INT</li>
+	    <li>SUM(value), TOTAL_PREDICT, INT</li>
+	</ul>
+      </li>
+      <li>Click next.</li>
+      <li>Click next.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>We need to calculate the same values per bin.</p>
+  <ol>
+      <li>Drag a Spark or Pig aggregator.</li>
+      <li>Select the &ldquo;bin_score&rdquo; and create a link to the
+    new aggregator action.</li>
+      <li>Open it and name it &ldquo;score_bin_prop&rdquo;.</li>
+
+      <li>Select &ldquo;BIN_score&rdquo; on the first page and click next.</li>
+      <li>On the second page, use the &ldquo;Copy&rdquo; generator and create
+      two additional fields.
+	<ul>
+	    <li>SUM(1), SCORED, INT</li>
+	    <li>SUM(value), PREDICT, INT</li>
+	</ul>
+      </li>
+      <li>Click next.</li>
+      <li>Click next.</li>
+      <li>Click OK.</li>
+  </ol>
+
+
+  <p>Create the evaluation end result.</p>
+  <ol>
+      <li>Drag a Spark or Pig Join.</li>
+      <li>Select the &ldquo;score_bin_prop&rdquo; action and create a link to the
+    new join action.</li>
+      <li>Select the &ldquo;score_glob_prop&rdquo; action and create a link to the
+    new join action.</li>
+      <li>Open it and name it &ldquo;evaluation&rdquo;.</li>
+      <li>Click next on the first page.</li>
+      <li>On the second page create the following eight field, you can use the
+      copy generator to help you. 
+      <ul>
+	  <li>&ldquo;score_bin_prop.BIN_score&rdquo;, &ldquo;BIN&rdquo;, INT</li>
+	  <li>&ldquo;score_bin_prop.SCORED&rdquo;, &ldquo;SCORED&rdquo;, INT</li>
+	  <li>&ldquo;score_bin_prop.PREDICT&rdquo;, &ldquo;PREDICT&rdquo;, INT</li>
+	  <li>&ldquo;score_bin_prop.PREDICT / score_bin_prop.SCORED&rdquo;, &ldquo;PREDICT_RATE&rdquo;, FLOAT</li>
+	  <li>&ldquo;(score_bin_prop.PREDICT * score_glob_prop.TOTAL_SCORED) /
+	  (score_bin_prop.SCORED * score_glob_prop.TOTAL_PREDICT)&rdquo;, &ldquo;LIFT&rdquo;, FLOAT</li>
+	  <li>&ldquo;score_glob_prop.TOTAL_SCORED&rdquo;, &ldquo;TOTAL_SCORED&rdquo;, INT</li>
+	  <li>&ldquo;score_glob_prop.TOTAL_PREDICT&rdquo;, &ldquo;TOTAL_PREDICT&rdquo;, INT</li>
+	  <li>&ldquo;score_glob_prop.TOTAL_PREDICT / score_glob_prop.TOTAL_SCORED&rdquo;, &ldquo;BACKGROUND&rdquo;, FLOAT</li>
+      </ul></li>
+      <li>Click next.</li>
+      <li>Join on all the lines, by filling out 1 in the join field column.</li>
+      <li>Click next.</li>
+      <li>On the Sorting page, select &ldquo;BIN&rdquo; and
+      &ldquo;DESCENDING&rdquo;. Click next.</li>
+      <li>If you use Spark, select a partition of 1.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>You can now run the workflow and see the result. The model should appear
+  very accurate on this toy data. What we will do now, is add this evaluation
+  method into your footer, so that you can reuse it.</p>
+  <ol>
+      <li>Select with the mouse and the CTRL key the actions
+      &ldquo;bin_score&rdquo;, &ldquo;score_bin_prop&rdquo;,
+      &ldquo;score_glob_prop&rdquo;, &ldquo;evaluation&rdquo;.</li>
+      <li>Go in Edit > Aggregate.</li>
+      <li>On the new page change the name of the sub-workflow
+      &ldquo;evaluation10bin&rdquo;.</li>
+      <li>Fill out the form as below.
+      <ul>
+	  <li>In the list of inputs: &ldquo;score_and_value&rdquo;</li>
+	  <li>In the list of outputs: &ldquo;eval_10&rdquo;</li>
+	  <li>In the description: &ldquo;Score Evaluation split in 10 bins. The
+	  input should be a dataset with a score (value between 0 and 1) and a value
+	  (0 or 1).&rdquo;</li> 
+      </ul>
+      </li>
+      <li>Click OK.</li>
+      <li>Save the workflow.</li>
+      <li>Note that if you click on the new action, a new page is displayed in the
+      help tab</li>
+      <li>Go into the footer editor, click on &ldquo;...&rdquo; next to &ldquo;LR&rdquo;, refresh the list of actions and add &ldquo;sa_evaluation10bin&rdquo;.</li>
+      <li>Click OK.</li>
+  </ol>
+
+  <p>Once you have finished with this tutorial, don't forget to clean the workflow before closing it.</li>
 
   <h3>Summary of workflow</h3>
 
+  <p>In this workflow we have</p>
   <ul>
-    <li>added actions to an actions
-    tab</li>
+    <li>added actions to a footer</li>
 
-    <li>labeled the inputs for logistic
-    regression</li>
+    <li>labeled the inputs for logistic regression</li>
 
-    <li>configured and ran a logistic
-    regression</li>
+    <li>configured and ran a logistic regression</li>
+
+    <li>created an evaluation method</li>
+
+    <li>created a Super Action and it to a footer</li>
   </ul>
 
   

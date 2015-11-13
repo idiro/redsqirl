@@ -28,6 +28,10 @@
       <outputDirectory>redsqirl-${project.version}/conf</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${dist.tutorialdata}</directory>
+      <outputDirectory>redsqirl-${project.version}/tutorialdata</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${dist.tomcat}</directory>
       <outputDirectory>redsqirl-${project.version}/apache-tomcat-7.0.42</outputDirectory>
     </fileSet>

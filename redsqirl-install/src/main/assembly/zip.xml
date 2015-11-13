@@ -27,5 +27,9 @@
       <directory>${dist.conf}</directory>
       <outputDirectory>redsqirl-${project.version}/conf</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${dist.tutorialdata}</directory>
+      <outputDirectory>redsqirl-${project.version}/tutorialdata</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>
