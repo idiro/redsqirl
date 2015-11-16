@@ -70,9 +70,7 @@ public class SettingMenu {
 					}catch(Exception e){}
 					if(templateName != null){
 						String newPath = path+"."+templateName;
-						if(templateName != null){
-							menu.put(templateName, new TemplateSettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
-						}
+						menu.put(templateName, new TemplateSettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
 					}
 				}
 			}

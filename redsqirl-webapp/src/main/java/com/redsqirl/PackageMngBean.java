@@ -330,7 +330,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			}else{
 				n = settingsMenu.getKey();
 			}
-			
+
 			sc.setName(n);
 			listSubMenu.add(sc);
 		}
@@ -436,10 +436,23 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			logger.info("newPath " + pathToDelete.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
 		}
 
+		sysSettings = new ArrayList<String[]>();
+		calcSettings();
+		
+		for (String[] deletesettings : deleteSettings) {
+			for (Iterator<String[]> iterator = sysSettings.iterator(); iterator.hasNext();) {
+				String[] settings = (String[]) iterator.next();
+				if(deletesettings[0].equals(settings[0])){
+					iterator.remove();
+				}
+			}
+		}
+
 		String error = null;
 
 		try {
-			WorkflowPrefManager.deleteSysProperties(getProps(deleteSettings));
+			//WorkflowPrefManager.deleteSysProperties(getProps(deleteSettings));
+			WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
 		} catch (IOException e) {
 			error = e.getMessage();
 		}
