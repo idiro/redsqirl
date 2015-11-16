@@ -2,6 +2,8 @@ package com.redsqirl.workflow.server;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -50,7 +52,7 @@ public class SettingMenuTests {
 				"	    ]"+
 				"	},"+
 				"        {"+
-				"	    \"name\":\"test\","+
+				"	    \"name\":\"fix_prop\","+
 				"	    \"settings\":"+
 				"	    ["+
 				"		{"+
@@ -74,16 +76,29 @@ public class SettingMenuTests {
 			assertTrue("Spark Home is "+sm.getPropertyValue("spark_home"), 
 					"/home/hadoop/spark".equals(sm.getPropertyValue("spark_home")));
 
-			assertTrue("1: Spark Master is "+sm.getPropertyValue("test.spark_master"), 
-					"yarn-cluster".equals(sm.getPropertyValue("test.spark_master")));
+			assertTrue("1: Spark Master is "+sm.getPropertyValue("fix_prop.spark_master"), 
+					"yarn-cluster".equals(sm.getPropertyValue("fix_prop.spark_master")));
 
 			assertTrue("2: Spark Master is "+sm.getPropertyValue("spark_master"), 
-					"yarn-cluster2".equals(sm.getPropertyValue("spark_master")));
+					"yarn".equals(sm.getPropertyValue("spark_master")));
+			
+			Properties prop = WorkflowPrefManager.getUserProperties();
+			String propTemplate = "test.host.t1.spark_master";
+			prop.put(propTemplate, "blah");
+			WorkflowPrefManager.storeUserProperties(prop);
+			
+			sm = new SettingMenu("test", obj);
+			String newValue = sm.getPropertyValue("host.t1.spark_master");
+			assertTrue("3: Spark Master is "+newValue, 
+					"blah".equals(newValue));
+			
+			prop.remove(propTemplate);
 			
 			//assertTrue("template ", "yarn-cluster-blabla".equals(sm.getMenu().get("host").getPropertyValue("spark_master")));
 
 		}catch(Exception e){
 			logger.error(e,e);
+			assertTrue("Fail with exception: "+e.getMessage(),false);
 		}
 
 	}

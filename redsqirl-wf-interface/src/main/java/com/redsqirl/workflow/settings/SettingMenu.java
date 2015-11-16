@@ -87,9 +87,11 @@ public class SettingMenu {
 		try{
 			if(name.contains(".")){
 				String[] splitArr = name.split("\\.", 2);
-				return menu.get(splitArr[0]).getPropertyValue(splitArr[1]);
+				logger.info(menu.keySet());
+				return !menu.containsKey(splitArr[0]) ? null : menu.get(splitArr[0]).getPropertyValue(splitArr[1]);
 			}else{
-				return properties.get(name).getValue();
+				logger.info(properties.keySet());
+				return !properties.containsKey(name) ? null : properties.get(name).getValue();
 			}
 		}catch(Exception e){
 			logger.warn("Property "+name+" not found. "+e,e);
@@ -114,24 +116,7 @@ public class SettingMenu {
 				properties.put(property, new Setting(scope,defaultValue,type,validator));
 				properties.get(property).setDescription(langProperties.getProperty(propertyName+"_desc",propertyName));
 				properties.get(property).setLabel(langProperties.getProperty(propertyName+"_label",propertyName));
-				switch(scope){
-				case ANY:
-					String sysProp = sysProperties.getProperty(propertyName);
-					properties.get(property).setValue(userProperties.getProperty(propertyName,sysProp));
-					if(sysProp != null){
-						scopeMenu = Setting.Scope.SYSTEM;
-					}
-					break;
-				case SYSTEM:
-					properties.get(property).setValue(sysProperties.getProperty(propertyName));
-					scopeMenu = Setting.Scope.SYSTEM;
-					break;
-				case USER:
-					properties.get(property).setValue(userProperties.getProperty(propertyName));
-					break;
-				default:
-					break;
-				}
+				properties.get(property).setPropertyName(propertyName);
 			}catch(Exception e){
 				logger.warn(e,e);
 			}

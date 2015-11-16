@@ -1124,7 +1124,12 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysProperty(java.lang.String)
 	 */
 	public static String getSysProperty(String key) {
-		return props.getSysProperty(key);
+		try{
+			return props.getSysProperty(key);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return null;
 	}
 
 	/**
@@ -1134,7 +1139,12 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysProperty(java.lang.String, java.lang.String)
 	 */
 	public static String getSysProperty(String key, String defaultValue) {
-		return props.getSysProperty(key, defaultValue);
+		try{
+			return props.getSysProperty(key, defaultValue);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return defaultValue;
 	}
 
 	/**
@@ -1143,7 +1153,12 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperty(java.lang.String)
 	 */
 	public static String getUserProperty(String key) {
-		return props.getUserProperty(key);
+		try{
+			return props.getUserProperty(key);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return null;
 	}
 
 	/**
@@ -1153,7 +1168,12 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperty(java.lang.String, java.lang.String)
 	 */
 	public static String getUserProperty(String key, String defaultValue) {
-		return props.getUserProperty(key, defaultValue);
+		try{
+			return props.getUserProperty(key, defaultValue);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return null;
 	}
 	
 	/**
@@ -1162,7 +1182,18 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @return
 	 */
 	public static String getProperty(String key){
-		return props.getUserProperty(key,props.getSysProperty(key));
+		String sysProp = null;
+		try{
+			sysProp = props.getSysProperty(key);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		try{
+			return props.getUserProperty(key,sysProp);
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return sysProp;
 	}
 
 	/**

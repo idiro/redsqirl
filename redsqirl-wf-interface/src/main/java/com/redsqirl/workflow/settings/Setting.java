@@ -2,13 +2,18 @@ package com.redsqirl.workflow.settings;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
+import com.redsqirl.workflow.server.WorkflowPrefManager;
+
 public class Setting implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -936547836947198532L;
-
+	private static Logger logger = Logger.getLogger(Setting.class);
+	
 	public interface Checker{
 		boolean valid();
 	}
@@ -27,7 +32,7 @@ public class Setting implements Serializable{
 	}
 	
 	protected Scope scope;
-	protected String value;
+	protected String propertyName;
 	protected String description;
 	protected String label;
 	protected String defaultValue;
@@ -81,12 +86,32 @@ public class Setting implements Serializable{
 		return checker == null? validType(): validType()&&checker.valid();
 	}
 	
-	public String getValue() {
-		return value == null ? defaultValue : value;
+	public String getSysValue(){
+		return Scope.USER.equals(scope) ? null : WorkflowPrefManager.getSysProperty(propertyName);  
 	}
-
-	public void setValue(String value) {
-		this.value = value;
+	
+	public String getUserValue(){
+		return Scope.SYSTEM.equals(scope) ? null : WorkflowPrefManager.getUserProperty(propertyName);
+	}
+	
+	public String getValue() {
+		String value = null;
+		switch(scope){
+		case ANY:
+			String sysProp = WorkflowPrefManager.getSysProperty(propertyName);
+			value = WorkflowPrefManager.getUserProperty(propertyName,sysProp);
+			break;
+		case SYSTEM:
+			value = WorkflowPrefManager.getSysProperty(propertyName);
+			break;
+		case USER:
+			value = WorkflowPrefManager.getUserProperty(propertyName);
+			break;
+		default:
+			break;
+		}
+		logger.info("Value for "+propertyName+": "+value);
+		return value == null ? defaultValue : value;
 	}
 	
 	public Scope getScope() {
@@ -127,6 +152,14 @@ public class Setting implements Serializable{
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
 	}
 	
 }

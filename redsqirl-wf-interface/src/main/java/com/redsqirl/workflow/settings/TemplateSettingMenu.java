@@ -32,7 +32,7 @@ public class TemplateSettingMenu extends SettingMenu{
 		while(tempValuesIt.hasNext()){
 			String cur = tempValuesIt.next();
 			String newPath = path+"."+cur;
-			menu.put(newPath, new SettingMenu(json, newPath, sysProperties, userProperties, langProperties));
+			menu.put(cur, new SettingMenu(json, newPath, sysProperties, userProperties, langProperties));
 		}
 	}
 
