@@ -70,7 +70,7 @@
     &ldquo;pig_tutorial_data.mrtxt&rdquo;.</li>
 
     <li>Click the checkbox beside the
-    &ldquo;pig_tutorial_data.txt&rdquo; folder and then click the move symbol
+    &ldquo;pig_tutorial_data.txt&rdquo; file and then click the move symbol
     under the current working directory.</li>
 
     <li>In the new window click the radio
@@ -81,15 +81,27 @@
   <h3>Change your footer</h3>
 
   <p>The action footer is the little frame on the bottom left of
-  the FlowChart tab. Click the green information symbol. Once the
-  configuration popup has appeared in the left column click &ldquo;+&rdquo;,
-  enter &ldquo;extraPig&rdquo; and click the &ldquo;...&rdquo; symbol. Then click the checkbox beside
-  all the pig actions and the source action and then click OK.</p>
+  the FlowChart tab.</p>
+  <ol>
+      <li>Click the green information symbol.</li>
+      <li>Once the configuration popup has appeared in the left column click
+      &ldquo;+&rdquo;.</li>
+      <li>Type &ldquo;extraPig&rdquo; on the new empty line.</li>
+      <li>Click the &ldquo;...&rdquo; symbol.</li>
+      <li>On the right column, select pig_audit.</li>
+      <li>Click OK.</li>
+  </ol>
 
-  <p>You should see a new footer tab called &ldquo;extraPig&rdquo;.</p>
-
-  <p>To remove this new menu, go back to the footer editor. Click on the check
-  box beside &ldquo;extraPig&rdquo; and click on the Delete button.</p>
+  <p>You should see a new footer tab called &ldquo;extraPig&rdquo; with
+  &ldquo;Pig Audit&rdquo; inside. To remove this new menu, you need to do the
+  following. 
+  </p>
+  <ol>
+      <li>Click the green information symbol.</li>
+      <li>Click on the check box beside &ldquo;extraPig&rdquo;.</li>
+      <li>Click on the Delete button in the table header.</li>
+      <li>Click OK.</li>
+  </ol>
 
   <h3>Create a Workflow</h3>
 
@@ -105,9 +117,7 @@
   <p>This Task will show how the source
   &ldquo;action&rdquo; can be configured to select flat files and
   change the properties such as the delimiter of the file and also
-  the headings and types of the file. For this tutorial the
-  workflow needs to be run after each action is configured except
-  for source.</p>
+  the headings and types of the file.</p>
 
   <ol>
     <li>In the actions footer drag a new source icon onto the canvas.</li>
@@ -130,14 +140,17 @@
 
     <li>At this stage, you will see the data correctly display on the
     screen, the name of the fields are &ldquo;Field1 Long, Field2 Long...&rdquo;</li>
-    <li>On the feature title line, click on the edit button. Once it appears you
-    can choose &ldquo;Change Header&rdquo; and paste &ldquo;subscriber_number STRING , Friend STRING ,
+    <li>On the feature title line, click on the edit button.</li>
+    <li>Once it appears you
+    can choose &ldquo;Change Header&rdquo;</li>
+    <li>Copy and paste &ldquo;subscriber_number STRING , Friend STRING ,
     offpeak_voice INT , offpeak_sms INT , offpeak_mms INT
     ,peak_voice INT,peak_sms INT , peak_mms INT , sna_weight INT ,
     subscriber_onnet INT ,friend_onnet INT&rdquo; into the value
-    field. Click OK. You will have the confirmation that the Header is correct.</li>
+    field.</li>
+    <li>Click OK. You will have the confirmation that the Header is correct.</li>
 
-    <li>Click OK to exit from the Configuration Window.</li>
+    <li>Click OK to exit from the Configuration window.</li>
 
     <li>If you leave the mouse cursor on the source action you will be able to
     see some configuration details</li>
@@ -197,10 +210,12 @@
     <li>The following page is about filter and format, click OK to leave the
     default parameters.</li> 
 
-    <li>In Project, click &ldquo;Save and Run&rdquo; to run the workflow.</li>
+    <li>In &ldquo;Project&rdquo; menu on the top, click &ldquo;Save and Run&rdquo; to run the workflow.</li>
 
-    <li>To see the results, leave your mouse on the action &gt; Options &gt; Data
+    <li>To see the results, leave your mouse on the action &ldquo;nl_sum&rdquo;, &gt; Options &gt; Data
     Output.</li>
+    <li>You can close it by hitting &ldquo;Cancel&rdquo; or
+    &ldquo;OK&rdquo;</li>
   </ol>
 
 
@@ -217,12 +232,14 @@
 
     <li>Create a new row (+ button).</li>
 
-    <li>In this new row write &ldquo;AVG(communication.offpeak_voice +
+    <li>In this new row copy and paste &ldquo;AVG(communication.offpeak_voice +
     communication.peak_voice)&rdquo;.</li>
 
     <li>Call the field &ldquo;total_voice_avg&rdquo; and select the DOUBLE type.</li>
 
-    <li>Click next, next then OK on the final page.</li>
+    <li>Click next.</li>
+    <li>Click next on the sorting page.</li>
+    <li>Click OK on the final page.</li>
   </ol>
 
   <h4>Perform a Pig Join Action</h4>  
@@ -258,7 +275,9 @@
     <li>In &ldquo;Join Field&rdquo; column, type &ldquo;1&rdquo; in the two rows. This condition will join
     the two tables together.</li>
 
-    <li>Click next, next then OK on the final page.</li>
+    <li>Click next.</li>
+    <li>Click next on the sorting page.</li>
+    <li>Click OK on the final page.</li>
   </ol>
 
   
@@ -281,9 +300,10 @@
     <li>Use the copy generator and click next.</li>
 
     <li>In the Sorting page, select &ldquo;nl_sum_total_voice&rdquo; and
-    &ldquo;DESCENDING&rdquo; order. Click Next.</li>
+    &ldquo;DESCENDING&rdquo; order.</li>
+    <li>Click Next.</li>
 
-    <li>Click on the Pen in the Condition and write &ldquo;nl_sum_total_voice
+    <li>Click on the Pen in the Condition section and write &ldquo;nl_sum_total_voice
     &gt; comm_groupbyall_total_voice_av&rdquo;.</li>
 
 
