@@ -38,6 +38,7 @@ public class Setting implements Serializable{
 	protected String defaultValue;
 	protected Type type;
 	protected Checker checker;
+	protected String value;
 	
 	public Setting(Scope scope, String defaultValue) {
 		super();
@@ -114,6 +115,10 @@ public class Setting implements Serializable{
 		return value == null ? defaultValue : value;
 	}
 	
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	public Scope getScope() {
 		return scope;
 	}

@@ -10,70 +10,119 @@
     
 <a4j:loadBundle basename="MessagesResources" var="messages" />
     
-    <h:form>
-    
-    
-    	<h:panelGroup layout="block" id="pathSetting" >
-	    	<ui:repeat value="#{packageMngBean.path}" var="item">
-	    		<a4j:commandLink value="#{item}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
-	    			style="padding:5px 10px 5px 5px;color:black;text-decoration:none;border:2px solid black;border-bottom-right-radius:20px;border-top-right-radius:20px;" >
-		    		<f:param name="name" value="#{item}" />
-		    	</a4j:commandLink>
-		    	&#32;&#32;
-	    	</ui:repeat>
-    	</h:panelGroup>
+	<h:form>
 	    
-	    <br/>
-	    <br/>
-	    <br/>
-	    
-	    <h:panelGroup layout="block" id="listSubMenuSettings" >
-	    
-	    	<a4j:commandLink title="#{messages.label_add_template}" action="#{packageMngBean.openAddNewTemplate}" oncomplete="#{rich:component('addNewTemplate')}.show();" rendered="#{packageMngBean.template == 'Y'}" >
-		    	<img src="../image/icons/button-plus-small.gif" />
-		    	<f:param name="name" value="#{packageMngBean.pathPosition}" />
-		    </a4j:commandLink>
+	    <div class="editPackageSettings" >
+		    
+	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
+		    	<ui:repeat value="#{packageMngBean.path}" var="item">
+		    		<a4j:commandLink value="#{item}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
+		    			style="padding:5px 10px 5px 5px;color:black;text-decoration:none;border-right:2px solid black;border-bottom-right-radius:20px;border-top-right-radius:20px;" >
+			    		<f:param name="name" value="#{item}" />
+			    	</a4j:commandLink>
+			    	&#32;&#32;
+		    	</ui:repeat>
+	    	</h:panelGroup>
 		    
 		    <br/>
-	    	<br/>
+		    <br/>
+		    <br/>
+		    
+		    <h:panelGrid columns="2" width="100%">
+		    
+			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:10px;" >
+			    
+			    	<a4j:commandLink title="#{messages.label_add_template}" action="#{packageMngBean.openAddNewTemplate}" oncomplete="#{rich:component('addNewTemplate')}.show();" rendered="#{packageMngBean.template == 'Y'}" >
+				    	<img src="../image/icons/button-plus-small.gif" />
+				    	<f:param name="name" value="#{packageMngBean.pathPosition}" />
+				    </a4j:commandLink>
+				    
+				    <br/>
+			    	<br/>
+			    
+				    <ui:repeat value="#{packageMngBean.listSubMenu}" var="sc">
+				     	<a4j:commandButton value="#{sc.name}" action="#{packageMngBean.navigationPackageSettings}" 
+				     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
+				     		<f:param name="name" value="#{sc.name}" />
+				     	</a4j:commandButton>
+				     	
+				     	<a4j:commandLink title="#{messages.label_remove_template}" action="#{packageMngBean.removeNewTemplate}" rendered="#{sc.template == 'Y'}" >
+					    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.button_remove}"/>
+					    	<f:param name="name" value="#{sc.name}" />
+					    </a4j:commandLink>
+				     	
+				     	<br/>
+			    		<br/>
+			    		<br/>
+			    		
+				    </ui:repeat>
+			    </h:panelGroup>
+		     
+		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:10px;" rendered="#{not empty packageMngBean.listSetting}" >
+			     	<table>
+			     		
+			     		<tr>
+		     				<td>
+		     					<h:outputText value="#{messages.label_setting}" style="font-size:20px;" />
+		     				</td>
+		     			</tr>
+		     			
+		     			<tr>
+			     			<td>
+			     				<br/>
+			     			</td>
+			     		</tr>
+			     		
+				     	<ui:repeat value="#{packageMngBean.listSetting}" var="obj">
+			     			
+			     			<tr>
+			     				<td>
+			     					
+			     					<h:outputText value="#{obj.label}" style="font-size:15px;" /><br/><br/>
+			     					
+			     					<h:outputText value="#{obj.description}" /><br/>
+			     					
+			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{obj.scope == 'USER' or obj.scope == 'ANY'}" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{obj.scope == 'SYSTEM'}" />
+			     					<h:inputText value="#{obj.value}" style="background-color:#33FF99;" rendered="#{obj.scope == 'USER' or obj.scope == 'ANY'}" />
+			     					<h:inputText value="#{obj.value}" style="background-color:#FF3333;" rendered="#{obj.scope == 'SYSTEM'}" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{obj.scope == 'ANY'}" />
+			     					<h:inputText value="{obj.value}" rendered="#{obj.scope == 'ANY'}" style="margin-left:10px;background-color:#FF3333;" /><br/>
+			     					
+			     					<h:outputText value="#{messages.label_default}" style="font-weight:bold;" />
+			     					<h:outputText value="#{obj.defaultValue}" style="margin-left:3px;" /><br/>
+			     					
+			     					<a4j:commandLink title="#{messages.label_default_value}" value="#{messages.label_default_value}" action="#{packageMngBean.setDefaultValue}" >
+			     						<f:param name="name" value="#{obj.label}" />
+			     					</a4j:commandLink>
+			     				
+			     				</td>
+			     			</tr>
+			     			
+			     			<tr>
+				     			<td>
+				     				<br/>
+				     				<br/>
+				     			</td>
+				     		</tr>
+			     			
+				     	</ui:repeat>
+			     	</table>
+		     	</h:panelGroup>
 	    
-		    <ui:repeat value="#{packageMngBean.listSubMenu}" var="sc">
-		     	<a4j:commandLink value="#{sc.name}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
-		     		style="padding:5px;color:black;text-decoration:none;border:2px solid black;" >
-		     		<f:param name="name" value="#{sc.name}" />
-		     	</a4j:commandLink>
-		     	
-		     	<a4j:commandLink title="#{messages.label_remove_template}" action="#{packageMngBean.removeNewTemplate}" rendered="#{sc.template == 'Y'}" >
-			    	<img src="../image/icons/button-delete-small.gif" />
-			    	<f:param name="name" value="#{sc.name}" />
-			    </a4j:commandLink>
-		     	
-		     	<br/>
-	    		<br/>
-		    </ui:repeat>
-	    </h:panelGroup>
-     
-     	<br/>
-     	<br/>
-     
-     	<h:panelGroup layout="block" id="listSettingSettings" >
-	     	<ui:repeat value="#{packageMngBean.listSetting}" var="obj">
-	     	
-	     		<h:outputText value="#{obj.label}" /><br/>
-	     		<h:inputText value="#{obj.value}" /><br/>
-	     		
-	     		<br/>
-	     		<br/>
-	     	
-	     	</ui:repeat>
-     	</h:panelGroup>
-     
-	    <a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.saveSettings}" styleClass="greenButton" />
-	    &#32;&#32;
-	    <a4j:commandButton value="#{messages.button_cancel}" action="#{packageMngBean.cancelSettings}" styleClass="greenButton" />
-     
+	    	</h:panelGrid>
+	    
+	    </div>
     
-    </h:form>
+	    <div style="overflow-x:hidden;float:right;margin-right:5px;margin-top:10px;">
+		     
+		    <a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.saveSettings}" styleClass="greenButton" />
+		    &#32;&#32;
+		    <a4j:commandButton value="#{messages.button_cancel}" action="#{packageMngBean.cancelSettings}" styleClass="greenButton" />
+	    
+	    </div>
+    
+     </h:form>
     
     
     <rich:modalPanel id="addNewTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
@@ -102,5 +151,7 @@
 		</h:form>
 		
 	</rich:modalPanel>
+	
+	
     
 </ui:composition>
