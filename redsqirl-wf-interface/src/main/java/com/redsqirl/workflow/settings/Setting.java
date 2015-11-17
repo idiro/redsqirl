@@ -1,6 +1,9 @@
 package com.redsqirl.workflow.settings;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -62,6 +65,46 @@ public class Setting implements Serializable{
 		this.defaultValue = defaultValue;
 		this.type = type;
 		this.checker = checker;
+	}
+	
+	public void deleteSysProperty(){
+		deleteProperty(false,true);
+	}
+	
+	public void deleteUserProperty(){
+		deleteProperty(true,false);
+	}
+	
+	public void deleteProperty(boolean user, boolean sys){
+		Properties sysProp = null;
+		Properties userProp = null;
+		if(user){
+			userProp = WorkflowPrefManager.getUserProperties();
+		}
+		if(sys){
+			sysProp = WorkflowPrefManager.getSysProperties();
+		}
+		
+		if(user && userProp != null){
+			userProp.remove(propertyName);
+		}
+		if(sys && sysProp != null){
+			sysProp.remove(propertyName);
+		}
+		if(user && userProp != null){
+			try {
+				WorkflowPrefManager.storeUserProperties(userProp);
+			} catch (IOException e) {
+				logger.warn(e,e);
+			}
+		}
+		if(sys && sysProp != null){
+			try{
+				WorkflowPrefManager.storeSysProperties(sysProp);
+			} catch (IOException e) {
+				logger.warn(e,e);
+			}
+		}
 	}
 	
 	protected boolean validType(){

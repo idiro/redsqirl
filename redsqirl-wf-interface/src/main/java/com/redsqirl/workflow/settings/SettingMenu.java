@@ -1,5 +1,7 @@
 package com.redsqirl.workflow.settings;
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -77,7 +79,53 @@ public class SettingMenu {
 		}catch(Exception e){
 		}
 	}
+	public void deleteAllProperties(){
+		deleteProperties(true,true);
+	}
 	
+	public void deleteAllUserProperties(){
+		deleteProperties(true,false);
+	}
+	
+	public void deleteAllSysProperties(){
+		deleteProperties(false,true);
+	}
+	
+	public void deleteProperties(boolean user, boolean sys){
+		Iterator<Setting> it = properties.values().iterator();
+		Properties sysProp = null;
+		Properties userProp = null;
+		if(user){
+			userProp = WorkflowPrefManager.getUserProperties();
+		}
+		if(sys){
+			sysProp = WorkflowPrefManager.getSysProperties();
+		}
+		
+		while(it.hasNext()){
+			String propName = it.next().getPropertyName();
+			if(user && userProp != null){
+				userProp.remove(propName);
+			}
+			if(sys && sysProp != null){
+				sysProp.remove(propName);
+			}
+		}
+		if(user && userProp != null){
+			try {
+				WorkflowPrefManager.storeUserProperties(userProp);
+			} catch (IOException e) {
+				logger.warn(e,e);
+			}
+		}
+		if(sys && sysProp != null){
+			try{
+				WorkflowPrefManager.storeSysProperties(sysProp);
+			} catch (IOException e) {
+				logger.warn(e,e);
+			}
+		}
+	}
 	
 	protected Setting.Scope getClearScope(){
 		return null;
