@@ -38,22 +38,31 @@ public class HelpBean extends BaseBean implements Serializable {
 	private List<String> listHelp = new ArrayList<String>();
 	private List<String[]> helpHtmlSuperAction = null;
 
+	private DataFlow getWf(String name) throws RemoteException{
+		DataFlow wf = getworkFlowInterface().getWorkflow(name);
+		if(wf == null){
+			getworkFlowInterface().addWorkflow(name);
+			wf = getworkFlowInterface().getWorkflow(name);
+		}
+		return wf;
+	}
+	
+	private void removeWf(String name) throws RemoteException{
+		getworkFlowInterface().removeWorkflow(name);
+	}
+	
 	public void calcHelpItens(){
 
 		logger.info("calcHelpItens");
 
 		try {
-
-			if (getworkFlowInterface().getWorkflow("canvas-1") == null) {
-				getworkFlowInterface().addWorkflow("canvas-1");
-			}
-
-			DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
+			String canvas1 = "calcHelpItens";
+			DataFlow wf = getWf(canvas1);
 
 			mountRelativeHelp(wf);
-			
 			mountRelativeHelpSuperAction(wf);
 
+			removeWf(canvas1);
 		} catch (RemoteException e) {
 			logger.error(e);
 		} catch (Exception e) {
@@ -63,21 +72,11 @@ public class HelpBean extends BaseBean implements Serializable {
 	}
 	
 	public void refreshRelativeHelp() throws Exception{
-		
 		logger.info("refreshRelativeHelp");
-		
-		String canvas1 = "canvas-1";
-		boolean toRemove = false;
-		DataFlow wf = getworkFlowInterface().getWorkflow(canvas1);
-		if(wf == null){
-			toRemove = true;
-			getworkFlowInterface().addWorkflow(canvas1);
-			wf = getworkFlowInterface().getWorkflow(canvas1);
-		}
+		String canvas1 = "refreshRelativeHelp";
+		DataFlow wf = getWf(canvas1);
 		mountRelativeHelpSuperAction(wf);
-		if(toRemove){
-			getworkFlowInterface().removeWorkflow(canvas1);
-		}
+		removeWf(canvas1);
 	}
 
 	public void mountRelativeHelp(DataFlow wf) throws Exception{

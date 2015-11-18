@@ -123,9 +123,12 @@ public interface DataFlowInterface extends Remote{
 	 */
 	public boolean checkNumberCluster(int numberCluster) throws RemoteException;
 	
-	public void backupAllWorkflowsToOpen(String name) throws RemoteException;
-	
-	public List<String[]> loadMapCanvasToOpen(String name) throws RemoteException;
+	/**
+	 * Get the last files that have been cbacked up in bunch (with a backupAll)
+	 * @return
+	 * @throws RemoteException
+	 */
+	public List<String[]> getLastBackedUp() throws RemoteException;
 	
 	public void setWorkflowPath(String name, String path) throws RemoteException;
 	
