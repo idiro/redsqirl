@@ -510,7 +510,7 @@ function changeHelpAnchorPriv(index){
 	
 	jQuery("#divTabHelp").scrollTop( 0 );
 	if(jQuery("#page"+index).position()){
-		jQuery("#divTabHelp").animate({scrollTop: jQuery("#page"+index).position().top-50}, 800);
+		jQuery("#divTabHelp").animate({scrollTop: jQuery("#page"+index).position().top-jQuery("#helpButtons").height()-50}, 800);
 	}
 }
 
