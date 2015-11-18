@@ -138,13 +138,34 @@
       <li>Open it and name it &ldquo;score_vs_value&rdquo;.</li>
       <li>Click next on the first page.</li>
       <li>On the second page create two new fields.
-      <ul>
-	  <li>&ldquo;iris_model.score&rdquo;, name it &ldquo;score&rdquo;, give it a FLOAT type</li>
-	  <li>If you use a &ldquo;Spark Join&rdquo;, copy and paste the expression &ldquo;IF(iris_predict.SPECIES =
-	  'Iris-setosa',1,0)&rdquo;, name it &ldquo;value&rdquo;, give it a INT
-	  type. In the &ldquo;Pig Join&rdquo; case, the expression is &ldquo;CASE WHEN iris_predict.SPECIES ==
-	  'Iris-setosa' THEN 1 ELSE 0 END&rdquo;</li>
-      </ul></li>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Operation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Field Name</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Type</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">iris_model.score</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">IF(iris_predict.SPECIES = 'Iris-setosa',1,0) or CASE WHEN iris_predict.SPECIES ==
+	  'Iris-setosa' THEN 1 ELSE 0 END for Pig</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">value</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+      </table>
+      </li>
       <li>Click next.</li>
       <li>Join on ID and label. The table should look like
       <table style="border: 1px solid black;border-collapse: collapse;">
@@ -249,7 +270,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">SUM(1)</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">TOTAL_SCORED</td>
+		  collapse;">SCORED</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">INT</td>
 	  </tr>
@@ -257,7 +278,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">SUM(value) or SUM(bin_score.value) for Pig</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">TOTAL_PREDICT</td>
+		  collapse;">PREDICT</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">INT</td>
 	  </tr>
