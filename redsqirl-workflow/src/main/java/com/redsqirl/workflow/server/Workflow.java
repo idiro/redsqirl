@@ -555,6 +555,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String check() throws RemoteException {
+		return check(element);
+	}
+	
+	protected String check(List<DataFlowElement> dfEl) throws RemoteException {
 		String error = "";
 		// Need to check that we have a DAG
 		try {
@@ -562,10 +566,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		} catch (Exception e) {
 			return e.getMessage();
 		}
+		
+		//Need to add the sources
+		List<DataFlowElement> elToCheck = new LinkedList<DataFlowElement>();
+		elToCheck.addAll(dfEl);
+		List<String> elIds = getComponentIds(dfEl);
+		Iterator<DataFlowElement> itEl = element.iterator();
+		while(itEl.hasNext()){
+			DataFlowElement cur = itEl.next();
+			if(cur.getOozieAction() == null){
+				Iterator<DataFlowElement> itCOutput = cur.getAllOutputComponent().iterator();
+				boolean found = false;
+				while(itCOutput.hasNext() && !found){
+					if(elIds.contains(itCOutput.next())){
+						found = true;
+						elToCheck.add(cur);
+					}
+				}
+				
+			}
+		}
 
 		// Need to check element one per one
 		// We don't check an element that depends on an element that fails
-		Iterator<DataFlowElement> iconIt = element.iterator();
+		Iterator<DataFlowElement> iconIt = elToCheck.iterator();
 		List<DataFlowElement> listToNotCheck = new LinkedList<DataFlowElement>();
 		while (iconIt.hasNext()) {
 			DataFlowElement wa = iconIt.next();
@@ -633,45 +657,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		return run(elToRun);
-	}
-
-	/**
-	 * Run the workflow with all it's elements
-	 * 
-	 * @return error message
-	 * @throws RemoteException
-	 */
-	@SuppressWarnings({ "unused", "null" })
-	public String run(List<String> dataFlowElement) throws RemoteException {
-
-		// Close all file systems
-		try {
-			FileSystem.closeAll();
-		} catch (IOException e1) {
-			logger.error("Fail to close all filesystem: " + e1);
-		}
-
-		String error = check();
-		logger.info("run check: " + error);
-
-		if (error == null) {
-			LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
-			if (dataFlowElement.size() < element.size()) {
-				Iterator<DataFlowElement> itIn = getEls(dataFlowElement)
-						.iterator();
-				while (itIn.hasNext()) {
-					DataFlowElement cur = itIn.next();
-					elsIn = getAllWithoutDuplicate(elsIn,
-							getItAndAllElementsNeeded(cur));
-				}
-			} else {
-				elsIn.addAll(getEls(dataFlowElement));
-
-			}
-
-			error = runWF(dataFlowElement);
-		}
-		return error;
 	}
 
 	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements)
@@ -779,7 +764,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	}
 
-	protected String runWF(List<String> dataFlowElement) throws RemoteException {
+	public String run(List<String> dataFlowElement) throws RemoteException {
 
 		logger.info("runWF ");
 
@@ -791,6 +776,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		} catch (Exception e) {
 			error = e.getMessage();
 		}
+		
+		if(error == null){
+			error = check(toRun);
+		}
+		
 		logger.info("runWF error: " + error);
 
 		if (error == null && toRun.isEmpty()) {
@@ -807,6 +797,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				error = "Unexpected error: " + e.getMessage();
 				logger.info("setOozieJobId error: " + error, e);
 			}
+		}
+		
+		if(error == null && !isrunning()){
+			error = LanguageManagerWF.getText("workflow.notrunning");
 		}
 
 		if (error != null) {
@@ -2744,8 +2738,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @return List of component Ids
 	 */
 	public List<String> getComponentIds() throws RemoteException {
+		return getComponentIds(element);
+	}
+	
+	public List<String> getComponentIds(List<DataFlowElement> dfeL) throws RemoteException {
 		List<String> ans = new LinkedList<String>();
-		Iterator<DataFlowElement> it = element.iterator();
+		Iterator<DataFlowElement> it = dfeL.iterator();
 		while (it.hasNext()) {
 			ans.add(it.next().getComponentId());
 		}
