@@ -12,11 +12,9 @@ public interface PropertiesManager extends Remote {
 	
 	public void storeSysProperties(Properties prop) throws RemoteException, IOException;
 	
-	public Properties getSysLangProperties() throws RemoteException;
+	public Properties getLangProperties() throws RemoteException;
 
 	public Properties getUserProperties() throws RemoteException;
-	
-	public Properties getUserLangProperties() throws RemoteException;
 	
 	public void storeUserProperties(Properties prop) throws RemoteException, IOException;
 

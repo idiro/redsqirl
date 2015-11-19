@@ -38,7 +38,7 @@ public class SettingMenu {
 	public void read(String path,JSONObject json){
 		Properties sysProperties = WorkflowPrefManager.getSysProperties(); 
 		Properties userProperties = WorkflowPrefManager.getUserProperties(); 
-		Properties langProperties  = WorkflowPrefManager.getSysLangProperties();
+		Properties langProperties  = WorkflowPrefManager.getLangProperties();
 		read(json, path,sysProperties, userProperties, langProperties);
 	}
 	

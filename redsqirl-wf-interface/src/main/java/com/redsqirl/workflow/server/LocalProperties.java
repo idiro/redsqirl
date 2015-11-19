@@ -46,7 +46,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)), "");
 	}
 	
-	public void storeSysLangProperties(Properties prop) throws IOException{
+	public void storeLangProperties(Properties prop) throws IOException{
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref)), "");
 	}
 	
@@ -56,7 +56,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	 * 
 	 * @return The description of the system properties
 	 */
-	public Properties getSysLangProperties() {
+	public Properties getLangProperties() {
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref)));
@@ -89,19 +89,6 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		userProp.setWritable(true, true);
 		userProp.setReadable(true, true);
 	}
-
-
-	@Override
-	public Properties getUserLangProperties() throws RemoteException {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserLangCfgPref)));
-		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.pathUserLangCfgPref + "', "
-					+ e.getMessage());
-		}
-		return prop;
-	}
 	
 	/**
 	 * Get the user properties a given user.
@@ -118,25 +105,6 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		} catch (Exception e) {
 			logger.error("Error when loading '" + WorkflowPrefManager.getPathUserPref(user)
 					+ "/redsqirl_user.properties', " + e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get the lang properties of the given user.
-	 * 
-	 * @param user
-	 *            The user name
-	 * @return The lang user properties.
-	 */
-	public Properties getUserLangProperties(String user) {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.getPathUserPref(user)
-					+ "/redsqirl_user_lang.properties")));
-		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.getPathUserPref(user)
-					+ "/redsqirl_user_lang.properties', " + e.getMessage());
 		}
 		return prop;
 	}
