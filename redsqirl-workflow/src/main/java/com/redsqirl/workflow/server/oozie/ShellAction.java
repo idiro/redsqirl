@@ -66,6 +66,10 @@ public class ShellAction extends OozieActionAbs {
 			shellElement.appendChild(argumentElement2);
 		}
 		
+		Element userEnvVar = oozieXmlDoc.createElement("env-var");
+		userEnvVar.appendChild(oozieXmlDoc.createTextNode("HADOOP_USER_NAME=${"+OozieManager.prop_user+"}"));
+		shellElement.appendChild(userEnvVar);
+		
 		Element fileElement = oozieXmlDoc.createElement("file");
 		fileElement.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
 		shellElement.appendChild(fileElement);
@@ -95,35 +99,22 @@ public class ShellAction extends OozieActionAbs {
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
 		logger.info("Command to execute "+oneCommandToExecute);
 		toWrite += "USER_NAME=$1"+ System.getProperty("line.separator");
-		toWrite += "export HADOOP_USER_NAME=$USER_NAME"+ System.getProperty("line.separator");
 		
 		if(extraFile){
 			toWrite += "FILE_NAME=$2"+ System.getProperty("line.separator");
+			toWrite += "echo $@"+ System.getProperty("line.separator");
 			toWrite += "echo \"File name: $FILE_NAME \""  + System.getProperty("line.separator");
+
+			toWrite += "echo "+ System.getProperty("line.separator");
+			toWrite += "echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'"+ System.getProperty("line.separator");
 			toWrite += "cat $FILE_NAME"  + System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
+			toWrite += "echo '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'"+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
-			toWrite += "echo $@"+ System.getProperty("line.separator");
+			toWrite += "echo "+ System.getProperty("line.separator");
 			
 		}
-		toWrite += "if [[ -z \"`sudo -n true`\" && -z \"`sudo -n true 2>&1`\" && `whoami` != \"$USER_NAME\" ]]; then \n";
-				System.getProperty("line.separator");
-		if(extraFile){
-			toWrite += "\tEXEC_DIR=`mktemp -d`" + System.getProperty("line.separator");
-			toWrite += "\tcp ./* ${EXEC_DIR}" + System.getProperty("line.separator");
-			toWrite += "\tEXEC_FILE=${EXEC_DIR}/$FILE_NAME" + System.getProperty("line.separator");
-			toWrite += "\tchmod -R a+rw $EXEC_DIR" + System.getProperty("line.separator");
-			toWrite += "\tchmod a+x $EXEC_DIR" + System.getProperty("line.separator");
-			toWrite += "\tchmod a+x $EXEC_DIR/*.sh"+System.getProperty("line.separator");
-			toWrite += "\tpushd ${EXEC_DIR}"+System.getProperty("line.separator");
-		}
-		toWrite += "\tsudo su $USER_NAME -c \""+oneCommandToExecute.replaceAll("\"", "\\\\\"")+"\""+ 
-				System.getProperty("line.separator");
-		if(extraFile){
-			toWrite += "\tpopd"+System.getProperty("line.separator");		
-			toWrite += "\trm -rf $EXEC_DIR"+ System.getProperty("line.separator");
-		}
-		toWrite += "else"+ System.getProperty("line.separator");
+		
 		if(extraFile){
 			if(getFileExtensions()[1].endsWith(".sh")){
 				toWrite += "\tchmod +x *.sh"+System.getProperty("line.separator");
@@ -133,8 +124,6 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "\tEXEC_FILE=$FILE_NAME"+System.getProperty("line.separator");
 		}
 		toWrite += "\t"+oneCommandToExecute+ System.getProperty("line.separator");
-		toWrite += "fi"+ System.getProperty("line.separator");
-//		logger.info("Command to execute after editions "+toWrite);
 		return toWrite;
 	}
 	
