@@ -485,6 +485,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		mountPath(getPathPosition());
 	}
+	
+	public void setDefaultValue() throws RemoteException{
+		
+		
+	}
 
 	public void calcSettings(){
 		logger.info("calcSettings");
