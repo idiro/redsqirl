@@ -200,14 +200,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * User properties with specific user settings.
 	 */
 	pathUserCfgPref =  pathUserPref
-	+ "/redsqirl_user.properties",
-	/**
-	 * User lang properties. These properties are optional and are used by the
-	 * front-end to give a bit more details about user settings. For each user
-	 * property, you can create a #{key}_label and a #{key}_desc property.
-	 */
-	pathUserLangCfgPref =  pathUserPref
-	+ "/redsqirl_user_lang.properties";
+	+ "/redsqirl_user.properties";
 
 	/**
 	 * True if the instance is initialised.
@@ -612,21 +605,13 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static void setupHome() {
 		File userProp = new File(pathUserCfgPref);
-		File userPropLang = new File(pathUserLangCfgPref);
 		if (!userProp.exists()) {
 			Properties prop = new Properties();
 			prop.setProperty(user_hive, "");
-
-			Properties propLang = new Properties();
-			propLang.setProperty(user_hive + "_label", "JDBC URL");
-			propLang.setProperty(user_hive + "_desc", "JDBC URL");
 			try {
 				prop.store(new FileWriter(userProp), "");
-				propLang.store(new FileWriter(userPropLang), "");
 				userProp.setWritable(true, true);
 				userProp.setReadable(true, true);
-				userPropLang.setWritable(true, true);
-				userPropLang.setReadable(true, true);
 			} catch (IOException e) {
 				logger.warn("Fail to write default properties");
 			}
@@ -1077,10 +1062,10 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * @return The description system properties
-	 * @see com.redsqirl.workflow.server.LocalProperties#getSysLangProperties()
+	 * @see com.redsqirl.workflow.server.LocalProperties#getLangProperties()
 	 */
-	public static Properties getSysLangProperties() {
-		return props.getSysLangProperties();
+	public static Properties getLangProperties() {
+		return props.getLangProperties();
 	}
 
 	/**
@@ -1107,15 +1092,6 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static Properties getUserProperties(String user) {
 		return props.getUserProperties(user);
-	}
-
-	/**
-	 * @param user
-	 * @return The description of the user properties
-	 * @see com.redsqirl.workflow.server.LocalProperties#getUserLangProperties(java.lang.String)
-	 */
-	public static Properties getUserLangProperties(String user) {
-		return props.getUserLangProperties(user);
 	}
 
 	/**

@@ -716,7 +716,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		logger.info("calcSettings");
 		WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
 		Properties sysProp = wpm.getSysProperties();
-		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
+		Properties sysLangProp = WorkflowPrefManager.getLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 	}
 

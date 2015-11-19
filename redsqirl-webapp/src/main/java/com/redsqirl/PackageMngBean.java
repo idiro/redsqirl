@@ -489,7 +489,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void calcSettings(){
 		logger.info("calcSettings");
 		Properties sysProp = WorkflowPrefManager.getSysProperties();
-		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
+		Properties sysLangProp = WorkflowPrefManager.getLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 
 		/*try{

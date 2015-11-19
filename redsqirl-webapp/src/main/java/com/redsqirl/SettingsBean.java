@@ -43,12 +43,12 @@ public class SettingsBean extends BaseBean implements Serializable  {
 	public void calcSettings(){
 		logger.info("calcSettings");
 		Properties sysProp = WorkflowPrefManager.getSysProperties();
-		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
+		Properties sysLangProp = WorkflowPrefManager.getLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 
 		try{
 			Properties userProp = getPrefs().getUserProperties();
-			Properties userLangProp = getPrefs().getUserLangProperties();
+			Properties userLangProp = getPrefs().getLangProperties();
 			setUserSettings(getList(userProp,userLangProp));
 			logger.info("setUserSettings "+userProp + " - "+userLangProp);
 		}catch(Exception e){

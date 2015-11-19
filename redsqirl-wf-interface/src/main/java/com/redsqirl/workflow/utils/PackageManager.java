@@ -327,7 +327,7 @@ public class PackageManager extends UnicastRemoteObject {
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
 								+ "/" + lib_dir, getLibDir(user)
 								.getAbsolutePath());
-						Properties langProp = WorkflowPrefManager.getProps().getSysLangProperties();
+						Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
 						Properties prop = new Properties();
 						try {
 							prop.load(new FileReader(new File(packs[i].getAbsolutePath()
@@ -337,7 +337,7 @@ public class PackageManager extends UnicastRemoteObject {
 									+ e.getMessage());
 						}
 						langProp.putAll(prop);
-						WorkflowPrefManager.getProps().storeSysLangProperties(langProp);
+						WorkflowPrefManager.getProps().storeLangProperties(langProp);
 
 						
 						Date date= new Date();
