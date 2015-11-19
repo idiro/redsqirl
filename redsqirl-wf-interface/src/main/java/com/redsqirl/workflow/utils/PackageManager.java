@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -741,6 +742,20 @@ public class PackageManager extends UnicastRemoteObject {
 		}
 
 		return error;
+	}
+	
+	public Map<String,String> getActionsPerPackage(String user){
+		Map<String,String> actions = new LinkedHashMap<String,String>();
+		Iterator<File> packageIt = getAllPackages(user).iterator();
+		while (packageIt.hasNext()) {
+			File packageFile = packageIt.next();
+			File p = new File(packageFile, action_file);
+			Iterator<String> actionIt = getAction(p).iterator();
+			while(actionIt.hasNext()){
+				actions.put(packageFile.getName(),actionIt.next());
+			}
+		}
+		return actions;
 	}
 
 	public List<String> getActions(String user){
