@@ -1557,3 +1557,28 @@ select {
 	border-radius:10px;
 	overflow:auto;
 }
+
+.packageSettingsTab{
+	-moz-user-select: none;
+	background-color: #646464;
+    color: #ffffff;
+    cursor: pointer;
+    height: 32px;
+    line-height: 30px;
+    padding-left: 1.25em;
+    padding-right: 1.25em;
+    float: left;
+    font-weight: bold;
+    text-decoration: none;
+    vertical-align: middle;
+    list-style: outside none none;
+    white-space: nowrap;
+    font-size: 70%;
+    border-radius: 9px 9px 0 0;
+    margin-left: 1px;
+    
+    //border-right:2px solid black;
+    //border-bottom-right-radius:20px;
+    //border-top-right-radius:20px;
+}
+

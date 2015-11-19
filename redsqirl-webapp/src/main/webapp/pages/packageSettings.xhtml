@@ -17,7 +17,7 @@
 	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
 		    	<ui:repeat value="#{packageMngBean.path}" var="item">
 		    		<a4j:commandLink value="#{item}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
-		    			style="padding:5px 10px 5px 5px;color:black;text-decoration:none;border-right:2px solid black;border-bottom-right-radius:20px;border-top-right-radius:20px;" >
+		    			styleClass="packageSettingsTab" rendered="#{item ne packageMngBean.pathPosition}" >
 			    		<f:param name="name" value="#{item}" />
 			    	</a4j:commandLink>
 			    	&#32;&#32;
@@ -63,7 +63,7 @@
 			     		
 			     		<tr>
 		     				<td>
-		     					<h:outputText value="#{messages.label_setting}" style="font-size:20px;" />
+		     					<h:outputText value="#{packageMngBean.pathPosition}" style="font-size:20px;" />
 		     				</td>
 		     			</tr>
 		     			
