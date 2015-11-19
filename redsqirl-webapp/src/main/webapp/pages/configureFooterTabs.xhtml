@@ -90,13 +90,21 @@
 				
 			</h:panelGroup>
 			
-			<a4j:commandLink title="Add new line" action="#{configureTabsBean.createTab}" reRender="tabsMenu" oncomplete="newRetrieveItems();">
-				<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
-			</a4j:commandLink>
 			
-			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" >
-				<f:param name="selected" value="new" />
-			</a4j:jsFunction>
+			<a4j:region>
+				
+				<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });" onerror="jQuery.unblockUI();" />
+					
+				<a4j:commandLink title="Add new line" action="#{configureTabsBean.createTab}" reRender="tabsMenu" oncomplete="newRetrieveItems();">
+					<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+				</a4j:commandLink>
+				
+				<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" oncomplete="jQuery.unblockUI();" >
+					<f:param name="selected" value="new" />
+				</a4j:jsFunction>
+
+			</a4j:region>
+			
 			
 		</rich:panel>
 		
