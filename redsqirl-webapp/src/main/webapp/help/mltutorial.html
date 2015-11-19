@@ -13,7 +13,8 @@
   SparkML package or the Hama Logistic Regression from the Hama package can be
   used.  </p>
 
-  <p>You will need two files to complete this tutorial.
+  <p>You will need two files to complete this tutorial. You will find them in
+  tutorialdata directory (see Pig Tutorial for knowing how to transfer file).
   <ul>
       <li>ml_tutorial_training_data.txt</li>
       <li>ml_tutorial_prediction_data.txt</li>
@@ -48,16 +49,16 @@
       <li>Drag a Pig Text Source, double click on it, name it
   &ldquo;iris_train&rdquo;</li>
   <li>Select &ldquo;ml_tutorial_training_data.mrtxt&rdquo; path.</li>
-    <li> Use &ldquo;,&rdquo; as the delimiter and
+    <li> Copy and paste the header  
   &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
-  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header.</li>
+  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo;</li>
 
   <li>Drag a Pig Text Source, double click on it, name it
   &ldquo;iris_predict&rdquo;</li>
   <li>Select &ldquo;ml_tutorial_prediction_data.mrtxt&rdquo; path.</li>
-  <li> Use &ldquo;,&rdquo; as the delimiter and
+    <li> Copy and paste the header  
   &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
-  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header.</li>
+  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo;</li>
   </ol>
 
   <p>We add the action we use in the footer with the following.</p>
@@ -65,11 +66,13 @@
 
     <li>On the actions footer below click the actions property Icon.</li>
 
-    <li>Add a tab &ldquo;ML&rdquo;.</li>
+    <li>Add a tab by clicking &ldquo;+&rdquo;</li>
+    <li>Type &ldquo;ML&rdquo; in the new row field.</li>
 
-    <li>Click on the &ldquo;...&rdquo; and select 
-    &ldquo;hama_logistic_regression&rdquo;/&ldquo;spark_logistic_regression&rdquo;
-    on the right column and then click OK.</li>
+    <li>Click on the &ldquo;...&rdquo;.</li>
+    <li>Select &ldquo;hama_logistic_regression&rdquo; or &ldquo;spark_logistic_regression&rdquo;
+    on the right column.</li>
+    <li>Click OK.</li>
 
   </ol>
   <p>Finally we configure the model.</p>
@@ -92,7 +95,7 @@
     <li>Once the &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action
     has the two required inputs , open it and name it &ldquo;iris_model&rdquo;.</li>
 
-    <li>The first page with list three interactions : Label , ID and Label Value.</li>
+    <li>The first page with list three interactions : ID, Target and Target Value.</li>
 
     <li>In the Id interaction select &ldquo;ID&rdquo;.</li> 
 
@@ -112,7 +115,7 @@
 
     <li>Click OK.</li>
 
-    <li>Save the workflow as &ldquo;ml_tutorial&rdquo;.</li>
+    <li>In the File top menu, save the workflow as &ldquo;ml_tutorial&rdquo;.</li>
 
     <li>Run the workflow.</li>
 
@@ -135,25 +138,59 @@
       <li>Open it and name it &ldquo;score_vs_value&rdquo;.</li>
       <li>Click next on the first page.</li>
       <li>On the second page create two new fields.
-      <ul>
-	  <li>&ldquo;iris_model.score&rdquo;, name it &ldquo;score&rdquo;, give it a FLOAT type</li>
-	  <li>In Spark use the expression &ldquo;IF(iris_predict.SPECIES =
-	  'Iris-setosa',1,0)&rdquo;, name it &ldquo;value&rdquo;, give it a INT
-	  type. If you use Pig use &ldquo;CASE WHEN iris_predict.SPECIES ==
-	  'Iris-setosa' THEN 1 ELSE 0 END&rdquo;</li>
-      </ul></li>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Operation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Field Name</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Type</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">iris_model.score</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">IF(iris_predict.SPECIES = 'Iris-setosa',1,0) or CASE WHEN iris_predict.SPECIES ==
+	  'Iris-setosa' THEN 1 ELSE 0 END for Pig</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">value</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+      </table>
+      </li>
       <li>Click next.</li>
       <li>Join on ID and label. The table should look like
-      <ul>
-	  <li>iris_predict, iris_predict.ID</li>
-	  <li>iris_model, iris_model.label</li>
-      </ul>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Relation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Join Field</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse: collapse;">iris_predict</td>
+	      <td style="border: 1px solid black;border-collapse: collapse;">iris_predict.ID</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse: collapse;">iris_model</td>
+	      <td style="border: 1px solid black;border-collapse: collapse;">iris_model.label</td>
+	  </tr>
+      </table>
       </li>
       <li>Click next.</li>
       <li>Click next.</li>
       <li>Click OK.</li>
   </ol>
 
+  <h3>Create Bins</h3>
   <p>We will now separate our score in 10 bins of same size ranked on the score.
   We expect to see a high accuracy on high scores.</p>
   <ol>
@@ -167,6 +204,7 @@
       <li>Click OK.</li>
   </ol>
 
+  <h3>Global Model Metrics</h3>
   <p>We will calculate some global parameter of the model such as how many score
   do we have and how many items were to be predicted.</p>
   <ol>
@@ -176,16 +214,39 @@
       <li>Open it and name it &ldquo;score_glob_prop&rdquo;.</li>
       <li>Click next.</li>
       <li>On the second page create two new fields
-	<ul>
-	    <li>SUM(1), TOTAL_SCORED, INT</li>
-	    <li>SUM(value), TOTAL_PREDICT, INT</li>
-	</ul>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Operation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Field Name</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Type</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(1)</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">TOTAL_SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(value) or SUM(score_vs_value.value) for Pig</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">TOTAL_PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+      </table>
       </li>
       <li>Click next.</li>
       <li>Click next.</li>
       <li>Click OK.</li>
   </ol>
 
+  <h3>Bin Model Metrics</h3>
   <p>We need to calculate the same values per bin.</p>
   <ol>
       <li>Drag a Spark or Pig aggregator.</li>
@@ -196,10 +257,32 @@
       <li>Select &ldquo;BIN_score&rdquo; on the first page and click next.</li>
       <li>On the second page, use the &ldquo;Copy&rdquo; generator and create
       two additional fields.
-	<ul>
-	    <li>SUM(1), SCORED, INT</li>
-	    <li>SUM(value), PREDICT, INT</li>
-	</ul>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Operation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Field Name</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Type</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(1)</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(value) or SUM(bin_score.value) for Pig</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+      </table>
       </li>
       <li>Click next.</li>
       <li>Click next.</li>
@@ -207,6 +290,7 @@
   </ol>
 
 
+  <h3>Evaluation</h3>
   <p>Create the evaluation end result.</p>
   <ol>
       <li>Drag a Spark or Pig Join.</li>
@@ -218,17 +302,81 @@
       <li>Click next on the first page.</li>
       <li>On the second page create the following eight field, you can use the
       copy generator to help you. 
-      <ul>
-	  <li>&ldquo;score_bin_prop.BIN_score&rdquo;, &ldquo;BIN&rdquo;, INT</li>
-	  <li>&ldquo;score_bin_prop.SCORED&rdquo;, &ldquo;SCORED&rdquo;, INT</li>
-	  <li>&ldquo;score_bin_prop.PREDICT&rdquo;, &ldquo;PREDICT&rdquo;, INT</li>
-	  <li>&ldquo;score_bin_prop.PREDICT / score_bin_prop.SCORED&rdquo;, &ldquo;PREDICT_RATE&rdquo;, FLOAT</li>
-	  <li>&ldquo;(score_bin_prop.PREDICT * score_glob_prop.TOTAL_SCORED) /
-	  (score_bin_prop.SCORED * score_glob_prop.TOTAL_PREDICT)&rdquo;, &ldquo;LIFT&rdquo;, FLOAT</li>
-	  <li>&ldquo;score_glob_prop.TOTAL_SCORED&rdquo;, &ldquo;TOTAL_SCORED&rdquo;, INT</li>
-	  <li>&ldquo;score_glob_prop.TOTAL_PREDICT&rdquo;, &ldquo;TOTAL_PREDICT&rdquo;, INT</li>
-	  <li>&ldquo;score_glob_prop.TOTAL_PREDICT / score_glob_prop.TOTAL_SCORED&rdquo;, &ldquo;BACKGROUND&rdquo;, FLOAT</li>
-      </ul></li>
+      <table style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Operation</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Field Name</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">Type</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_bin_prop.BIN_score</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">BIN</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_bin_prop.SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_bin_prop.PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_bin_prop.PREDICT / score_bin_prop.SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">PREDICT_RATE</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">(score_bin_prop.PREDICT * score_glob_prop.TOTAL_SCORED) /
+	  (score_bin_prop.SCORED * score_glob_prop.TOTAL_PREDICT)</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">LIFT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_glob_prop.TOTAL_SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">TOTAL_SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_glob_prop.TOTAL_PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">TOTAL_PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+	 <tr style="border: 1px solid black;border-collapse: collapse;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">score_glob_prop.TOTAL_PREDICT / score_glob_prop.TOTAL_SCORED</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">BACKGROUND</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	  </tr>
+      </table></li>
       <li>Click next.</li>
       <li>Join on all the lines, by filling out 1 in the join field column.</li>
       <li>Click next.</li>
@@ -237,10 +385,13 @@
       <li>If you use Spark, select a partition of 1.</li>
       <li>Click OK.</li>
   </ol>
-
   <p>You can now run the workflow and see the result. The model should appear
-  very accurate on this toy data. What we will do now, is add this evaluation
-  method into your footer, so that you can reuse it.</p>
+  very accurate on this toy data.</p>
+
+  <h3>Create a Super Action</h3>
+  <p>What we will do now, is add this evaluation method into your footer, so
+  that you can reuse it.</p>
+
   <ol>
       <li>Select with the mouse and the CTRL key the actions
       &ldquo;bin_score&rdquo;, &ldquo;score_bin_prop&rdquo;,
@@ -261,7 +412,8 @@
       <li>Save the workflow.</li>
       <li>Note that if you click on the new action, a new page is displayed in the
       help tab</li>
-      <li>Go into the footer editor, click on &ldquo;...&rdquo; next to &ldquo;LR&rdquo;, refresh the list of actions and add &ldquo;sa_evaluation10bin&rdquo;.</li>
+      <li>Go into the footer editor, click on &ldquo;...&rdquo; next to
+      &ldquo;ML&rdquo;, refresh the list of actions and add &ldquo;sa_evaluation10bin&rdquo;.</li>
       <li>Click OK.</li>
   </ol>
 
