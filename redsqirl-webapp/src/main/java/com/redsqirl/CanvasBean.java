@@ -1079,13 +1079,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		getDf().setName(getNameWorkflow());
 		logger.info("getNameWorkflow: " + getNameWorkflow());
 
-		// Back up the project
-		try {
-			updatePosition();
-			df.backup();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		updatePosition();
 
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 		logger.info("Select: " + select);
@@ -1116,12 +1110,30 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR RUNWORKFLOW", error);
 		} else {
-			String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
+			final String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
 			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty() 
 					&& !savedFile.equals("null") && !savedFile.equals("undefined")) {
 				logger.info("Save the workflow in " + savedFile);
 				logger.info(df.getOozieJobId());
-				getDf().save(savedFile);
+				new Thread() {
+					public void run() {
+						try {
+							getDf().save(savedFile);
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
+			}else{
+				new Thread() {
+					public void run() {
+						try {
+							df.backup();
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
 			}
 			calcWorkflowUrl();
 		}

@@ -150,18 +150,18 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			String errorNodeName = "error";
 			String okEndNodeName = "end";
 
-			logger.info("createXml 1");
 
 			if (error == null) {
-
+				logger.info("Create workflow.xml...");
+				
 				elements.clear();
 				outEdges.clear();
 
-				logger.info("createXml 2");
+				logger.info("Create the scripts...");
 
 				createOozieJob(doc, errorNodeName, okEndNodeName, scripts, list);
 
-				logger.info("createXml 3");
+				logger.info("Order the actions and build the dependency tree...");
 
 				Iterator<String> keys = outEdges.keySet().iterator();
 				Set<String> outNodes = new LinkedHashSet<String>();
@@ -169,14 +169,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					outNodes.addAll(outEdges.get(keys.next()));
 				}
 
-				logger.info("createXml 4");
-
 				Set<String> firstElements = new LinkedHashSet<String>();
 				firstElements.addAll(outEdges.keySet());
 				firstElements.removeAll(outNodes);
 				outEdges.put(startNode, firstElements);
-
-				logger.info("createXml 5");
 
 				OozieDag od = new OozieDag();
 				od.initWithOutGraph(outEdges);
@@ -184,7 +180,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					error = "Fail to fork the graph";
 					logger.info(outEdges.toString());
 				}else{
-					logger.debug("graph transformed...");
+					logger.info("Create the xml action objects...");
 					outEdges = od.getGraphOut();
 					// logger.debug(outEdges.toString());
 					Iterator<String> it = outEdges.keySet().iterator();
@@ -194,8 +190,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					if (firstElements.size() != 1) {
 						error = LanguageManagerWF
 								.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
-						logger.info("createXml firstElements " + error);
-						logger.info(outEdges.toString());
+						if(logger.isDebugEnabled()){
+							logger.debug("createXml firstElements " + error);
+							logger.debug(outEdges.toString());
+						}
 					} else {
 						Element start = doc.createElement("start");
 						Attr attrStartTo = doc.createAttribute("to");
@@ -203,8 +201,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						start.setAttributeNode(attrStartTo);
 						rootElement.appendChild(start);
 					}
-
-					logger.info("createXml 6");
 
 					while (it.hasNext() && error == null) {
 						String cur = it.next();
@@ -241,7 +237,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}
 			}
 
-			logger.info("createXml 7");
+			logger.info("Write the workflow.xml file in local filesystem...");
 
 			if (error == null) {
 				logger.debug("Finish up the xml generation...");
@@ -265,8 +261,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
-				// transformerFactory.setAttribute("indent-number", new
-				// Integer(4));
 				Transformer transformer = transformerFactory.newTransformer();
 				transformer.setOutputProperty(
 						"{http://xml.apache.org/xslt}indent-amount", "4");

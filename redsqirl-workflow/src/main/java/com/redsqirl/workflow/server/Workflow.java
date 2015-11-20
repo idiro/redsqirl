@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
@@ -920,9 +921,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
-				// fs.close();
 
 				saved = true;
+
+				String bckPath = getBackupName(createBackupDir());
+				FileUtil.copy(fs, new Path(filePath), fs, new Path(bckPath), false,NameNodeVar.getConf());
+				cleanUpBackup();
+				
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
@@ -1204,23 +1209,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return path;
 	}
-
+	
+	protected String createBackupDir(){
+		String path = WorkflowPrefManager.getBackupPath();
+		try {
+			FileSystem fs = NameNodeVar.getFS();
+			fs.mkdirs(new Path(path));
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			logger.warn("Fail creating backup directory");
+		}
+		return path;	
+	}
 	/**
 	 * Backup the workflow
 	 * 
 	 * @throws RemoteException
 	 */
 	public void backup() throws RemoteException {
-		String path = WorkflowPrefManager.getBackupPath();
-		try {
-			FileSystem fs = NameNodeVar.getFS();
-			fs.mkdirs(new Path(path));
-			// fs.close();
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-			logger.warn("Fail creating backup directory");
-		}
-		path = getBackupName(path);
+		String path = getBackupName(createBackupDir());
 		boolean save_swp = isSaved();
 		String error = save(path);
 		saved = save_swp;
