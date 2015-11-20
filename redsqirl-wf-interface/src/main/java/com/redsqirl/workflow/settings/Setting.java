@@ -43,6 +43,9 @@ public class Setting implements Serializable{
 	protected Checker checker;
 	protected String value;
 	
+	protected String userValue;
+	protected String sysValue;
+	
 	public Setting(Scope scope, String defaultValue) {
 		super();
 		this.scope = scope;
@@ -138,6 +141,14 @@ public class Setting implements Serializable{
 		return Scope.SYSTEM.equals(scope) ? null : WorkflowPrefManager.getUserProperty(propertyName);
 	}
 	
+	public void setUserValue(String userValue) {
+		this.userValue = userValue;
+	}
+
+	public void setSysValue(String sysValue) {
+		this.sysValue = sysValue;
+	}
+
 	public String getValue() {
 		String value = null;
 		switch(scope){

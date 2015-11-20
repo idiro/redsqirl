@@ -74,7 +74,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private String type;
 
 	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
-	private List<Setting> listSetting = new ArrayList<Setting>();
+	private List<String> listSetting = new ArrayList<String>();
 	private List<String> path;
 	private String nameNewTemplate;
 	private String pathPosition;
@@ -83,6 +83,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<String[]> userSettings = null;
 	private String template;
 
+	private Map<String, SettingMenu> curMap;
+	private SettingMenu s;
 
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
@@ -270,6 +272,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String name = params.get("name");
 
 		WorkflowPrefManager.readSettingMenu();
+		curMap = WorkflowPrefManager.getSettingMenu();
 
 		if(path == null){
 			path = new ArrayList<String>();
@@ -300,7 +303,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			path.add(name);
 		}
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		if(s.isTemplate()){
 			setTemplate("Y");
@@ -335,10 +338,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			listSubMenu.add(sc);
 		}
 
-		listSetting = new ArrayList<Setting>();
+		listSetting = new ArrayList<String>();
 		if(!s.isTemplate()){
 			for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
-				listSetting.add(setting.getValue());
+				listSetting.add(setting.getKey());
 			}
 		}
 
@@ -356,7 +359,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
 		SettingMenu cur = null;
-		Map<String, SettingMenu> curMap = WorkflowPrefManager.getSettingMenu();
+		//Map<String, SettingMenu> curMap = WorkflowPrefManager.getSettingMenu();
 		Iterator<String> itPath = path.iterator();
 		if(itPath.hasNext()){
 			cur = curMap.get(itPath.next());
@@ -387,7 +390,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		//path.add(name);
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		StringBuffer newPath = new StringBuffer();
 		for (String value : getPath()) {
@@ -420,7 +423,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
@@ -938,11 +941,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.listSubMenu = listSubMenu;
 	}
 
-	public List<Setting> getListSetting() {
+	public List<String> getListSetting() {
 		return listSetting;
 	}
 
-	public void setListSetting(List<Setting> listSetting) {
+	public void setListSetting(List<String> listSetting) {
 		this.listSetting = listSetting;
 	}
 
@@ -1000,6 +1003,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setPathPosition(String pathPosition) {
 		this.pathPosition = pathPosition;
+	}
+
+	public Map<String, SettingMenu> getCurMap() {
+		return curMap;
+	}
+
+	public void setCurMap(Map<String, SettingMenu> curMap) {
+		this.curMap = curMap;
+	}
+
+	public SettingMenu getS() {
+		return s;
+	}
+
+	public void setS(SettingMenu s) {
+		this.s = s;
 	}
 
 }

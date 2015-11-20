@@ -78,22 +78,22 @@
 			     			<tr>
 			     				<td>
 			     					
-			     					<h:outputText value="#{obj.label}" style="font-size:15px;" /><br/><br/>
+			     					<h:outputText value="#{packageMngBean.s.properties[obj].label}" style="font-size:15px;" /><br/><br/>
 			     					
-			     					<h:outputText value="#{obj.description}" /><br/>
+			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" /><br/>
 			     					
-			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{obj.scope == 'USER' or obj.scope == 'ANY'}" />
-			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{obj.scope == 'SYSTEM'}" />
-			     					<h:inputText value="#{obj.value}" style="background-color:#33FF99;" rendered="#{obj.scope == 'USER' or obj.scope == 'ANY'}" />
-			     					<h:inputText value="#{obj.value}" style="background-color:#FF3333;" rendered="#{obj.scope == 'SYSTEM'}" />
-			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{obj.scope == 'ANY'}" />
-			     					<h:inputText value="{obj.value}" rendered="#{obj.scope == 'ANY'}" style="margin-left:10px;background-color:#FF3333;" /><br/>
+			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM'}" />
+			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="#{packageMngBean.s.properties[obj].sysValue}" style="background-color:#FF3333;" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM'}" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{packageMngBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="{packageMngBean.s.properties[obj].sysValue}" rendered="#{packageMngBean.s.properties[obj].scope == 'ANY'}" style="margin-left:10px;background-color:#FF3333;" /><br/>
 			     					
 			     					<h:outputText value="#{messages.label_default}" style="font-weight:bold;" />
-			     					<h:outputText value="#{obj.defaultValue}" style="margin-left:3px;" /><br/>
+			     					<h:outputText value="#{packageMngBean.s.properties[obj].defaultValue}" style="margin-left:3px;" /><br/>
 			     					
 			     					<a4j:commandLink title="#{messages.label_default_value}" value="#{messages.label_default_value}" action="#{packageMngBean.setDefaultValue}" >
-			     						<f:param name="name" value="#{obj.label}" />
+			     						<f:param name="name" value="#{packageMngBean.s.properties[obj].label}" />
 			     					</a4j:commandLink>
 			     				
 			     				</td>
