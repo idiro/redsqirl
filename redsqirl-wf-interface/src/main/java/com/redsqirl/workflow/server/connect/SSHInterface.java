@@ -23,6 +23,8 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore.ParamProperty;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -31,7 +33,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author keith
  * 
  */
-public class SSHInterface extends UnicastRemoteObject implements DataStore {
+public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 
 	/**
 	 * 
@@ -81,6 +83,8 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	 * Max History size
 	 */
 	public static final int historyMax = 50;
+	
+	protected Session session;
 
 	/**
 	 * Constructor
@@ -110,7 +114,7 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		}
 
 		JSch jsch = new JSch();
-		Session session = jsch.getSession(System.getProperty("user.name"),
+		session = jsch.getSession(System.getProperty("user.name"),
 				host, port);
 		jsch.addIdentity(privateKey);
 		session.setConfig("StrictHostKeyChecking", "no");
@@ -746,6 +750,20 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public Map<String, String> readPathList(String repo) throws RemoteException {
 		return null;
+	}
+
+	/**
+	 * @return the session
+	 */
+	public Session getSession() {
+		return session;
+	}
+
+	/**
+	 * @param session the session to set
+	 */
+	public void setSession(Session session) {
+		this.session = session;
 	}
 	
 }

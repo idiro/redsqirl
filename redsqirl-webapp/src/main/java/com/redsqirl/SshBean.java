@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,8 +16,11 @@ import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 
 /** SshBean
  * 
@@ -39,7 +41,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private String password;
 	private String selectedTab;
 	private String tableState = new String();
-	private DataStoreArray dsa;
+	private SSHDataStoreArray dsa;
 	private boolean selectedpassword;
 
 	/** openCanvasScreen
@@ -57,7 +59,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		try {
 
-			dsa = getDataStoreArray();
+			dsa = getSSHDataStoreArray();
 
 			for(Map<String, String> map : dsa.getKnownStoreDetails()){
 				dsa.addStore(map);
@@ -70,7 +72,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 			if (!tabs.isEmpty()){
 				setSelectedTab(tabs.get(0));
-				setDataStore(dsa.getStores().get(selectedTab));
+				setDataStore(dsa.getStore(selectedTab));
 
 				if(getTableGrid() != null && getTableGrid().getRows() != null && getTableGrid().getRows().isEmpty()){
 					mountTable();
@@ -197,7 +199,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		logger.info("changeTab: "+name);
 		setSelectedTab(name);
-		setDataStore(dsa.getStores().get(name));
+		setDataStore(dsa.getStore(name));
 
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
@@ -312,11 +314,11 @@ public class SshBean extends FileSystemBean implements Serializable{
 		this.tableState = tableState;
 	}
 
-	public DataStoreArray getDsa() {
+	public SSHDataStoreArray getDsa() {
 		return dsa;
 	}
 
-	public void setDsa(DataStoreArray dsa) {
+	public void setDsa(SSHDataStoreArray dsa) {
 		this.dsa = dsa;
 	}
 

@@ -15,15 +15,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.idiro.Log;
-import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
@@ -136,7 +134,7 @@ public class ServerMain {
 
 				registry.rebind(
 						nameSshArray,
-						(DataStoreArray) new SSHInterfaceArray()
+						(SSHDataStoreArray) SSHInterfaceArray.getInstance()
 						);
 
 				logger.info("nameSshArray: "+nameSshArray);

@@ -24,7 +24,7 @@ public class SSHInterfaceArrayTests {
 		TestUtils.logTestTitle("HDFSInterfaceArrayTests#save");
 		
 		try{
-			SSHInterfaceArray arr = new SSHInterfaceArray();
+			SSHInterfaceArray arr = SSHInterfaceArray.getInstance();
 			
 			arr.resetKnownStores();
 			assertTrue("No host should be there",arr.getKnownStoreDetails().isEmpty());

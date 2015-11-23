@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
+import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
@@ -307,6 +308,15 @@ public interface DataStore extends Remote {
 	Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException;
 
+	/**
+	 * Get the children properties of the given path.
+	 * 
+	 * @return Children properties of the given path, or null if the object cannot have children.
+	 * @throws RemoteException
+	 */
+	Map<String, Map<String, String>> getChildrenProperties(String path)
+			throws RemoteException;
+	
 	/**
 	 * Change one property of the current element
 	 * 

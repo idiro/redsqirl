@@ -11,9 +11,11 @@ import java.util.Map;
 
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
-public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreArray {
+public class SSHInterfaceArray extends UnicastRemoteObject implements SSHDataStoreArray {
 
 	/**
 	 * 
@@ -32,11 +34,21 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	 * Map of available DataStores
 	 */
 	protected Map<String,DataStore> stores = new LinkedHashMap<String,DataStore>();
+	
+	private static SSHInterfaceArray instance = null;
+	
+	public static SSHInterfaceArray getInstance() throws RemoteException{
+		if(instance == null){
+			instance = new SSHInterfaceArray();
+		}
+		return instance;
+	}
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
 	 */
-	public SSHInterfaceArray() throws RemoteException {
+	private SSHInterfaceArray() throws RemoteException {
 		super();
 		if(initFieldsInit == null){
 			initFieldsInit = new LinkedHashMap<String,String>();
@@ -175,8 +187,13 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	 * @throws {@link RemoteException}
 	 */
 	@Override
-	public Map<String,DataStore> getStores() throws Exception, RemoteException {
+	public Map<String,DataStore> getStores() throws RemoteException {
 		return stores;
+	}
+	
+	@Override
+	public SSHDataStore getStore(String storeName) throws RemoteException {
+		return (SSHDataStore) stores.get(storeName);
 	}
 
 
@@ -223,5 +240,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	public void resetKnownStores() throws RemoteException {
 		SSHInterface.resetKnownHost();
 	}
+
+
 
 }

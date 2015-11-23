@@ -76,7 +76,12 @@ public interface DataStoreArray extends Remote {
 	 * @throws Exception
 	 * @throws RemoteException
 	 */
-	Map<String, DataStore> getStores() throws Exception, RemoteException;
+	Map<String, DataStore> getStores() throws RemoteException;
+	
+	/**
+	 * Get the given store
+	 */
+	DataStore getStore(String storeName) throws RemoteException;
 
 	/**
 	 * Add a store to a permanent list. The fields needed for this method are

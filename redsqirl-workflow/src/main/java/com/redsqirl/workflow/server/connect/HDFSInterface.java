@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
@@ -21,7 +20,6 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -40,12 +38,11 @@ import com.idiro.utils.RandomString;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -793,12 +790,19 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
+		return getChildrenProperties(history.get(cur).toString());
+	}
+	
+	@Override
+	public Map<String, Map<String, String>> getChildrenProperties(String pathStr)
+			throws RemoteException {
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
-		HdfsFileChecker fCh = new HdfsFileChecker(history.get(cur));
+		Path pathHdfs = new Path(pathStr);
+		HdfsFileChecker fCh = new HdfsFileChecker(pathHdfs);
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			if (fCh.isDirectory()) {
-				FileStatus[] fsA = fs.listStatus(history.get(cur));
+				FileStatus[] fsA = fs.listStatus(pathHdfs);
 
 				for (int i = 0; i < fsA.length; ++i) {
 					String path = fsA[i].getPath().toString();
@@ -809,7 +813,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			}
 			// fs.close();
 		} catch (IOException e) {
-			logger.error("Cannot open the directory: " + history.get(cur));
+			logger.error("Cannot open the directory: " + pathStr);
 			logger.error(e.getMessage());
 		}
 		// fCh.close();
@@ -1171,28 +1175,12 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	public String copyFromRemote(String rfile, String lfile, String remoteServer) {
 		String error = null;
 		try {
-			JSch shell = new JSch();
-			Session session = shell.getSession(System.getProperty("user.name"),
-					remoteServer);
 
-			session.setConfig("PreferredAuthentications", "publickey");
-			shell.setKnownHosts(System.getProperty("user.home")
-					+ "/.ssh/known_hosts");
-			shell.addIdentity(System.getProperty("user.home") + "/.ssh/id_rsa");
-			session.setConfig("StrictHostKeyChecking", "no");
-
-			logger.info("session config set");
-			session.connect();
-
-			Channel channel = session.openChannel("exec");
-
-			copyInHDFS(channel, rfile, lfile, remoteServer);
-
+			SSHDataStore remoteDS = SSHInterfaceArray.getInstance().getStore(remoteServer);
+			Channel channel = remoteDS.getSession().openChannel("exec");
+			copyInHDFS(channel, rfile, lfile, remoteDS);
 			channel.disconnect();
-			session.disconnect();
-		}
-
-		catch (Exception e) {
+		}catch (Exception e) {
 			logger.info("error", e);
 
 			error = LanguageManagerWF.getText("unexpectedexception",
@@ -1201,14 +1189,12 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		return error;
 	}
 
-	private String copyInHDFS(Channel channel, String rfile, String lfile, String remoteServer) throws Exception {
+	private String copyInHDFS(Channel channel, String rfile, String lfile, SSHDataStore remoteServer) throws Exception {
 
 		String error = null;
 		FileSystem fs = NameNodeVar.getFS();
 
-		SSHInterface sshInt = new SSHInterface(remoteServer, 22);
-
-		Map<String,String> p = sshInt.getProperties(rfile);
+		Map<String,String> p = remoteServer.getProperties(rfile);
 		if(p.get("type").equals("file")){
 
 			String nameRdm = RandomString.getRandomName(20);
@@ -1235,7 +1221,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 
 			logger.info("create the directory " + lfile);
 
-			Map<String,Map<String,String>> files = sshInt.getChildrenProperties(rfile);
+			Map<String,Map<String,String>> files = remoteServer.getChildrenProperties(rfile);
 			logger.info(files);
 
 			for (String path : files.keySet()) {
@@ -1268,25 +1254,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	public String copyToRemote(String lfile, String rfile, String remoteServer) {
 		String error = null;
 		try {
-			JSch shell = new JSch();
-			Session session = shell.getSession(System.getProperty("user.name"),
-					remoteServer);
-
-			session.setConfig("PreferredAuthentications", "publickey");
-			shell.setKnownHosts(System.getProperty("user.home")
-					+ "/.ssh/known_hosts");
-			shell.addIdentity(System.getProperty("user.home") + "/.ssh/id_rsa");
-			session.setConfig("StrictHostKeyChecking", "no");
-
-			logger.info("session config set");
-			session.connect();		
-
-			Channel channel = session.openChannel("exec");
-
+			SSHDataStore remoteDS = SSHInterfaceArray.getInstance().getStore(remoteServer);
+			Channel channel = remoteDS.getSession().openChannel("exec");
 			copyInRemote(channel, lfile, rfile);
 			channel.disconnect();
-			session.disconnect();
-
 			return null;
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);

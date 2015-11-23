@@ -25,9 +25,9 @@ import com.redsqirl.useful.RedSqirlEntry;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
@@ -142,12 +142,12 @@ public class BaseBean {
 	 * @return DataStoreArray
 	 * @author Igor.Souza
 	 */
-	public DataStoreArray getDataStoreArray() throws RemoteException{
+	public SSHDataStoreArray getSSHDataStoreArray() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStoreArray) session.getAttribute("ssharray");
+		return (SSHDataStoreArray) session.getAttribute("ssharray");
 	}
 	
 	/** getHDFS

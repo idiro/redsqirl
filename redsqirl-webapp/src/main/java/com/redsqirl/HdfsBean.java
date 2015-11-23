@@ -8,6 +8,7 @@ import javax.faces.context.FacesContext;
 import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
+import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 
 /** HdfsBean
@@ -75,10 +76,10 @@ public class HdfsBean extends FileSystemBean {
 		String path = context.getExternalContext().getRequestParameterMap().get("path");
 		String server = context.getExternalContext().getRequestParameterMap().get("server");
 		
-		logger.info("copy from "+path+"/"+file+" to "+server+":"+getPath()+"/"+file);
-		
+		logger.info("copy from "+server+":"+getPath()+"/"+file+" to "+path+"/"+file);
 		try{
-			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
+			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, 
+					server);
 			mountTable();
 		}
 		catch(Exception e){
