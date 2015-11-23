@@ -7,18 +7,17 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:panelGrid id="selectLinkList">
-		<h:panelGrid rendered="#{!empty canvasBean.linkPossibilities}">
-			<h:selectOneRadio value="#{canvasBean.selectedLink}" layout="pageDirection" >
-	   			<f:selectItems value="#{canvasBean.linkPossibilities}" />
-	   		</h:selectOneRadio>
-	   		
-	   		<h:panelGrid columns="2">
-		   		<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
-					onclick="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') }); setTimeout(function(){ addLinkBt();},250) "/>
-				<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
-				    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
-			</h:panelGrid>
+	<h:panelGrid id="selectLinkList" width="280" heigth="160">
+		
+		<h:selectOneRadio value="#{canvasBean.selectedLink}" layout="pageDirection"  rendered="#{!empty canvasBean.linkPossibilities}">
+	   		<f:selectItems value="#{canvasBean.linkPossibilities}" />
+	   	</h:selectOneRadio>
+	   	
+	   	<h:panelGrid columns="2" style="float:right;"  rendered="#{!empty canvasBean.linkPossibilities}">
+			<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
+			    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
+			<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+				onclick="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') }); setTimeout(function(){ addLinkBt();},250) "/>
 		</h:panelGrid>
 		
 		<h:panelGrid rendered="#{empty canvasBean.linkPossibilities}">
