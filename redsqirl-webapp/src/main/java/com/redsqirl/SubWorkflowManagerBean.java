@@ -279,7 +279,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		} else {
 			String error = getSuperActionManager().importSA(getUserInfoBean().getUserName(),
-					pathHdfs);
+					pathHdfs,"default");
 
 			if (error != null && !error.isEmpty()) {
 				MessageUseful.addErrorMessage(error);

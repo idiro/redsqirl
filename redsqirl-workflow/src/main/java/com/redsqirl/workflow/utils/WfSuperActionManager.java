@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
@@ -36,50 +37,28 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 	}
 	
 
-	public String importSA(String user,String pathHdfs) throws IOException{
-		String error = null;
-		FileSystem fs = NameNodeVar.getFS();
-		Path path = new Path(pathHdfs);
-		Path dest = new Path(WorkflowPrefManager.getSuperActionMainDir(user).getAbsolutePath());
-		if(fs.isFile(path)){
-			try{
-				fs.copyToLocalFile(path, dest);
-				String filename = pathHdfs.substring(pathHdfs.lastIndexOf("/"));
-				logger.info("filename " + filename);
-				String filenameReplced = "";
-				if(filename.endsWith(".srs")){
-					filenameReplced = filename.substring(0,filename.indexOf(".srs"));
-				}else{
-					filenameReplced = filename;
-				}
-				File file = new File(WorkflowPrefManager.getSuperActionMainDir(user).getAbsolutePath()+filename);
-				File file2 = new File(WorkflowPrefManager.getSuperActionMainDir(user).getAbsolutePath()+filenameReplced);
-				
-				file.renameTo(file2);
-				
-			} catch (Exception e ){
-				error ="Problem transfering "+pathHdfs+" on HDFS to "+ dest.getName()+" on local filesystem";
-				logger.error("error "+e,e);
-			}
-		}else{
-			error = "Propelem with file :"+path;
-		}
-		return error;
-		
+	public String importSA(String user,String pathHdfs, String packageName) throws IOException{
+		SubWorkflow sw = new SubWorkflow();
+		sw.read(pathHdfs);
+		return createInstallFiles(user, sw, sw.getPrivilege(), packageName);
 	}
 	
-	public String createInstallFiles(String user, SubDataFlow toInstall, Boolean privilege)
+	public String createInstallFiles(String user, SubDataFlow toInstall, Boolean privilege, String packageName)
 			throws RemoteException {
+		packageName = packageName != null & ! packageName.isEmpty() ? packageName:"default";
 		String name = toInstall.getName();
 		
-		File mainFile = new File(WorkflowPrefManager.getPathTmpFolder(user),name);
-		File helpFile = new File(WorkflowPrefManager.getPathTmpFolder(user),name+".html");
+		File mainFile = new File(WorkflowPrefManager.getPathTmpFolder(user)+"/"+packageName,name);
+		File helpFile = new File(WorkflowPrefManager.getPathTmpFolder(user)+"/"+packageName,name+".html");
 		
 		String error = null;
 		if (mainFile.exists()) {
 			mainFile.delete();
 			helpFile.delete();
 		}
+		mainFile.getParentFile().mkdirs();
+		helpFile.getParentFile().mkdirs();
+		
 		logger.debug("Check installation file");
 		error = toInstall.check();
 
@@ -117,19 +96,40 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 	}
 	
 	public List<String> getSysSuperActions() {
-		File sysSA = WorkflowPrefManager.getSuperActionMainDir(null);
+		return getSysSuperActions(WorkflowPrefManager.getSuperActionMainDir(null));
+	}
+
+	public List<String> getUserSuperActions(String user) {
+		return getSysSuperActions(WorkflowPrefManager.getSuperActionMainDir(user));
+	}
+
+	public List<String> getSysSuperActions(File superActionFolder) {
 		final String pattern = "sa_[a-zA-Z0-9]*";
 
 		List<String> ansL = new LinkedList<String>();
 		try {
-			if (sysSA.exists()) {
-				ansL.addAll(Arrays.asList(sysSA.list(new FilenameFilter() {
+			if (superActionFolder.exists()) {
+				File[] packageList = superActionFolder.listFiles(new FilenameFilter() {
 
 					@Override
 					public boolean accept(File arg0, String name) {
-						return name.matches(pattern) && name.startsWith("sa_");
+						return arg0.isDirectory();
 					}
-				})));
+				});
+				for(File pack:packageList){
+					String packName = pack.getName();
+					File[] saL = pack.listFiles(new FilenameFilter() {
+
+						@Override
+						public boolean accept(File arg0, String name) {
+							return name.matches(pattern) && name.startsWith("sa_");
+						}
+					});
+					for(File sa:saL){
+						ansL.add(packName+"."+sa.getName());
+					}
+				}
+				
 			}
 		} catch (Exception e) {
 			logger.error("error ", e);
@@ -137,27 +137,6 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 		return ansL;
 	}
 	
-	public List<String> getUserSuperActions(String user) {
-		File userSA = WorkflowPrefManager.getSuperActionMainDir(user);
-		final String pattern = "sa_[a-zA-Z0-9]*";
-
-		List<String> ansL = new LinkedList<String>();
-		try {
-			if (userSA.exists()) {
-				ansL.addAll(Arrays.asList(userSA.list(new FilenameFilter() {
-
-					@Override
-					public boolean accept(File arg0, String name) {
-						return name.matches(pattern) && name.startsWith("sa_");
-					}
-				})));
-			}
-		} catch (Exception e) {
-			logger.error(e);
-		}
-		return ansL;
-	}
-
 	public List<String> getAvailableSuperActions(String user) {
 		List<String> ansL = new LinkedList<String>();
 		ansL.addAll(getUserSuperActions(user));

@@ -19,9 +19,9 @@ public interface SuperActionManager extends Remote {
 
 	public String export(String pathHdfs, SubDataFlow toExport , Boolean privilage) throws RemoteException;
 
-	public String importSA(String user,String pathHdfs)  throws RemoteException, IOException;
+	public String importSA(String user,String pathHdfs, String packageName)  throws RemoteException, IOException;
 	
-	public String createInstallFiles(String user, SubDataFlow toInstall, Boolean privilege) throws RemoteException;
+	public String createInstallFiles(String user, SubDataFlow toInstall, Boolean privilege, String packageName) throws RemoteException;
 
 	public List<String> getSysSuperActions() throws RemoteException;
 	
