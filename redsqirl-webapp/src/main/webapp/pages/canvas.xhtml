@@ -223,9 +223,12 @@
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
+	              var tabName;
+	              do{
+	              	contTabCanvas++;
+	              	tabName = "canvas-"+contTabCanvas;
+	              }while(canvasArray[tabName])
 	              
-	              contTabCanvas++;
-	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflow(tabName);
 	              addWorkflowTab(tabName);
 	              configureCanvas(tabName, true, "W");
@@ -238,9 +241,11 @@
 
 	    	  jQuery('#addsubtabCanvas').click( function(){
 	              //<![CDATA[
-	              
-	              contTabCanvas++;
-	              var tabName = "canvas-"+contTabCanvas;
+	              var tabName;
+	              do{
+	              	contTabCanvas++;
+	              	tabName = "canvas-"+contTabCanvas;
+	              }while(canvasArray[tabName])
 	              addSubWorkflow(tabName);
 	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
