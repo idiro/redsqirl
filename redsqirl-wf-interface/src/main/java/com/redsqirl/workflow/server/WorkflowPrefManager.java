@@ -131,6 +131,10 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt",
 			/**
+			 * The local file storing dataflow action classes
+			 */
+			pathFooterPackageNotification = pathUserPref + "/.footerpackagenotification.txt",
+			/**
 			 * The local directory to store temporarily workflow. Accessible from
 			 * redsqirl-workflow side.
 			 */
@@ -459,6 +463,7 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("superactioninput");
 				s.println("superactionoutput");
 				
+				/*
 				PackageManager p = new PackageManager();
 				List<String> listActions = p.getActions(userName);
 				
@@ -547,7 +552,7 @@ public class WorkflowPrefManager extends BlockManager {
 				
 				//hama
 				
-				/*if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
+				if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
 						listActions.contains("Page_Rank_Action") ){
 					s.println("menu:Model");
 				}
@@ -560,7 +565,9 @@ public class WorkflowPrefManager extends BlockManager {
 				}
 				if(listActions.contains("Page_Rank_Action")){
 					s.println("Page_Rank_Action");
-				}*/
+				}
+				
+				*/
 
 				s.close();
 
@@ -643,6 +650,7 @@ public class WorkflowPrefManager extends BlockManager {
 		pathUserSuperAction = pathUserPref + "/superactions";
 		pathOutputClasses = pathUserPref + "/.outputclasses.txt";
 		pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt";
+		pathFooterPackageNotification = pathUserPref + "/.footerpackagenotification.txt";
 		pathUserPackagePref = pathUserPref + "/packages";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
@@ -1179,8 +1187,21 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * @return the pathUserSuperAction
 	 */
+	public static String getPathFooterPackageNotification() {
+		return pathFooterPackageNotification;
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
 	public static String getPathDataFlowActionClasses(String user) {
 		return getPathUserPref(user)+"/.dataflowactionclasses.txt";
+	}
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathFooterPackageNotification(String user) {
+		return getPathUserPref(user)+"/.footerpackagenotification.txt";
 	}
 
 	/**

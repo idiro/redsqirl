@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.ElementManager;
 
 public class HelpBean extends BaseBean implements Serializable {
 
@@ -30,25 +31,27 @@ public class HelpBean extends BaseBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7223013564153599958L;
-
+	private static final String workflowNameTmp = "calcHelpItens"; 
 	private static Logger logger = Logger.getLogger(HelpBean.class);
 	private List<String[]> helpHtml = null;
 	private String fieldSearch;
 	private List<String[]> result = new ArrayList<String[]>();
 	private List<String> listHelp = new ArrayList<String>();
 	private List<String[]> helpHtmlSuperAction = null;
+	protected ElementManager em = null;
 
-	private DataFlow getWf(String name) throws RemoteException{
-		DataFlow wf = getworkFlowInterface().getWorkflow(name);
-		if(wf == null){
-			getworkFlowInterface().addWorkflow(name);
-			wf = getworkFlowInterface().getWorkflow(name);
+
+	private ElementManager getEM() throws RemoteException{
+		if(em == null){
+			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			if(wf == null){
+				getworkFlowInterface().addWorkflow(workflowNameTmp);
+				wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			}
+			em = wf.getElementManager();
+			getworkFlowInterface().removeWorkflow(workflowNameTmp);
 		}
-		return wf;
-	}
-	
-	private void removeWf(String name) throws RemoteException{
-		getworkFlowInterface().removeWorkflow(name);
+		return em;
 	}
 	
 	public void calcHelpItens(){
@@ -56,13 +59,9 @@ public class HelpBean extends BaseBean implements Serializable {
 		logger.info("calcHelpItens");
 
 		try {
-			String canvas1 = "calcHelpItens";
-			DataFlow wf = getWf(canvas1);
-
-			mountRelativeHelp(wf);
-			mountRelativeHelpSuperAction(wf);
-
-			removeWf(canvas1);
+			getEM();
+			mountRelativeHelp();
+			mountRelativeHelpSuperAction();
 		} catch (RemoteException e) {
 			logger.error(e);
 		} catch (Exception e) {
@@ -73,18 +72,16 @@ public class HelpBean extends BaseBean implements Serializable {
 	
 	public void refreshRelativeHelp() throws Exception{
 		logger.info("refreshRelativeHelp");
-		String canvas1 = "refreshRelativeHelp";
-		DataFlow wf = getWf(canvas1);
-		mountRelativeHelpSuperAction(wf);
-		removeWf(canvas1);
+		getEM();
+		mountRelativeHelpSuperAction();
 	}
 
-	public void mountRelativeHelp(DataFlow wf) throws Exception{
+	protected void mountRelativeHelp() throws Exception{
 
 		Map<String,String[]> helpRel = null;
 		helpHtml = new LinkedList<String[]>();
 		try {
-			helpRel = wf.getRelativeHelp(getCurrentPage());
+			helpRel = em.getRelativeHelp(getCurrentPage());
 			Iterator<String> it = helpRel.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
@@ -105,17 +102,17 @@ public class HelpBean extends BaseBean implements Serializable {
 				}
 			});
 		} catch (Exception e) {
-			logger.info("E");
+			logger.error(e,e);
 		}
 
 	}
 
-	public void mountRelativeHelpSuperAction(DataFlow wf) throws Exception{
+	protected void mountRelativeHelpSuperAction() throws Exception{
 
 		Map<String,String[]> helpRel = null;
 		List<String[]> helpHtmlSA = new LinkedList<String[]>();
 		try {
-			helpRel = wf.getRelativeHelpSuperAction(getCurrentPage());
+			helpRel = em.getRelativeHelpSuperAction(getCurrentPage());
 			Iterator<String> it = helpRel.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
@@ -136,7 +133,7 @@ public class HelpBean extends BaseBean implements Serializable {
 				}
 			});
 		} catch (Exception e) {
-			logger.info("E");
+			logger.error(e,e);
 		}
 		
 		setHelpHtmlSuperAction(helpHtmlSA);
@@ -182,6 +179,7 @@ public class HelpBean extends BaseBean implements Serializable {
 					newName = line.replaceAll("<title>", "").replaceAll("</title>", "");
 				}
 			}
+			br.close();
 			String aux[] = fileName.split("/");
 			String id = aux[aux.length-1].replaceAll("\\.html", "");
 			if(listHelp != null && listHelp.contains(id)){

@@ -97,6 +97,8 @@
         var msg_expand_command='#{messages.msg_expand_command}';
         var msg_refresh='#{messages.msg_refresh}';
         var msg_recover_backup='#{messages.msg_recover_backup}';
+        var msg_newpackage_notification_footer_beg='#{messages.msg_newpackage_notification_footer_beg}';
+        var msg_newpackage_notification_footer_end='#{messages.msg_newpackage_notification_footer_end}'; 
         
 		           
 		 var contTabCanvas = 1;
@@ -1100,21 +1102,44 @@
 	   	}
 
 	   	function reinitializeCanvasScreen(refresh,backUpWf){
+	   	    //<![CDATA[
 	   		console.log("reinitializeCanvasScreen");
-		   	
 			if(refresh != null){
 				backupAndCloseAll();
 				if(confirm(msg_refresh)){
 				   reOpenCanvas();
 				}
-			}else if(backUpWf != null){
-	    	   //re open canvas
-	    	   if(confirm(msg_recover_backup)){
-	    	      reOpenCanvas();
-	    	   }
-	    	}
+			}else{ 
+				if(backUpWf != null){
+	    	   		//re open canvas
+	    	   		if(confirm(msg_recover_backup)){
+	    	      		reOpenCanvas();
+	    	   		}
+	    		}
+				
+    		   	notifyUser();
+	    	   	
+			}
 	    	configureFooter();
+	    	//]]>
 		}
+	   	
+	   	function notifyUserJS(notificationFooter){
+	   	    //<![CDATA[
+	   		if(notificationFooter && notificationFooter.length > 0){
+    		  	var pack = "\n";
+    		   	for (var i = 0; i < notificationFooter.length; i++) {
+    			  	pack += "\t- "+notificationFooter[i]+"\n";
+    		   	}
+    		   	pack += "\n";
+	    	   	if(confirm(msg_newpackage_notification_footer_beg+pack+msg_newpackage_notification_footer_end)){
+	    		   	updateFooterWithNewPackages();
+	    	   	}else{
+	    		   	updateNewPackageAsNotified();
+	    	   	}
+    	   	}
+	    	//]]>
+	   	}
 
 
 	   	function setShowInstallPackageModelValue(value){
@@ -1398,6 +1423,12 @@
 					oncomplete="console.log('closeAll'); closeAllWorkflowTabs()" />
 			</a4j:region>
 
+			
+            <a4j:region>
+				<a4j:jsFunction name="notifyUser" data="#{configureTabsBean.notificationUser}"
+					oncomplete="console.log('notifyUser');notifyUserJS(data);"
+					/>
+			</a4j:region>
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -1407,6 +1438,13 @@
 
 				<a4j:jsFunction name="reRenderFooter" oncomplete="console.log('reRenderFooter'); mountFooter();" reRender="tabsFooterForm" />
 				<a4j:jsFunction name="mountFooter" oncomplete="console.log('mountFooter'); configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
+                
+				<a4j:jsFunction name="updateFooterWithNewPackages" action="#{configureTabsBean.updateFooterWithNewPackages}"
+					oncomplete="console.log('updateFooterWithNewPackages');reRenderFooter();"
+					 />
+                    
+                <a4j:jsFunction name="updateNewPackageAsNotified" action="#{configureTabsBean.updateNewPackageAsNotified}"
+                     />
 			</a4j:region>
 
 			<a4j:region>
@@ -2032,7 +2070,6 @@
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
 					oncomplete="console.log('pasteJS'); saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
-
 			<a4j:region>
 
 				<a4j:commandLink id="openCanvasScreenHdfs"

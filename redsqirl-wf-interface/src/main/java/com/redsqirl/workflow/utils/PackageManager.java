@@ -43,7 +43,7 @@ public class PackageManager extends UnicastRemoteObject {
 
 	static Logger logger = Logger.getLogger(PackageManager.class);
 	/** Help Files directory name */
-	static String help_dir = "help",
+	public final static String help_dir = "help",
 	/** Image Directory name */
 	image_dir = "images",
 	/** Lib directory name */
@@ -413,6 +413,15 @@ public class PackageManager extends UnicastRemoteObject {
 			}
 		}
 
+		return ans;
+	}
+	
+	public List<String> getAllPackageNames(String user){
+		List<File> packageFiles = getAllPackages(user);
+		List<String> ans = new ArrayList<String>(packageFiles.size());
+		for(File cur:packageFiles){
+			ans.add(cur.getName());
+		}
 		return ans;
 	}
 
@@ -802,7 +811,7 @@ public class PackageManager extends UnicastRemoteObject {
 		File packDir = null;
 		if (user == null || user.isEmpty()) {
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
-		} else {
+		}else{
 			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
 		return new File(packDir, packName);

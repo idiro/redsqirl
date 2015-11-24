@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.redsqirl.workflow.server.WorkflowPrefManager;
-
 /**
  * Data Flow interface.
  * 
@@ -18,53 +16,12 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 public interface DataFlow extends Remote, Cloneable{
 	
 	/**
-	 * Load the icon menu.
-	 * 
-	 * The icon menu is read from a directory. All the directory are tab, and
-	 * each line in each file is an action. The files can be commented by '#' on
-	 * the beginning of each line.
-	 * 
-	 * @return null if ok, or all the error found
-	 * 
-	 */
-	public String loadMenu() throws RemoteException;
-
-	/**
-	 * Load the icon menu.
-	 * 
-	 * Load the icon menu from a map of action list.
-	 * 
-	 * @param newMenu The new actions per menu
-	 * @return null if ok, or all the error found
-	 * 
-	 */
-	public String loadMenu(Map<String,List<String>> newMenu) throws RemoteException;
-	
-	/**
-	 * Get the menu loaded with relative path calculated from the input.
-	 * @param curPath
-	 * @return The menu with relative path.
+	 * Get the element manager of the workflow
+	 * @return
 	 * @throws RemoteException
 	 */
-	public Map<String,List<String[]>> getRelativeMenu(File curPath) throws RemoteException;
-
+	public ElementManager getElementManager() throws RemoteException;
 	
-	/**
-	 * Get the help html file path relatively to the input for each action name (key).
-	 * @param curPath 
-	 * @return The help html file path relatively to the input for each action name (key).
-	 */
-	public Map<String,String[]> getRelativeHelp(File curPath) throws RemoteException;
-	
-	/**
-	 * Save the icon menu.
-	 * 
-	 * 
-	 * @return null if ok, or all the error found
-	 * 
-	 */
-	public String saveMenu() throws RemoteException;
-
 	/**
 	 * Check if a workflow is correct or not. Returns a string with a
 	 * description of the error if it is not correct.
@@ -483,14 +440,6 @@ public interface DataFlow extends Remote, Cloneable{
 	 */
 	public boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
-
-	/**
-	 * Get the relative help of all the Super Actions
-	 * @param curPath
-	 * @return Get the relative help of all the Super Actions
-	 * @throws RemoteException
-	 */
-	Map<String, String[]> getRelativeHelpSuperAction(File curPath) throws RemoteException;
 
 	public String backupAllWorkflowsBeforeClose() throws RemoteException;
 	

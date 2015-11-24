@@ -23,12 +23,15 @@ import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.ElementManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 
 	private static final long serialVersionUID = 4626482566525824607L;
+	private static final String workflowNameTmp = "wf-footer-123";
 
+	protected ElementManager em = null;
 	protected Map<String, List<String[]>> menuWA;
 	private Map<String,String> allWANameWithClassName = null;
 	private LinkedHashSet<String> menuActions;
@@ -39,7 +42,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private SelectableTable tableGridOld = new SelectableTable();
 	private Integer index;
 	private String showTab = "N";
-	private String workflowNameTmp = "wf-footer-123";
 
 	/**
 	 * Value to give when index is null
@@ -51,6 +53,20 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	public ConfigureTabsBean(){
 	}
+	
+
+	private ElementManager getEM() throws RemoteException{
+		if(em == null){
+			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			if(wf == null){
+				getworkFlowInterface().addWorkflow(workflowNameTmp);
+				wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			}
+			em = wf.getElementManager();
+			getworkFlowInterface().removeWorkflow(workflowNameTmp);
+		}
+		return em;
+	}
 
 	//@PostConstruct
 	public void openCanvasScreen() {
@@ -59,22 +75,17 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			showTab = "Y";
 		}else{
 			try {
-				if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
-					getworkFlowInterface().addWorkflow(workflowNameTmp);
-				}
-
-				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+				ElementManager em = getEM();
+				
 				logger.info("Load menu...");
-				wf.loadMenu();
+				em.loadMenu();
 				logger.info("Load relative menu...");
-				menuWA = wf.getRelativeMenu(getCurrentPage());
+				menuWA = em.getRelativeMenu(getCurrentPage());
 				logger.info("Load Action classes");
 				if(allWANameWithClassName == null){
-					allWANameWithClassName = wf.getAllWANameWithClassName();
+					allWANameWithClassName = em.getAllWANameWithClassName();
 					logger.info(allWANameWithClassName.keySet());
 				}
-				getworkFlowInterface().removeWorkflow(workflowNameTmp);
-
 				logger.info("Mount action");
 				mountMenuActions();
 
@@ -93,7 +104,25 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-
+	
+	public String[] getNotificationUser() throws RemoteException{
+		getEM();
+		List<String> notif = em.getPackageToNotify(); 
+		return notif.toArray(new String[notif.size()]);
+	}
+	
+	public void updateFooterWithNewPackages() throws RemoteException{
+		getEM();
+		em.addPackageToFooter(em.getPackageToNotify());
+		menuWA = null;
+		openCanvasScreen();
+	}
+	
+	public void updateNewPackageAsNotified() throws RemoteException{
+		getEM();
+		em.packageNotified(em.getPackageToNotify());
+	}
+	
 	public void mountMenuActions() throws RemoteException, Exception {
 
 		logger.info("mountMenuActions");
@@ -317,10 +346,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		if(error == null){
 
 			try {
-				if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
-					getworkFlowInterface().addWorkflow(workflowNameTmp);
-				}
-				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+				ElementManager em = getEM();
 				Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
 
 				for (SelectableRow selectableRow : getTableGrid().getRows()) {
@@ -340,10 +366,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					mapMenu.put(selectableRow.getRow()[0],l);
 				}
 
-				wf.loadMenu(mapMenu);
-				wf.saveMenu();
-				menuWA = wf.getRelativeMenu(getCurrentPage());
-				getworkFlowInterface().removeWorkflow(workflowNameTmp);
+				em.loadMenu(mapMenu);
+				em.saveMenu();
+				menuWA = em.getRelativeMenu(getCurrentPage());
 				setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
 				//showTab = "N";
