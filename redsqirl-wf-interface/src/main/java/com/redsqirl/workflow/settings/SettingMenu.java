@@ -1,6 +1,7 @@
 package com.redsqirl.workflow.settings;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
-public class SettingMenu {
+public class SettingMenu implements Serializable{
 
 	protected Map<String,Setting> properties = new LinkedHashMap<String,Setting>();
 	protected Map<String,SettingMenu> menu = new LinkedHashMap<String,SettingMenu>();

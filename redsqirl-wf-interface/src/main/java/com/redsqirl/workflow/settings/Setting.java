@@ -42,9 +42,11 @@ public class Setting implements Serializable{
 	protected Type type;
 	protected Checker checker;
 	protected String value;
-	
 	protected String userValue;
 	protected String sysValue;
+	protected boolean existUserProperty;
+	protected boolean existSysProperty;
+	
 	
 	public Setting(Scope scope, String defaultValue) {
 		super();
@@ -133,16 +135,24 @@ public class Setting implements Serializable{
 		return checker == null? validType(): validType()&&checker.valid();
 	}
 	
-	public String getSysValue(){
+	public String getSysPropetyValue(){
 		return Scope.USER.equals(scope) ? null : WorkflowPrefManager.getSysProperty(propertyName);  
 	}
 	
-	public String getUserValue(){
+	public String getUserPropetyValue(){
 		return Scope.SYSTEM.equals(scope) ? null : WorkflowPrefManager.getUserProperty(propertyName);
 	}
 	
 	public void setUserValue(String userValue) {
 		this.userValue = userValue;
+	}
+
+	public String getUserValue() {
+		return userValue;
+	}
+
+	public String getSysValue() {
+		return sysValue;
 	}
 
 	public void setSysValue(String sysValue) {
@@ -219,6 +229,22 @@ public class Setting implements Serializable{
 
 	public void setPropertyName(String propertyName) {
 		this.propertyName = propertyName;
+	}
+
+	public boolean isExistUserProperty() {
+		return existUserProperty;
+	}
+
+	public void setExistUserProperty(boolean existUserProperty) {
+		this.existUserProperty = existUserProperty;
+	}
+
+	public boolean isExistSysProperty() {
+		return existSysProperty;
+	}
+
+	public void setExistSysProperty(boolean existSysProperty) {
+		this.existSysProperty = existSysProperty;
 	}
 	
 }
