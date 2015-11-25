@@ -1111,8 +1111,9 @@
 				}
 			}else{ 
 				if(backUpWf != null){
+					var wf = "\n\t- "+backUpWf.replace(", ","\n\t- ");
 	    	   		//re open canvas
-	    	   		if(confirm(msg_recover_backup)){
+	    	   		if(confirm(msg_recover_backup+wf)){
 	    	      		reOpenCanvas();
 	    	   		}
 	    		}
