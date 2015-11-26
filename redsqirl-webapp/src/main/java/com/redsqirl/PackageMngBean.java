@@ -315,12 +315,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
 
-			/*if(settingsMenu.getValue().isTemplate()){
-				sc.setTemplate("Y");
-			}else{
-				sc.setTemplate("N");
-			}*/
-
 			if(s.isTemplate()){
 				sc.setTemplate("Y");
 			}else{
@@ -422,6 +416,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return cur;
 	}
+	
+	public String cancelSettings() throws RemoteException{
+		return "success";
+	}
+	
+	public void applySettings() throws RemoteException{
+		saveSettings();
+	}
 
 	public String saveSettings() throws RemoteException{
 
@@ -438,30 +440,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String nameSettings = newPath.substring(1) +"."+ setting.getKey();
 			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM)){
 				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
-					//if(!setting.getValue().getSysValue().equals(setting.getValue().getDefaultValue())){
 					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
 					sysSettings.add(value);
-					//}
 				}
 			}else if(setting.getValue().getScope().equals(Setting.Scope.USER)){
 				if(setting.getValue().getUserValue() != null && !setting.getValue().getUserValue().isEmpty()){
-					//if(!setting.getValue().getUserValue().equals(setting.getValue().getDefaultValue())){
 					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getUserValue()};
 					userSettings.add(value);
-					//}
 				}
 			}else{
 				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
-					//if(!setting.getValue().getSysValue().equals(setting.getValue().getDefaultValue())){
 					String[] valueS = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
 					sysSettings.add(valueS);
-					//}
 				}
 				if(setting.getValue().getUserValue() != null && !setting.getValue().getUserValue().isEmpty()){
-					//if(!setting.getValue().getUserValue().equals(setting.getValue().getDefaultValue())){
 					String[] valueU = {nameSettings, nameSettings, nameSettings, setting.getValue().getUserValue()};
 					userSettings.add(valueU);
-					//}
 				}
 			}
 		}
@@ -626,10 +620,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			Setting setting = s.getProperties().get(label);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(false);
-				deleteProperty(label, setting.getSysValue());
+				deleteProperty(label, setting.getSysValue(), scope);
 			}else if(scope.equals(Setting.Scope.USER.toString())){
 				setting.setExistUserProperty(false);
-				deleteProperty(label, setting.getUserValue());
+				deleteProperty(label, setting.getUserValue(), scope);
 			}
 			
 			WorkflowPrefManager.readSettingMenu();
@@ -640,7 +634,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	}
 	
-	public void deleteProperty(String name, String valueToDelete){
+	public void deleteProperty(String name, String valueToDelete, String scope){
 		
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
@@ -660,17 +654,21 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		for (String[] deletesettings : deleteSettings) {
 
-			for (Iterator<String[]> iterator = sysSettings.iterator(); iterator.hasNext();) {
-				String[] settings = (String[]) iterator.next();
-				if(deletesettings[0].equals(settings[0])){
-					iterator.remove();
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				for (Iterator<String[]> iterator = sysSettings.iterator(); iterator.hasNext();) {
+					String[] settings = (String[]) iterator.next();
+					if(deletesettings[0].equals(settings[0])){
+						iterator.remove();
+					}
 				}
 			}
 
-			for (Iterator<String[]> iterator = userSettings.iterator(); iterator.hasNext();) {
-				String[] settings = (String[]) iterator.next();
-				if(deletesettings[0].equals(settings[0])){
-					iterator.remove();
+			if(scope.equals(Setting.Scope.USER.toString())){
+				for (Iterator<String[]> iterator = userSettings.iterator(); iterator.hasNext();) {
+					String[] settings = (String[]) iterator.next();
+					if(deletesettings[0].equals(settings[0])){
+						iterator.remove();
+					}
 				}
 			}
 
@@ -762,10 +760,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		});
 
 		return ans;
-	}
-
-	public String cancelSettings() throws RemoteException{
-		return "success";
 	}
 
 	public void storeNewSettings(List<String[]> sysSettings, List<String[]> userSettings){

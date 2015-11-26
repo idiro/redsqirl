@@ -86,8 +86,9 @@ public class AuthorizationListener implements PhaseListener {
 					HelpBean helpBean = (HelpBean) context.getApplication().evaluateExpressionGet(context, "#{helpBean}", HelpBean.class);
 					helpBean.calcHelpItens();
 
-					SettingsBean prefBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
-					prefBean.calcSettings();
+					/*SettingsBean settingsBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
+					settingsBean.calcSettings();
+					settingsBean.defaultSettings();*/
 
 					session.setAttribute("startInit","n");
 				}

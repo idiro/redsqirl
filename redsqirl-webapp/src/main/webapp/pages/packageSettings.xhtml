@@ -166,6 +166,8 @@
 		     
 		    <a4j:commandButton value="#{messages.button_cancel}" action="#{packageMngBean.cancelSettings}" styleClass="greenButton" />
 		    &#32;&#32;
+		    <a4j:commandButton value="#{messages.button_apply}" action="#{packageMngBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />
+		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.saveSettings}" styleClass="greenButton" />
 	    
 	    </div>

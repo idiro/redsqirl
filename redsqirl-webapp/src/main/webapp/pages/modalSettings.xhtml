@@ -12,150 +12,158 @@
     <div id="domMessageDivModalSettings" style="display: none;">
         <img src="../image/icons/waiting.gif" />
     </div>
-
-    <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSettings') });"
-    	onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
-    <a4j:jsFunction name="storeNewSettings" action="#{settingsBean.storeNewSettings}"
-    	oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
-    <a4j:jsFunction name="calcSettings" action="#{settingsBean.calcSettings}"
-    	oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
             
-    <div style="width:100%;height: 550px;" >
-                
-        <rich:tabPanel id="settingsTabPanel" style="border:none;" switchType="ajax">
-        
-            <rich:tab label="#{messages.label_tab_usersetting}" style="border:none;border-collapse:collapse;" >
-                <rich:panel id="userSettingsTabPanel" style="border:1px solid black;padding-left:5px; overflow: auto; height:465px;">
-                    <a4j:repeat value="#{settingsBean.userSettings}" var="setting" >
-                        <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
-                        <br />
-                        <h:inputText value="#{setting[3]}" size="100" />
-                        <br />
-                        <br />
-                    </a4j:repeat>
-                    
-                     <a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('userNewSettings')}.show();" >
-		            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
-		            </a4j:commandLink>
-                    
-                </rich:panel>
-                
-                <h:panelGrid columns="3">
-                    <a4j:commandButton styleClass="greenButton"
-                        value="#{messages.button_cancel}" type="button" reRender="errorTable" 
-                        onclick="calcSettings();#{rich:component('modalSettings')}.hide();" />
-                    <a4j:commandButton styleClass="greenButton" 
-                        value="#{messages.button_apply}" reRender="msnError" 
-                        onclick="storeNewSettings();" />
-                    <a4j:commandButton styleClass="greenButton" 
-                        value="#{messages.button_ok}" reRender="msnError, errorTable" 
-                        onclick="storeNewSettings()"
-                        oncomplete="#{rich:component('modalSettings')}.hide();" />
-                </h:panelGrid>
-            </rich:tab>
-            
-            <rich:tab label="#{messages.label_tab_syssetting}" >
-            
-                <rich:panel id="sysSettingsTabPanel" style="border:1px solid black;padding-left:5px;overflow: auto;height:465px;">
-                
-                    <a4j:repeat value="#{settingsBean.sysSettings}" var="setting" >
-                        <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
-                        <br />
-                        <h:inputText value="#{setting[3]}" size="100" disabled="#{not settingsBean.admin}" />
-                        <br />
-                        <br />
-                    </a4j:repeat>
-                    
-                     <a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('sysNewSettings')}.show();" 
-                     	rendered="#{settingsBean.admin}" >
-		            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
-		            </a4j:commandLink>
-			            
-                </rich:panel>
-                
-                <h:panelGrid columns="3">
-                    <a4j:commandButton styleClass="greenButton"
-                        value="#{messages.button_cancel}" type="button" reRender="errorTable" 
-                        onclick="calcSettings();#{rich:component('modalSettings')}.hide();" />
-                    <a4j:commandButton styleClass="greenButton" 
-                        value="#{messages.button_apply}" reRender="msnError" 
-                        onclick="storeNewSettings()" />
-                    <a4j:commandButton styleClass="greenButton" 
-                        value="#{messages.button_ok}" reRender="msnError, errorTable" 
-                        onclick="storeNewSettings()"
-                        oncomplete="#{rich:component('modalSettings')}.hide()" />
-                </h:panelGrid>
-                
-            </rich:tab>
-        </rich:tabPanel>
-        
-    </div>
+    <div class="editPackageSettings" >
+		    
+	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
+		    	<ui:repeat value="#{settingsBean.path}" var="item">
+		    		<a4j:commandLink value="#{item}" action="#{settingsBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
+		    			styleClass="packageSettingsTab" rendered="#{item ne settingsBean.pathPosition}" >
+			    		<f:param name="name" value="#{item}" />
+			    	</a4j:commandLink>
+			    	&#32;&#32;
+		    	</ui:repeat>
+	    	</h:panelGroup>
+		    
+		    <br/>
+		    <br/>
+		    <br/>
+		    
+		    <h:panelGrid columns="2" width="100%">
+		    
+			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:10px;" >
+			    
+				    <ui:repeat value="#{settingsBean.listSubMenu}" var="sc">
+				     	
+				     	<a4j:commandButton value="#{sc.name}" action="#{settingsBean.navigationPackageSettings}" 
+				     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
+				     		<f:param name="name" value="#{sc.name}" />
+				     	</a4j:commandButton>
+				     	
+				     	<br/>
+			    		<br/>
+			    		<br/>
+			    		
+				    </ui:repeat>
+			    </h:panelGroup>
+		     
+		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:10px;" rendered="#{not empty settingsBean.listSetting}" >
+			     	<table>
+			     		
+			     		<tr>
+		     				<td>
+		     					<h:outputText value="#{settingsBean.pathPosition}" style="font-size:20px;" />
+		     				</td>
+		     			</tr>
+		     			
+		     			<tr>
+			     			<td>
+			     				<br/>
+			     			</td>
+			     		</tr>
+			     		
+				     	<ui:repeat value="#{settingsBean.listSetting}" var="obj">
+			     			
+			     			<tr>
+			     				<td>
+			     					
+			     					<h:outputText value="#{settingsBean.s.properties[obj].label}" style="font-size:15px;" /><br/><br/>
+			     					
+			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" /><br/>
+			     					
+			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM'}" />
+			     					<h:inputText value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;" rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty }" />
+			     					
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;" rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty }" />
+			     					<br/>
+			     					
+			     					<a4j:commandLink action="#{settingsBean.setDefaultValue}" >
+								    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_default_value}"/>
+								    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
+								    </a4j:commandLink>
+			     					
+			     					<h:outputText value="#{messages.label_default}" style="font-weight:bold;" />
+			     					<h:outputText value="#{settingsBean.s.properties[obj].defaultValue}" style="margin-left:3px;" />
+			     					<br/>
+			     					<br/>
+			     					
+			     					<h:panelGrid rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}">
+								    	
+								    	<h:outputText value="#{messages.label_add_or_delete}" style="margin-left:3px;" />
+								    	<h:outputText value="#{messages.label_user}" style="margin-left:3px;" />
+			     					
+	 			     					<a4j:commandLink action="#{settingsBean.deletePropertyValue}" reRender="listSettingSettings" 
+	 			     						rendered="#{settingsBean.s.properties[obj].existUserProperty}" >
+									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
+									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
+									    	<f:param name="scope" value="USER" />
+									    </a4j:commandLink>
+									    
+									    <a4j:commandLink action="#{settingsBean.addPropertyValue}" reRender="listSettingSettings" 
+									    	rendered="#{!settingsBean.s.properties[obj].existUserProperty}" >
+									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
+									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
+									    	<f:param name="scope" value="USER" />
+									    </a4j:commandLink>
+									    
+									    <br/>
+								    
+								    </h:panelGrid>
+			     					
+			     					<h:panelGrid rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY'}">
+			     					
+			     						<h:outputText value="#{messages.label_add_or_delete}" style="margin-left:3px;" />
+			     						<h:outputText value="#{messages.label_system}" style="margin-left:3px;" />
+			     					
+	 			     					<a4j:commandLink action="#{settingsBean.deletePropertyValue}" reRender="listSettingSettings" 
+	 			     						rendered="#{settingsBean.s.properties[obj].existSysProperty}" >
+									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
+									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
+									    	<f:param name="scope" value="SYSTEM" />
+									    </a4j:commandLink>
+									    
+									    <a4j:commandLink action="#{settingsBean.addPropertyValue}" reRender="listSettingSettings" 
+									    	rendered="#{!settingsBean.s.properties[obj].existSysProperty}" >
+									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
+									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
+									    	<f:param name="scope" value="SYSTEM" />
+									    </a4j:commandLink>
+								   
+								    </h:panelGrid>
+			     				
+			     				</td>
+			     			</tr>
+			     			
+			     			<tr>
+				     			<td>
+				     				<br/>
+				     				<br/>
+				     			</td>
+				     		</tr>
+			     			
+				     	</ui:repeat>
+			     	</table>
+		     	</h:panelGroup>
+	    
+	    	</h:panelGrid>
+	    
+	    </div>
+    
+	    <div style="overflow-x:hidden;float:right;margin-right:5px;margin-top:10px;">
+		     
+		    <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton" 
+		    	oncomplete="#{rich:component('modalSettings')}.hide();" />
+		    &#32;&#32;
+		    <a4j:commandButton value="#{messages.button_apply}" action="#{settingsBean.applySettings}" 
+		    	styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />
+		    &#32;&#32;
+		    <a4j:commandButton value="#{messages.button_ok}" action="#{settingsBean.saveSettings}" 
+		    	styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();" />
+	    
+	    </div>
     
 </h:form>
-
-	<rich:modalPanel id="userNewSettings" width="500" height="300" style="overflow:auto;" resizeable="false" >
-		
-		<h:form>
-		
-			<f:facet name="header">
-				<h:outputText value='#{messages.label_add_new_line}' />
-			</f:facet>
-		
-			<h:panelGrid columns="2">
-			
-				<h:outputText value="#{messages.label_name}" class="formLabel" />
-				<h:inputText value="#{settingsBean.nameSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
-				
-				<h:outputText value="#{messages.label_title_key}" class="formLabel" />
-				<h:inputText value="#{settingsBean.titleSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
-				
-				<h:outputText value="#{messages.label_value}" class="formLabel" />
-				<h:inputText value="#{settingsBean.valueSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
-				
-			</h:panelGrid>
-					
-			<br/><br/>
-	           
-        	<a4j:commandButton id="btAddNewLineUserSettings" value="#{messages.button_ok}" action="#{settingsBean.addNewLineUserSettings}" 
-           		reRender="userSettingsTabPanel,sysSettingsTabPanel" oncomplete="#{rich:component('userNewSettings')}.hide();" />
-           
-            <a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('userNewSettings')}.hide();" />
-           
-    	</h:form>
-
-	</rich:modalPanel>
-	
-	<rich:modalPanel id="sysNewSettings" width="500" height="300" style="overflow:auto;" resizeable="false" >
-		
-		<h:form>
-		
-			<f:facet name="header">
-				<h:outputText value='#{messages.label_add_new_line}' />
-			</f:facet>
-		
-			<h:panelGrid columns="2">
-			
-				<h:outputText value="#{messages.label_name}" class="formLabel" />
-				<h:inputText value="#{settingsBean.nameSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
-				
-				<h:outputText value="#{messages.label_title_key}" class="formLabel" />
-				<h:inputText value="#{settingsBean.titleSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
-				
-				<h:outputText value="#{messages.label_value}" class="formLabel" />
-				<h:inputText value="#{settingsBean.valueSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
-				
-			</h:panelGrid>
-					
-			<br/><br/>
-	           
-        	<a4j:commandButton id="btAddNewLineSysSettings" value="#{messages.button_ok}" action="#{settingsBean.addNewLineSysSettings}" 
-           		reRender="userSettingsTabPanel,sysSettingsTabPanel" oncomplete="#{rich:component('sysNewSettings')}.hide();" />
-           
-            <a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('sysNewSettings')}.hide();" />
-           
-    	</h:form>
-
-	</rich:modalPanel>
-
     
 </ui:composition>

@@ -2290,8 +2290,8 @@
 									</rich:menuItem>
 
 									<rich:menuItem id="settingsMenuItem" submitMode="ajax"
-										value="#{messages.label_setting_modal}"
-										onclick="#{rich:component('modalSettings')}.show();">
+										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}"
+										oncomplete="#{rich:component('modalSettings')}.show();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>
 									<!-- <rich:menuSeparator />
