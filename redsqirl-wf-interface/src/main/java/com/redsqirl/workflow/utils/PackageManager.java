@@ -512,16 +512,13 @@ public class PackageManager extends UnicastRemoteObject {
 
 		return error;
 	}
-	
-	public Map<String,String> getActionsPerPackage(String user){
-		Map<String,String> actions = new LinkedHashMap<String,String>();
+
+	public Map<String,List<String>> getActionsPerPackage(String user){
+		Map<String,List<String>> actions = new LinkedHashMap<String,List<String>>();
 		Iterator<RedSqirlPackage> packageIt = getAllPackages(user).iterator();
 		while (packageIt.hasNext()) {
 			RedSqirlPackage pck = packageIt.next();
-			Iterator<String> actionIt = pck.getAction().iterator();
-			while(actionIt.hasNext()){
-				actions.put(pck.getName(),actionIt.next());
-			}
+			actions.put(pck.getName(),pck.getAction());
 		}
 		return actions;
 	}

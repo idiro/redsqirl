@@ -2290,8 +2290,8 @@
 									</rich:menuItem>
 
 									<rich:menuItem id="settingsMenuItem" submitMode="ajax"
-										value="#{messages.label_setting_modal}"
-										onclick="#{rich:component('modalSettings')}.show();">
+										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}"
+										oncomplete="#{rich:component('modalSettings')}.show();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>
 									<!-- <rich:menuSeparator />
@@ -2479,10 +2479,11 @@
 										<a4j:region>
 											<a4j:commandButton image="../image/icons/button-property.gif"
 												title="#{messages.label_property_button}"
-												action="#{configureTabsBean.openCanvasScreen}"
+												action="#{configureTabsBean.openConfigureTabsBean}"
 												oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
 												style="border: hidden;width:35px;vertical-align:middle;"
-												styleClass="configureFooterButton" />
+												styleClass="configureFooterButton" 
+												reRender="tabsMenu" />
 										</a4j:region>
 
 									</h:form>
@@ -2500,7 +2501,7 @@
 									</button>
 								</span>
 
-								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
+								<ui:repeat value="#{configureTabsBean.tabsMapList}" var="tab">
 									<div id="tabFooter-#{tab.key}" style="overflow-y: hidden;">
 										<ui:repeat value="#{tab.value}" var="action">
 											<span id="spanImagensObj" style="display: none"> <img
@@ -2701,20 +2702,19 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalConfigureFooterTabs" width="800"
-			height="420" style="overflow:auto;" resizeable="false"
+		<rich:modalPanel id="modalConfigureFooterTabs" width="450"
+			height="400" style="overflow:none;" resizeable="false"
 			styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
+					onclick="#{rich:component('modalConfigureFooterTabs')}.hide();" />
 			</f:facet>
 
-			<h:panelGroup>
-				<a4j:include viewId="/pages/configureFooterTabs.xhtml"
-					ajaxRendered="true" />
+			<h:panelGroup style="width:100%">
+				<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="false" />
 			</h:panelGroup>
 
 		</rich:modalPanel>

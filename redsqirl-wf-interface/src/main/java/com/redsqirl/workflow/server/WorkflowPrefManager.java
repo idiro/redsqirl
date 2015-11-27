@@ -208,43 +208,54 @@ public class WorkflowPrefManager extends BlockManager {
 	private boolean init = false;
 
 	/** Namenode url */
-	public static final String sys_namenode = "namenode",
+	public static final String core_settings = "core",
+			core_settings_oozie = core_settings+".oozie",
+			core_settings_hive = core_settings+".hive",
+			
+			/** Default oozie launcher queue for hadoop */
+			sys_oozie_launcher_queue = core_settings_oozie+".oozie_launcher_queue",
+			/** Default oozie running queue for hadoop */
+			sys_oozie_action_queue= core_settings_oozie+".oozie_action_queue",
+			/** Oozie URL */
+			sys_oozie = core_settings_oozie+".oozie_url",
+			/** Oozie xml schema location */
+			sys_oozie_xmlns = core_settings_oozie+".oozie_xmlns",
+			
+			/** Default Hive XML */
+			sys_hive_default_xml = core_settings_hive+".hive_default_xml",
+			/** Hive XML */
+			sys_hive_xml = core_settings_hive+".hive_xml",
+			/** Hive Extra Lib */
+			sys_hive_extralib = core_settings_hive+".hive_extra_lib",
+			
+			/** namenode path */
+			sys_namenode = core_settings+".namenode",
+			/** The Hadoop Home Folder (with /bin and /conf inside */
+			sys_hadoop_home = core_settings+".hadoop_home",
+			/** Job Tracker URL for hadoop */
+			sys_jobtracker = core_settings+".jobtracker",
+			/** Path for tomcat */
+			sys_tomcat_path = core_settings+".tomcat_path",
+			/** Path for installed packages */
+			sys_install_package = core_settings+".package_dir",
+			/** URL for Package Manager */
+			sys_pack_manager_url = core_settings+".pack_manager_url",
+			
+			/** The admin user */
+			sys_admin_user = core_settings+".admin_user",
+			/** Allow a user to install */
+			sys_allow_user_install = core_settings+".allow_user_install",
+			
 			/** Sqirl nutcracker path */
 			sys_nutcracker_path = "nutcracker_path",
-			/** Max number of workers for Giraph */
-			sys_max_workers = "max_workers",
-			/** Job Tracker URL for hadoop */
-			sys_jobtracker = "jobtracker",
-			/** Default oozie launcher queue for hadoop */
-			sys_oozie_launcher_queue = "oozie_launcher_queue",
-			/** Default oozie running queue for hadoop */
-			sys_oozie_action_queue="oozie_action_queue",
-			/** Oozie URL */
-			sys_oozie = "oozie_url",
-			/** Oozie xml schema location */
-			sys_oozie_xmlns = "oozie_xmlns",
-			/** Default Hive XML */
-			sys_hive_default_xml = "hive_default_xml",
-			/** Hive XML */
-			sys_hive_xml = "hive_xml",
-			/** Hive Extra Lib */
-			sys_hive_extralib = "hive_extra_lib",
-			/** Allow a user to install */
-			sys_allow_user_install = "allow_user_install",
-			/** Path for tomcat */
-			sys_tomcat_path = "tomcat_path",
-			/** Path for installed packages */
-			sys_install_package = "package_dir",
-			/** URL for Package Manager */
-			sys_pack_manager_url = "pack_manager_url",
-			/** The admin user */
-			sys_admin_user = "admin_user",
+			
 			/** Parallel clause for pig */
 			sys_pig_parallel = "pig_parallel",
-			/** The Hadoop Home Folder (with /bin and /conf inside */
-			sys_hadoop_home = "hadoop_home";
+			/** Max number of workers for Giraph */
+			sys_max_workers = "max_workers";
+	
 	/** Hive JDBC Url */
-	public static final String user_hive = "hive_jdbc_url",
+	public static final String user_hive = core_settings_hive+".hive_jdbc_url",
 			/** Path to Private Key */
 			user_rsa_private = "private_rsa_key",
 			/** Backup Path of workflow on HFDS */
@@ -267,6 +278,7 @@ public class WorkflowPrefManager extends BlockManager {
 	private static LocalProperties props;
 	
 	private static Map<String,SettingMenu> settingMenu = null;
+	private static Map<String,SettingMenu> defaultsettingMenu = null;
 
 	/**
 	 * Constructor.
@@ -312,8 +324,11 @@ public class WorkflowPrefManager extends BlockManager {
 		String idiroInterfacePath = null;
 		try {
 			props = new LocalProperties();
-			workflowLibPath = getSysProperty("workflow_lib_path");
-			idiroInterfacePath = getSysProperty("idiro_interface_path");
+			
+			//FIXME - name property
+			workflowLibPath = getSysProperty("core.workflow_lib_path");
+			idiroInterfacePath = getSysProperty("core.idiro_interface_path");
+			
 		} catch (RemoteException e){
 			logger.info("Error trying to read local properties");
 		}
@@ -364,6 +379,10 @@ public class WorkflowPrefManager extends BlockManager {
 		return settingMenu;
 	}
 	
+	public static Map<String, SettingMenu> getDefaultSettingMenu(){
+		return defaultsettingMenu;
+	}
+	
 	public static void readSettingMenu(){
 		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
 		File[] userPackages = new File(pathUserPackagePref).listFiles();
@@ -376,6 +395,23 @@ public class WorkflowPrefManager extends BlockManager {
 			}catch(Exception e){}
 		}
 		settingMenu = ans;
+	}
+	
+	public static void readDefaultSettingMenu(){
+		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+
+		logger.info("read setting path " + pathSystemPref);
+
+		File sysPackages = new File(pathSystemPref);
+		try{
+			Reader r = new FileReader(new File(sysPackages,"settings.json"));
+			JSONTokener tokener = new JSONTokener(r);
+			JSONObject json = new JSONObject(tokener);
+			ans.put("core", new SettingMenu("core", json));
+		}catch(Exception e){
+			logger.info("read error " + e,e);
+		}
+		defaultsettingMenu = ans;
 	}
 	
 	/**

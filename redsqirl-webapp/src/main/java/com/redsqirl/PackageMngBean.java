@@ -75,7 +75,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private String type;
 
 	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
-	private List<Setting> listSetting = new ArrayList<Setting>();
+	private List<String> listSetting = new ArrayList<String>();
 	private List<String> path;
 	private String nameNewTemplate;
 	private String pathPosition;
@@ -84,6 +84,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<String[]> userSettings = null;
 	private String template;
 
+	private Map<String, SettingMenu> curMap;
+	private SettingMenu s;
 
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
@@ -271,6 +273,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String name = params.get("name");
 
 		WorkflowPrefManager.readSettingMenu();
+		curMap = WorkflowPrefManager.getSettingMenu();
 
 		if(path == null){
 			path = new ArrayList<String>();
@@ -301,7 +304,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			path.add(name);
 		}
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		if(s.isTemplate()){
 			setTemplate("Y");
@@ -312,12 +315,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		listSubMenu = new ArrayList<SettingsControl>();
 		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
-
-			/*if(settingsMenu.getValue().isTemplate()){
-				sc.setTemplate("Y");
-			}else{
-				sc.setTemplate("N");
-			}*/
 
 			if(s.isTemplate()){
 				sc.setTemplate("Y");
@@ -336,16 +333,69 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			listSubMenu.add(sc);
 		}
 
-		listSetting = new ArrayList<Setting>();
+		listSetting = new ArrayList<String>();
 		if(!s.isTemplate()){
-			for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
-				listSetting.add(setting.getValue());
+			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+				listSetting.add(settings.getKey());
+				Setting setting = settings.getValue();
+				if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+
+					if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
+						setting.setSysValue(setting.getSysPropetyValue());
+					}
+
+					if(setting.getSysPropetyValue() != null){
+						setting.setExistSysProperty(true);
+					}else{
+						setting.setExistSysProperty(false);
+					}
+
+				}else if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+
+					if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
+						setting.setUserValue(setting.getUserPropetyValue());
+					}
+
+					if(setting.getUserPropetyValue() != null){
+						setting.setExistUserProperty(true);
+					}else{
+						setting.setExistUserProperty(false);
+					}
+
+				}else{
+					if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
+						setting.setSysValue(setting.getSysPropetyValue());
+					}
+					if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
+						setting.setUserValue(setting.getUserPropetyValue());
+					}
+
+					if(setting.getSysPropetyValue() != null){
+						setting.setExistSysProperty(true);
+					}else{
+						setting.setExistSysProperty(false);
+					}
+
+					if(setting.getUserPropetyValue() != null){
+						setting.setExistUserProperty(true);
+					}else{
+						setting.setExistUserProperty(false);
+					}
+
+				}
+
 			}
 		}
 
 	}
 
 	public void navigationPackageSettings() throws RemoteException{
+
+		saveSettings();
+
+		WorkflowPrefManager.readSettingMenu();
+		curMap = WorkflowPrefManager.getSettingMenu();
+
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
@@ -357,7 +407,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
 		SettingMenu cur = null;
-		Map<String, SettingMenu> curMap = WorkflowPrefManager.getSettingMenu();
+		//Map<String, SettingMenu> curMap = WorkflowPrefManager.getSettingMenu();
 		Iterator<String> itPath = path.iterator();
 		if(itPath.hasNext()){
 			cur = curMap.get(itPath.next());
@@ -367,8 +417,51 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return cur;
 	}
+	
+	public String cancelSettings() throws RemoteException{
+		return "success";
+	}
+	
+	public void applySettings() throws RemoteException{
+		saveSettings();
+	}
 
 	public String saveSettings() throws RemoteException{
+
+		StringBuffer newPath = new StringBuffer();
+		for (String value : getPath()) {
+			newPath.append("."+value);
+		}
+
+		sysSettings = new ArrayList<String[]>();
+		userSettings = new ArrayList<String[]>();
+		calcSettings();
+
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			String nameSettings = newPath.substring(1) +"."+ setting.getKey();
+			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
+					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
+					sysSettings.add(value);
+				}
+			}else if(setting.getValue().getScope().equals(Setting.Scope.USER)){
+				if(setting.getValue().getUserValue() != null && !setting.getValue().getUserValue().isEmpty()){
+					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getUserValue()};
+					userSettings.add(value);
+				}
+			}else{
+				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
+					String[] valueS = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
+					sysSettings.add(valueS);
+				}
+				if(setting.getValue().getUserValue() != null && !setting.getValue().getUserValue().isEmpty()){
+					String[] valueU = {nameSettings, nameSettings, nameSettings, setting.getValue().getUserValue()};
+					userSettings.add(valueU);
+				}
+			}
+		}
+
+		storeNewSettings(sysSettings, userSettings);
 
 		return "success";
 	}
@@ -388,7 +481,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		//path.add(name);
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		StringBuffer newPath = new StringBuffer();
 		for (String value : getPath()) {
@@ -397,21 +490,30 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		newPath.append(getNameNewTemplate());
 
 		sysSettings = new ArrayList<String[]>();
+		userSettings = new ArrayList<String[]>();
 		calcSettings();
 
 		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
 			String nameSettings = newPath.toString() +"."+ setting.getKey();
 			String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getDefaultValue()};
-			sysSettings.add(value);
+			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM) ){
+				sysSettings.add(value);
+			}else if(setting.getValue().getScope().equals(Setting.Scope.USER) ){
+				userSettings.add(value);
+			}else{
+				sysSettings.add(value);
+				userSettings.add(value);
+			}
 			logger.info("newPath " + newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
 		}
 
-		storeNewSettings(sysSettings);
+		storeNewSettings(sysSettings, userSettings);
 
 		setPackageSelected(null);
 		setNameNewTemplate(null);
 
 		WorkflowPrefManager.readSettingMenu();
+		curMap = WorkflowPrefManager.getSettingMenu();
 
 		mountPath(name);
 	}
@@ -421,7 +523,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
 
-		SettingMenu s = mountPackageSettings(path);
+		s = mountPackageSettings(path);
 
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
@@ -438,43 +540,134 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 
 		sysSettings = new ArrayList<String[]>();
+		userSettings = new ArrayList<String[]>();
 		calcSettings();
-		
+
 		for (String[] deletesettings : deleteSettings) {
+
 			for (Iterator<String[]> iterator = sysSettings.iterator(); iterator.hasNext();) {
 				String[] settings = (String[]) iterator.next();
 				if(deletesettings[0].equals(settings[0])){
 					iterator.remove();
 				}
 			}
+
+			for (Iterator<String[]> iterator = userSettings.iterator(); iterator.hasNext();) {
+				String[] settings = (String[]) iterator.next();
+				if(deletesettings[0].equals(settings[0])){
+					iterator.remove();
+				}
+			}
+
 		}
 
-		String error = null;
+		storeNewSettings(sysSettings, userSettings);
 
-		try {
+		/*try {
 			//WorkflowPrefManager.deleteSysProperties(getProps(deleteSettings));
 			WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
 		} catch (IOException e) {
 			error = e.getMessage();
+		}*/
+
+
+		if(path.contains(name)){
+			boolean removeValue = false;
+			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
+				String value = (String) iterator.next();
+				if(value.equals(name)){
+					removeValue = true;
+					iterator.remove();
+					continue;
+				}
+				if(removeValue){
+					iterator.remove();
+				}
+			}
 		}
 
-		if(error != null){
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR DELETESETTINGS", error);
-		}else{
+		WorkflowPrefManager.readSettingMenu();
+		curMap = WorkflowPrefManager.getSettingMenu();
 
-			if(path.contains(name)){
-				boolean removeValue = false;
-				for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
-					String value = (String) iterator.next();
-					if(value.equals(name)){
-						removeValue = true;
+		mountPath(getPathPosition());
+	}
+
+	public void addPropertyValue() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+		String scope = params.get("scope");
+
+		if(label != null && scope != null){
+			label = label.substring(label.lastIndexOf(".")+1, label.length());
+			Setting setting = s.getProperties().get(label);
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				setting.setExistSysProperty(true);
+			}else if(scope.equals(Setting.Scope.USER.toString())){
+				setting.setExistUserProperty(true);
+			}
+		}
+
+	}
+
+	public void deletePropertyValue() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+		String scope = params.get("scope");
+
+		if(label != null && scope != null){
+			label = label.substring(label.lastIndexOf(".")+1, label.length());
+			Setting setting = s.getProperties().get(label);
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				setting.setExistSysProperty(false);
+				deleteProperty(label, setting.getSysValue(), scope);
+			}else if(scope.equals(Setting.Scope.USER.toString())){
+				setting.setExistUserProperty(false);
+				deleteProperty(label, setting.getUserValue(), scope);
+			}
+			
+			WorkflowPrefManager.readSettingMenu();
+			curMap = WorkflowPrefManager.getSettingMenu();
+
+			mountPath(getPathPosition());
+		}
+
+	}
+	
+	public void deleteProperty(String name, String valueToDelete, String scope){
+		
+		StringBuffer pathToDelete = new StringBuffer();
+		for (String value : getPath()) {
+			pathToDelete.append(value+".");
+		}
+		pathToDelete.append(name);
+
+		List<String[]> deleteSettings = new ArrayList<String[]>();
+		String nameSettings = pathToDelete.toString();
+		String[] value = {nameSettings, nameSettings, nameSettings, valueToDelete};
+		logger.info("newPath " + pathToDelete.toString() +"="+ valueToDelete);
+		deleteSettings.add(value);
+
+		sysSettings = new ArrayList<String[]>();
+		userSettings = new ArrayList<String[]>();
+		calcSettings();
+
+		for (String[] deletesettings : deleteSettings) {
+
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				for (Iterator<String[]> iterator = sysSettings.iterator(); iterator.hasNext();) {
+					String[] settings = (String[]) iterator.next();
+					if(deletesettings[0].equals(settings[0])){
 						iterator.remove();
-						continue;
 					}
-					if(removeValue){
+				}
+			}
+
+			if(scope.equals(Setting.Scope.USER.toString())){
+				for (Iterator<String[]> iterator = userSettings.iterator(); iterator.hasNext();) {
+					String[] settings = (String[]) iterator.next();
+					if(deletesettings[0].equals(settings[0])){
 						iterator.remove();
 					}
 				}
@@ -482,14 +675,53 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		}
 
-		WorkflowPrefManager.readSettingMenu();
-
-		mountPath(getPathPosition());
+		storeNewSettings(sysSettings, userSettings);
 	}
-	
+
 	public void setDefaultValue() throws RemoteException{
-		
-		
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+
+		if(label != null){
+
+			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
+			setting.setUserValue(setting.getDefaultValue());
+
+			StringBuffer newPath = new StringBuffer();
+			for (String value : getPath()) {
+				newPath.append("."+value);
+			}
+
+			userSettings = new ArrayList<String[]>();
+			calcSettings();
+
+			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+				String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+
+				if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+						String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+						userSettings.add(value);
+					}
+				}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+						String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+						userSettings.add(valueU);
+					}
+				}
+
+			}
+
+			storeNewSettings(null, userSettings);
+
+			WorkflowPrefManager.readSettingMenu();
+			curMap = WorkflowPrefManager.getSettingMenu();
+
+			mountPath(getPathPosition());
+
+		}
+
 	}
 
 	public void calcSettings(){
@@ -498,14 +730,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		Properties sysLangProp = WorkflowPrefManager.getLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 
-		/*try{
+		try{
 			Properties userProp = getPrefs().getUserProperties();
-			Properties userLangProp = getPrefs().getUserLangProperties();
+			Properties userLangProp = getPrefs().getLangProperties();
 			setUserSettings(getList(userProp,userLangProp));
-			logger.info("setUserSettings "+userProp + " - "+userLangProp);
 		}catch(Exception e){
 			logger.error(e,e);
-		}*/
+		}
 
 	}
 
@@ -532,27 +763,27 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		return ans;
 	}
 
-	public String cancelSettings() throws RemoteException{
-		return "success";
-	}
-
-	public void storeNewSettings(List<String[]> sysSettings){
+	public void storeNewSettings(List<String[]> sysSettings, List<String[]> userSettings){
 		logger.info("storeNewSettings");
 		String error = null;
 		if(isAdmin()){
-			try {
-				WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
-			} catch (IOException e) {
-				error = e.getMessage();
+			if(sysSettings != null){
+				try {
+					WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
+				} catch (IOException e) {
+					error = e.getMessage();
+				}
 			}
 		}
-		/*if(error == null){
-			try {
-				getPrefs().storeUserProperties(getProps(userSettings));
-			} catch (IOException e) {
-				error = e.getMessage();
+		if(error == null){
+			if(userSettings != null){
+				try {
+					getPrefs().storeUserProperties(getProps(userSettings));
+				} catch (IOException e) {
+					error = e.getMessage();
+				}
 			}
-		}*/
+		}
 		if(error != null){
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -939,11 +1170,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.listSubMenu = listSubMenu;
 	}
 
-	public List<Setting> getListSetting() {
+	public List<String> getListSetting() {
 		return listSetting;
 	}
 
-	public void setListSetting(List<Setting> listSetting) {
+	public void setListSetting(List<String> listSetting) {
 		this.listSetting = listSetting;
 	}
 
@@ -1001,6 +1232,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setPathPosition(String pathPosition) {
 		this.pathPosition = pathPosition;
+	}
+
+	public Map<String, SettingMenu> getCurMap() {
+		return curMap;
+	}
+
+	public void setCurMap(Map<String, SettingMenu> curMap) {
+		this.curMap = curMap;
+	}
+
+	public SettingMenu getS() {
+		return s;
+	}
+
+	public void setS(SettingMenu s) {
+		this.s = s;
 	}
 
 }
