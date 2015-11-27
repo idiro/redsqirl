@@ -21,7 +21,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
-import com.redsqirl.workflow.utils.WfSuperActionManager;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 /**
  * Class to start up the server.
@@ -151,7 +151,7 @@ public class ServerMain {
 				
 				registry.rebind(
 						nameSuperActionManager,
-						(SuperActionManager) new WfSuperActionManager()
+						(SuperActionManager) new SuperActionManager()
 						);
 				
 				logger.info("end server main");

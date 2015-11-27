@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -18,7 +20,6 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
@@ -55,7 +56,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		logger.info("subWorkflow actual name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-		SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
+		SuperActionInstaller saInst = new SuperActionInstaller(getSuperElementManager());
 		boolean system = asSystem.equals("System");
 		
 		logger.info("privilege : '" + privilege + "'");
@@ -115,7 +116,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 		swa.setName(name);
 		
-		if(!getSuperActionManager().getAvailableSuperActions(username).contains(swa.getName())){
+		if(!getSuperElementManager().getAvailableSuperActions(username).contains(swa.getName())){
 			exists = "true";
 		}
 	}
@@ -183,31 +184,28 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	}
 
 	public void refreshSubworkflowsSystemList() throws RemoteException {
-		List<String> listSa = getSuperActionManager().getSysSuperActions();
-		
 		uninstallSysSa = new ArrayList<SelectItem>();
-		for (int i = 0; i < listSa.size(); ++i) {
-			String s = listSa.get(i);
-			uninstallSysSa.add(new SelectItem(s, s));
+		Iterator<String> saIt = getSuperElementManager().getSysSuperActions().iterator();
+		while(saIt.hasNext()){
+			String cur = saIt.next();
+			uninstallSysSa.add(new SelectItem(cur, cur));
 		}
 		logger.info("system sa " + systemSA.length);
 	}
 
 	public void refreshSubworkflowsUser() throws RemoteException {
-		List<String> listSa = getSuperActionManager()
-				.getUserSuperActions(getUserInfoBean().getUserName());
-		
 		uninstallUserSa = new ArrayList<SelectItem>();
-		for (int i = 0; i < listSa.size(); ++i) {
-			String s = listSa.get(i);
-			uninstallUserSa.add(new SelectItem(s, s));
+		Iterator<String> saIt = getSuperElementManager().getUserSuperActions(getUserInfoBean().getUserName()).iterator();
+		while(saIt.hasNext()){
+			String cur = saIt.next();
+			uninstallUserSa.add(new SelectItem(cur, cur));
 		}
 	}
 
 	public void deleteSASystem() throws RemoteException {
 		logger.info("delete user sa");
 		if (getAdmin()) {
-			SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
+			SuperActionInstaller saInst = new SuperActionInstaller(getSuperElementManager());
 			for (String s : getSystemSA()) {
 				saInst.uninstall(null, s);
 			}
@@ -220,7 +218,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void deleteSaUser() throws RemoteException {
 		logger.info("delete user sa");
 		String user = getUserInfoBean().getUserName();
-		SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
+		SuperActionInstaller saInst = new SuperActionInstaller(getSuperElementManager());
 		for (String s : getUserSA()) {
 			logger.info("delete user sa " + s);
 			saInst.uninstall(user, s);
@@ -250,7 +248,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		swa.setName(name);
 
 		String filePath ="/user/"+getUserInfoBean().getUserName()+"/redsqirl-save/"+name+".srs";
-		String error = getSuperActionManager().export(filePath, swa, privilegeVal);
+		String error = getSuperElementManager().export(filePath, swa, privilegeVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -278,7 +276,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		} else {
-			String error = getSuperActionManager().importSA(getUserInfoBean().getUserName(),
+			String error = getSuperElementManager().importSA(getUserInfoBean().getUserName(),
 					pathHdfs,"default");
 
 			if (error != null && !error.isEmpty()) {

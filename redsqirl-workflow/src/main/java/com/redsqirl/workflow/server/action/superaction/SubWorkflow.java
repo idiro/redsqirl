@@ -52,6 +52,8 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.RedSqirlModel;
+import com.redsqirl.workflow.utils.ModelManager;
 
 /**
  * 
@@ -173,17 +175,11 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 	protected String saveXmlOnLocal(File file, Boolean privilege) throws RemoteException{
 		String error = null;
-		String pattern= "sa_[a-z0-9]*";
+		String pattern= ">[a-zA-Z0-9_]+>[a-zA-Z0-9_]+";
 		logger.info(name+ "  "+name.matches(pattern));
-		logger.info(name+ "  "+name.startsWith("sa_"));
-		if(!name.matches(pattern) || !name.startsWith("sa_")){
-			error = "The super action name should be alpha-numeric only and start by 'sa_'. '"+name+"'" ;
+		if(!name.matches(pattern)){
+			error = "The super action name should contain alpha-numeric, underscore and two '>' such as '>model>action'. '"+name+"'" ;
 		}else{
-
-		}
-
-		if(error == null){
-			setName(name);
 			try {
 				logger.debug("Save xml: " + file.getAbsolutePath());
 				file.getParentFile().mkdirs();
@@ -302,26 +298,9 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 	
 	public File getInstalledMainFile(){
-		File usPath = WorkflowPrefManager.getSuperActionMainDir(System.getProperty("user.name"));
-		logger.info("Look at intalled subworkflows in: "+usPath);
-		File xmlFile = null;
-		boolean usFileExist = false;
-		try{
-			xmlFile = new File(usPath,name);
-			logger.info("User path to search "+name+": "+xmlFile.getPath());
-			usFileExist = xmlFile.exists();
-		}catch(Exception e){
-		}
-		if(!usFileExist){
-			File sysPath = WorkflowPrefManager.getSuperActionMainDir(null);
-			logger.info("Look at intalled subworkflows in: "+sysPath);
-			try{
-				xmlFile = new File(sysPath,name);
-			}catch(Exception e){
-			}
-			logger.debug("System path to search "+name+": "+xmlFile.getPath());
-		}
-		return xmlFile;
+		String[] modelSW = RedSqirlModel.getModelAndSW(name);
+		return new File(new ModelManager().getModel(modelSW[0], System.getProperty("user.name")).getFileName(),
+				modelSW[1]);
 	}
 	
 	@Override

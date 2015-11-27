@@ -73,8 +73,10 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.RedSqirlModel;
+import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.WfSuperActionManager;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 /**
  * Class that manages a workflow.
@@ -237,7 +239,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			List<String> superActions = getSuperActions();
+			Set<String> superActions = getSuperActions();
 
 			String nameMenu = "";
 
@@ -290,6 +292,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			// }
 
 		} catch (Exception e) {
+			logger.error(e,e);
 			error += "\n"
 					+ LanguageManagerWF.getText("workflow.loadclassexception");
 		}
@@ -332,9 +335,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 	}
 
-	public List<String> getSuperActions() throws RemoteException {
-		return new WfSuperActionManager().getAvailableSuperActions(System
+	public Set<String> getSuperActions() throws RemoteException {
+		Set<String> ans = new SuperActionManager().getAvailableSuperActions(System
 				.getProperty("user.name"));
+		if(name != null && name.contains(">")){
+			String[] modelSW = RedSqirlModel.getModelAndSW(name);
+			ans.addAll(new ModelManager().getModel(modelSW[0], System.getProperty("user.name")).getSubWorkflowFullNames());
+		}
+		return ans;
 	}
 
 	public String loadMenu(Map<String, List<String>> newMenu) {
@@ -345,7 +353,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			List<String> superActions = getSuperActions();
+			Set<String> superActions = getSuperActions();
 
 			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
 				LinkedList<String[]> new_list = new LinkedList<String[]>();
@@ -1796,9 +1804,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		int posIncr = 150;
 		String error = null;
 		// Create subworkflow object
-		if (!subworkflowName.startsWith("sa_")) {
-			subworkflowName = "sa_" + subworkflowName;
-		}
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
 		sw.setComment(subworkflowComment);
 
@@ -1981,7 +1986,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		if (getElement(superActionId) == null) {
 			return "Element " + superActionId + " does not exist.";
-		} else if (!getElement(superActionId).getName().startsWith("sa_")) {
+		} else if (!getElement(superActionId).getName().contains(">")) {
 			return "Element " + superActionId + " is not a super action ("
 					+ getElement(superActionId).getName() + ").";
 		}
@@ -2965,7 +2970,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			throws RemoteException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		DataFlowElement dfe = null;
-		if (className.startsWith("sa_")) {
+		if (className.contains(">")) {
 			dfe = new SuperAction(className);
 		} else {
 			dfe = (DataFlowElement) Class.forName(

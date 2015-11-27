@@ -789,12 +789,13 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 			PackageManager pckManager = new PackageManager();
 
-			Iterator<String> it = pckManager.getPackageNames(null).iterator();
+			Iterator<com.redsqirl.workflow.utils.RedSqirlPackage> it = pckManager.getPackages(null).iterator();
 			List<SelectItem> result = new LinkedList<SelectItem>();
 			while(it.hasNext()){
-				String pck = it.next();
-				String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
-				result.add(new SelectItem(pck,pck+"-"+version));
+				com.redsqirl.workflow.utils.RedSqirlPackage pck = it.next();
+				
+				String version = pck.getPackageProperty(com.redsqirl.workflow.utils.RedSqirlPackage.property_version);
+				result.add(new SelectItem(pck.getName(),pck.getName()+"-"+version));
 			}
 			setSystemPackages(result);
 

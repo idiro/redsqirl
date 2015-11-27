@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -105,7 +106,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		logger.info("User: " + userInfoBean.getUserName());
 
 		//list of super action
-		List<String> listSuperAction = getSuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
+		Set<String> listSuperAction = getSuperElementManager().getAvailableSuperActions(userInfoBean.getUserName());
 		//logger.info("Available Super Actions: "+listSuperAction);
 		//list of normal action
 		List<String> listAction = new ArrayList<String>();
@@ -262,7 +263,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 		//list of super action
-		List<String> listSuperAction = getSuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
+		Set<String> listSuperAction = getSuperElementManager().getAvailableSuperActions(userInfoBean.getUserName());
 		//list of normal action
 		for (Iterator<Entry<String, String>> iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
 			Entry<String, String> e = iterator.next();

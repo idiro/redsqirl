@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.idiro.ProjectID;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.redsqirl.workflow.utils.PackageManager;
 
 public class BaseCommandTests {
@@ -31,11 +32,11 @@ public class BaseCommandTests {
 		File[] list = path.listFiles();
 		List<String> packages = new ArrayList<String>();
 		for (File f : list){
+			RedSqirlPackage pckSys = new RedSqirlPackage(f,user);
 			String propertyPath = f.getAbsolutePath();
-			String pck = pm.getPackageProperties(propertyPath)
-					.getProperty(PackageManager.property_name)
-					+"-"+ pm.getPackageProperties(propertyPath).getProperty(
-							PackageManager.property_version);
+			String pck = pckSys.getPackageProperty(RedSqirlPackage.property_name)
+					+"-"
+					+pckSys.getPackageProperty(RedSqirlPackage.property_version);
 			pck = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
 //			logger.info(pck);
 			packages.add(pck);

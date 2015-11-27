@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +12,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import com.idiro.ProjectID;
 import com.redsqirl.keymanager.ciphers.Decrypter;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 
 /**
  * Class that generates a command that has the base classes necessary for
@@ -116,13 +115,13 @@ public class BaseCommand {
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
 						.equalsIgnoreCase("true")) {
 			for (File file : fUser.listFiles()) {
-				String pck = PackageManager.getPackageProperties(file.getAbsolutePath())
-						.getProperty(PackageManager.property_name)
-						+"-"+ PackageManager.getPackageProperties(file.getAbsolutePath()).getProperty(
-								PackageManager.property_version);
+				RedSqirlPackage pckCur = new RedSqirlPackage(file,userName); 
+				String pck = pckCur.getPackageProperty(RedSqirlPackage.property_name)
+						+"-"
+						+pckCur.getPackageProperty(RedSqirlPackage.property_version);
 				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 				if(valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
-					for (String s : pm.getFiles(file)){
+					for (String s : pckCur.getFiles()){
 						if (s.substring(0,4).equals("lib:")){
 							String jar = s.substring(4);
 							logger.debug(pcktrimmed+ " , "+jar);
@@ -137,22 +136,22 @@ public class BaseCommand {
 		File fSys = new File(pathSys);
 		if (fSys.exists()) {
 			for (File file : fSys.listFiles()) {
-					String pck = PackageManager.getPackageProperties(file.getAbsolutePath())
-							.getProperty(PackageManager.property_name)
-							+"-"+ PackageManager.getPackageProperties(file.getAbsolutePath()).getProperty(
-									PackageManager.property_version);
-					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
-					if(valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
-						for (String s : pm.getFiles(file)){
-							if (s.substring(0,4).equals("lib:")){
-								String jar = s.substring(4);
-								if (!filesUser.contains(jar)) {
-									logger.debug("Added "+jar+ " for the system lib "+userName);
-									classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
-								}
+				RedSqirlPackage pckCur = new RedSqirlPackage(file,null); 
+				String pck = pckCur.getPackageProperty(RedSqirlPackage.property_name)
+						+"-"
+						+pckCur.getPackageProperty(RedSqirlPackage.property_version);
+				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
+				if(valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
+					for (String s : pckCur.getFiles()){
+						if (s.substring(0,4).equals("lib:")){
+							String jar = s.substring(4);
+							if (!filesUser.contains(jar)) {
+								logger.debug("Added "+jar+ " for the system lib "+userName);
+								classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
 							}
 						}
 					}
+				}
 			}
 		}
 		
@@ -169,10 +168,10 @@ public class BaseCommand {
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
 						.equalsIgnoreCase("true")) {
 			for (File file : fUser.listFiles()) {
-				String pck = pm.getPackageProperties(file.getAbsolutePath())
-						.getProperty(PackageManager.property_name)
-						+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
-								PackageManager.property_version);
+				RedSqirlPackage pckCur = new RedSqirlPackage(file,userName);
+				String pck = pckCur.getPackageProperty(RedSqirlPackage.property_name)
+						+"-"
+						+pckCur.getPackageProperty(RedSqirlPackage.property_version);
 				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 				
 				String tmp = validMsg(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false);
@@ -184,18 +183,18 @@ public class BaseCommand {
 		File fSys = new File(pathSys);
 		if (fSys.exists()) {
 			for (File file : fSys.listFiles()) {
+				RedSqirlPackage pckSys = new RedSqirlPackage(file,null);
 				String jar = null;
-				for (String s : pm.getFiles(file)){
+				for (String s : pckSys.getFiles()){
 					if (s.substring(0,4).equals("lib:")){
 						jar = s.substring(4);
 					}
 				}
 
 				if (!filesUser.contains(jar)) {
-					String pck = pm.getPackageProperties(file.getAbsolutePath())
-							.getProperty(PackageManager.property_name)
-							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
-									PackageManager.property_version);
+					String pck = pckSys.getPackageProperty(RedSqirlPackage.property_name)
+							+"-"
+							+pckSys.getPackageProperty(RedSqirlPackage.property_version);
 					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
 
 					//logger.info("pcktrimmed " + pcktrimmed);

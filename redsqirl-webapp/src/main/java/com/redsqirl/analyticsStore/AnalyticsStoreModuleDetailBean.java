@@ -22,11 +22,6 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.io.FileUtils;
@@ -43,11 +38,15 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.SuperElementManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 @KeepAlive
 public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializable{
@@ -148,14 +147,12 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			if (userInstall){
 				user = userInfoBean.getUserName();
 			}
-			//String user = userInfoBean.getUserName();
 
 			PackageManager pckMng = new PackageManager();
 			List<String> packagesInstalled = pckMng.getPackageNames(user);
 
 			if (packagesInstalled.contains(moduleVersion.getName())){
-				String versionPck = pckMng.getPackageProperty(user, moduleVersion.getName(), 
-						PackageManager.property_version);
+				String versionPck = pckMng.getPackage(moduleVersion.getName(), user).getPackageProperty(RedSqirlPackage.property_version);
 				if (versionPck.equals(moduleVersion.getVersionName())){
 					installed = true;
 				}
@@ -291,7 +288,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
 			System.out.println("folder.getPath  " + folder.getPath());
 
-			SuperActionManager saManager = getSuperActionManager();
+			SuperElementManager saManager = getSuperElementManager();
 			DataFlowInterface dfi = getworkFlowInterface();
 
 			List<String> curSuperActions = null;

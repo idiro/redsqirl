@@ -2708,16 +2708,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String error = null;
 		//logger.info("name sub workflow " + getInputNameSubWorkflow());
-
-		//check name unique
-		if(!getInputNameSubWorkflow().startsWith("sa_")){
-			setInputNameSubWorkflow("sa_"+getInputNameSubWorkflow());
-		}
-		String pattern= "sa_[a-z0-9]*";
+		String pattern= "[a-zA-Z][A-Za-z0-9_]*";
 		if(!getInputNameSubWorkflow().matches(pattern)){
 			//check regex
 			error = getMessageResources("msg_error_agg_subworkflow_name");
 		}
+		String fullName = ">default>"+getInputNameSubWorkflow();
 
 		if(error == null){
 			try {
@@ -2762,10 +2758,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if(error == null){
 					try{
 						SubDataFlow sw = getDf().createSA(getComponentIds(), 
-								getInputNameSubWorkflow(),
+								fullName,
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						new SuperActionInstaller(getSuperActionManager()).install(getUserInfoBean().getUserName(),false, sw, null);
+						new SuperActionInstaller(getSuperElementManager()).install(getUserInfoBean().getUserName(),false, sw,null);
 					}catch(Exception e){
 						error = e.getMessage();
 					}
@@ -2777,12 +2773,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 						logger.info("inputs: " + inputs);
 						logger.info("outputs: " + outputs);
 
-						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
+						error = getDf().aggregateElements(getComponentIds(), fullName, inputs, outputs);
 
 						logger.info("aggregateElements  " + error);
 
 						if(error != null){
-							new SuperActionInstaller(getSuperActionManager()).uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
+							new SuperActionInstaller(getSuperElementManager()).uninstall(getUserInfoBean().getUserName(), fullName);
 						}else{
 							logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2824,7 +2820,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String user = getUserInfoBean().getUserName();
 
 		if(nameSA != null){
-			new SuperActionInstaller(getSuperActionManager()).uninstall(user, nameSA);
+			new SuperActionInstaller(getSuperElementManager()).uninstall(user, nameSA);
 		}
 	}
 

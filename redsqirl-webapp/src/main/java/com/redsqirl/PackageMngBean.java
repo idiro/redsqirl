@@ -45,6 +45,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 import com.redsqirl.workflow.settings.SettingMenu;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -65,8 +66,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private boolean showMain = true;
 
 	private transient boolean userInstall = true;
-	private RedSqirlPackage curPackage;
-	private List<RedSqirlPackage> extPackages;
+	private PackageFromAnalyticsStore curPackage;
+	private List<PackageFromAnalyticsStore> extPackages;
 	private String[] unUserPackage,	unSysPackage;
 	private String repoWelcomePage;
 	private List<RedSqirlModule> systemPackages;
@@ -86,7 +87,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
-		extPackages = new LinkedList<RedSqirlPackage>();
+		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
 
@@ -101,7 +102,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void start() throws RemoteException{
 		logger.info("start PackageMngBean");
-		extPackages = new LinkedList<RedSqirlPackage>();
+		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
 		calcSystemPackages();
@@ -110,7 +111,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void retrievesExtPackages() {
 
-		List<RedSqirlPackage> lAns = new LinkedList<RedSqirlPackage>();
+		List<PackageFromAnalyticsStore> lAns = new LinkedList<PackageFromAnalyticsStore>();
 		try{
 			SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
 			String packageId = FacesContext.getCurrentInstance().getExternalContext().
@@ -153,7 +154,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				for(int i = 0; i < pckArray.length();++i){
 					JSONObject pckObj = pckArray.getJSONObject(i);
 					logger.info("element: "+pckObj);
-					RedSqirlPackage pck = new RedSqirlPackage();
+					PackageFromAnalyticsStore pck = new PackageFromAnalyticsStore();
 					pck.setId(pckObj.getString("id"));
 					pck.setName(pckObj.getString("name"));
 					pck.setLicense(pckObj.getString("license"));
@@ -234,7 +235,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
+			//String version = pckManager.getPackage(pck,null).getPackageProperty(RedSqirlPackage.property_version);
 
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("../pages/packages/images/spark_audit.gif");
@@ -253,7 +254,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
+			//String version = pckManager.getPackage(pck,user).getPackageProperty(RedSqirlPackage.property_version);
 
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("../pages/packages/images/pig_audit.gif");
@@ -862,22 +863,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	/**
 	 * @return the curPackage
 	 */
-	public RedSqirlPackage getCurPackage() {
+	public PackageFromAnalyticsStore getCurPackage() {
 		return curPackage;
 	}
 
 	/**
 	 * @param curPackage the curPackage to set
 	 */
-	public void setCurPackage(RedSqirlPackage curPackage) {
+	public void setCurPackage(PackageFromAnalyticsStore curPackage) {
 		this.curPackage = curPackage;
 	}
 
-	public void setExtPackages(List<RedSqirlPackage> extPackages) {
+	public void setExtPackages(List<PackageFromAnalyticsStore> extPackages) {
 		this.extPackages = extPackages;
 	}
 
-	public List<RedSqirlPackage> getExtPackages() {
+	public List<PackageFromAnalyticsStore> getExtPackages() {
 		return extPackages;
 	}
 

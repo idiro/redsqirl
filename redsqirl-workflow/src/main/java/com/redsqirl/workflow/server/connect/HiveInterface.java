@@ -156,7 +156,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				// Launch Thrift if possible, it fails if it is already done
 				// without damage
 				try {
-
 					try {
 						Properties config = new Properties();
 						config.put("StrictHostKeyChecking", "no");
@@ -223,7 +222,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						logger.error("Fail to launch the server process");
 						logger.error(e.getMessage());
 					}
-
 					logger.debug("Application launched");
 				} catch (Exception e) {
 					logger.error(e.getMessage());
