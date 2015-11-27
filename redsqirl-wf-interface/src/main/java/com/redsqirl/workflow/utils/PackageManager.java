@@ -744,16 +744,13 @@ public class PackageManager extends UnicastRemoteObject {
 		return error;
 	}
 	
-	public Map<String,String> getActionsPerPackage(String user){
-		Map<String,String> actions = new LinkedHashMap<String,String>();
+	public Map<String,List<String>> getActionsPerPackage(String user){
+		Map<String,List<String>> actions = new LinkedHashMap<String,List<String>>();
 		Iterator<File> packageIt = getAllPackages(user).iterator();
 		while (packageIt.hasNext()) {
 			File packageFile = packageIt.next();
 			File p = new File(packageFile, action_file);
-			Iterator<String> actionIt = getAction(p).iterator();
-			while(actionIt.hasNext()){
-				actions.put(packageFile.getName(),actionIt.next());
-			}
+			actions.put(packageFile.getName(),getAction(p));
 		}
 		return actions;
 	}

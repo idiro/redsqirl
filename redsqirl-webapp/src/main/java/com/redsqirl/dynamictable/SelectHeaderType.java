@@ -12,6 +12,12 @@ public class SelectHeaderType implements Serializable{
 		super();
 	}
 	
+	public SelectHeaderType(String name, String type) {
+		super();
+		this.name = name;
+		this.type = type;
+	}
+
 	public String getName() {
 		return name;
 	}

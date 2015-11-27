@@ -78,7 +78,7 @@ public class AuthorizationListener implements PhaseListener {
 					cb.init();
 
 					ConfigureTabsBean configureTabsBean = (ConfigureTabsBean) context.getApplication().evaluateExpressionGet(context, "#{configureTabsBean}", ConfigureTabsBean.class);
-					configureTabsBean.openCanvasScreen();
+					configureTabsBean.openCanvasConfigureTabsBean();
 
 					ProcessManagerBean processManagerBean = (ProcessManagerBean) context.getApplication().evaluateExpressionGet(context, "#{processManagerBean}", ProcessManagerBean.class);
 					processManagerBean.retrievesProcessesGrid();
@@ -86,9 +86,11 @@ public class AuthorizationListener implements PhaseListener {
 					HelpBean helpBean = (HelpBean) context.getApplication().evaluateExpressionGet(context, "#{helpBean}", HelpBean.class);
 					helpBean.calcHelpItens();
 
-					/*SettingsBean settingsBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
+					/*
+					SettingsBean settingsBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
 					settingsBean.calcSettings();
-					settingsBean.defaultSettings();*/
+					settingsBean.defaultSettings();
+					*/
 
 					session.setAttribute("startInit","n");
 				}
