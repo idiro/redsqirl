@@ -60,7 +60,7 @@
                         	<h:outputText value="#{column}" />
                         </f:facet>
                         <h:inputText value="#{rowItem.row[ind]}" size="9" onkeyup="nospaces(this);" onkeypress="return disableEnterKey(event);" />
-						<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
+						<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanelPopUp">
 							<f:param name="selected" value="#{rowNb}" />
 						</a4j:commandButton>
                        
@@ -94,7 +94,7 @@
 				<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 			</a4j:commandLink>
 			
-			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" >
+			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanelPopUp" >
 				<f:param name="selected" value="new" />
 			</a4j:jsFunction>
 			
@@ -104,7 +104,7 @@
 		
 		
 		
-		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:620px;height:315px;" >
+		<rich:panel id="actionsPanelPopUp" header="#{messages.label_tab_actions}" style="overflow:auto;width:620px;height:315px;" >
 
 			<table>
 				<tr>
@@ -162,7 +162,7 @@
 	</h:panelGrid>
 	
 	<h:panelGrid columns="2" style="border:none; float:right;">
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanelPopUp"/>
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
 	</h:panelGrid>
 

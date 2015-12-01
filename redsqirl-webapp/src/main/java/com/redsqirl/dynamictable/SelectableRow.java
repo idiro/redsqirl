@@ -14,6 +14,12 @@ public class SelectableRow implements Serializable{
 	private String nameTab;
 	private String nameTabHidden;
 
+	
+	
+	public SelectableRow() {
+		super();
+	}
+
 	/**
 	 * @param selected
 	 * @param row

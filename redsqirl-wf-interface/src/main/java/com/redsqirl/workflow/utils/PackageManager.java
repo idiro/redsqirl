@@ -754,6 +754,36 @@ public class PackageManager extends UnicastRemoteObject {
 		}
 		return actions;
 	}
+	
+	public Map<String,String> getPackageOfActions(String user){
+		Map<String,String> result = new LinkedHashMap<String,String>();
+		
+		for (String actionName : getCoreActions()) {
+			result.put(actionName, "core");
+		}
+		
+		Iterator<File> packageIt = getAllPackages(user).iterator();
+		while (packageIt.hasNext()) {
+			File packageFile = packageIt.next();
+			File p = new File(packageFile, action_file);
+			for (String actionName : getAction(p)) {
+				result.put(actionName, packageFile.getName());
+			}
+		}
+		return result;
+	}
+	
+	public List<String> getCoreActions(){
+		List<String> actions = new LinkedList<String>();
+		actions.add("convert_file_text");
+		actions.add("convert");
+		actions.add("file_text_source");
+		actions.add("send_email");
+		actions.add("source");
+		actions.add("superactioninput");
+		actions.add("superactionoutput");
+		return actions;
+	}
 
 	public List<String> getActions(String user){
 		List<String> actions = new LinkedList<String>();
