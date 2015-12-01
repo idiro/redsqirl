@@ -209,12 +209,10 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 
 			List<String> packageNames = pckMng.getPackageNames(redSqirlInstallations.getUserName());
 			boolean install = true;
-			if(packageNames != null && !packageNames.isEmpty()){
-				for (String packageName : packageNames) {
-					if(pckMng.getPackageProperty(redSqirlInstallations.getUserName(), packageName, "version").equals(redSqirlInstallations.getModuleVersion())){
-						install = false;
-						break;
-					}
+			com.redsqirl.workflow.utils.RedSqirlPackage pck = pckMng.getPackage(redSqirlInstallations.getModule(), redSqirlInstallations.getUserName());
+			if(pck != null){
+				if(pck.getPackageProperty(com.redsqirl.workflow.utils.RedSqirlPackage.property_version).equals(redSqirlInstallations.getModuleVersion())){
+					install = false;
 				}
 			}
 

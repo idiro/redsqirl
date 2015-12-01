@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class RedSqirlPackage implements Serializable{
+public class PackageFromAnalyticsStore implements Serializable{
 
 	/**
 	 * 

@@ -17,8 +17,7 @@ public class WorkflowHelpUtils {
 	}
 	
 	public static String generateHelp(String wfName, String description,Map<String,DFEOutput> inputs,Map<String,DFEOutput> outputs) throws RemoteException{
-		String help = "<h1>"+WordUtils.capitalizeFully(wfName.substring(3)
-				.replace("_", " "))+"</h1>";
+		String help = "<h1>"+WordUtils.capitalizeFully(wfName.replace("_", " "))+"</h1>";
 		if(description != null && !description.isEmpty()){
 			help+="<p>"+description+"</p>";
 		}

@@ -17,16 +17,18 @@ public class SuperActionInstaller implements Serializable{
 	 */
 	private static final long serialVersionUID = -9100651224310861710L;
 
-	public SuperActionInstaller(SuperActionManager mng) {
+	SuperElementManager mng;
+	
+	public SuperActionInstaller(SuperElementManager mng) {
 		super();
 		this.mng = mng;
 	}
 
-	SuperActionManager mng;
 
 	public String uninstall(String user, String name) throws RemoteException {
-		File mainFile = new File(WorkflowPrefManager.getSuperActionMainDir(user), name);
-		File helpFile = new File(mng.getSuperActionHelpDir(user), name + ".html");
+		String[] modelSA = RedSqirlModel.getModelAndSW(name);
+		File mainFile = new File(WorkflowPrefManager.getSuperActionMainDir(user), modelSA[0]+"/"+modelSA[1]);
+		File helpFile = new File(mng.getSuperActionHelpDir(user), modelSA[0]+"/"+modelSA[1] + ".html");
 
 		mainFile.delete();
 		helpFile.delete();
@@ -35,11 +37,10 @@ public class SuperActionInstaller implements Serializable{
 	}
 	
 	public String install(String user, boolean system, SubDataFlow toInstall, Boolean privilege) throws RemoteException{
-		return install(user, system, toInstall, privilege, null);
-	}
-	
-	public String install(String user, boolean system, SubDataFlow toInstall, Boolean privilege,String packageName) throws RemoteException{
-		String name = toInstall.getName();
+		String[] modelWA = RedSqirlModel.getModelAndSW(toInstall.getName());
+		String packageName = modelWA[0];
+		String name = modelWA[1];
+		
 		File mainDir = WorkflowPrefManager.getSuperActionMainDir(system?null:user);
 		mainDir.mkdirs();
 		if(packageName != null){
@@ -50,12 +51,13 @@ public class SuperActionInstaller implements Serializable{
 		helpDir.mkdirs();
 		
 		File mainFile = new File(mainDir, name);
-		File helpFile = new File(helpDir, name+".html");
+		File helpFile = new File(helpDir, packageName+"/"+name+".html");
 		
 		File tmpMain = new File(WorkflowPrefManager.getPathTmpFolder(user),name);
 		File tmpHelp = new File(WorkflowPrefManager.getPathTmpFolder(user),name+".html");
 		
 		String error = mng.createInstallFiles(user, toInstall, privilege);
+		helpFile.getParentFile().mkdirs();
 		if(error == null){
 			if (mainFile.exists()||helpFile.exists()) {
 				error = "Super Action '"
@@ -79,11 +81,11 @@ public class SuperActionInstaller implements Serializable{
 	
 
 
-	public SuperActionManager getMng() {
+	public SuperElementManager getMng() {
 		return mng;
 	}
 
-	public void setMng(SuperActionManager mng) {
+	public void setMng(SuperElementManager mng) {
 		this.mng = mng;
 	}
 }

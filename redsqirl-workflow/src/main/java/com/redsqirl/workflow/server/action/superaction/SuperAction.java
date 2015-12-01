@@ -32,6 +32,7 @@ import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.server.oozie.SubWorkflowAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 
 /**
  * SuperAction class, read the given superaction and initialise the
@@ -158,6 +159,31 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		}
 	}
 
+	public String getHelp() throws RemoteException {
+		String[] modelWA = RedSqirlModel.getModelAndSW(getName());
+		String fname = modelWA[0]+"/"+modelWA[1] + ".html";
+		String relativePath = WorkflowPrefManager.getPathuserhelppref() + "/"
+				+ fname;
+		File f = new File(WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
+				+ relativePath);
+		if (!f.exists()) {
+			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
+					+ fname;
+			f = new File(
+					WorkflowPrefManager.getSysProperty(
+							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
+							+ relativePath);
+		}
+		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
+		logger.debug("help absolutePath : "+absolutePath);
+		logger.debug("help relPath : "+relativePath);
+		
+		return absolutePath;
+	}
+	
 	/**
 	 * Get the path to the Image
 	 * 
@@ -166,27 +192,29 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	 */
 	@Override
 	public String getImage() throws RemoteException {
-		String absolutePath = "";
-		String imageFile = "/image/superaction.gif";
-		String path = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
-		List<String> files = listFilesRecursively(path);
-		for (String file : files) {
-			if (file.contains(imageFile)) {
-				absolutePath = file;
-				break;
-			}
+		String fname = getName().toLowerCase() + ".gif";
+		String relativePath = WorkflowPrefManager.getPathuserimagepref() + "/"
+				+ fname;
+		File f = new File(WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
+				+ relativePath);
+		if (!f.exists()) {
+			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
+					+ fname;
+			f = new File(
+					WorkflowPrefManager.getSysProperty(
+							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
+							+ relativePath);
 		}
 		
-		if(logger.isDebugEnabled()){
-			String ans = "";
-			if (absolutePath.contains(path)) {
-				ans = absolutePath.substring(path.length());
-			}
-			logger.debug("SuperAction image abs Path : " + absolutePath);
-			logger.debug("SuperAction image Path : " + path);
-			logger.debug("SuperAction image ans : " + ans);
+		if(!f.exists()){
+			f = new File(RedSqirlModel.getDefaultImage());
 		}
+		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
+		logger.debug("image absolutePath : "+absolutePath);
+		logger.debug("image relPath : "+relativePath);
 		return absolutePath;
 	}
 

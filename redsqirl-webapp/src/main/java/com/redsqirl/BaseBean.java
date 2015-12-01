@@ -29,7 +29,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
-import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.SuperElementManager;
 
 
 /** BaseBean
@@ -210,11 +210,11 @@ public class BaseBean {
 		return (PropertiesManager) session.getAttribute("prefs");
 	}
 	
-	public SuperActionManager getSuperActionManager() throws RemoteException{
+	public SuperElementManager getSuperElementManager() throws RemoteException{
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (SuperActionManager) session.getAttribute("samanager");
+		return (SuperElementManager) session.getAttribute("samanager");
 	}
 	
 

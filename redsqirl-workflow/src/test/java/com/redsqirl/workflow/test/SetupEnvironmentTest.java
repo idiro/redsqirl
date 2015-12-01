@@ -17,6 +17,8 @@ import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowTests;
+import com.redsqirl.workflow.server.action.superaction.SuperActionTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
@@ -52,13 +54,13 @@ import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
 //	EditorInteractionTests.class,
 //	TableInteractionTests.class,
 //	//FIXME Test only done for keith user...
-	HDFSTypeTests.class,
+//	HDFSTypeTests.class,
 //	PackageManagerTests.class,
 //	AbstractDictionaryTests.class,
 //	SendEmailTests.class,
 //	WorkflowInterfaceTests.class,
-//	SubWorkflowTests.class,
-	//SuperActionTests.class
+	SubWorkflowTests.class,
+//	SuperActionTests.class
 })
 public class SetupEnvironmentTest {
 
@@ -134,10 +136,12 @@ public class SetupEnvironmentTest {
 		logger.info(WorkflowPrefManager.pathSysHome);
 		logger.info(WorkflowPrefManager.getPathuserpref());
 		logger.info(WorkflowPrefManager.pathUserCfgPref);
+		logger.info("starts the tests...");
 	}
 
 	@AfterClass
 	public static void end(){
+		logger.info("Clean testing environment...");
 		HDFSInterface hdfsInt = null;
 		try {
 			hdfsInt = new HDFSInterface();
