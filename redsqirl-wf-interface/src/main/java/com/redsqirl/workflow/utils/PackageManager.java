@@ -212,7 +212,7 @@ public class PackageManager extends UnicastRemoteObject {
 		if (error == null) {
 			logger.info("Install the packages one per one");
 			for (int i = 0; i < packs.length && error == null; ++i) {
-				logger.debug(packs[i].getPackageFile().getAbsolutePath() + "...");
+				logger.info(packs[i].getPackageFile().getAbsolutePath() + "...");
 				error = packs[i].addPackage(user);
 			}
 		} else {
