@@ -213,20 +213,10 @@ public class PackageManager extends UnicastRemoteObject {
 			logger.info("Install the packages one per one");
 			for (int i = 0; i < packs.length && error == null; ++i) {
 				logger.info(packs[i].getPackageFile().getAbsolutePath() + "...");
-				error = packs[i].addPackage(user);
+				error = packs[i].addPackage(user,packStr[i].endsWith(".zip"));
 			}
 		} else {
 			logger.info("No change have been made");
-		}
-
-		for (int i = 0; i < packStr.length; ++i) {
-			if (packStr[i].endsWith(".zip")) {
-				try {
-					LocalFileSystem.delete(packs[i].getPackageFile());
-				} catch (IOException e) {
-					logger.warn("Fail to free tmp directory");
-				}
-			}
 		}
 
 		return error;

@@ -2878,6 +2878,26 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="modalPackageSettings" width="820" height="600"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_packages}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalPackageSettings')}.hide();" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/packageSettings.xhtml" ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
 
 	<a4j:region>
 		<rich:modalPanel id="modalInstallPackage" width="900" height="600"

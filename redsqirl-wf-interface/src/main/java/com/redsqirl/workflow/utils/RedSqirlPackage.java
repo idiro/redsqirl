@@ -56,6 +56,10 @@ public class RedSqirlPackage {
 	}
 	
 	public String addPackage(String user){
+		return addPackage(user, false);
+	}
+	
+	public String addPackage(String user,boolean deleteInstallFile){
 		
 		logger.info("Installing path " + packageFile.getAbsolutePath());
 		
@@ -110,17 +114,20 @@ public class RedSqirlPackage {
 				Timestamp ts = new Timestamp(time);
 				try{
 					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(newPack.getAbsolutePath() + "/"+ properties_file),true));
-					bw.write("install_timestamp="+ts.toString()+"\n");
+					bw.write("\n"+"install_timestamp="+ts.toString()+"\n");
 					bw.close();
 				}catch(Exception e){}
 				
+				if(error == null){
+					if(deleteInstallFile){
+						LocalFileSystem.delete(this.packageFile);
+					}
+					this.packageFile = newPack;
+					this.user = user;
+				}
 			} catch (IOException e) {
-				logger.info("Fail when writing files/directory in package");
-			}
-			
-			if(error == null){
-				this.packageFile = newPack;
-				this.user = user;
+				error = "Fail when writing files/directory in package";
+				logger.info(error);
 			}
 		}
 		return error;

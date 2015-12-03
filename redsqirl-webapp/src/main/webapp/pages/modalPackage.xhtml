@@ -44,9 +44,10 @@
                         
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
-		                        value="#{messages.button_package_settings}"
+		                        value="#{messages.button_package_settings}" oncomplete="#{rich:component('modalPackageSettings')}.show();"
 		                        action="#{packageMngBean.packageSettings}" >
 		                        <f:param name="name" value="#{pck.name}" />
+		                        <f:param name="type" value="S" />
 		                    </a4j:commandButton>
 							
 						</h:panelGroup>
@@ -97,9 +98,10 @@
                         
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
-		                        value="#{messages.button_package_settings}"
+		                        value="#{messages.button_package_settings}" oncomplete="#{rich:component('modalPackageSettings')}.show();"
 		                        action="#{packageMngBean.packageSettings}" >
 		                        <f:param name="name" value="#{pck.name}" />
+		                        <f:param name="type" value="U" />
 		                    </a4j:commandButton>
 							
 						</h:panelGroup>
