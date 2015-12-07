@@ -31,7 +31,7 @@
 		    
 		    <h:panelGrid columns="2" width="100%">
 		    
-			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:10px;" >
+			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:10px;position:absolute;top:200px;" >
 			    
 				    <ui:repeat value="#{settingsBean.listSubMenu}" var="sc">
 				     	
@@ -47,17 +47,24 @@
 				    </ui:repeat>
 			    </h:panelGroup>
 		     
-		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:10px;" rendered="#{not empty settingsBean.listSetting}" >
+		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:100px;" rendered="#{not empty settingsBean.listSetting}" >
 			     	<table>
 			     		
 			     		<tr>
-		     				<td>
+		     				<td colspan="2">
 		     					<h:outputText value="#{settingsBean.pathPosition}" style="font-size:20px;" />
 		     				</td>
 		     			</tr>
 		     			
 		     			<tr>
 			     			<td>
+			     				<h:outputText value="#{settingsBean.s.properties[obj].label}" style="font-size:15px;" /><br/><br/>
+			     				<h:outputText value="#{settingsBean.s.properties[obj].description}" /><br/>
+			     			</td>
+			     		</tr>
+			     		
+			     		<tr>
+			     			<td colspan="2">
 			     				<br/>
 			     			</td>
 			     		</tr>
@@ -65,18 +72,11 @@
 				     	<ui:repeat value="#{settingsBean.listSetting}" var="obj">
 			     			
 			     			<tr>
-			     				<td>
-			     					
-			     					<h:outputText value="#{settingsBean.s.properties[obj].label}" style="font-size:15px;" /><br/><br/>
-			     					
-			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" /><br/>
+			     				<td style="width:350px;">
 			     					
 			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM'}" />
 			     					<h:inputText value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;" rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty }" />
 			     					
-			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;" rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty }" />
 			     					<br/>
 			     					
 			     					<a4j:commandLink action="#{settingsBean.setDefaultValue}" >
@@ -112,6 +112,19 @@
 								    
 								    </h:panelGrid>
 			     					
+			     					
+			     				
+			     				</td>
+			     				<td>
+			     				
+			     				
+			     					
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;" rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty }" />
+			     					
+			     					<br/>
+			     					
+			     				
 			     					<h:panelGrid rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY'}">
 			     					
 			     						<h:outputText value="#{messages.label_add_or_delete}" style="margin-left:3px;" />
@@ -133,11 +146,13 @@
 								   
 								    </h:panelGrid>
 			     				
+			     				
 			     				</td>
+			     				
 			     			</tr>
 			     			
 			     			<tr>
-				     			<td>
+				     			<td colspan="2">
 				     				<br/>
 				     				<br/>
 				     			</td>
