@@ -238,10 +238,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
-			//String version = pckManager.getPackage(pck,null).getPackageProperty(RedSqirlPackage.property_version);
 
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("../pages/packages/images/package.gif");
+			rdm.setImage("../pages/packages/images/"+pck+"_package.gif");
 			rdm.setName(pck);
 
 			result.add(rdm);
@@ -257,10 +256,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
-			//String version = pckManager.getPackage(pck,user).getPackageProperty(RedSqirlPackage.property_version);
 
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("../pages/packages/images/package.gif");
+			rdm.setImage("../pages/packages/images/"+pck+"_package.gif");
 			rdm.setName(pck);
 
 			result.add(rdm);
