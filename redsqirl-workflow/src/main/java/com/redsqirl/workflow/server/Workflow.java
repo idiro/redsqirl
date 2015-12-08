@@ -3011,9 +3011,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.info(dfe.getName() + " " + name + " '" + priv + "");
 			if (priv == null) {
 				parameters[2] = null;
-			} else {
-				parameters[2] = String.valueOf(((SuperElement) dfe)
-						.getPrivilege());
+			} else if(new ModelManager().getAvailableModel(
+					System.getProperty("user.name"), 
+					RedSqirlModel.getModelAndSW(dfe.getName())[0]).isEditable()){
+				parameters[2] = String.valueOf(priv);
+			}else{
+				parameters[2] = null;
 			}
 		} else {
 			parameters[2] = null;

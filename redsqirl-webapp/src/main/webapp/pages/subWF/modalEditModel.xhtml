@@ -17,8 +17,12 @@
 	function getModelNameValueJS(){
 		return jQuery('[id$="modelNameInput"]').val();
 	}
+	function getModelVersionValueJS(){
+		return jQuery('[id$="modelVersionInput"]').val();
+	}
 	jQuery('[id$="modelImgInput"]').hide();
 	jQuery('[id$="modelNameEditAfter"]').hide();
+	jQuery('[id$="modelVersionEditAfter"]').hide();
 	jQuery('[id$="modelCommentEditAfter"]').hide();
     function showEditModelName(){
         jQuery('[id$="modelNameInput"]').show();
@@ -31,6 +35,18 @@
         jQuery('[id$="modelNameEditAfter"]').hide();
         jQuery('[id$="modelNameOutput"]').show();
         jQuery('[id$="modelNameEditBefore"]').show();
+    }
+    function showEditModelVersion(){
+        jQuery('[id$="modelVersionInput"]').show();
+        jQuery('[id$="modelVersionEditAfter"]').show();
+        jQuery('[id$="modelVersionOutput"]').hide();
+        jQuery('[id$="modelVersionEditBefore"]').hide();
+    }
+    function hideEditModelVersion(){
+        jQuery('[id$="modelVersionInput"]').hide();
+        jQuery('[id$="modelVersionEditAfter"]').hide();
+        jQuery('[id$="modelVersionOutput"]').show();
+        jQuery('[id$="modelVersionEditBefore"]').show();
     }
     function showEditModelImg(){
         jQuery('[id$="modelImgInput"]').show();
@@ -70,15 +86,22 @@
 				onstop="jQuery.unblockUI();" />
 			<a4j:jsFunction name="renameModel"
 				reRender="msnError, modelNameOutput, modelsList"
-				oncomplete="hideEditModelName();" action="#{modelBean.renameModel}">
+				oncomplete="if(#{requestScope['msnError'] == null}){hideEditModelName();}" action="#{modelBean.renameModel}">
 				<a4j:actionparam  name="modelName"  />
 			</a4j:jsFunction>
 
 			<a4j:jsFunction name="updateModelComment"
 				reRender="msnError, modelCommentOutput, modelsList"
 				action="#{modelBean.updateModelComment}"
-				oncomplete="hideEditModelComment();">
+				oncomplete="if(#{requestScope['msnError'] == null}){hideEditModelComment();}">
 				<a4j:actionparam  name="modelComment"  />
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateModelVersion"
+				reRender="msnError, modelVersionOutput, modelsList"
+				action="#{modelBean.updateModelVersion}"
+				oncomplete="if(#{requestScope['msnError'] == null}){hideEditModelVersion();}">
+				<a4j:actionparam  name="modelVersion"  />
 			</a4j:jsFunction>
 
 		</a4j:region>
@@ -120,6 +143,23 @@
 									style="width:15px;margin-left:3px;"
 									title="#{messages.label_text_editor}"
 									onclick="renameModel(getModelNameValueJS());"/>
+							</a4j:commandLink>
+							<h:outputText value="  "/>
+							<h:outputText id="modelVersionOutput" value="#{modelBean.version}" />
+							<h:inputText id="modelVersionInput" style="display:none"
+								value="#{modelBean.version}"
+								onkeypress="if(event.keyCode == 13){event.preventDefault();updateModelVersion(getModelVersionValueJS());}" />
+							<a4j:commandLink id="modelVersionEditBefore">
+								<h:graphicImage url="../image/icons/button-pencil02.gif"
+									style="width:15px;margin-left:3px;"
+									title="#{messages.label_text_editor}"
+									onclick="showEditModelVersion();" />
+							</a4j:commandLink>
+							<a4j:commandLink id="modelVersionEditAfter">
+								<h:graphicImage url="../image/icons/button-pencil02.gif"
+									style="width:15px;margin-left:3px;"
+									title="#{messages.label_text_editor}"
+									onclick="updateModelVersion(getModelVersionValueJS());" />
 							</a4j:commandLink>
 						</h1>
 					</td>

@@ -47,6 +47,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 
 	private String name = "";
 	private String comment = null;
+	private String version = null;
 
 	private String currentSubworkflowName = "";
 
@@ -356,6 +357,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			error = copyMoveSubWorkflow(newModel, rsModel.getSubWorkflowNames(),true,false);
 			if(error == null){
 				newModel.setComment(rsModel.getComment());
+				newModel.setVersion(rsModel.getVersion());
 				try{
 					LocalFileSystem.delete(rsModel.getFile());
 				}catch(Exception e){
@@ -582,6 +584,25 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		
 		return error;
 	}
+	
+	public void toggleEditable() throws RemoteException{
+		logger.info("updateModel");
+		String modelIndex = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("index");
+		String modelScope = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("scope");
+		if(modelScope.equalsIgnoreCase("system")){
+			setModel(getSystemModels().get(Integer.valueOf(modelIndex)));
+			rsModel = getModelManager().getSysModel(model.getName());
+		}else{
+			setModel(getUserModels().get(Integer.valueOf(modelIndex)));
+			rsModel = getModelManager().getUserModel(userName,model.getName());
+		}
+		rsModel.setEditable(!rsModel.isEditable());
+		getModel().setEditable(rsModel.isEditable());
+		
+	}
+	
 	public void updateModel() throws RemoteException{
 		logger.info("updateModel");
 		String modelIndex = FacesContext.getCurrentInstance()
@@ -598,11 +619,12 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			setModel(getSystemModels().get(modelIndex));
 			rsModel = getModelManager().getSysModel(model.getName());
 		}else{
-			setModel(getUserModels().get(Integer.valueOf(modelIndex)));
+			setModel(getUserModels().get(modelIndex));
 			rsModel = getModelManager().getUserModel(userName,model.getName());
 		}
 		name = rsModel.getName();
 		comment = rsModel.getComment();
+		version = rsModel.getVersion();
 		
 		
 		updateSubWorkflowFromModel();
@@ -618,6 +640,26 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}else{
 			calcUserModels();
 		}
+	}
+
+	public void updateModelVersion() throws RemoteException{
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String error = null;
+		String regex="[0-9]+(\\.{0,1}[0-9]+)*";
+		String modelVersion = params.get("modelVersion");
+		if(!modelVersion.matches(regex)){
+			error = "A version should only include number with optional dots between them.";
+		}else{
+			version = modelVersion;
+			logger.info("updateModelVersion: "+version);
+			rsModel.setVersion(version);
+			if(rsModel.isSystem()){
+				calcSystemModels();
+			}else{
+				calcUserModels();
+			}
+		}
+		displayErrorMessage(error, "UPDATEMODELVERSION");
 	}
 	
 	public void updateSubWorkflowFromModel() throws RemoteException{
@@ -738,6 +780,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			rdm.setName(model.getName());
 			rdm.setVersionName(model.getVersion());
 			rdm.setVersionNote(model.getComment());
+			rdm.setEditable(model.isEditable());
 			result.add(rdm);
 		}
 		return result;
@@ -962,5 +1005,19 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 
 	public void setCurrentSubworkflowName(String currentSubworkflowName) {
 		this.currentSubworkflowName = currentSubworkflowName;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }

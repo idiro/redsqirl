@@ -2108,7 +2108,7 @@ function showContextMenu(group, e){
         var item = contextMenuCanvasAction[i];
         
         if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) != 0 && key.indexOf(menu_clean) != 0 && key.indexOf(menu_oozieLog) != 0)){
-            if(group.elementType.indexOf('sa_')==0){
+            if(group.elementType.indexOf('>')==0){
                     temp[temp.length] = item;
             }else{
                 if( key.indexOf(menu_editSa)!=0 && key.indexOf(menu_refreshSa)!=0){
@@ -2128,7 +2128,7 @@ function showContextMenu(group, e){
 		jQuery(this).closest("table").remove();
 	});
     cmenuCanvas = jQuery.contextMenu.create(temp);
-    if(group.elementType.indexOf('sa_')==0){
+    if(group.elementType.indexOf('>')==0){
         if(group.privilege != null){
             if(!jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").hasClass("context-menu-item-disabled")){
                 jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").addClass("context-menu-item-disabled");

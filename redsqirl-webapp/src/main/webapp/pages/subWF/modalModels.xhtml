@@ -47,22 +47,41 @@
 							<br style="font-size: 10px;" />
 							<h:outputText style="font-size: 12px;" value="#{model.versionNote}"/>
 						</h:panelGroup>
-	                	<h:panelGroup layout="block" class="license" style="float:right;">
+	                	<h:panelGroup layout="block" class="licenseModel">
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
+		                        rendered="#{modelBean.admin}"
 		                        value="#{messages.button_remove}"
 		                        action="#{modelBean.removeSystemModel}"
 		                        reRender="sysModelList" >
 		                    	<f:param name="name" value="#{model.name}" />
 		                    </a4j:commandButton>
-                        
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
+		                        rendered="#{model.editable &amp;&amp; modelBean.admin}"
 		                        value="#{messages.button_edit}"
 		                        action="#{modelBean.updateModel}"
 		                        oncomplete="#{rich:component('modalEditModel')}.show();"
 		                        reRender="modalEditModel" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="system" />
+		                    </a4j:commandButton>
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        rendered="#{model.editable &amp;&amp; modelBean.admin}"
+		                        value="#{messages.button_protect}"
+		                        action="#{modelBean.toggleEditable}"
+		                        reRender="sysModelList" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="system" />
+		                    </a4j:commandButton>
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        rendered="#{! model.editable &amp;&amp; modelBean.admin}"
+		                        value="#{messages.button_unprotect}"
+		                        action="#{modelBean.toggleEditable}"
+		                        reRender="sysModelList" >
 		                        <f:param name="index" value="#{modelCurIdx}" />
 		                        <f:param name="scope" value="system" />
 		                    </a4j:commandButton>
@@ -112,7 +131,7 @@
 							<br style="font-size: 10px;" />
 							<h:outputText style="font-size: 12px;" value="#{model.versionNote}"/>
 						</h:panelGroup>
-	                	<h:panelGroup layout="block" class="license" style="float:right;">
+	                	<h:panelGroup layout="block" class="licenseModel">
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
@@ -124,10 +143,31 @@
                         
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
+		                        rendered="#{model.editable}"
 		                        value="#{messages.button_edit}"
 		                        action="#{modelBean.updateModel}"
 		                        oncomplete="#{rich:component('modalEditModel')}.show();"
 		                        reRender="modalEditModel">
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="user" />
+		                    </a4j:commandButton>
+		                    
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        rendered="#{model.editable}"
+		                        value="#{messages.button_protect}"
+		                        action="#{modelBean.toggleEditable}"
+		                        reRender="usModelList" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="user" />
+		                    </a4j:commandButton>
+		                    
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        rendered="#{! model.editable}"
+		                        value="#{messages.button_unprotect}"
+		                        action="#{modelBean.toggleEditable}"
+		                        reRender="usModelList" >
 		                        <f:param name="index" value="#{modelCurIdx}" />
 		                        <f:param name="scope" value="user" />
 		                    </a4j:commandButton>

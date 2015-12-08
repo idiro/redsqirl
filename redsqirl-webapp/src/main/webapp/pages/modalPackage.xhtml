@@ -36,6 +36,7 @@
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
+		                        rendered="#{packageMngBean.admin}"
 		                        value="#{messages.button_sys_uninstall}"
 		                        action="#{packageMngBean.removeSystemPackage}"
 		                        reRender="sysPckList" >
@@ -90,6 +91,7 @@
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
+		                        rendered="#{packageMngBean.userAllowInstall}"
 		                        value="#{messages.button_user_uninstall}"
 		                        action="#{packageMngBean.removeUserPackage}"
 		                        reRender="usPckList" >

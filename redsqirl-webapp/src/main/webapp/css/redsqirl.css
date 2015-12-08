@@ -1531,6 +1531,16 @@ select {
 	font-size:12px;
 }
 
+.licenseModel{
+	margin-top:15px;
+	margin-right:10px;
+	margin-bottom:5px;
+	width:60%;
+	float:right;
+	text-align:right;
+	font-size:12px;
+}
+
 .moduleItemInstall .dependency{
 	float: left;
     font-size: 12px;

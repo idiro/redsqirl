@@ -45,6 +45,7 @@ import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.ModelInstaller;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 
 public class CanvasBean extends BaseBean implements Serializable {
 
@@ -2427,21 +2428,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return result;
 	}
 
-	public void openSubWorkflow() {
+	public void openSubWorkflow() throws RemoteException {
 
 		logger.info("openSubWorkflow");
 
 		Map<String, String> params = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap();
 		String nameSubWorkflow = params.get("nameSubWorkflow");
+		String[] modelAndSW = RedSqirlModel.getModelAndSW(nameSubWorkflow);
 
-		//logger.info("nameSubWorkflow " + nameSubWorkflow);
-
-		File file = new File(WorkflowPrefManager.getSuperActionMainDir(userName), nameSubWorkflow);
-		if(!file.exists()){
-			file = new File(WorkflowPrefManager.getSuperActionMainDir(null), nameSubWorkflow);
-		}
-		//logger.info("file path " + file.getAbsolutePath());
+		File file = new File(getModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
+				modelAndSW[1]);
 
 		loadSubWorkFlowFromLocal(file.getAbsolutePath());
 	}
