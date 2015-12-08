@@ -23,6 +23,7 @@ import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.utils.ModelInt;
 import com.redsqirl.workflow.utils.PackageManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
@@ -190,6 +191,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				setSelectedPackage(listPackages.get(0).getLabel());
 				retrieveActions(getSelectedPackage());
 			}
+			
+			
+			for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
+				SelectItem s = new SelectItem(modelInt.getName(), modelInt.getName());
+				listPackages.add(s);
+			}
 
 			calculateListSelectedActions();
 
@@ -237,9 +244,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		if(selectedPackage != null){
 			setSelectedPackage(selectedPackage);
 
-			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-			logger.info("User: " + userInfoBean.getUserName());
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
 
 			PackageManager pckManager = new PackageManager();
 			listActions = new ArrayList<SelectHeaderType>();
@@ -249,7 +255,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					SelectHeaderType s = new SelectHeaderType("core", name);
 					listActions.add(s);
 				}
-				Map<String,List<String>> map = pckManager.getActionsPerPackage(userInfoBean.getUserName());
+				Map<String,List<String>> map = pckManager.getActionsPerPackage(user);
 				for (String key : map.keySet()) {
 					List<String> ansList = map.get(key);
 					if(ansList != null && !ansList.isEmpty()){
@@ -265,14 +271,27 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					listActions.add(s);
 				}
 			}else{
-				Map<String,List<String>> map = pckManager.getActionsPerPackage(userInfoBean.getUserName());
+				
+				Map<String,List<String>> map = pckManager.getActionsPerPackage(user);
 				List<String> ansList = map.get(selectedPackage);
 				if(ansList != null && !ansList.isEmpty()){
 					for (String action : ansList) {
 						SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, action);
 						listActions.add(selectHeaderType);
 					}
+				}else{
+					
+					for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
+						if(modelInt.getName().equals(selectedPackage)){
+							for (String superAction : modelInt.getSubWorkflowNames()) {
+								SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction);
+								listActions.add(selectHeaderType);
+							}
+						}
+					}
+					
 				}
+				
 			}
 
 		}
