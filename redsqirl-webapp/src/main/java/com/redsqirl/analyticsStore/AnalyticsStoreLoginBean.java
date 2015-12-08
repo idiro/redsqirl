@@ -310,7 +310,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
 				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
 			return license();
-		}else if(pckManager.getPackageNames(null).isEmpty()){
+		}else if(pckManager.getSysPackages().isEmpty()){
 			return installModule();
 		}else{
 			return setting();
@@ -879,7 +879,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void updateUninstalMenu() throws RemoteException{
 		PackageManager pckManager = new PackageManager();
-		if(pckManager.getPackageNames(null).isEmpty()){
+		if(pckManager.getSysPackageNames().isEmpty()){
 			showUninstall = "N";
 		}else{
 			showUninstall = "Y";

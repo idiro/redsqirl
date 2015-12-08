@@ -529,17 +529,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void load() {
-
-		String path = getPath();
-
+		load(getPath(),generateWorkflowName(getPath()),true);
+	}
+	
+	private void load(String path,String newWfName,boolean setWorkflow){
 		logger.info("load " + path);
-
 		if (path.endsWith(".srs")) {
-			loadSubWorkflow();
+			loadDataFlow(path, newWfName, false, setWorkflow);
 		} else {
-			loadWorkFlow();
+			loadDataFlow(path, newWfName, true, setWorkflow);
 		}
-
 	}
 
 	/**
@@ -551,73 +550,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void loadWorkFlow() {
-
-		String path = getPath();
-
-		logger.info("loadWorkFlow " + path);
-
-		DataFlowInterface dfi;
-		String error = null;
-		try {
-			dfi = getworkFlowInterface();
-			DataFlow df = null;
-			String newWfName = generateWorkflowName(path);
-
-			if (error == null) {
-				if (getWorkflowMap().containsKey(newWfName)) {
-					error = "A workflow called "
-							+ newWfName
-							+ " already exist. Please close this workflow if you want to proceed.";
-				} else if (dfi.getWorkflow(newWfName) != null) {
-					logger.warn("A workflow named "
-							+ newWfName
-							+ " already exist on the backend, closing it quietly...");
-					dfi.removeWorkflow(newWfName);
-				}
-			}
-			if (error == null) {
-				error = dfi.addWorkflow(newWfName);
-			}
-			if (error == null) {
-				dfi.setWorkflowPath(newWfName, path);
-				df = dfi.getWorkflow(newWfName);
-				logger.info("read " + path);
-				error = df.read(path);
-			}
-			if (error == null) {
-				logger.info("set current worflow to " + newWfName);
-				setNameWorkflow(newWfName);
-				setDf(df);
-				df.setName(newWfName);
-
-				logger.info("Load element ids for front-end " + newWfName);
-				workflowMap.put(getNameWorkflow(), df);
-				getIdMap()
-				.put(getNameWorkflow(), new HashMap<String, String>());
-				logger.info("Nb elements: " + df.getElement().size());
-
-				Iterator<String> itCompIds = df.getComponentIds().iterator();
-				while (itCompIds.hasNext()) {
-					String cur = itCompIds.next();
-					idMap.get(nameWorkflow).put(cur, cur);
-				}
-				logger.info("Nb element loaded: "
-						+ getIdMap().get(getNameWorkflow()).size());
-
-				setWorkflowType("W");
-
-				mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
-
-				logger.info("Load workflow type " + getWorkflowType());
-
-			}
-
-		} catch (Exception e) {
-			logger.info("Error loading workflow");
-			e.printStackTrace();
-			usageRecordLog().addError("ERROR LOADWORKFLOW", e.getMessage());
-		}
-
+		String error = loadDataFlow(getPath(),generateWorkflowName(path), true, true);
+		
 		if (error != null) {
 			logger.info("Error: " + error);
 			MessageUseful.addErrorMessage(error);
@@ -625,9 +559,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR LOADWORKFLOW", error);
 		}
-
 		usageRecordLog().addSuccess("LOADWORKFLOW");
+		
 	}
+	
 
 	/**
 	 * loadSubWorkflow
@@ -638,72 +573,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void loadSubWorkflow() {
-
-		String path = getPath();
-
-		logger.info("loadSubWorkflow " + path);
-
-		DataFlowInterface dfi;
-		String error = null;
-		try {
-			dfi = getworkFlowInterface();
-			DataFlow df = null;
-			String newWfName = generateWorkflowName(path);
-
-			if (error == null) {
-				if (getWorkflowMap().containsKey(newWfName)) {
-					error = "A workflow called "
-							+ newWfName
-							+ " already exist. Please close this workflow if you want to proceed.";
-				} else if (dfi.getWorkflow(newWfName) != null) {
-					logger.warn("A workflow named "
-							+ newWfName
-							+ " already exist on the backend, closing it quietly...");
-					dfi.removeWorkflow(newWfName);
-				}
-			}
-			if (error == null) {
-				error = dfi.addSubWorkflow(newWfName);
-			}
-			if (error == null) {
-				dfi.setWorkflowPath(newWfName, path);
-				df = dfi.getSubWorkflow(newWfName);
-				logger.info("read " + path);
-				error = df.read(path);
-			}
-			if (error == null) {
-				logger.info("set current worflow to " + newWfName);
-				setNameWorkflow(newWfName);
-				setDf(df);
-				df.setName(newWfName);
-
-				logger.info("Load element ids for front-end " + newWfName);
-				workflowMap.put(getNameWorkflow(), df);
-				getIdMap()
-				.put(getNameWorkflow(), new HashMap<String, String>());
-				logger.info("Nb elements: " + df.getElement().size());
-
-				Iterator<String> itCompIds = df.getComponentIds().iterator();
-				while (itCompIds.hasNext()) {
-					String cur = itCompIds.next();
-					idMap.get(nameWorkflow).put(cur, cur);
-				}
-				logger.info("Nb element loaded: "
-						+ getIdMap().get(getNameWorkflow()).size());
-
-				setWorkflowType("S");
-
-				mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
-
-				logger.info("Load workflow type " + getWorkflowType());
-
-			}
-
-		} catch (Exception e) {
-			logger.info("Error loading workflow");
-			e.printStackTrace();
-			usageRecordLog().addError("ERROR LOADSUBWORKFLOW", e.getMessage());
-		}
+		String error = loadDataFlow(getPath(),generateWorkflowName(path), false, true);
 
 		if (error != null) {
 			logger.info("Error: " + error);
@@ -715,6 +585,89 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		usageRecordLog().addSuccess("LOADSUBWORKFLOW");
 	}
+		
+	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow) {
+
+		logger.info("loadWorkFlow " + path);
+
+		DataFlowInterface dfi;
+		String error = null;
+		try {
+			dfi = getworkFlowInterface();
+			DataFlow df = null;
+
+			if (error == null) {
+				if (getWorkflowMap().containsKey(newWfName)) {
+					error = "A workflow called "
+							+ newWfName
+							+ " already exist. Please close this workflow if you want to proceed.";
+				} else if (dfi.getWorkflow(newWfName) != null) {
+					logger.warn("A workflow named "
+							+ newWfName
+							+ " already exist on the backend, closing it quietly...");
+					dfi.removeWorkflow(newWfName);
+				}
+			}
+			if (error == null) {
+				if(workflow){
+					error = dfi.addWorkflow(newWfName);
+				}else{
+					error = dfi.addSubWorkflow(newWfName);
+				}
+			}
+			if (error == null) {
+				dfi.setWorkflowPath(newWfName, path);
+				df = dfi.getWorkflow(newWfName);
+				logger.info("read " + path);
+				error = df.read(path);
+			}
+			
+			if (error == null) {
+				logger.info("set current worflow to " + newWfName);
+				
+				if(setWorkflow){
+					setNameWorkflow(newWfName);
+					setDf(df);
+					df.setName(newWfName);
+					if(workflow){
+						setWorkflowType("W");
+					}else{
+						setWorkflowType("S");
+					}
+				}
+
+				logger.info("Load element ids for front-end " + newWfName);
+				workflowMap.put(newWfName, df);
+				getIdMap()
+				.put(newWfName, new HashMap<String, String>());
+				logger.info("Nb elements: " + df.getElement().size());
+
+				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				while (itCompIds.hasNext()) {
+					String cur = itCompIds.next();
+					getIdMap().get(newWfName).put(cur, cur);
+				}
+				logger.info("Nb element loaded: "
+						+ getIdMap().get(newWfName).size());
+
+				if(workflow){
+					mapWorkflowType.put(newWfName, "W");
+				}else{
+					mapWorkflowType.put(newWfName, "S");
+				}
+
+				logger.info("Load workflow type " + mapWorkflowType.get(newWfName));
+
+			}
+
+		} catch (Exception e) {
+			logger.info("Error loading workflow",e);
+			usageRecordLog().addError("ERROR LOADWORKFLOW", e.getMessage());
+		}
+		return error;
+
+	}
+
 
 	/**
 	 * Push the object position on the backend
@@ -791,35 +744,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-
-	public void backupAllWorkflowsBeforeCloseToOpen() {
-		logger.info("backupAllWorkflowsBeforeCloseToOpen");
-		updateAllPosition();
-		try {
-			getworkFlowInterface().backupAllWorkflowsToOpen(userName);
-
-		} catch (RemoteException e) {
-			logger.info("Error backing up all workflows");
-			e.printStackTrace();
-		}
-	}
-
-	public String[][] getLoadMapCanvasToOpen() {
-		logger.info("getLoadMapCanvasToOpen");
-		try {
-			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userName);
-			String[][] result = new String[listCanvasToOpen.size()][];
-			for (int i = 0; i < listCanvasToOpen.size(); i++) {
-				String[] aux = listCanvasToOpen.get(i);
-				result[i] =  aux;
-			}
-			
-			return result;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	public void loadBackup(String path) {
 		logger.info("loadBackup " + path);
@@ -830,20 +754,23 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[][] getBuildLoadMapCanvasToOpen() throws Exception {
 		logger.info("getBuildLoadMapCanvasToOpen");
 		try {
-			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userName);
-			String[][] result = new String[listCanvasToOpen.size()][];
-			for (int i = 0; i < listCanvasToOpen.size(); i++) {
-				String[] aux = listCanvasToOpen.get(i);
-				//loadBackup("RELOAD"+aux[1]);
-				loadBackup(aux[1]);
-				String[] positions = getPositions();
-				result[i] =  positions;
+			closeWorkflow("canvas-1");
+			List<String[]> lastBackedUp = getworkFlowInterface().getLastBackedUp();
+			String[][] result = new String[lastBackedUp.size()][];
+			Iterator<String[]> it = lastBackedUp.iterator();
+			int i = 0;
+			while(it.hasNext()){
+				String[] cur = it.next();
+				load(cur[1], cur[0], false);
+				result[i] =  getPositions(getworkFlowInterface().getWorkflow(cur[0]),cur[0], "undefined");
+				++i;
 			}
 			
 			return result;
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
+		
 		return null;
 	}
 
@@ -1159,13 +1086,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		getDf().setName(getNameWorkflow());
 		logger.info("getNameWorkflow: " + getNameWorkflow());
 
-		// Back up the project
-		try {
-			updatePosition();
-			df.backup();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		updatePosition();
 
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 		logger.info("Select: " + select);
@@ -1196,12 +1117,30 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR RUNWORKFLOW", error);
 		} else {
-			String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
+			final String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
 			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty() 
 					&& !savedFile.equals("null") && !savedFile.equals("undefined")) {
 				logger.info("Save the workflow in " + savedFile);
 				logger.info(df.getOozieJobId());
-				getDf().save(savedFile);
+				new Thread() {
+					public void run() {
+						try {
+							getDf().save(savedFile);
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
+			}else{
+				new Thread() {
+					public void run() {
+						try {
+							df.backup();
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
 			}
 			calcWorkflowUrl();
 		}
@@ -1338,60 +1277,26 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public String getReinitialize() throws RemoteException {
-
+	public String[] getReinitialize() throws RemoteException {
 		logger.info("getReinitialize");
-
-		/*
-		if(getWorkflowMap().entrySet().size() != 1){
-			return reinitializeCanvas();
-		} else if(getWorkflowMap().entrySet().size() == 1){
-			for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
-				if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
-					if(!e.getKey().equalsIgnoreCase("canvas-1") ||
-							!getworkFlowInterface().getWorkflow(e.getKey()).getComponentIds().isEmpty()){
-						return reinitializeCanvas();
-					}
-				}else{
-					return reinitializeCanvas();
-				}
-			}
-		}
-
-		return null;*/
-
+		String ans = getFirstTime();
 		if(getFirstTime() == null){
 			setFirstTime(" ");
-			return null;
 		}
-
-		return " ";
-
-	}
-
-	/*public String[] reinitializeCanvas() throws RemoteException{
-
-		String[] res = new String[getWorkflowMap().size()];
-
-		int i = 0;
-		for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
-			res[i] = e.getKey();
-			logger.info( e.getKey());
-			++i;
-		}
-
-		Map<String, Map<String, String>> newIdMap = new LinkedHashMap<String, Map<String, String>>(); 
-		for (Iterator<String> iterator = getIdMap().keySet().iterator(); iterator.hasNext();) {
-			String nameWF = (String) iterator.next();
-			newIdMap.put(nameWF, new LinkedHashMap<String, String>());
-			for (Iterator<String> iterator2 = getIdMap().get(nameWF).values().iterator(); iterator2.hasNext();) {
-				String el = (String) iterator2.next();
-				newIdMap.get(nameWF).put(el, el);
+		String wfName = "";
+		Iterator<String[]> it = getworkFlowInterface().getLastBackedUp().iterator();
+		while(it.hasNext()){
+			wfName+=it.next()[0];
+			if(it.hasNext()){
+				wfName +=", ";
 			}
 		}
-		setIdMap(newIdMap);
-		return res;
-	}*/
+		if(wfName.isEmpty()){
+			wfName = null;
+		}
+		return new String[]{ans, wfName};
+
+	}
 
 	/**
 	 * openCanvas
@@ -1642,12 +1547,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public Map<String, String> getReverseIdMap() {
+		return getReverseIdMap(getNameWorkflow());
+	}
+	
+	public Map<String, String> getReverseIdMap(String wfName) {
 
 		logger.info("getReverseIdMap");
 
 		Map<String, String> elements = new LinkedHashMap<String, String>();
-		if(getIdMap().get(getNameWorkflow()) != null){
-			for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()) {
+		if(getIdMap().get(wfName) != null){
+			for (Entry<String, String> el : getIdMap().get(wfName).entrySet()) {
 				elements.put(el.getValue(), el.getKey());
 			}
 		}
@@ -2218,17 +2127,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public String[] getPositions() throws Exception {
-
 		logger.info("getPositions");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
 		logger.info("getPositions " + selecteds);
-		DataFlow df = getDf();
+		
+		return getPositions(getDf(), getNameWorkflow(), selecteds);
+	}
+		
+	public String[] getPositions(DataFlow df, String workflowName, String selecteds) throws Exception {
+
 		try {
 
-			Map<String, String> elements = getReverseIdMap();
+			Map<String, String> elements = getReverseIdMap(workflowName);
 
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
@@ -2293,17 +2206,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.warn("Error getPositions getDf NULL or empty");
 			}
 
-			logger.info("getPositions getNameWorkflow " + getNameWorkflow());
-			logger.info("getPositions getPath " + getPath());
+			logger.info("getPositions getNameWorkflow " + workflowName);
+			logger.info("getPositions getPath " + df.getPath());
 			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+			logger.info("getPositions getWorkflowType " + getMapWorkflowType().get(workflowName));
 
-			setWorkflowType(getMapWorkflowType().get(getNameWorkflow()));
-			logger.info("getPositions getWorkflowType " + getWorkflowType());
-
-			return new String[] { getNameWorkflow(), getPath(),
+			return new String[] { workflowName, df.getPath(),
 					jsonElements.toString(), jsonLinks.toString(), selecteds,
-					getWorkflowType() };
+					getMapWorkflowType().get(workflowName) };
 
 		} catch (Exception e) {
 			logger.info("Error " + e + " - " + e.getMessage());

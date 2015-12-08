@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -207,7 +208,6 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 
 			PackageManager pckMng = new PackageManager();
 
-			List<String> packageNames = pckMng.getPackageNames(redSqirlInstallations.getUserName());
 			boolean install = true;
 			com.redsqirl.workflow.utils.RedSqirlPackage pck = pckMng.getUserPackage(redSqirlInstallations.getUserName(),redSqirlInstallations.getModule());
 			if(pck != null){
@@ -316,7 +316,7 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 			String user = redSqirlInstallations.getUserName();
 			
 			//remove other installations
-			List<String> packageNames = pckMng.getPackageNames(user);
+			Set<String> packageNames = pckMng.getUserPackageNames(user);
 			if(packageNames != null && !packageNames.isEmpty()){
 				for (String packageName : packageNames) {
 					if(packageName.equals(redSqirlInstallations.getModule())){

@@ -3,8 +3,10 @@ package com.redsqirl;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +19,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.auth.AuthorizationListener;
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SelectHeaderType;
 import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.utils.ModelInt;
 import com.redsqirl.workflow.utils.PackageManager;
 
@@ -30,13 +32,23 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 
 	private static final long serialVersionUID = 4626482566525824607L;
+	private static final String workflowNameTmp = "wf-footer-123";
 
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
-
-	private String workflowNameTmp = "wf-footer-123";
-	private Map<String, List<String[]>> tabsMap;
-	private SelectableTable tableGrid = new SelectableTable();
+	
+	protected ElementManager em = null;
+	protected Map<String, List<String[]>> menuWA;
+	private Map<String,String> allWANameWithClassName = null;
+	private LinkedHashSet<String> menuActions;
 	private List<String> tabs;
+	private LinkedList<String> columnIds;
+	private LinkedList<String> target;
+	private SelectableTable tableGrid = new SelectableTable();
+	private SelectableTable tableGridOld = new SelectableTable();
+	private Integer index;
+	private String showTab = "N";
+
+	private Map<String, List<String[]>> tabsMap;
 	private List<SelectItem> listPackages;
 	private List<SelectHeaderType> listActions;
 	private String selectedPackage;
@@ -44,6 +56,23 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private Map<String,String> mapActionPackage;
 
 
+
+	public ConfigureTabsBean(){
+	}
+	
+	private ElementManager getEM() throws RemoteException{
+		if(em == null){
+			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			if(wf == null){
+				getworkFlowInterface().addWorkflow(workflowNameTmp);
+				wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+			}
+			em = wf.getElementManager();
+			getworkFlowInterface().removeWorkflow(workflowNameTmp);
+		}
+		return em;
+	}
+	
 	/** openCanvasConfigureTabsBean
 	 * 
 	 * Methods Used in AuthorizationListener.java to open the canvas.xhtml
@@ -54,14 +83,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	public void openCanvasConfigureTabsBean() {
 
 		try{
-
-			if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
-				getworkFlowInterface().addWorkflow(workflowNameTmp);
-			}
-
-			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
-			wf.loadMenu();
-			tabsMap = wf.getRelativeMenu(getCurrentPage());
+			ElementManager em = getEM();
+			em.loadMenu();
+			tabsMap = em.getRelativeMenu(getCurrentPage());
 
 			setTabs(new LinkedList<String>(getTabsMap().keySet()));
 
@@ -75,6 +99,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 
 	}
+
 
 	/** openConfigureTabsBean
 	 * 
@@ -117,6 +142,25 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 	}
+	
+	public String[] getNotificationUser() throws RemoteException{
+		getEM();
+		Collection<String> notif = em.getPackageToNotify(); 
+		return notif.toArray(new String[notif.size()]);
+	}
+	
+	public void updateFooterWithNewPackages() throws RemoteException{
+		getEM();
+		em.addPackageToFooter(em.getPackageToNotify());
+		menuWA = null;
+		openCanvasConfigureTabsBean();
+	}
+	
+	public void updateNewPackageAsNotified() throws RemoteException{
+		getEM();
+		em.packageNotified(em.getPackageToNotify());
+	}
+	
 
 	/** createTab
 	 * 
@@ -138,7 +182,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	public void saveTabs() throws RemoteException {
 
 		Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
-
+		getEM();
 		for (Iterator iterator = tableGrid.getRows().iterator(); iterator.hasNext();) {
 			SelectableRowFooter s = (SelectableRowFooter) iterator.next();
 			List<String> temp = new ArrayList<String>();
@@ -149,9 +193,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
-		wf.loadMenu(mapMenu);
-		wf.saveMenu();
-		tabsMap = wf.getRelativeMenu(getCurrentPage());
+		em.loadMenu(mapMenu);
+		em.saveMenu();
+		tabsMap = em.getRelativeMenu(getCurrentPage());
 		setTabs(new LinkedList<String>(getTabsMap().keySet()));
 	}
 
@@ -179,11 +223,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			String user = (String) session.getAttribute("username");
 
 			PackageManager pckManager = new PackageManager();
-			for (String name : pckManager.getPackageNames(user)) {
-				SelectItem s = new SelectItem(name, name);
-				listPackages.add(s);
-			}
-			for (String name : pckManager.getPackageNames(null)) {
+			for (String name : pckManager.getAvailablePackageNames(user)) {
 				SelectItem s = new SelectItem(name, name);
 				listPackages.add(s);
 			}
@@ -361,10 +401,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 
+
 	}
 
 	public void unselectAll(){
-
 		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 
 		for (Iterator<SelectHeaderType> iterator = s.getSelectedActions().iterator(); iterator.hasNext();) {

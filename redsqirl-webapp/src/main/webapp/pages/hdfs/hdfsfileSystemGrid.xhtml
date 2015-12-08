@@ -235,7 +235,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="hdfsaddModalPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="hdfsaddModalPanel" width="215" height="140" style="overflow:auto;" resizeable="false">
 			<f:facet name="header">
 				<h:outputText value='#{messages.hdfsinterface_create_dir}' />
 			</f:facet>
@@ -246,7 +246,7 @@
 			</f:facet>
 
 			<h:form id="hdfsform4">
-				<h:panelGrid>
+				<h:panelGrid width="100%">
 					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGrid>
 			</h:form>

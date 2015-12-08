@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,8 +16,11 @@ import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 
 /** SshBean
  * 
@@ -36,9 +38,11 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private boolean selectedSaveSsh;
 	private String host;
 	private String port;
+	private String password;
 	private String selectedTab;
 	private String tableState = new String();
-	private DataStoreArray dsa;
+	private SSHDataStoreArray dsa;
+	private boolean selectedpassword;
 
 	/** openCanvasScreen
 	 * 
@@ -52,11 +56,11 @@ public class SshBean extends FileSystemBean implements Serializable{
 	public void openCanvasScreen() {
 
 		logger.info("openCanvasScreen sshbean");
-		
+
 		try {
 
-			dsa = getDataStoreArray();
-			
+			dsa = getSSHDataStoreArray();
+
 			for(Map<String, String> map : dsa.getKnownStoreDetails()){
 				dsa.addStore(map);
 			}
@@ -65,10 +69,10 @@ public class SshBean extends FileSystemBean implements Serializable{
 			for (Entry<String, DataStore> e : dsa.getStores().entrySet()){
 				tabs.add(e.getKey());
 			}
-			
+
 			if (!tabs.isEmpty()){
 				setSelectedTab(tabs.get(0));
-				setDataStore(dsa.getStores().get(selectedTab));
+				setDataStore(dsa.getStore(selectedTab));
 
 				if(getTableGrid() != null && getTableGrid().getRows() != null && getTableGrid().getRows().isEmpty()){
 					mountTable();
@@ -124,19 +128,38 @@ public class SshBean extends FileSystemBean implements Serializable{
 			Map<String, String> values = new HashMap<String, String>();
 			values.put("host name", getHost());
 			values.put("port", getPort());
-			logger.info("host name: "+getHost());
-			logger.info("port: "+getPort());
 
-			if(isSelectedSaveSsh()){
-				error = dsa.addKnownStore(values);
-			}else{
+			//logger.info("host name: "+getHost());
+			//logger.info("port: "+getPort());
+
+			if(getPassword() != null && !"".equals(getPassword())){
+				values.put("password", getPassword());
+
+				setSelectedSaveSsh(false);
+
 				try{
 					dsa.addStore(values);
 				}catch (Exception e){
-					error = "Error trying to add store "+e.getMessage();
+					error = "Error trying to add store with Password "+e.getMessage();
 					logger.error(error);
 				}
+
+			}else{
+
+				if(isSelectedSaveSsh()){
+					error = dsa.addKnownStore(values);
+				}else{
+					try{
+						dsa.addStore(values);
+					}catch (Exception e){
+						error = "Error trying to add store "+e.getMessage();
+						logger.error(error);
+					}
+				}
+
 			}
+			
+			setSelectedpassword(false);
 
 			if(error == null){
 				error = dsa.initKnownStores();
@@ -176,7 +199,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		logger.info("changeTab: "+name);
 		setSelectedTab(name);
-		setDataStore(dsa.getStores().get(name));
+		setDataStore(dsa.getStore(name));
 
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
@@ -193,23 +216,23 @@ public class SshBean extends FileSystemBean implements Serializable{
 		logger.info("closeTab: "+name);
 
 		dsa.initKnownStores();
-		
+
 		for(Map<String, String> map : dsa.getKnownStoreDetails()){
 			if (map.get("host name").equals(name)){
 				dsa.removeKnownStore(map);
 				dsa.removeStore(name);
 			}
 		}
-		
+
 		if(dsa.getStores().containsKey(name)){
 			dsa.removeStore(name);
 		}
-		
+
 		tabs = new ArrayList<String>();
 		for(Entry<String, DataStore> e : dsa.getStores().entrySet()){
 			tabs.add(e.getKey());
 		}
-		
+
 	}
 
 	public void processDrop(DropEvent dropEvent) throws RemoteException {
@@ -291,12 +314,28 @@ public class SshBean extends FileSystemBean implements Serializable{
 		this.tableState = tableState;
 	}
 
-	public DataStoreArray getDsa() {
+	public SSHDataStoreArray getDsa() {
 		return dsa;
 	}
 
-	public void setDsa(DataStoreArray dsa) {
+	public void setDsa(SSHDataStoreArray dsa) {
 		this.dsa = dsa;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean isSelectedpassword() {
+		return selectedpassword;
+	}
+
+	public void setSelectedpassword(boolean selectedpassword) {
+		this.selectedpassword = selectedpassword;
 	}
 
 }

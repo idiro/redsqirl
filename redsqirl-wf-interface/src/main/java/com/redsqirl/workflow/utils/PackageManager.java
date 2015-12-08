@@ -13,9 +13,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -253,10 +255,23 @@ public class PackageManager extends UnicastRemoteObject {
 		}
 	}
 
+	public Set<String> getUserPackageNames(String user){
+		return getPackagesStr(user);
+	}
+
+	public Set<String> getSysPackageNames(){
+		return getPackagesStr(null);
+	}
+	
+	public Set<String> getAvailablePackageNames(String user){
+		Set<String> ans = getPackagesStr(user);
+		ans.addAll(getPackagesStr(null));
+		return ans;
+	}
 	
 	public List<RedSqirlPackage> getAvailablePackages(String user){
 		List<RedSqirlPackage> ans = getUserPackages(user);
-		List<String> usPckStr = getPackagesStr(user);
+		Set<String> usPckStr = getPackagesStr(user);
 		Iterator<RedSqirlPackage> it = getSysPackages().iterator();
 		while(it.hasNext()){
 			RedSqirlPackage cur = it.next();
@@ -266,6 +281,7 @@ public class PackageManager extends UnicastRemoteObject {
 		}
 		return ans;
 	}
+	
 	public List<RedSqirlPackage> getUserPackages(String user){
 		return getPackages(user);
 	}
@@ -304,8 +320,8 @@ public class PackageManager extends UnicastRemoteObject {
 		return ans;
 	}
 	
-	private List<String> getPackagesStr(String user) {
-		List<String> ans = new LinkedList<String>();
+	private Set<String> getPackagesStr(String user) {
+		Set<String> ans = new LinkedHashSet<String>();
 
 		File fPackage = null;
 		if(user != null && !user.isEmpty()){
@@ -378,6 +394,7 @@ public class PackageManager extends UnicastRemoteObject {
 		return ans;
 	}
 	
+
 	public Map<String,Timestamp> getTimestampPackages(String user){
 		List<RedSqirlPackage> pack = getAllPackages(user);
 		Map<String,Timestamp> ans = new HashMap<String,Timestamp>();
@@ -388,31 +405,6 @@ public class PackageManager extends UnicastRemoteObject {
 		}
 		
 		return ans;
-	}
-
-	/**
-	 * Get a List of packages that are installed
-	 * 
-	 * @param user  if user is null or empty it is considered as system
-	 * @return List of Packages
-	 */
-	public List<String> getPackageNames(String user) {
-		List<String> packageNames = new LinkedList<String>();
-		File packDir = null;
-		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
-		} else {
-			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
-		}
-		try {
-			for (File cur : packDir.listFiles()) {
-				packageNames.add(cur.getName());
-			}
-		} catch (Exception e) {
-			logger.error("Package directory not found");
-		}
-		Collections.sort(packageNames);
-		return packageNames;
 	}
 
 	/**

@@ -4,25 +4,63 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<script>
+//<![CDATA[
+           
+function openSshPopUp(){
+	jQuery('[id$="sshBeanPassword"]').attr('readonly','readonly');
+}
+           
+function unSelectedSaveSsh(){
+	
+	//alert(jQuery('[id$="sshBeanPassword"]').val());
+	
+	if(jQuery('[id$="sshBeanPassword"]').val() != null && jQuery('[id$="sshBeanPassword"]').val() !== 'undefined' && jQuery('[id$="sshBeanPassword"]').val() != ""){
+		jQuery('[id$="selectedSaveSsh"]').attr('readonly','readonly');
+	}else{
+		jQuery('[id$="selectedSaveSsh"]').removeAttr("readonly");
+	}
+}
+
+function selectedpassword(){
+	if(jQuery('[id$="selectedpassword"]').is(':checked')){
+		jQuery('[id$="sshBeanPassword"]').removeAttr("readonly");
+		jQuery('[id$="selectedSaveSsh"]').attr('readonly','readonly');
+	}else{
+		jQuery('[id$="sshBeanPassword"]').attr('readonly','readonly');
+		jQuery('[id$="sshBeanPassword"]').val('');
+		jQuery('[id$="selectedSaveSsh"]').removeAttr("readonly");
+	}
+}
+
+//]]>
+</script>
 		
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 		
-		<h:outputText value="Host" />
-		<h:inputText value="#{sshBean.host}" onkeypress="return enableEnterKey(event, 'newSshBtn');"/>
+		<h:outputText value="#{messages.label_host}" />
+		<h:inputText value="#{sshBean.host}" onkeypress="return enableEnterKey(event, 'newSshBtn');" />
 				
-		<h:outputText value="Port" />
-		<h:inputText value="#{sshBean.port}" onkeypress="return enableEnterKey(event, 'newSshBtn');"/>
+		<h:outputText value="#{messages.label_port}" />
+		<h:inputText value="#{sshBean.port}" onkeypress="return enableEnterKey(event, 'newSshBtn');" />
+		
+		<h:outputText value="#{messages.label_password}" />
+		<h:panelGroup layout="block">
+			<h:selectBooleanCheckbox id="selectedpassword" value="#{sshBean.selectedpassword}" onclick="selectedpassword();" />
+			<h:inputSecret value="#{sshBean.password}" onkeypress="return enableEnterKey(event, 'newSshBtn');" id="sshBeanPassword" onblur="unSelectedSaveSsh();" />
+		</h:panelGroup>
 	
 		<h:outputText value="Save" />
 		<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
 		
-		<h:panelGrid columns="2">
+		<h:panelGrid columns="2" style="border:none; float:right;" >
 		
-			<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
-				onclick="#{rich:component('modalNewSsh')}.hide();" />		
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
+				onclick="#{rich:component('modalNewSsh')}.hide();" />
 	
 			<a4j:commandButton id="newSshBtn" styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();resizeTables();" 
-				value="#{messages.button_ok}" reRender="tabRemote,msnError,fileSysGridFormSsh"/>
+				value="#{messages.button_ok}" reRender="tabRemote,msnError,fileSysGridFormSsh" />
 	
 		</h:panelGrid>
 

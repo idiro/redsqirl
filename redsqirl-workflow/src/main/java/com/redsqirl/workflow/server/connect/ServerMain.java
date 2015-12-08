@@ -9,16 +9,19 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
-import com.idiro.Log;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.ModelManagerInt;
@@ -51,16 +54,27 @@ public class ServerMain {
 				port = 2001;
 			}
 		}
+
 		
-		// Loads in the log settings.
-		Log.init();
 		//Loads preferences
 		WorkflowPrefManager runner = WorkflowPrefManager.getInstance();
+		
 		if(runner.isInit()){
 			//Setup the user home if not setup yet
 			WorkflowPrefManager.setupHome();
 			WorkflowPrefManager.createUserFooter();
-			
+
+			// Loads in the log settings.
+			BasicConfigurator.configure();
+			try{
+				Logger.getRootLogger().setLevel(Level.INFO);
+				Logger.getRootLogger().addAppender(
+						new FileAppender(new PatternLayout("[%d{MMM dd HH:mm:ss}] %-5p (%F:%L) - %m%n"),
+								WorkflowPrefManager.getPathuserpref()+"/redsqirl-workflow.log")
+						);
+			}catch(Exception e){
+				logger.error("Fail to write log in temporary folder");
+			}
 			logger = Logger.getLogger(ServerMain.class);
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));
 			NameNodeVar.setJobTracker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_jobtracker));
@@ -120,7 +134,7 @@ public class ServerMain {
 
 				registry.rebind(
 						nameSshArray,
-						(DataStoreArray) new SSHInterfaceArray()
+						(SSHDataStoreArray) SSHInterfaceArray.getInstance()
 						);
 
 				logger.info("nameSshArray: "+nameSshArray);

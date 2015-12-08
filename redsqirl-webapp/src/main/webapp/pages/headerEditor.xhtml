@@ -12,41 +12,9 @@
            
           function startHeaderEditor() {
        	  	jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
-       	  	selectRadio();
+       	 	selectRadio();
           }
           
-          function mountComboboxHeaderEditor() {
-
-			//alert(jQuery(".comboInputClassHeader").parent().attr('class'));
-			//alert(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap");
-
-			if(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap"){
-       		 
-                jQuery(".comboInputClassHeader").textext({
-		            plugins : 'arrow autocomplete'
-		        }).bind('getSuggestions', function(e, data){
-
-					try{
-			        	
-			            var list = #{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypesString} ,
-			                textext = jQuery(e.target).textext()[0],
-			                query = (data ? data.query : '') || '' ;
-			
-			            jQuery(this).trigger('setSuggestions', {
-				            	result : textext.itemManager().filter(list, query)
-				            }
-			            );
-
-					}catch(exception){
-					    alert(exception);
-					}
-		            
-		        });
-
-			}
-
- 		}
-   
 
 	function selectRadio(){
 
@@ -54,12 +22,13 @@
 
 			jQuery('[id$="inputHeaderEditor"]').prop('disabled', false);
 			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', true);
+			jQuery('[id$="tableHeaderEditor"]').find("select").attr('disabled', 'disabled');
 			
 		}else{
 
 			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
 			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
-			mountComboboxHeaderEditor();
+			jQuery('[id$="tableHeaderEditor"]').find("select").removeAttr('disabled');
 			
 		}
 			
@@ -111,6 +80,7 @@
 							
 							<br/><br/>
 							
+							<a4j:region >
 							<h:panelGroup id="tableHeaderEditorPG" >
 								<h:outputText value="#{messages.label_change_fileds}" style="font-weight:bold;" /><br/>
 								<h:outputText value="#{messages.label_header_table}" /><br/>
@@ -135,9 +105,19 @@
 									     	<f:facet name="header">
 									     		<h:outputText value="#{messages.label_type}" />
 									        </f:facet>
-						                	
-						                	<h:inputText value="#{obj.type}" styleClass="comboInputClassHeader" style="width:96%;" >
-                            				</h:inputText>
+                            				
+                            				<h:panelGroup layout="block" id="displayFieldTypesGroup#{rowNb}" >
+					                        	<select onchange="updatedFieldTypes(this, '#{rowNb}');" >
+					                        		<a4j:repeat value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" var="idx"  >
+														<h:outputText rendered="#{obj.type == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+														<h:outputText rendered="#{obj.type != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+													</a4j:repeat>
+								            	</select>
+								            	<div id="displayFieldTypes#{rowNb}">
+													<h:inputHidden value="#{obj.type}" id="displayFieldTypes#{rowNb}ans" />
+												</div>
+												<a4j:jsFunction name="onchangeDisplayTableHeaderEditor" reRender="displayFieldTypes#{rowNb}ans" oncomplete="selectRadio();" />
+								            </h:panelGroup>
 						                	
 									     </rich:column>
 								        
@@ -145,9 +125,26 @@
 							    </div>
 						    </h:panelGroup>
 						    
+						    <script>
+						    
+						    function updatedFieldTypes(element, index){
+							    var idx=element.selectedIndex;
+							    var val=element.options[idx].value;
+							    var content=element.options[idx].innerHTML;
+							    jQuery("[id$=displayFieldTypes"+index+"]").children().val(val);
+							    //alert(val + " " + content);
+							    onchangeDisplayTableHeaderEditor();
+							}
+						    
+						    </script>
+						    </a4j:region>
+						    
+						    
 						</td>
 					</tr>
 				</table>
+				
+				
 				
 				<div style="height:40px;border:0px solid;overflow-x:hidden;float:right;margin-right:5px;">
 				
@@ -156,11 +153,11 @@
 						
 					<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
 						reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
-						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();mountComboboxHeaderEditor();" />
+						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();selectRadio();" />
 						
 					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
 					    styleClass="greenButton" value="#{messages.button_ok}"
-						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}mountComboboxHeaderEditor();"
+						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
 						reRender="browserTableData, msnError, errorTable" />
 					
 				</div>

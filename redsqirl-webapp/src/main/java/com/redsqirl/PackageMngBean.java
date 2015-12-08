@@ -208,14 +208,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		setSystemPackages(calcPackage(pckManager.getPackageNames(null)));
+		setSystemPackages(calcPackage(pckManager.getSysPackageNames()));
 	}
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
-		setUserPackages(calcPackage(pckManager.getPackageNames(user)));
+		setUserPackages(calcPackage(pckManager.getUserPackageNames(user)));
 	}
 	
 	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages){

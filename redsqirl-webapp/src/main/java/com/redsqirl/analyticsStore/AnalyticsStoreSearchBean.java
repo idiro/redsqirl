@@ -109,7 +109,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 	public void updateShowDefaultInstallation() throws RemoteException{
 		PackageManager pckManager = new PackageManager();
-		if(pckManager.getPackageNames(null).isEmpty()){
+		if(pckManager.getSysPackages().isEmpty()){
 			setShowDefaultInstallation("Y");
 		}else{
 			setShowDefaultInstallation("N");
@@ -348,7 +348,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			String user = redSqirlInstallations.getUserName();
 
 			//remove other installations
-			List<String> packageNames = pckMng.getPackageNames(user);
+			Set<String> packageNames = pckMng.getUserPackageNames(user);
 			if(packageNames != null && !packageNames.isEmpty()){
 				for (String packageName : packageNames) {
 					if(packageName.equals(redSqirlInstallations.getModule())){

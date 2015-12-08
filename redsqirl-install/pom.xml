@@ -18,6 +18,8 @@
 		<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
 		<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 		<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
+		<tutorial.data>${basedir}/../src/site/files</tutorial.data>
+		<dist.tutorialdata>${dist}/tutorialdata</dist.tutorialdata>
 		<hadoop.version>1.0.4</hadoop.version>
 	</properties>
 
@@ -212,6 +214,24 @@
 							<resources>
 								<resource>
 									<directory>${main.resources.conf}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-tutorialdata</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${dist.tutorialdata}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${tutorial.data}</directory>
+									<includes>
+									    <include>*tutorial*_data*</include>
+									</includes>
 								</resource>
 							</resources>
 						</configuration>

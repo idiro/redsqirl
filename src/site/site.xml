@@ -20,7 +20,7 @@
 	</custom>
 
 	<bannerLeft>
-		<src>images/logo_redsqirl.gif</src>
+		<src>images/logo_redsqirl.png</src>
 		<width>15%</width>
 		<height>15%</height>
 		<href>index.html</href>
@@ -37,7 +37,9 @@
 			<item name="Download" href="download.html" />
 			<item name="Getting started" href="gettingstarted.html" />
 			<item name="Screenshots" href="screenshots.html" />
-			<item name="Package Management Setup" href="packagemanagement.html" />
+			<item name="Package Management" href="packagemanagement.html" />
+			<item name="User Guide" target="_blank" href="help/main.html" />
+			<item name="Administration Guide" href="adminGuide.html" />
 		</menu>
 
 		<menu name="Support">

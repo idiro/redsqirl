@@ -82,6 +82,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 */
 	private Map<String,DataStore> datastores;
 
+	protected Map<String, String> mapCanvasToOpen;
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -90,8 +92,6 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		super();
 		datastores = WorkflowInterface.getAllClassDataStore();
 	}
-
-	protected Map<String, String> mapCanvasToOpen;
 
 	/**
 	 * Get a List of output classes for data to be held in
@@ -480,11 +480,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return instance;
 	}
-
 	/**
 	 * Backup all workflows that are open
 	 */
-	public void backupAll() {
+	public void backupAll() throws RemoteException{
+		logger.info ("backupAllWorkflowsToOpen ");
+
+		Map<String, String> mapCanvasToOpen = new LinkedHashMap<String, String>();
+
 		Iterator<String> itWorkflow = wf.keySet().iterator();
 		while(itWorkflow.hasNext()){
 			String workflowNameCur = itWorkflow.next();
@@ -492,26 +495,6 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			try {
 				wf.get(workflowNameCur).setName(workflowNameCur);
 				wf.get(workflowNameCur).backup();
-			} catch (Exception e) {
-				logger.warn("Error backing up workflow "+workflowNameCur);
-			}
-		}
-	}
-
-	/**
-	 * Backup all workflows before log out to open when login
-	 */
-	public void backupAllWorkflowsToOpen(String name) throws RemoteException{
-		logger.info ("backupAllWorkflowsToOpen ");
-
-		mapCanvasToOpen = new LinkedHashMap<String, String>();
-
-		Iterator<String> itWorkflow = wf.keySet().iterator();
-		while(itWorkflow.hasNext()){
-			String workflowNameCur = itWorkflow.next();
-			logger.info("backup "+workflowNameCur);
-			try {
-				wf.get(workflowNameCur).setName(workflowNameCur);
 				
 				if(wf.get(workflowNameCur).getPath() != null){
 					mapCanvasToOpen.put(workflowNameCur, wf.get(workflowNameCur).getPath());
@@ -525,32 +508,27 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			}
 		}
 
-		if(!mapCanvasToOpen.isEmpty()){
-			saveMapCanvasToOpen(name);
-		}
+		saveMapCanvasToOpen(mapCanvasToOpen);
 	}
 
-	public String saveMapCanvasToOpen(String name) throws RemoteException {
+	protected String saveMapCanvasToOpen(Map<String, String> mapCanvasToOpen) throws RemoteException {
 		logger.info ("saveMapCanvasToOpen ");
 		
 		String error = null;
 		
-		File path = new File(WorkflowPrefManager.pathUsersFolder+"/"+name+"/loadCanvas.txt");
+		File path = new File(WorkflowPrefManager.getPathuserpref()+"/.loadCanvas.txt");
 		logger.info ("saveMapCanvasToOpen path " + path);
 		
 		try {
 			
-			if (!path.exists()) {
-				path.createNewFile();
-	        }
-			
-			FileWriter fw = new FileWriter(path.getAbsoluteFile(), false);
+			FileWriter fw = new FileWriter(path);
 			
 			BufferedWriter bw = new BufferedWriter(fw);
 			for (Entry<String,String> e : mapCanvasToOpen.entrySet()) {
 				bw.write(e.getKey() + "," + e.getValue()+"\n");
 			}
             bw.close();
+            fw.close();
 
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("workflow.saveMapCanvasToOpen");
@@ -559,25 +537,25 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		return error;
 	}
 
-	public List<String[]> loadMapCanvasToOpen(String name) throws RemoteException {
-		logger.info ("loadMapCanvasToOpen ");
+	public List<String[]> getLastBackedUp() throws RemoteException {
 		
 		List<String[]> result = new LinkedList<String[]>();
 
-		File path = new File(WorkflowPrefManager.pathUsersFolder+"/"+name+"/loadCanvas.txt");
-		
-		try {
-			
-			BufferedReader br = new BufferedReader(new FileReader(path));
-			String line;
-			while ((line = br.readLine()) != null) {
-				String[] ans = line.split(",");
-				result.add(ans);
-			}
-			br.close();
+		File path = new File(WorkflowPrefManager.getPathuserpref()+"/"+".loadCanvas.txt");
+		if(path.exists()){
+			try {
 
-		} catch (Exception e) {
-			e.printStackTrace();
+				BufferedReader br = new BufferedReader(new FileReader(path));
+				String line;
+				while ((line = br.readLine()) != null) {
+					String[] ans = line.split(",");
+					result.add(ans);
+				}
+				br.close();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;
@@ -681,15 +659,6 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 
 		return size;
-	}
-
-	public Map<String, String> getMapCanvasToOpen() {
-		return mapCanvasToOpen;
-	}
-
-	public void setMapCanvasToOpen(Map<String, String> mapCanvasToOpen) {
-		this.mapCanvasToOpen = mapCanvasToOpen;
-	}
-
+	}	
 
 }

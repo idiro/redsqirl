@@ -643,7 +643,11 @@ table.secondtable td {
 	width: 2%%;
 }
 
-#canvasModalBeanTextEditor .extdt-hsep {
+/* #canvasModalBeanTextEditor .extdt-hsep {
+    display: none;
+} */
+
+#listOperationTD .extdt-hsep {
     display: none;
 }
 

@@ -32,6 +32,7 @@ import com.redsqirl.workflow.server.HiveJdbcProcessesManager;
 import com.redsqirl.workflow.server.ProcessesManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -1112,8 +1113,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
-		logger.info("path : " + history.get(cur));
-		String[] tableAndPartitions = getTableAndPartitions(history.get(cur));
+		return getChildrenProperties(history.get(cur));
+	}
+		
+		@Override
+		public Map<String, Map<String, String>> getChildrenProperties(String pathStr)
+				throws RemoteException {
+		logger.info("path : " + pathStr);
+		String[] tableAndPartitions = getTableAndPartitions(pathStr);
 		logger.info("getting table and partitions");
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
 		try {

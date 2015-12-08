@@ -39,7 +39,7 @@ function Canvas(name){
 }
 
 var selectedCanvas = "canvas-1";
-var canvasArray;
+var canvasArray = {};
 var allPositionIcons;
 var rightClickGroup;
 var curToolTip;
@@ -47,7 +47,7 @@ var isSaveAll = false;
 var indexSaving;
 var contSaving;
 var tmpCommandObj;
-var stageArrayTab;
+var stageArrayTab = [];
 var mouseIn = false;
 var canvasModalParam;
 
@@ -75,8 +75,6 @@ var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction);
 
 window.onload = function() {
     var canvasName = "canvas-1";
-    canvasArray = {};
-    stageArrayTab = [];
     configureCanvas(canvasName, true, 'W');
     mountObj(canvasName);
 };

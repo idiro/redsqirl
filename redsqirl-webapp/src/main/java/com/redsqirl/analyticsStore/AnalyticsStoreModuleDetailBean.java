@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -146,12 +147,16 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 
 			String user = null;
+			Set<String> packagesInstalled = null;
+			PackageManager pckMng = new PackageManager();
 			if (userInstall){
 				user = userInfoBean.getUserName();
+				packagesInstalled = pckMng.getUserPackageNames(user);
+			}else{
+				packagesInstalled = pckMng.getSysPackageNames();
 			}
 
-			PackageManager pckMng = new PackageManager();
-			List<String> packagesInstalled = pckMng.getPackageNames(user);
+			
 
 			if (packagesInstalled.contains(moduleVersion.getName())){
 				RedSqirlPackage rs = null;

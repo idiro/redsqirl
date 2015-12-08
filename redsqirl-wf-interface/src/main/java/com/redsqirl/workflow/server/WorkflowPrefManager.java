@@ -139,6 +139,10 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt",
 			/**
+			 * The local file storing dataflow action classes
+			 */
+			pathFooterPackageNotification = pathUserPref + "/.footerpackagenotification.txt",
+			/**
 			 * The local directory to store temporarily workflow. Accessible from
 			 * redsqirl-workflow side.
 			 */
@@ -549,110 +553,6 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("convert_file_text");
 				s.println("superactioninput");
 				s.println("superactionoutput");
-
-				PackageManager p = new PackageManager();
-				List<String> listActions = p.getActions(userName);
-
-				//pig
-
-				if(listActions.contains("pig_text_source")){
-					s.println("menu:Pig");
-				}
-
-				if(listActions.contains("pig_text_source")){
-					s.println("pig_text_source");
-				}
-				if(listActions.contains("pig_compress_source")){
-					s.println("pig_compress_source");
-				}
-				if(listActions.contains("pig_select")){
-					s.println("pig_select");
-				}
-				if(listActions.contains("pig_aggregator")){
-					s.println("pig_aggregator");
-				}
-				if(listActions.contains("pig_join")){
-					s.println("pig_join");
-				}
-				if(listActions.contains("pig_union")){
-					s.println("pig_union");
-				}
-				if(listActions.contains("pig_audit")){
-					s.println("pig_audit");
-				}
-				if(listActions.contains("pig_rank")){
-					s.println("pig_rank");
-				}
-				if(listActions.contains("pig_group_rank")){
-					s.println("pig_group_rank");
-				}
-				if(listActions.contains("pig_volume_binning")){
-					s.println("pig_volume_binning");
-				}
-				if(listActions.contains("pig_value_binning")){
-					s.println("pig_value_binning");
-				}
-				if(listActions.contains("pig_correlation")){
-					s.println("pig_correlation");
-				}
-
-				//spark
-
-				if(listActions.contains("spark_text_source")){
-					s.println("menu:Spark");
-				}
-
-				if(listActions.contains("spark_text_source")){
-					s.println("spark_text_source");
-				}
-				if(listActions.contains("spark_select")){
-					s.println("spark_select");
-				}
-				if(listActions.contains("spark_aggregator")){
-					s.println("spark_aggregator");
-				}
-				if(listActions.contains("spark_join")){
-					s.println("spark_join");
-				}
-				if(listActions.contains("spark_union")){
-					s.println("spark_union");
-				}
-				if(listActions.contains("spark_audit")){
-					s.println("spark_audit");
-				}
-				if(listActions.contains("spark_rank")){
-					s.println("spark_rank");
-				}
-				if(listActions.contains("spark_group_rank")){
-					s.println("spark_group_rank");
-				}
-				if(listActions.contains("spark_volume_binning")){
-					s.println("spark_volume_binning");
-				}
-				if(listActions.contains("spark_value_binning")){
-					s.println("spark_value_binning");
-				}
-				if(listActions.contains("spark_correlation")){
-					s.println("spark_correlation");
-				}
-
-				//hama
-
-				/*if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
-						listActions.contains("Page_Rank_Action") ){
-					s.println("menu:Model");
-				}
-
-				if(listActions.contains("hama_logistic_regression") ){
-					s.println("hama_logistic_regression");
-				}
-				if(listActions.contains("hama_kmeans")){
-					s.println("hama_kmeans");
-				}
-				if(listActions.contains("Page_Rank_Action")){
-					s.println("Page_Rank_Action");
-				}*/
-
 				s.close();
 
 			} catch (Exception e) {
@@ -726,6 +626,7 @@ public class WorkflowPrefManager extends BlockManager {
 		pathUserSuperAction = pathUserPref + "/superactions";
 		pathOutputClasses = pathUserPref + "/.outputclasses.txt";
 		pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt";
+		pathFooterPackageNotification = pathUserPref + "/.footerpackagenotification.txt";
 		pathUserPackagePref = pathUserPref + "/packages";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
@@ -1293,8 +1194,21 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * @return the pathUserSuperAction
 	 */
+	public static String getPathFooterPackageNotification() {
+		return pathFooterPackageNotification;
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
 	public static String getPathDataFlowActionClasses(String user) {
 		return getPathUserPref(user)+"/.dataflowactionclasses.txt";
+	}
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathFooterPackageNotification(String user) {
+		return getPathUserPref(user)+"/.footerpackagenotification.txt";
 	}
 
 	/**

@@ -41,13 +41,7 @@ public class SparkPyAction extends ShellAction{
 		public boolean writeLauncherScriptFile(File[] files,Iterable<DFEOutput> outputs) throws RemoteException {
 			logger.info("Write launcher query in: " + files[0].getAbsolutePath());
 			String sparkHome = WorkflowPrefManager.getSysProperty(sys_spark_home);
-			String hadoopHome = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
-			
-			logger.info("sparkHome " + sparkHome);
-			logger.info("hadoopHome " + hadoopHome);
-			
-			
-			String user = System.getProperty("user.name");
+
 			if(sparkHome == null){
 				sparkHome = "";
 			}else if(! sparkHome.isEmpty()){
@@ -55,12 +49,7 @@ public class SparkPyAction extends ShellAction{
 			}
 			sparkHome += "spark-submit";
 			sparkHome += " --master "+WorkflowPrefManager.getSysProperty(sys_spark_master);
-			String exec = "export JAVA_HOME=$JAVA_HOME;export HADOOP_CONF_DIR=$HADOOP_CONF_DIR; export YARN_CONF_DIR=$YARN_CONF_DIR;";
-			exec += sparkHome+" " +getShellFileVariable();
-			Iterator<DFEOutput> it = outputs.iterator();
-			while(it.hasNext()){
-				exec += ";"+hadoopHome+"/bin/hadoop fs -chown -R "+user+" "+it.next().getPath();
-			}
+			String exec = sparkHome+" " +getShellFileVariable();
 			
 			String toWrite = getShellContent(exec);
 			boolean ok = toWrite != null;

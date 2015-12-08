@@ -95,6 +95,10 @@
         var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
         var msg_aggregate_command='#{messages.msg_aggregate_command}';
         var msg_expand_command='#{messages.msg_expand_command}';
+        var msg_refresh='#{messages.msg_refresh}';
+        var msg_recover_backup='#{messages.msg_recover_backup}';
+        var msg_newpackage_notification_footer_beg='#{messages.msg_newpackage_notification_footer_beg}';
+        var msg_newpackage_notification_footer_end='#{messages.msg_newpackage_notification_footer_end}'; 
         
 		           
 		 var contTabCanvas = 1;
@@ -123,10 +127,10 @@
 	    	  configureTabsRemote();
 	    	  configureFooter();
 
-	    	jQuery("[id$='openCanvasScreenHdfs']").click();
-	    	jQuery("[id$='openCanvasScreenHive']").click();
-	    	jQuery("[id$='openCanvasScreenSsh']").click();
-	    	jQuery("[id$='openCanvasScreenHdfsBrowser']").click();
+	    	  jQuery("[id$='openCanvasScreenHdfs']").click();
+	    	  jQuery("[id$='openCanvasScreenHive']").click();
+	    	  jQuery("[id$='openCanvasScreenSsh']").click();
+	    	  jQuery("[id$='openCanvasScreenHdfsBrowser']").click();
 
 	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
 	    	  /* 
@@ -221,9 +225,12 @@
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
+	              var tabName;
+	              do{
+	              	contTabCanvas++;
+	              	tabName = "canvas-"+contTabCanvas;
+	              }while(canvasArray[tabName])
 	              
-	              contTabCanvas++;
-	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflow(tabName);
 	              addWorkflowTab(tabName);
 	              configureCanvas(tabName, true, "W");
@@ -236,9 +243,11 @@
 
 	    	  jQuery('#addsubtabCanvas').click( function(){
 	              //<![CDATA[
-	              
-	              contTabCanvas++;
-	              var tabName = "canvas-"+contTabCanvas;
+	              var tabName;
+	              do{
+	              	contTabCanvas++;
+	              	tabName = "canvas-"+contTabCanvas;
+	              }while(canvasArray[tabName])
 	              addSubWorkflow(tabName);
 	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
@@ -481,20 +490,8 @@
 	    		 jQuery("#tabsFooter").find("a").click(function() {
 	    			 resizeCanvas(30,30);
 	    		 });
-	    		 
-	    		 /* window.onbeforeunload = function(){
-	    			 reinitializeCanvas();
-	    		 } */
 
 	    		 reinitializeCanvas();
-
-
-	    		 //re open canvas
-	    		 //delay(20000);
-	    		 //closeAllWorkflowTabs();
-	    		 //delay(3000);
-	    		 //reOpenCanvas();
-
 	    		 
 	    	});	//---------- END jQuery function
 
@@ -502,16 +499,18 @@
 		    function reOpenCanvasJS(status){
 			//<![CDATA[
 				console.log("reOpenCanvasJS");
-
-				//delay(10000);
-				
+				closeAllWorkflowTabs();
 				for (var i = 0; i < status.length; i++) {
-					console.log(status[i][1]);
-					//alert(status[i][1]);
-					//delay(8000);
+					console.log("load: "+status[i][1]);
 					unblockRunningWorkflowJS();
-					addElementJs(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
-					reOpenCanvasLoadWorkflow();
+					if(i == status.length - 1){
+					   console.log("last element");
+					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
+					   reOpenCanvasLoadWorkflow();
+					}else{
+					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
+					}
+					
 				}
 				
 			    //]]>
@@ -547,12 +546,13 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType, forceRefresh ){
+	      function addElementJS(canvasName, path, positions, links, selecteds, reset, workflowType, forceRefresh, setWf){
 
-	    	  console.log("addElementJs");
+	    	  console.log("addElementJS");
 	    	  
 	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
 	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
+	    	  setWf = typeof setWf !== 'undefined' ? setWf : true;
 		      
 		 	  //alert(positions);
 		 	  
@@ -565,12 +565,13 @@
 	          if(forceRefresh) {
 	    	      addElements(canvasName, positions, selecteds);
 	    	      addLinks(canvasName, links);
-		    	  setWorkflow(canvasName);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
-		    	  resizeCanvas(30,30);
-
-                  canvasArray[canvasName].stage.draw();
+                  if(setWf){
+		    	     setWorkflow(canvasName);
+		    	     resizeCanvas(30,30);
+                     canvasArray[canvasName].stage.draw();
+		    	  }
 	          }
 	          
 	      }
@@ -755,11 +756,15 @@
             	  closeTab(value);
               });
               
-              var arrayLength = canvasArray.length;
-              for (var i = 0; i < arrayLength;++i) {
-	    	  	 canvasArray[i].stage.destroy();
-	    	  	 canvasArray[i].legendStage.destroy();
-	    	  	 delete canvasArray[i];
+              if(canvasArray){
+                 var arrayLength = canvasArray.length;
+                 for (var i = 0; i < arrayLength;++i) {
+	    	  	    canvasArray[i].stage.destroy();
+	    	  	    canvasArray[i].legendStage.destroy();
+	    	  	    delete canvasArray[i];
+                 }
+              }else{
+                 canvasArray = {};
               }
 	    	  
               contTabCanvas = 0;
@@ -1096,16 +1101,46 @@
 	    	}
 	   	}
 
-	   	function reinitializeCanvasScreen(values){
-
+	   	function reinitializeCanvasScreen(refresh,backUpWf){
+	   	    //<![CDATA[
 	   		console.log("reinitializeCanvasScreen");
-		   	
-			if(values != null){
+			if(refresh != null){
 				backupAndCloseAll();
-				setTimeout(function() {alert("The page has been refreshed. Your work has been saved in the backup directory.");}, 1);
-				//addWorkflow("canvas-1");
+				if(confirm(msg_refresh)){
+				   reOpenCanvas();
+				}
+			}else{ 
+				if(backUpWf != null){
+					var wf = "\n\t- "+backUpWf.replace(", ","\n\t- ");
+	    	   		//re open canvas
+	    	   		if(confirm(msg_recover_backup+wf)){
+	    	      		reOpenCanvas();
+	    	   		}
+	    		}
+				
+    		   	notifyUser();
+	    	   	
 			}
+	    	configureFooter();
+	    	//]]>
 		}
+	   	
+	   	function notifyUserJS(notificationFooter){
+	   	    //<![CDATA[
+	   		if(notificationFooter && notificationFooter.length > 0){
+    		  	var pack = "\n";
+    		   	for (var i = 0; i < notificationFooter.length; i++) {
+    			  	pack += "\t- "+notificationFooter[i]+"\n";
+    		   	}
+    		   	pack += "\n";
+	    	   	if(confirm(msg_newpackage_notification_footer_beg+pack+msg_newpackage_notification_footer_end)){
+	    		   	updateFooterWithNewPackages();
+	    	   	}else{
+	    		   	updateNewPackageAsNotified();
+	    	   	}
+    	   	}
+	    	//]]>
+	   	}
 
 
 	   	function setShowInstallPackageModelValue(value){
@@ -1377,12 +1412,6 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
-			
-			<a4j:region renderRegionOnly="true">
-				<a4j:jsFunction name="backupAllWorkflowsBeforeCloseToOpen" action="#{canvasBean.backupAllWorkflowsBeforeCloseToOpen}">
-					<a4j:actionparam name="allpositions" />
-				</a4j:jsFunction>
-			</a4j:region>
 
 			<a4j:region>
 				<a4j:status
@@ -1395,6 +1424,12 @@
 					oncomplete="console.log('closeAll'); closeAllWorkflowTabs()" />
 			</a4j:region>
 
+			
+            <a4j:region>
+				<a4j:jsFunction name="notifyUser" data="#{configureTabsBean.notificationUser}"
+					oncomplete="console.log('notifyUser');notifyUserJS(data);"
+					/>
+			</a4j:region>
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -1404,6 +1439,13 @@
 
 				<a4j:jsFunction name="reRenderFooter" oncomplete="console.log('reRenderFooter'); mountFooter();" reRender="tabsFooterForm" />
 				<a4j:jsFunction name="mountFooter" oncomplete="console.log('mountFooter'); configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
+                
+				<a4j:jsFunction name="updateFooterWithNewPackages" action="#{configureTabsBean.updateFooterWithNewPackages}"
+					oncomplete="console.log('updateFooterWithNewPackages');reRenderFooter();"
+					 />
+                    
+                <a4j:jsFunction name="updateNewPackageAsNotified" action="#{configureTabsBean.updateNewPackageAsNotified}"
+                     />
 			</a4j:region>
 
 			<a4j:region>
@@ -1737,15 +1779,15 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);"
+					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);"
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
-                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;"
+                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;"
                     reRender="tabFlowchart,errorTable,msnError" />
                     
                 <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);"
+					oncomplete="console.log('rebuildCanvas'); addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5],true);"
 					reRender="tabFlowchart,errorTable,msnError" />
                 
                 <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas'); reOpenCanvasJS(data);" />
@@ -1767,7 +1809,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="console.log('renameTab'); closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="console.log('renameTab'); closeCurrentTabWithoutCallingBackend();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1831,7 +1873,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" 
-					oncomplete="console.log('reinitializeCanvas'); reinitializeCanvasScreen(data)" />
+					oncomplete="console.log('reinitializeCanvas'); reinitializeCanvasScreen(data[0],data[1])" />
 			</a4j:region>
 
 			<a4j:region>
@@ -2029,7 +2071,6 @@
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
 					oncomplete="console.log('pasteJS'); saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
-
 			<a4j:region>
 
 				<a4j:commandLink id="openCanvasScreenHdfs"

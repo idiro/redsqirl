@@ -36,6 +36,11 @@ tables.
 
   * {{{./gettingstarted.html}Getting started}}
 
+* User Tutorial
+
+  You can find user tutorials in the User Guide,
+{{{./help/buildingworkflow.html}canvas section}}.
+
 * Submitting a package to the community
 
   If you have a package that you would like to share with the community, this can be easily done! 

@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -28,6 +29,7 @@ import org.json.simple.parser.ParseException;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.hadoop.checker.HdfsFileChecker;
+import com.kenai.constantine.platform.darwin.NameInfo;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -183,6 +185,8 @@ public abstract class MapRedDir extends MapRedHdfs{
 			if(stat != null && stat.length > 0){
 				ans = new ArrayList<String>(maxToRead);
 				int i =0;
+				int read =0;
+				Map<String,List<String>> fileNameAndContent = new HashMap<String,List<String>>();
 				
 				int numberFiles = 10;
 				SortedSet<Map.Entry<FileStatus,Long>> filesSortedBySize = new TreeSet<Map.Entry<FileStatus,Long>>(
@@ -199,43 +203,34 @@ public abstract class MapRedDir extends MapRedHdfs{
 				//Get the 10 biggest files
 				Iterator<Map.Entry<FileStatus,Long>> fbIter = filesSortedBySize.iterator();
 				List<Map.Entry<FileStatus,Long>> biggestFiles = new LinkedList<Map.Entry<FileStatus,Long>>();
-				while(fbIter.hasNext() && i < 10 && filesSortedBySize.size() - numberFiles > i ){
+				while(fbIter.hasNext() ){
 					biggestFiles.add(fbIter.next());
 					++i;
 				}
-				//Read the n-1 files
-				while(fbIter.hasNext() && (i-10) < numberFiles){
-					Map.Entry<FileStatus,Long> cur = fbIter.next();
-					FileStatus file = cur.getKey();
-					ans.addAll(hdfsInt.select(file.getPath().toString(),
-							",",
-							
-							(int) Math.ceil(maxToRead - ans.size()/Math.min(numberFiles, filesSortedBySize.size())))
-							);
-					++i;
-				}
+	
 				//Read the biggest files
 				Iterator<Map.Entry<FileStatus,Long>>  biggerFiles = biggestFiles.iterator();
 				while(biggerFiles.hasNext() && ans.size() < maxToRead){
 					Map.Entry<FileStatus,Long> cur = biggerFiles.next();
 					FileStatus file = cur.getKey();
 					logger.info(ans.size()+" is the size of the return list. -- biggest ");
-					ans.addAll(hdfsInt.select(file.getPath().toString(),
+					fileNameAndContent.put(file.getPath().getName(),hdfsInt.select(file.getPath().toString(),
 							",",
-							maxToRead - ans.size()));
+							(int) Math.ceil(maxToRead - read)
+							));
+					read+=fileNameAndContent.get(file.getPath().getName()).size();
 				}
 				
-				//Read the rest if necessary
-				while(fbIter.hasNext() && ans.size() < maxToRead){
-					Map.Entry<FileStatus,Long> cur = fbIter.next();
-					FileStatus file = cur.getKey();
-					logger.info(ans.size()+" is the size of the return list.");
-					ans.addAll(hdfsInt.select(file.getPath().toString(),
-							",",
-							maxToRead - ans.size()));
-					++i;
+				Set<String> names =new TreeSet<String>(fileNameAndContent.keySet());
+				
+				Iterator<String> namesItr = names.iterator();
+				
+				while(namesItr.hasNext()){
+					String name = namesItr.next();
 					
+					ans.addAll(fileNameAndContent.get(name));
 				}
+
 			}
 		} catch (IOException e) {
 			String error = "Unexpected error: " + e.getMessage();

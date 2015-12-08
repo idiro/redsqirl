@@ -171,15 +171,11 @@ function mountComboboxTextEditor(obj1, obj2){
 					<td width="45%">
 						<br /> 
 						
-						
-						
 						<h:panelGroup style="width:150px" layout="block" >
 	                    <h:inputText value="#{canvasModalBean.selEditor.selectedFunction}" id="comboboxListCategories" style="width:145px" >
 	                               	 
 	                    </h:inputText>
 	                    </h:panelGroup>
-	                    
-	                    
 						
 						<br />
 						
@@ -216,18 +212,14 @@ function mountComboboxTextEditor(obj1, obj2){
 						</rich:extendedDataTable>
 					</td>
 	
-					<td width="15%">
+					<td width="15%" id="listOperationTD" >
 						<br />
-						
-						
 						
 						<h:panelGroup style="width:100px" layout="block" >
 	                    <h:inputText value="#{canvasModalBean.selEditor.selectedOperation}" id="comboboxListCategoriesOperation" style="width:95px" >
 	                               	 
 	                    </h:inputText>
 	                    </h:panelGroup>
-						
-						
 						
 						<br />
 						
@@ -257,14 +249,13 @@ function mountComboboxTextEditor(obj1, obj2){
 					<br />
 						
 						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsRows}" var="rowItem"
-							style="border:0px;height:200px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;height:200px !important;padding-top:9px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-							rowClasses="even-row, odd-row">
+							rowClasses="even-row, odd-row" styleClass="listFieldsClass" >
 	
 	                       <rich:columns value="#{canvasModalBean.selEditor.edit.textEditorFieldsTitles == null? canvasBean.emptyList : canvasModalBean.selEditor.edit.textEditorFieldsTitles}" 
-                                          var="column" 
-                                          index="ind">
+                           		var="column" index="ind" width="150px;">
                                 
                                 <f:facet name="header">
                                     <h:outputText value="#{column}" />

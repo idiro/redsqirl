@@ -4,5 +4,77 @@
             
 Package Management
             
-		Red Sqirl Packages are managed by another application called the Analytics Store.
-	You can find out more {{{http://154.50.192.12:8091/analytics-store/}here}}
+	Red Sqirl Packages are managed by another application called the
+{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+
+* Install New packages
+
+** Online installation
+
+ If your Red Sqirl instance can reach the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, packages can be
+installed by the users or through the registered email you use to generate a Red
+Sqirl queue
+
+*** Through the Admin View
+
+ * On the Application home page, click on Admin.
+
+ * Log in with your registered email and password (Online mode should be selected).
+
+ * Go in Packages > Install.
+
+ * Choose the package and click install.
+
+*** Through the Red Sqirl main interface.
+
+ * For installing system packages, users should be in the "admin" system property.
+
+ * Go in Software > Install Package > Install.
+
+ * Log in to the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, you can register a user if needs be.
+
+ * Choose the package and click install.
+
+ []
+
+** Offline mode
+
+ 
+ In offline mode, only the administrator can sign in. You will need to add them
+manually in the system setting file first.
+
+ * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+
+ * Go in Red Sqirl > Search, choose your package and click install.
+
+ * Download the package (zip file) and the key file (Installations > Installation name).
+
+ * On the Application home page click on Admin.
+
+ * Log in with an admin user.
+
+ * Go to the Licences tab and upload the key file.
+
+ * Go to the Packages > Install Packages tab, upload the package and click OK.
+
+ [] 
+
+
+* Upload a New Package
+
+
+ * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+
+ * Go in Red Sqirl > Packages.
+
+ * Click on the "+" button.
+
+ * Fill out the form.
+
+ * Go to the new package you created.
+
+ * Click on the "+" button, to create the first version of your package.
+
+ * Fill out the form.
+
+ * If you go to "Search" you should be able to see your new package.

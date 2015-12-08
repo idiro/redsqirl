@@ -202,49 +202,31 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	public void cleanJobDirectory(final String nameWf) throws RemoteException {
 		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
-		int again = 10;
 		int numberToKeep = WorkflowPrefManager.getNbOozieDirToKeep();
-		while (again > 0) {
-			try {
-				logger.debug("Attempt " + (11 - again) + " to get a name.");
-				fs = NameNodeVar.getFS();
-				FileStatus[] children = fs.listStatus(hdfsWfPath,
-						new PathFilter() {
+		try {
+			fs = NameNodeVar.getFS();
+			FileStatus[] children = fs.listStatus(hdfsWfPath,
+					new PathFilter() {
 
-					@Override
-					public boolean accept(Path arg0) {
-						return arg0.getName().startsWith(nameWf + "_");
-					}
-				});
-				Arrays.sort(children, 0, children.length,
-						new Comparator<FileStatus>() {
+				@Override
+				public boolean accept(Path arg0) {
+					return arg0.getName().startsWith(nameWf + "_");
+				}
+			});
+			Arrays.sort(children, 0, children.length,
+					new Comparator<FileStatus>() {
 
-					@Override
-					public int compare(FileStatus arg0, FileStatus arg1) {
-						return (int) ((arg0.getModificationTime() - arg1
-								.getModificationTime()) / 10000);
-					}
-				});
-				for (int i = 0; i < children.length - numberToKeep; ++i) {
-					fs.delete(children[i].getPath(), true);
+				@Override
+				public int compare(FileStatus arg0, FileStatus arg1) {
+					return (int) ((arg0.getModificationTime() - arg1
+							.getModificationTime()) / 10000);
 				}
-				again = -1;
-			} catch (Exception e1) {
-				logger.error(e1);
-				--again;
+			});
+			for (int i = 0; i < children.length - numberToKeep; ++i) {
+				fs.delete(children[i].getPath(), true);
 			}
-			try {
-				// fs.close();
-			} catch (Exception e2) {
-				logger.error("Fail to close HDFS: " + e2);
-			}
-			if (again > 0) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					logger.error(e1);
-				}
-			}
+		} catch (Exception e1) {
+			logger.error(e1);
 		}
 	}
 
@@ -264,59 +246,39 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String ans = null;
 		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
-		int again = 10;
-		int number = 0;
-		while (again > 0) {
-			try {
-				logger.debug("Attempt " + (11 - again) + " to get a name.");
-				fs = NameNodeVar.getFS();
-				FileStatus[] children = fs.listStatus(hdfsWfPath,
-						new PathFilter() {
+		int number = -1;
+		try {
+			fs = NameNodeVar.getFS();
+			FileStatus[] children = fs.listStatus(hdfsWfPath,
+					new PathFilter() {
 
-					@Override
-					public boolean accept(Path arg0) {
-						if (arg0.getName().startsWith(nameWf)) {
-							try {
-								@SuppressWarnings("unused")
-								int i = Integer.valueOf(arg0.getName()
-										.substring(nameWf.length() + 1));
-								return true;
-							} catch (Exception e) {
-							}
+				@Override
+				public boolean accept(Path arg0) {
+					if (arg0.getName().startsWith(nameWf)) {
+						try {
+							@SuppressWarnings("unused")
+							int i = Integer.valueOf(arg0.getName()
+									.substring(nameWf.length() + 1));
+							return true;
+						} catch (Exception e) {
 						}
-						return false;
 					}
-				});
+					return false;
+				}
+			});
+			
+			if(children != null && children.length > 0){
 				for (FileStatus child : children) {
 					number = Math.max(
 							number,
 							Integer.valueOf(child.getPath().getName()
 									.substring(nameWf.length() + 1)));
 				}
-				again = -1;
-			} catch (Exception e1) {
-				logger.error(e1);
-				--again;
 			}
-			try {
-				// fs.close();
-			} catch (Exception e2) {
-				logger.error("Fail to close HDFS: " + e2);
-			}
-			if (again > 0) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					logger.error(e1);
-				}
-			}
+		} catch (Exception e) {
+			logger.error(e,e);
 		}
-
-		if (again == -1) {
-			ans = nameWf + "_" + (number + 1);
-		} else {
-			ans = nameWf + "_" + RandomString.getRandomName(6);
-		}
+		ans = nameWf + "_" + (number + 1);
 
 		return ans;
 	}
@@ -383,44 +345,14 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		if (error == null) {
 			logger.debug("copy from " + parentDir.getAbsolutePath() + " to "
 					+ hdfsWfPath);
-			int again = 10;
 			FileSystem fs = null;
-			Exception e = null;
-			while (again > 0) {
-				try {
-					logger.debug("Attempt " + (11 - again) + " to copy.");
-					fs = NameNodeVar.getFS();
-					Path wCur = new Path(hdfsWfPath);
-					if (fs.exists(wCur)) {
-						error = LanguageManagerWF.getText(
-								"ooziemanager.filenotexist",
-								new String[] { hdfsWfPath });
-						logger.error(error);
-					} else {
-						fs.copyFromLocalFile(false, true,
-								new Path(parentDir.getAbsolutePath()), wCur);
-					}
-					again = -1;
-				} catch (Exception e1) {
-					e = e1;
-					logger.error(e1);
-					--again;
-				}
-				try {
-					// fs.close();
-				} catch (Exception e2) {
-					logger.error("Fail to close HDFS: " + e2);
-				}
-				if (again > 0) {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {
-						logger.error(e1);
-					}
-				}
-			}
-
-			if (again == 0) {
+			try {
+				fs = NameNodeVar.getFS();
+				Path wCur = new Path(hdfsWfPath);
+				fs.copyFromLocalFile(false, true,
+							new Path(parentDir.getAbsolutePath()), wCur);
+			} catch (Exception e) {
+				logger.error(e,e);
 				error = LanguageManagerWF.getText(
 						"ooziemanager.copydependencies",
 						new Object[] { e.getMessage() });
@@ -454,11 +386,16 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			throw new Exception(error);
 		}
 
-		try {
-			cleanJobDirectory(nameWF);
-		} catch (RemoteException e) {
-			logger.warn("Fail clean oozie directory for job " + nameWF);
-		}
+		
+		new Thread() {
+			public void run() {
+				try {
+					cleanJobDirectory(nameWF);
+				} catch (Exception e) {
+					logger.warn("Fail clean oozie directory for job " + nameWF);
+				}
+			}  
+		}.start();
 
 		return jobId;
 	}
