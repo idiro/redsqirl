@@ -128,5 +128,9 @@ public interface DataFlowInterface extends Remote{
 	public List<String[]> loadMapCanvasToOpen(String name) throws RemoteException;
 	
 	public void setWorkflowPath(String name, String path) throws RemoteException;
+
+	DataFlow getNewWorkflow() throws RemoteException;
+
+	SubDataFlow getNewSubWorkflow() throws RemoteException;
 	
 }

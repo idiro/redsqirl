@@ -30,11 +30,11 @@
 						<br/>
 						<h:outputText value="Name" />
 						<br/>
-						<h:inputText value="#{subwfBean.name}"/>
+						<h:inputText value="#{modelBean.name}"/>
 						<br/>
 						<h:outputText value="Privileges" />
 						<h:selectOneRadio id="editable"
-							value="#{subwfBean.privilege}" 
+							value="#{modelBean.privilege}" 
 							layout="pageDirection">
 							<f:selectItem id="privilegesEdit" itemLabel="Editable" itemValue="edit" />
 							<f:selectItem id="privilegesRun" itemLabel="Run Only" itemValue="run" />
@@ -51,7 +51,7 @@
 				<a4j:commandButton styleClass="greenButton"
 					value="Export" 
 					reRender="exportSubWf,msnError,errorTable,msnErrorPage,msnSuccess"
-					action="#{subwfBean.exportSa}" 
+					action="#{modelBean.exportSa}" 
 					oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfexport')}.hide();"
 					/>
 			</h:panelGrid>

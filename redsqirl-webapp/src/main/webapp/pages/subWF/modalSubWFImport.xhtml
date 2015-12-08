@@ -181,13 +181,13 @@
     
     	<a4j:commandButton id="hdfsImportFileBtn" styleClass="greenButton" 
     	    value="Import"
-    		action="#{subwfBean.importSa}"
+    		action="#{modelBean.importSa}"
     		reRender="msnError,errorTable,formMenu,msnSuccess"
     		oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfimport')}.hide();refreshRelativeHelp();}"
     		>
     		<a4j:actionparam name="username" 
     		value="getPathModalSubWFImp('#{browserHdfsBean.path}')" 
-    		assignTo="#{subwfBean.pathHDFS}" 
+    		assignTo="#{modelBean.pathHDFS}" 
     		noEscape="true"/>
     	</a4j:commandButton>
 	

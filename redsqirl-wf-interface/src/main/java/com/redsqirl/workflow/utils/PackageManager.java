@@ -2,26 +2,20 @@ package com.redsqirl.workflow.utils;
 
 
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -149,7 +143,11 @@ public class PackageManager extends UnicastRemoteObject {
 		int i = 0;
 		for (i = 0; i < packStr.length; ++i) {
 			logger.debug("Find " + packStr[i]);
-			packs[i] = getPackage(packStr[i], user);
+			if(user == null || user.isEmpty()){
+				packs[i] = getSysPackage(packStr[i]);
+			}else{
+				packs[i] = getUserPackage(user, packStr[i]);
+			}
 			if (!packs[i].getPackageFile().exists()) {
 				error = PMLanguageManager.getText(
 						"PackageManager.packageDoesNotExist",
@@ -266,13 +264,31 @@ public class PackageManager extends UnicastRemoteObject {
 	}
 
 	
+	public List<RedSqirlPackage> getAvailablePackages(String user){
+		List<RedSqirlPackage> ans = getUserPackages(user);
+		List<String> usPckStr = getPackagesStr(user);
+		Iterator<RedSqirlPackage> it = getSysPackages().iterator();
+		while(it.hasNext()){
+			RedSqirlPackage cur = it.next();
+			if(!usPckStr.contains(cur.getPackageName())){
+				ans.add(cur);
+			}
+		}
+		return ans;
+	}
+	public List<RedSqirlPackage> getUserPackages(String user){
+		return getPackages(user);
+	}
+	public List<RedSqirlPackage> getSysPackages(){
+		return getPackages(null);
+	}
 	/**
 	 * Get a list of all packages that are installed
 	 * 
 	 * @param user  if user is null or empty it is considered as system
 	 * @return List of installed packages
 	 */
-	public List<RedSqirlPackage> getPackages(String user) {
+	private List<RedSqirlPackage> getPackages(String user) {
 		List<RedSqirlPackage> ans = new LinkedList<RedSqirlPackage>();
 
 		File fPackage = null;
@@ -292,6 +308,32 @@ public class PackageManager extends UnicastRemoteObject {
 			});
 			for (int i = 0; i < files.length; ++i) {
 				ans.add(new RedSqirlPackage(files[i],user));
+			}
+		}
+
+		return ans;
+	}
+	
+	private List<String> getPackagesStr(String user) {
+		List<String> ans = new LinkedList<String>();
+
+		File fPackage = null;
+		if(user != null && !user.isEmpty()){
+			fPackage = new File(WorkflowPrefManager.getPathUserPackagePref(user));
+		}else{
+			fPackage = new File(WorkflowPrefManager.pathSysPackagePref);
+		}
+
+		if (fPackage.exists() && fPackage.isDirectory()) {
+			File[] files = fPackage.listFiles(new FileFilter() {
+
+				@Override
+				public boolean accept(File pathname) {
+					return !pathname.getName().startsWith(".");
+				}
+			});
+			for (int i = 0; i < files.length; ++i) {
+				ans.add(files[i].getName());
 			}
 		}
 
@@ -533,6 +575,7 @@ public class PackageManager extends UnicastRemoteObject {
 	}
 	
 
+	
 	/**
 	 * Get the Directory for a package
 	 * 
@@ -540,14 +583,25 @@ public class PackageManager extends UnicastRemoteObject {
 	 * @param user if user is null or empty it is considered as system
 	 * @return directory
 	 */
-	public RedSqirlPackage getPackage(String packName, String user) {
-		File packDir = null;
-		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
-		} else {
-			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
+	public RedSqirlPackage getAvailablePackage(String user, String packName) {
+		RedSqirlPackage cur = getUserPackage(user, packName);
+		if (!cur.getPackageFile().exists()) {
+			cur = getSysPackage(packName);
 		}
+		if (!cur.getPackageFile().exists()) {
+			cur = null;
+		}
+		return cur;
+	}
+
+	public RedSqirlPackage getUserPackage(String user, String packName) {
+		File packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		return new RedSqirlPackage(new File(packDir, packName),user);
+	}
+	
+	public RedSqirlPackage getSysPackage(String packName) {
+		File packDir = new File(WorkflowPrefManager.pathSysPackagePref);
+		return new RedSqirlPackage(new File(packDir, packName),null);
 	}
 
 	/**

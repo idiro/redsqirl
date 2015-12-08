@@ -1485,7 +1485,7 @@ select {
 }
 
 
-.packageItemInstall{
+.moduleItemInstall{
 	background-color:#FFFFFF;
 	box-shadow: 3px 3px 3px #888888;
 	border-radius: 7px !important;
@@ -1497,14 +1497,14 @@ select {
 	font-size:20px;
 }
 
-.packageItemInstall .image{
+.moduleItemInstall .image{
 	margin-top:3px;
 	margin-left:5px;
 	margin-bottom:3px;
 	float:left;
 }
 
-.packageItemInstall .title{
+.moduleItemInstall .title{
 	margin-top:10px;
 	margin-left:20px;
 	width:60%;
@@ -1512,7 +1512,7 @@ select {
 	font-size:25px;
 }
 
-.packageItemInstall .type{
+.moduleItemInstall .type{
 	margin-top:20px;
 	margin-right:10px;
 	margin-bottom:0px;
@@ -1522,7 +1522,7 @@ select {
 	font-size:12px;
 }
 
-.packageItemInstall .license{
+.moduleItemInstall .license{
 	margin-top:15px;
 	margin-right:60px;
 	width:40%;
@@ -1531,14 +1531,14 @@ select {
 	font-size:12px;
 }
 
-.packageItemInstall .dependency{
+.moduleItemInstall .dependency{
 	float: left;
     font-size: 12px;
     padding-top: 5px;
     width: 100%;
 }
 
-.packageItemInstall .description{
+.moduleItemInstall .description{
 	margin-top:5px;
 	margin-left:5px;
 	width:70%;

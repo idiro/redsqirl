@@ -37,10 +37,12 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
+import com.redsqirl.workflow.utils.ModelInstaller;
+import com.redsqirl.workflow.utils.ModelInt;
+import com.redsqirl.workflow.utils.ModelManagerInt;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
-import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperElementManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -152,7 +154,13 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			List<String> packagesInstalled = pckMng.getPackageNames(user);
 
 			if (packagesInstalled.contains(moduleVersion.getName())){
-				String versionPck = pckMng.getPackage(moduleVersion.getName(), user).getPackageProperty(RedSqirlPackage.property_version);
+				RedSqirlPackage rs = null;
+				if(user == null){
+					rs = pckMng.getSysPackage(moduleVersion.getName());
+				}else{
+					rs = pckMng.getUserPackage(user,moduleVersion.getName());
+				}
+				String versionPck = rs.getPackageProperty(RedSqirlPackage.property_version);
 				if (versionPck.equals(moduleVersion.getVersionName())){
 					installed = true;
 				}
@@ -288,7 +296,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
 			System.out.println("folder.getPath  " + folder.getPath());
 
-			SuperElementManager saManager = getSuperElementManager();
+			ModelManagerInt saManager = getModelManager();
 			DataFlowInterface dfi = getworkFlowInterface();
 
 			List<String> curSuperActions = null;
@@ -314,7 +322,13 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 						error = swa.readFromLocal(new File(folder.getPath() + "/" + file));
 
 						if (error == null){
-							error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, swa.getPrivilege());
+							ModelInt model = null;
+							if(userInstall){
+								model = getModelManager().getUserModel(userInfoBean.getUserName(), RedSqirlModel.getModelAndSW(swa.getName())[0]);
+							}else{
+								model = getModelManager().getSysModel(RedSqirlModel.getModelAndSW(swa.getName())[0]);
+							}
+							error = new ModelInstaller(saManager).installSA(model, swa, swa.getPrivilege());
 						}
 
 						dfi.removeWorkflow(workflowName);

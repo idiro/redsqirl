@@ -11,7 +11,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -32,7 +34,12 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
  * @author etienne
  *
  */
-public class RedSqirlModel implements ModelInt{
+public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2320766286980032596L;
 
 	private static Logger logger = Logger.getLogger(RedSqirlModel.class);
 	
@@ -41,16 +48,19 @@ public class RedSqirlModel implements ModelInt{
 			private_file = "private_sw",
 			dependency_file = "dependencies",
 			editable_prop= "editable",
-			version_prop= "version";
+			version_prop= "version",
+			comment_prop = "comment";
 			
 	File modelFile;
 	String user;
 	
-	public RedSqirlModel(String user, File modelFile){
+	public RedSqirlModel(String user, File modelFile) throws RemoteException{
+		super();
 		this.modelFile = modelFile;
 		this.user= user;
 	}
 	
+	@Override
 	public String createModelDir(){
 		String error = null;
 		try{
@@ -67,22 +77,26 @@ public class RedSqirlModel implements ModelInt{
 	}
 	
 	@Override
-	public File getFileName(){
-		return modelFile;
+	public void delete(String name){
+		removeFromPrivate(name);
+		removeSubWorkflowDependencies(name);
+		new File(modelFile,name).delete();
 	}
 	
 	@Override
-	public void setName(String name) {
-		if(!new File(modelFile.getParentFile(),name).exists() ){
-			modelFile.renameTo(new File(modelFile.getParentFile(),name));
-		}
+	public File getFile(){
+		return modelFile;
 	}
-
+	
 	@Override
 	public String getName() {
 		return modelFile.getName();
 	}
 	
+	@Override
+	public String getUser(){
+		return user;
+	}
 	/**
 	 * Get a property of the package
 	 * 
@@ -146,7 +160,9 @@ public class RedSqirlModel implements ModelInt{
 	public void setImage(File imageFile) {
 		try {
 			Files.copy(imageFile.toPath(), new FileOutputStream(new File(new File(modelFile,conf_dir), modelFile.getName()+".gif")));
-			Files.copy(imageFile.toPath(), new FileOutputStream(new File(PackageManager.getImageDir(user),"model/"+modelFile.getName()+".gif")));
+			File modelDir = new File(PackageManager.getImageDir(isSystem()?null:user),"model");
+			modelDir.mkdir();
+			Files.copy(imageFile.toPath(), new FileOutputStream(new File(modelDir, modelFile.getName()+".gif")));
 		} catch (FileNotFoundException e) {
 			logger.warn(e,e);
 		} catch (IOException e) {
@@ -154,22 +170,30 @@ public class RedSqirlModel implements ModelInt{
 		}
 	}
 
+	@Override
+	public File getTomcatImage(){
+		File ans = new File(new File(PackageManager.getImageDir(isSystem()?null:user),"model"),modelFile.getName()+".gif");
+		if(!ans.exists()){
+			ans = new File(RedSqirlModel.getDefaultImage());
+		}
+		return ans;
+	}
 	
 	@Override
 	public void addToPrivate(String subworkflowName) {
-		Set<String> privateSW = getSubWorkflowNames();
-		Set<String> publicSW = getPublicSubWorkflowNames();
-		publicSW.remove(subworkflowName);
-		privateSW.removeAll(publicSW);
+		Set<String> privateSW = readPrivateList();
+		privateSW.add(subworkflowName);
+		privateSW.retainAll(getSubWorkflowNames());
+		logger.info(privateSW);
 		writePrivateList(privateSW);
 	}
 
 	@Override
 	public void removeFromPrivate(String subworkflowName) {
-		Set<String> privateSW = getSubWorkflowNames();
-		Set<String> publicSW = getPublicSubWorkflowNames();
-		publicSW.add(subworkflowName);
-		privateSW.removeAll(publicSW);
+		Set<String> privateSW = readPrivateList();
+		privateSW.remove(subworkflowName);
+		privateSW.retainAll(getSubWorkflowNames());
+		logger.info(privateSW);
 		writePrivateList(privateSW);
 	}
 
@@ -183,8 +207,10 @@ public class RedSqirlModel implements ModelInt{
 				return !pathname.getName().equals(conf_dir);
 			}
 		});
-		for(File f:fModels){
-			ans.add(f.getName());
+		if(fModels != null){
+			for(File f:fModels){
+				ans.add(f.getName());
+			}
 		}
 		
 		return ans;
@@ -193,28 +219,26 @@ public class RedSqirlModel implements ModelInt{
 	@Override
 	public Set<String> getPublicSubWorkflowNames() {
 		Set<String> ans = getSubWorkflowNames();
-		ans.remove(readPrivateList());
+		ans.removeAll(readPrivateList());
 		return ans;
 	}
 
 	@Override
 	public Set<String> getPublicFullNames() {
-		Set<String> publicSW = getPublicSubWorkflowNames();
-		Set<String> ans = new HashSet<String>(publicSW.size());
-		Iterator<String> it = publicSW.iterator();
-		while(it.hasNext()){
-			ans.add(">"+modelFile.getName()+">"+it.next());
-		}
-		return ans;
+		return getSubWorkflowFullNames(getPublicSubWorkflowNames());
 	}
 
 	@Override
 	public Set<String> getSubWorkflowFullNames(){
-		Set<String> publicSW = getSubWorkflowNames();
-		Set<String> ans = new HashSet<String>(publicSW.size());
-		Iterator<String> it = publicSW.iterator();
+		return getSubWorkflowFullNames(getSubWorkflowNames());
+	}
+	
+	@Override
+	public Set<String> getSubWorkflowFullNames(Collection<String> subworkflowNames){
+		Set<String> ans = new HashSet<String>(subworkflowNames.size());
+		Iterator<String> it = subworkflowNames.iterator();
 		while(it.hasNext()){
-			ans.add(">"+modelFile.getName()+">"+it.next());
+			ans.add(getFullName(it.next()));
 		}
 		return ans;
 	}
@@ -275,13 +299,46 @@ public class RedSqirlModel implements ModelInt{
 		}
 		return ans;
 	}
+	
+	@Override
+	public Set<String> getSubWorkflowFullNameDependentOn(Set<String> subworkflowFullNames){
+		Set<String> ans = new LinkedHashSet<String>();
+		Map<String, Set<String>> depPerSW = getDependenciesPerSubWorkflows();
+		Iterator<String> it = depPerSW.keySet().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			depPerSW.get(cur).retainAll(subworkflowFullNames);
+			if(!depPerSW.get(cur).isEmpty()){
+				ans.add(getFullName(cur));
+			}
+		}
+		return ans;
+	}
 
+	@Override
+	public void addSubWorkflowDependencyLines(Set<String> dependencyLine){
+		Set<String> toWrite = getAllDependencies();
+		toWrite.addAll(dependencyLine);
+		writeSubWorkflowDependencies(toWrite);
+	}
 
 	@Override
 	public void addSubWorkflowDependencies(String subworkflowName, Set<String> dependencies) {
 		Set<String> toWrite = getAllDependencies();
-		toWrite.addAll(dependencies);
+		Iterator<String> it = dependencies.iterator();
+		while(it.hasNext()){
+			toWrite.add(subworkflowName+":"+it.next());
+		}
 		writeSubWorkflowDependencies(toWrite);
+	}
+	
+	@Override 
+	public void removeAllDependencies(){
+		writeSubWorkflowDependencies(new HashSet<String>());
+	}
+	
+	public void removeSubWorkflowDependencies(String subworkflowName){
+		removeSubWorkflowDependencies(subworkflowName, getSubWorkflowDependencies(subworkflowName));
 	}
 	
 	@Override
@@ -292,15 +349,8 @@ public class RedSqirlModel implements ModelInt{
 	}
 
 	@Override
-	public String importFromHDFS(String path) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String exportToHDFS(String path, Boolean permissions) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean isSystem(){
+		return user == null || user.isEmpty();
 	}
 	
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException{
@@ -349,6 +399,12 @@ public class RedSqirlModel implements ModelInt{
 				}
 			}
 		}
+		
+		if(error == null){
+			removeSubWorkflowDependencies(modelWSA[1], getSubWorkflowDependencies(modelWSA[1]));
+			addSubWorkflowDependencies(modelWSA[1], toInstall.getSADependencies());
+		}
+		
 		return error;
 	}
 
@@ -356,6 +412,7 @@ public class RedSqirlModel implements ModelInt{
 	
 	protected void writePrivateList(Set<String> privateSW){
 		try{
+			logger.info("Write to "+new File(new File(modelFile,conf_dir),private_file).getAbsolutePath());
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(new File(modelFile,conf_dir),private_file)));
 			Iterator<String> privateIt = privateSW.iterator();
 			while(privateIt.hasNext()){
@@ -466,5 +523,27 @@ public class RedSqirlModel implements ModelInt{
 		}
 		
 		return new String[]{model,swName};
+	}
+	
+	@Override
+	public String getFullName(String saName){
+		return ">"+getName()+">"+saName;
+	}
+
+	@Override
+	public String getComment() throws RemoteException {
+		Properties prop = getPackageProperties();
+		return prop == null ? "Add a comment.": getPackageProperties().getProperty(comment_prop, "Add a comment.");
+	}
+
+	@Override
+	public void setComment(String comment) throws RemoteException {
+		Properties prop = getPackageProperties();
+		prop.put(comment_prop, comment);
+		try{
+			prop.store(new FileWriter(new File(new File(modelFile,conf_dir),properties_file)), "");
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
 	}
 }

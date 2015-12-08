@@ -2256,19 +2256,15 @@
 											<h:outputText value="#{messages.label_menu_software}" />
 										</h:panelGroup>
 									</f:facet>
+									
 									<rich:menuGroup value="#{messages.label_menu_subworkflow}">
 										<rich:menuItem id="installSubWorkflow" submitMode="ajax"
 											value="#{messages.label_menu_install_sub_workflow}"
 											disabled="#{canvasBean.workflowType == 'W'}"
 											onclick="#{rich:component('modalSubWfInstall')}.show();"
-											action="#{subwfBean.mountSubName}">
+											action="#{modelBean.mountSubName}">
 											<f:param name="subWorkflowName"
 												value="#{canvasBean.nameWorkflow}" />
-										</rich:menuItem>
-										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
-											value="#{messages.label_menu_manage_sub_workflow}"
-											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
-											action="#{subwfBean.refreshSubworkflowsAllList}">
 										</rich:menuItem>
 										<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
@@ -2278,11 +2274,17 @@
 											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
 											disabled="#{canvasBean.workflowType == 'W'}"
 											oncomplete="#{rich:component('modalSubWfexport')}.show();"
-											action="#{subwfBean.mountSubName}">
+											action="#{modelBean.mountSubName}">
 											<f:param name="subWorkflowName"
 												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
 									</rich:menuGroup>
+									<rich:menuItem id="manageModels" submitMode="ajax"
+										value="#{messages.label_menu_manage_models}"
+										reRender="modelsList"
+										oncomplete="#{rich:component('modalModels')}.show();"
+										action="#{modelBean.refreshModelList}">
+									</rich:menuItem>
 									<rich:menuItem id="installationMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_package}"
 										onclick="openPackageModal();">
@@ -2892,7 +2894,7 @@
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();#{rich:component('modalSubWfUninstall')}.hide();refreshRelativeHelp();" />
+					onclick="#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();#{rich:component('modalModels')}.hide();refreshRelativeHelp();" />
 			</f:facet>
 			<h:panelGroup>
 				<a4j:include viewId="/pages/modalInstallPackage.xhtml" ajaxRendered="true" />
@@ -2940,23 +2942,108 @@
 		</rich:modalPanel>
 	</a4j:region>
 	<a4j:region>
-		<rich:modalPanel id="modalSubWfUninstall" width="600" height="490"
+		<rich:modalPanel id="modalModels" width="832" height="620"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="#{messages.label_menu_manage_sub_workflow}" />
+				<h:outputText value="#{messages.label_menu_manage_models}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalSubWfUninstall')}.hide()" />
+					onclick="#{rich:component('modalModels')}.hide()" />
 			</f:facet>
 
 			<h:panelGroup>
-				<a4j:include viewId="/pages/subWF/modalSubWFUninstall.xhtml"
-					ajaxRendered="true" />
+				<a4j:include viewId="/pages/subWF/modalModels.xhtml"
+					ajaxRendered="false" />
 			</h:panelGroup>
 
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalEditModel" width="600" height="450"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='Edit Model' />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalEditModel')}.hide();" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/subWF/modalEditModel.xhtml"
+					ajaxRendered="false" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalListModel" width="600" height="450"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='List Models' />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalListModel')}.hide();" />
+			</f:facet>
+
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/subWF/modalListModel.xhtml" ajaxRendered="true"/>
+				</h:panelGroup>
+			</h:form>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalAddModel" width="600" height="450"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='New Model' />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalAddModel')}.hide();" />
+			</f:facet>
+
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/subWF/modalAddModel.xhtml" ajaxRendered="true"/>
+				</h:panelGroup>
+			</h:form>
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalRenameSubWF" width="600" height="450"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='Rename Subworkflow' />
+				</h:panelGroup>
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalRenameSubWF')}.hide();" />
+			</f:facet>
+
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/subWF/modalRenameSubWF.xhtml" ajaxRendered="true"/>
+				</h:panelGroup>
+			</h:form>
 		</rich:modalPanel>
 	</a4j:region>
 	<a4j:region>

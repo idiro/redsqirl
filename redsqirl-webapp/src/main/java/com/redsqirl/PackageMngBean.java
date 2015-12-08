@@ -44,8 +44,9 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.utils.ModelInt;
+import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -68,7 +69,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private transient boolean userInstall = true;
 	private PackageFromAnalyticsStore curPackage;
 	private List<PackageFromAnalyticsStore> extPackages;
-	private String[] unUserPackage,	unSysPackage;
 	private String repoWelcomePage;
 	private List<RedSqirlModule> systemPackages;
 	private List<RedSqirlModule> userPackages;
@@ -205,66 +205,30 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		setExtPackages(lAns);
 	}
 
-	public boolean isAdmin(){
-		boolean admin = false;
-		try{
-			logger.debug("is admin");
-			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-					.evaluateExpressionGet(context, "#{userInfoBean}",
-							UserInfoBean.class);
-			String user = userInfoBean.getUserName();
-			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			if(admins != null){
-				for(String cur: admins){
-					admin = admin || cur.equals(user);
-					logger.debug("admin user: "+cur);
-				}
-			}
-		}catch(Exception e){
-			logger.warn("Exception in isAdmin: "+e.getMessage());
-		}
-		return admin;
-	}
-
-	public boolean isUserAllowInstall(){
-		return WorkflowPrefManager.isUserPckInstallAllowed();
-	}
-
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		Iterator<String> it = pckManager.getPackageNames(null).iterator();
-		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
-		while(it.hasNext()){
-			String pck = it.next();
-			//String version = pckManager.getPackage(pck,null).getPackageProperty(RedSqirlPackage.property_version);
-
-			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("../pages/packages/images/spark_audit.gif");
-			rdm.setName(pck);
-
-			result.add(rdm);
-		}
-		setSystemPackages(result);
+		setSystemPackages(calcPackage(pckManager.getPackageNames(null)));
 	}
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
-		Iterator<String> it = pckManager.getPackageNames(user).iterator();
+		setUserPackages(calcPackage(pckManager.getPackageNames(user)));
+	}
+	
+	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages){
+		Iterator<String> it = pckPackages.iterator();
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
-			//String version = pckManager.getPackage(pck,user).getPackageProperty(RedSqirlPackage.property_version);
-
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("../pages/packages/images/pig_audit.gif");
 			rdm.setName(pck);
 
 			result.add(rdm);
 		}
-		setUserPackages(result);
+		return result;
 	}
 
 	public String packageSettings() throws RemoteException{
@@ -802,6 +766,16 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return prop;
 	}
+	
+	private void removePackage(String user, String name){
+		String[] uninstallPackage = new String[]{name};
+		String error = pckManager.removePackage(user, uninstallPackage);
+		if(error == null){
+			disable(uninstallPackage, user);
+		}else{
+			logger.info(error);
+		}
+	}
 
 	public void removeSystemPackage() throws RemoteException{
 		logger.info("rm sys packages");
@@ -810,16 +784,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String name = params.get("name");
 
 		if(isAdmin() && name != null){
-
-			unSysPackage = new String[]{name};
-
-			PackageManager sysPckManager = new PackageManager();
-			String error = sysPckManager.removePackage(null,unSysPackage);
-			if(error == null){
-				disable(unSysPackage, null);
-			}else{
-				logger.info(error);
-			}
+			removePackage(null,name);
 			calcSystemPackages();
 		}
 	}
@@ -831,17 +796,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String name = params.get("name");
 
 		if(isUserAllowInstall() && name != null){
-
-			unUserPackage = new String[]{name};
-
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
-			String error = pckManager.removePackage(user,unUserPackage);
-			if(error == null){
-				disable(unUserPackage, user);
-			}else{
-				logger.info(error);
-			}
+			removePackage(user,name);
 			calcUserPackages();
 		}
 	}
@@ -1047,34 +1004,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
 		request.setAttribute("msnError", "msnError");
-	}
-
-	/**
-	 * @return the unUserPackage
-	 */
-	public String[] getUnUserPackage() {
-		return unUserPackage;
-	}
-
-	/**
-	 * @param unUserPackage the unUserPackage to set
-	 */
-	public void setUnUserPackage(String[] unUserPackage) {
-		this.unUserPackage = unUserPackage;
-	}
-
-	/**
-	 * @return the unSysPackage
-	 */
-	public String[] getUnSysPackage() {
-		return unSysPackage;
-	}
-
-	/**
-	 * @param unSysPackage the unSysPackage to set
-	 */
-	public void setUnSysPackage(String[] unSysPackage) {
-		this.unSysPackage = unSysPackage;
 	}
 
 	/**

@@ -30,9 +30,8 @@ import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.test.TestUtils;
-import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperActionManager;
-import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.ModelInstaller;
+import com.redsqirl.workflow.utils.ModelManager;
 
 /**
  * 1. Create a Sub Workflow
@@ -245,15 +244,15 @@ public class SubWorkflowTests {
 			
 			//Install
 			logger.info("install...");
-			SuperActionManager saMan = new SuperActionManager();
-			SuperActionInstaller installer = new SuperActionInstaller(saMan);
-			installer.uninstall(userName, sName);
-			error = installer.install(userName,false, sw, null);
+			ModelManager saMan = new ModelManager();
+			ModelInstaller installer = new ModelInstaller(saMan);
+			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
+			error = installer.installSA(saMan.getUserModel(userName, "default"), sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
 			
 			//Uninstall
 			logger.info("uninstall...");
-			error = installer.uninstall(userName, sName);
+			error = installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 			assertTrue("Fail to uninstall subworkflow: "+error, error == null);
 			
 		} catch (Exception e) {
@@ -271,8 +270,9 @@ public class SubWorkflowTests {
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
-			SuperActionInstaller installer = new SuperActionInstaller(new SuperActionManager());
-			installer.uninstall(userName, sName);
+			ModelManager saMan = new ModelManager();
+			ModelInstaller installer = new ModelInstaller(new ModelManager());
+			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
@@ -299,7 +299,7 @@ public class SubWorkflowTests {
 
 			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
 			assertTrue("Fail to create SuperAction", sw != null);
-			new SuperActionInstaller(new SuperActionManager()).install(System.getProperty("user.name"),false, sw, null);
+			new ModelInstaller(new ModelManager()).installSA(saMan.getUserModel(userName, "default"), sw, null);
 			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
 			
@@ -320,8 +320,9 @@ public class SubWorkflowTests {
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
-			SuperActionInstaller installer = new SuperActionInstaller(new SuperActionManager());
-			installer.uninstall(userName, sName);
+			ModelManager saMan = new ModelManager();
+			ModelInstaller installer = new ModelInstaller(saMan);
+			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
@@ -349,7 +350,7 @@ public class SubWorkflowTests {
 			
 			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
 			assertTrue("Fail to create SuperAction", sw != null);
-			new SuperActionInstaller(new SuperActionManager()).install(System.getProperty("user.name"),false, sw, null);
+			new ModelInstaller(new ModelManager()).installSA(saMan.getUserModel(userName, "default"), sw, null);
 			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
 			List<String> aggComponents = w.getComponentIds();

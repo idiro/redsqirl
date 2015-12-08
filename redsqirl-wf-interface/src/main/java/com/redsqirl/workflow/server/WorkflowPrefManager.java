@@ -897,7 +897,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @return The tmp folder path.
 	 */
 	public static String getPathTmpFolder(String user) {
-		return getPathUserPref(user) + "/tmp";
+		return user == null|| user.isEmpty()? getPathtmpfolder():getPathUserPref(user) + "/tmp";
 	}
 
 	/**

@@ -1,0 +1,26 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:outputText value="#{messages.label_name}" />
+	<h:inputText value="#{modelBean.name}" />
+	
+	<h:panelGrid columns="2">
+		
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('modalAddModel')}.hide();" />
+		
+		<a4j:commandButton id="AddSysModelButton"  value="#{messages.button_ok}" rendered="#{modelBean.asSystem == 'System'}" 
+			styleClass="greenButton" action="#{modelBean.createSysModel}"
+			reRender="errorTable, msnError, sysModelList" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAddModel')}.hide();}" />
+		<a4j:commandButton id="AddUserModelButton"  value="#{messages.button_ok}" rendered="#{modelBean.asSystem != 'System'}"
+			styleClass="greenButton" action="#{modelBean.createUserModel}"
+			reRender="errorTable, msnError, usModelList" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAddModel')}.hide();}" />
+	</h:panelGrid>
+
+</h:panelGrid>

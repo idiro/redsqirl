@@ -1,7 +1,9 @@
 package com.redsqirl.workflow.utils;
 
 import java.io.File;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,105 +17,99 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
  * @author etienne
  *
  */
-public interface ModelInt {
+public interface ModelInt extends Remote{
 
 	/**
 	 * The model folder. The name of the folder is the model name.
 	 * @return
 	 */
-	File getFileName();
-	
-	/**
-	 * Change the name of the model and therefore the underlying file.
-	 * @param name
-	 */
-	void setName(String name);
+	File getFile() throws RemoteException;
 	
 	/**
 	 * Get the model name.
 	 * @return
 	 */
-	String getName();
+	String getName() throws RemoteException;
 	
 	/**
 	 * True if the model is editable.
 	 * @return
 	 */
-	boolean isEditable();
+	boolean isEditable() throws RemoteException;
 	
 	/**
 	 * Set if a model is editable or not.
 	 * @param editable
 	 */
-	void setEditable(boolean editable);
+	void setEditable(boolean editable) throws RemoteException;
 	
 	/**
 	 * Get the version of the model.
 	 * @return
 	 */
-	String getVersion();
+	String getVersion() throws RemoteException;
 	
 	/**
 	 * Set the version of the model.
 	 * @param version
 	 */
-	void setVersion(String version);
+	void setVersion(String version) throws RemoteException;
 	
 	/**
 	 * Reset the workflow image.
 	 */
-	void resetImage();
+	void resetImage() throws RemoteException;
 	
 	/**
 	 * Seth a new image for representing all the subworkflows of the model.
 	 * @param imageFile
 	 */
-	void setImage(File imageFile);
+	void setImage(File imageFile) throws RemoteException;
 	
 	/**
 	 * Add a subworkflow to the private list.
 	 * A private subworkflow can't be called from outside of the model.
 	 * @param subworkflowName
 	 */
-	void addToPrivate(String subworkflowName);
+	void addToPrivate(String subworkflowName) throws RemoteException;
 	
 	/**
 	 * Remove a subworkflow from the private list.
 	 * @param subworkflowName
 	 */
-	void removeFromPrivate(String subworkflowName);
+	void removeFromPrivate(String subworkflowName) throws RemoteException;
 	
 	/**
 	 * Get all the sub workflow names of the model.
 	 * @return
 	 */
-	Set<String> getSubWorkflowNames();
+	Set<String> getSubWorkflowNames() throws RemoteException;
 	
 	/**
 	 * Get the name of the sub workflow names.
 	 * @return
 	 */
-	Set<String> getPublicSubWorkflowNames();
+	Set<String> getPublicSubWorkflowNames() throws RemoteException;
 	
 	/**
 	 * Get the full name of the public workflows. 
 	 * The full name is composed of the model followed by the subworkflow names. 
 	 * @return
 	 */
-	Set<String> getPublicFullNames();
+	Set<String> getPublicFullNames() throws RemoteException;
 	
 	/**
 	 * Get the full name of the subworkflows. 
 	 * The full name is composed of the model followed by the subworkflow names. 
 	 * @return
 	 */
-	Set<String> getSubWorkflowFullNames();
+	Set<String> getSubWorkflowFullNames() throws RemoteException;
 	
 	/**
 	 * Get the dependencies of the entire model.  
 	 * @return
 	 */
-	Set<String> getAllDependencies();
+	Set<String> getAllDependencies() throws RemoteException;
 	
 	/**
 	 * Add dependencies required to run a subworkflow.
@@ -121,7 +117,7 @@ public interface ModelInt {
 	 * @param subworkflowName
 	 * @param dependencies
 	 */
-	void addSubWorkflowDependencies(String subworkflowName,Set<String> dependencies);
+	void addSubWorkflowDependencies(String subworkflowName,Set<String> dependencies) throws RemoteException;
 	
 	/**
 	 * Remove dependencies required to run a subworkflow.
@@ -129,35 +125,20 @@ public interface ModelInt {
 	 * @param subworkflowName
 	 * @param dependencies
 	 */
-	void removeSubWorkflowDependencies(String subworkflowName,Set<String> dependencies);
+	void removeSubWorkflowDependencies(String subworkflowName,Set<String> dependencies) throws RemoteException;
 	
 	/**
 	 * Get the dependencies required to run a given subworkflow.
 	 * @param subworkflowName
 	 * @return
 	 */
-	Set<String> getSubWorkflowDependencies(String subworkflowName);
+	Set<String> getSubWorkflowDependencies(String subworkflowName) throws RemoteException;
 	
 	/**
 	 * Get the dependencies related to each subworkflow.
 	 * @return
 	 */
-	Map<String,Set<String>> getDependenciesPerSubWorkflows();
-	
-	/**
-	 * Import a subworkflow from HDFS 
-	 * @param path
-	 * @return
-	 */
-	String importFromHDFS(String path);
-	
-	/**
-	 * Export a subworkflow to HDFS
-	 * @param path
-	 * @param permissions
-	 * @return
-	 */
-	String exportToHDFS(String path, Boolean permissions);
+	Map<String,Set<String>> getDependenciesPerSubWorkflows() throws RemoteException;
 	
 	/**
 	 * Install SubDataFlow with the given privileges.
@@ -167,4 +148,32 @@ public interface ModelInt {
 	 * @throws RemoteException
 	 */
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException;
+
+	/**
+	 * Delete a subworkflow
+	 * @param name
+	 */
+	void delete(String name) throws RemoteException;
+
+	Set<String> getSubWorkflowFullNames(Collection<String> subworkflowNames) throws RemoteException;
+
+	boolean isSystem() throws RemoteException;
+
+	void removeAllDependencies() throws RemoteException;
+
+	void addSubWorkflowDependencyLines(Set<String> dependencyLine) throws RemoteException;
+
+	String getUser() throws RemoteException;
+
+	Set<String> getSubWorkflowFullNameDependentOn(Set<String> subworkflowFullNames) throws RemoteException;
+
+	String getFullName(String saName) throws RemoteException;
+
+	String createModelDir() throws RemoteException;
+
+	String getComment() throws RemoteException;
+	
+	void setComment(String comment) throws RemoteException;
+
+	File getTomcatImage() throws RemoteException;
 }

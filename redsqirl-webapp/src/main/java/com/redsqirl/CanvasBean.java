@@ -44,7 +44,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
-import com.redsqirl.workflow.utils.SuperActionInstaller;
+import com.redsqirl.workflow.utils.ModelInstaller;
 
 public class CanvasBean extends BaseBean implements Serializable {
 
@@ -103,6 +103,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String> runningElements;
 	private List<String> doneElements;
 
+	private ModelInstaller modelInstaller;
+
+	private String userName;
+
 	/**
 	 * 
 	 * @return
@@ -149,7 +153,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			workflowMap.put(getNameWorkflow(), getDf());
 
 			calcWorkflowUrl();
-
+			modelInstaller = new ModelInstaller(getModelManager());
+			
+			userName = getUserInfoBean().getUserName();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -789,11 +795,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("backupAllWorkflowsBeforeCloseToOpen");
 		updateAllPosition();
 		try {
-			
-			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-			
-			getworkFlowInterface().backupAllWorkflowsToOpen(userInfoBean.getUserName());
+			getworkFlowInterface().backupAllWorkflowsToOpen(userName);
 
 		} catch (RemoteException e) {
 			logger.info("Error backing up all workflows");
@@ -804,11 +806,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[][] getLoadMapCanvasToOpen() {
 		logger.info("getLoadMapCanvasToOpen");
 		try {
-			
-			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-			
-			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userInfoBean.getUserName());
+			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userName);
 			String[][] result = new String[listCanvasToOpen.size()][];
 			for (int i = 0; i < listCanvasToOpen.size(); i++) {
 				String[] aux = listCanvasToOpen.get(i);
@@ -831,13 +829,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[][] getBuildLoadMapCanvasToOpen() throws Exception {
 		logger.info("getBuildLoadMapCanvasToOpen");
 		try {
-			
-			//closeAll();
-			
-			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-			
-			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userInfoBean.getUserName());
+			List<String[]> listCanvasToOpen = getworkFlowInterface().loadMapCanvasToOpen(userName);
 			String[][] result = new String[listCanvasToOpen.size()][];
 			for (int i = 0; i < listCanvasToOpen.size(); i++) {
 				String[] aux = listCanvasToOpen.get(i);
@@ -2445,14 +2437,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		//logger.info("nameSubWorkflow " + nameSubWorkflow);
 
-		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-		//logger.info("User: " + userInfoBean.getUserName());
-
-		File file = new File(WorkflowPrefManager.getSuperActionMainDir(userInfoBean
-				.getUserName()), nameSubWorkflow);
+		File file = new File(WorkflowPrefManager.getSuperActionMainDir(userName), nameSubWorkflow);
 		if(!file.exists()){
 			file = new File(WorkflowPrefManager.getSuperActionMainDir(null), nameSubWorkflow);
 		}
@@ -2761,7 +2746,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 								fullName,
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						new SuperActionInstaller(getSuperElementManager()).install(getUserInfoBean().getUserName(),false, sw,null);
+						modelInstaller.installSA(getModelManager().getUserModel(userName, "default"), sw,null);
 					}catch(Exception e){
 						error = e.getMessage();
 					}
@@ -2778,7 +2763,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 						logger.info("aggregateElements  " + error);
 
 						if(error != null){
-							new SuperActionInstaller(getSuperElementManager()).uninstall(getUserInfoBean().getUserName(), fullName);
+							modelInstaller.uninstallSA(
+									getModelManager().getUserModel(userName, "default"),
+									getInputNameSubWorkflow()
+									);
 						}else{
 							logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2817,10 +2805,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameSA = params.get("nameSA");
-		String user = getUserInfoBean().getUserName();
-
 		if(nameSA != null){
-			new SuperActionInstaller(getSuperElementManager()).uninstall(user, nameSA);
+			modelInstaller.uninstallSA(getModelManager().getUserModel(userName, "default"), nameSA);
 		}
 	}
 

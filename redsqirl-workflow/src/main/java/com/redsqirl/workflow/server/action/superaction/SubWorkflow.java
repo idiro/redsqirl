@@ -297,9 +297,9 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		
 	}
 	
-	public File getInstalledMainFile(){
+	public File getInstalledMainFile() throws RemoteException{
 		String[] modelSW = RedSqirlModel.getModelAndSW(name);
-		return new File(new ModelManager().getModel(modelSW[0], System.getProperty("user.name")).getFileName(),
+		return new File(new ModelManager().getAvailableModel(System.getProperty("user.name"),modelSW[0]).getFile(),
 				modelSW[1]);
 	}
 	

@@ -452,6 +452,16 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			throws RemoteException {
 		return (SubDataFlow) wf.get(name);
 	}
+	
+	@Override
+	public DataFlow getNewWorkflow() throws RemoteException{
+		return new Workflow();
+	}
+	
+	@Override
+	public SubDataFlow getNewSubWorkflow() throws RemoteException{
+		return new SubWorkflow();
+	}
 
 	/**
 	 * Get an Instance of the interface

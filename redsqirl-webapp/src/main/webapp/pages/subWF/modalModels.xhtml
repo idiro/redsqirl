@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+	
+	<a4j:keepAlive beanName="modelBean"/>
+
+	<div id="domMessageDivModalModels" style="display: none;">
+		<img src="../image/icons/waiting.gif" />
+	</div>
+
+	<h:form>
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalModels') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+				
+	        <a4j:jsFunction name="openInstallModelModal" action="#{packageMngBean.setPackageScope}"
+	            oncomplete="setShowInstallPackageModelValue('M');#{rich:component('modalInstallPackage')}.show();">
+	            <a4j:actionparam name="user"/>
+	            <a4j:actionparam name="type"/>
+	        </a4j:jsFunction>
+		</a4j:region>
+	
+		<h:panelGrid id="modelsList" columns="2">
+			<rich:panel id="systemSa" header="System Models"
+				style="width:397px;height:530px;" bodyClass="maxContent">
+
+
+            <h:panelGroup id="sysModelList" layout="block" style="overflow:auto;height:460px;" class="modelList">
+                <a4j:repeat value="#{modelBean.systemModels}" var="model" rowKeyVar="modelCurIdx" >
+                    
+                    <br />
+                    
+                    <div class="moduleItemInstall" >
+	                	
+	                	<h:graphicImage value="#{model.image}" width="100" height="100" styleClass="image"/>
+					 	<h:panelGroup layout="block" class="title">
+							<h:outputText value="#{model.name}"/>
+							<h:outputText style="float:right;font-size: 11px;" value="#{model.versionName}"/>
+							<br/>
+							<br style="font-size: 10px;" />
+							<h:outputText style="font-size: 12px;" value="#{model.versionNote}"/>
+						</h:panelGroup>
+	                	<h:panelGroup layout="block" class="license" style="float:right;">
+							
+							<a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_remove}"
+		                        action="#{modelBean.removeSystemModel}"
+		                        reRender="sysModelList" >
+		                    	<f:param name="name" value="#{model.name}" />
+		                    </a4j:commandButton>
+                        
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_edit}"
+		                        action="#{modelBean.updateModel}"
+		                        oncomplete="#{rich:component('modalEditModel')}.show();"
+		                        reRender="modalEditModel" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="system" />
+		                    </a4j:commandButton>
+							
+						</h:panelGroup>
+						
+					 </div>
+                    
+                </a4j:repeat>
+            </h:panelGroup>
+                
+				<h:panelGrid id="model_sys_buttons" columns="2"
+					rendered="#{modelBean.admin}">
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_sys_install}"
+						onclick="openInstallModelModal('false', 'model');" 
+                       	action="#{analyticsStoreSearchBean.retrieveAllPackageList}" >
+                      	<f:param name="type" value="model"/>
+                     </a4j:commandButton>
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_add}"
+						action="#{modelBean.storeScope}"
+						reRender="AddUserModelButton, AddSysModelButton"
+						onclick="#{rich:component('modalAddModel')}.show()" >
+                      	<f:param name="scope" value="System"/>
+                     </a4j:commandButton>
+				</h:panelGrid>
+
+			</rich:panel>
+			
+			<rich:panel id="userSa" header="User Models"
+				style="width:397px;height:530px;" bodyClass="maxContent">
+
+           
+            <h:panelGroup id="usModelList" layout="block" style="overflow:auto;height:460px;" >
+                <a4j:repeat value="#{modelBean.userModels}" var="model" rowKeyVar="modelCurIdx">
+                
+                	<br />
+                    
+                    <div class="moduleItemInstall" >
+	                	
+	                	<h:graphicImage value="#{model.image}" width="100" height="100" styleClass="image"/>
+					 	<h:panelGroup layout="block" class="title">
+							<h:outputText value="#{model.name}"/>
+							<h:outputText style="float:right;font-size: 11px;" value="#{model.versionName}"/>
+							<br/>
+							<br style="font-size: 10px;" />
+							<h:outputText style="font-size: 12px;" value="#{model.versionNote}"/>
+						</h:panelGroup>
+	                	<h:panelGroup layout="block" class="license" style="float:right;">
+							
+							<a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_remove}"
+		                        action="#{modelBean.removeUserModel}"
+		                        reRender="usModelList" >
+		                        <f:param name="name" value="#{model.name}" />
+		                    </a4j:commandButton>
+                        
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_edit}"
+		                        action="#{modelBean.updateModel}"
+		                        oncomplete="#{rich:component('modalEditModel')}.show();"
+		                        reRender="modalEditModel">
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="user" />
+		                    </a4j:commandButton>
+							
+						</h:panelGroup>
+						
+					 </div>
+                
+                </a4j:repeat>
+            </h:panelGroup>
+
+				<h:panelGrid id="model_user_buttons" columns="2"
+					rendered="#{modelBean.userAllowInstall}">
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_user_install}"
+						onclick="openInstallPackageModal('true', 'model');"
+						action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+						<f:param name="type" value="model" />
+					</a4j:commandButton>
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_add}"
+						action="#{modelBean.storeScope}"
+						reRender="AddUserModelButton, AddSysModelButton"
+						onclick="#{rich:component('modalAddModel')}.show()">
+                      	<f:param name="scope" value="User"/>
+                     </a4j:commandButton>
+
+				</h:panelGrid>
+
+			</rich:panel>
+
+		</h:panelGrid>
+		
+		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
+			<a4j:commandButton styleClass="greenButton"	value="ok" onclick="#{rich:component('modalModels')}.hide()"/>
+		</rich:panel>
+		
+	</h:form>
+</ui:composition>

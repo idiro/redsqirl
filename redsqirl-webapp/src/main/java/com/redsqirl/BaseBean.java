@@ -29,7 +29,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
-import com.redsqirl.workflow.utils.SuperElementManager;
+import com.redsqirl.workflow.utils.ModelManagerInt;
 
 
 /** BaseBean
@@ -210,11 +210,11 @@ public class BaseBean {
 		return (PropertiesManager) session.getAttribute("prefs");
 	}
 	
-	public SuperElementManager getSuperElementManager() throws RemoteException{
+	public ModelManagerInt getModelManager() throws RemoteException{
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (SuperElementManager) session.getAttribute("samanager");
+		return (ModelManagerInt) session.getAttribute("samanager");
 	}
 	
 
@@ -282,6 +282,33 @@ public class BaseBean {
 			return new UsageRecordWriter();
 		}
 		
+	}
+
+
+	public boolean isAdmin(){
+		boolean admin = false;
+		try{
+			bb_logger.debug("is admin");
+			FacesContext context = FacesContext.getCurrentInstance();
+			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+					.evaluateExpressionGet(context, "#{userInfoBean}",
+							UserInfoBean.class);
+			String user = userInfoBean.getUserName();
+			String[] admins = WorkflowPrefManager.getSysAdminUser();
+			if(admins != null){
+				for(String cur: admins){
+					admin = admin || cur.equals(user);
+					bb_logger.debug("admin user: "+cur);
+				}
+			}
+		}catch(Exception e){
+			bb_logger.warn("Exception in isAdmin: "+e.getMessage());
+		}
+		return admin;
+	}
+
+	public boolean isUserAllowInstall(){
+		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
 	
 }

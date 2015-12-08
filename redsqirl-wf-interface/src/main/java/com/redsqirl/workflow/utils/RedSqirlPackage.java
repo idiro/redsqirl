@@ -59,6 +59,10 @@ public class RedSqirlPackage {
 		this.user = user;
 	}
 	
+	public String getPackageName(){
+		return packageFile.getName();
+	}
+	
 	public String addPackage(String user){
 		String error = null;
 		String packageName = getPackageProperty(property_name);

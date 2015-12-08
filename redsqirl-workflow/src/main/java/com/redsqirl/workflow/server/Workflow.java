@@ -73,10 +73,9 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
-import com.redsqirl.workflow.utils.RedSqirlModel;
 import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 
 /**
  * Class that manages a workflow.
@@ -336,11 +335,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	public Set<String> getSuperActions() throws RemoteException {
-		Set<String> ans = new SuperActionManager().getAvailableSuperActions(System
+		Set<String> ans = new ModelManager().getAvailableSuperActions(System
 				.getProperty("user.name"));
 		if(name != null && name.contains(">")){
 			String[] modelSW = RedSqirlModel.getModelAndSW(name);
-			ans.addAll(new ModelManager().getModel(modelSW[0], System.getProperty("user.name")).getSubWorkflowFullNames());
+			ans.addAll(new ModelManager().getAvailableModel(System.getProperty("user.name"),modelSW[0]).getSubWorkflowFullNames());
 		}
 		return ans;
 	}
@@ -2319,6 +2318,32 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return error;
 
+	}
+	
+
+
+	@Override
+	public void renameSA(String oldName, String newName) throws RemoteException {
+		Iterator<DataFlowElement> it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			if(cur.getName().equals(oldName)){
+				((SuperElement) cur).setName(newName);
+			}
+		}
+	}
+	
+	@Override
+	public Set<String> getSADependencies() throws RemoteException {
+		Set<String> ans = new LinkedHashSet<String>();
+		Iterator<DataFlowElement> it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			if(cur.getName().contains(">")){
+				ans.add(cur.getName());
+			}
+		}
+		return ans;
 	}
 
 	@Override

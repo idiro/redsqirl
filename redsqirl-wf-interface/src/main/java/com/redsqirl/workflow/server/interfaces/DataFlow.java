@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
@@ -245,6 +246,15 @@ public interface DataFlow extends Remote, Cloneable{
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException,Exception;
 	
+	
+	/**
+	 * Rename a Super Element so that it point to a different Super Action.
+	 * The new Super Action should have the same entry than the old one.  
+	 * @param oldName
+	 * @param newName
+	 * @throws RemoteException
+	 */
+	public void renameSA(String oldName, String newName) throws RemoteException;
 	
 	/**
 	 * Aggregate the Elements in one existing SuperAction
@@ -497,5 +507,7 @@ public interface DataFlow extends Remote, Cloneable{
 	public String getPath() throws RemoteException;
 
 	public void setPath(String path) throws RemoteException;
+
+	Set<String> getSADependencies() throws RemoteException;
 	
 }

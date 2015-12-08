@@ -192,15 +192,15 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	 */
 	@Override
 	public String getImage() throws RemoteException {
-		String fname = getName().toLowerCase() + ".gif";
-		String relativePath = WorkflowPrefManager.getPathuserimagepref() + "/"
+		String fname = RedSqirlModel.getModelAndSW(getName())[0] + ".gif";
+		String relativePath = WorkflowPrefManager.getPathuserimagepref() + "/model/"
 				+ fname;
 		File f = new File(WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
 				+ relativePath);
 		if (!f.exists()) {
-			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
+			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/model/"
 					+ fname;
 			f = new File(
 					WorkflowPrefManager.getSysProperty(

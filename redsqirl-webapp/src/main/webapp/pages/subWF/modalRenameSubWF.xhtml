@@ -1,0 +1,46 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<script>
+		function getSubWFRenameValueJS(){
+			return jQuery('[id$="renameSubWFInput"]').val();
+		}
+	</script>
+
+    <div id="domMessageDivRenameSubWF" style="display: none;">
+        <img src="../image/icons/waiting.gif" />
+    </div>
+	<a4j:region>
+		<a4j:status
+			onstart="jQuery.blockUI({ message: jQuery('#domMessageDivRenameSubWF') });"
+			onerror="jQuery.unblockUI();"
+			onsuccess="jQuery.unblockUI();"
+			onstop="jQuery.unblockUI();" />
+		<a4j:jsFunction name="renameSubWF"
+			reRender="msnError, subwfList"
+			action="#{modelBean.renameSubWorkflow}"
+			oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalRenameSubWF')}.hide()}">
+			<a4j:actionparam name="subWFNewName" />
+		</a4j:jsFunction>
+
+	</a4j:region>
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:outputText value="#{messages.label_name}" />
+	<h:inputText id="renameSubWFInput" value="#{modelBean.currentSubworkflowName}" />
+	
+	<h:panelGrid columns="2">
+		
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('modalAddModel')}.hide();" />
+		
+		<a4j:commandButton id="renameSubWFButton"  value="#{messages.button_ok}"
+			styleClass="greenButton" onclick="renameSubWF(getSubWFRenameValueJS())" />
+	</h:panelGrid>
+
+</h:panelGrid>

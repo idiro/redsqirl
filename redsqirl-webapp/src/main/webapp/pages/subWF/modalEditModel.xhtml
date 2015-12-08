@@ -1,0 +1,246 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+
+	<script>
+	
+	function getCommentValueJS(){
+		return jQuery('[id$="modelCommentInput"]').val();
+	}
+	
+	function getModelNameValueJS(){
+		return jQuery('[id$="modelNameInput"]').val();
+	}
+	jQuery('[id$="modelImgInput"]').hide();
+	jQuery('[id$="modelNameEditAfter"]').hide();
+	jQuery('[id$="modelCommentEditAfter"]').hide();
+    function showEditModelName(){
+        jQuery('[id$="modelNameInput"]').show();
+        jQuery('[id$="modelNameEditAfter"]').show();
+        jQuery('[id$="modelNameOutput"]').hide();
+        jQuery('[id$="modelNameEditBefore"]').hide();
+    }
+    function hideEditModelName(){
+        jQuery('[id$="modelNameInput"]').hide();
+        jQuery('[id$="modelNameEditAfter"]').hide();
+        jQuery('[id$="modelNameOutput"]').show();
+        jQuery('[id$="modelNameEditBefore"]').show();
+    }
+    function showEditModelImg(){
+        jQuery('[id$="modelImgInput"]').show();
+        jQuery('[id$="modelImgOutput"]').hide();
+        jQuery('[id$="modelImgEdit"]').hide();
+    }
+    function hideEditModelImg(){
+        jQuery('[id$="modelImgInput"]').hide();
+        jQuery('[id$="modelImgOutput"]').show();
+        jQuery('[id$="modelImgEdit"]').show();
+    }
+    function showEditModelComment(){
+        jQuery('[id$="modelCommentInput"]').show();
+        jQuery('[id$="modelCommentEditAfter"]').show();
+        jQuery('[id$="modelCommentOutput"]').hide();
+        jQuery('[id$="modelCommentEditBefore"]').hide();
+    }
+    function hideEditModelComment(){
+        jQuery('[id$="modelCommentInput"]').hide();
+        jQuery('[id$="modelCommentEditAfter"]').hide();
+        jQuery('[id$="modelCommentOutput"]').show();
+        jQuery('[id$="modelCommentEditBefore"]').show();
+    }
+    
+	</script>
+	
+    <div id="domMessageDivEditModel" style="display: none;">
+        <img src="../image/icons/waiting.gif" />
+    </div>
+	<h:form>
+
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivEditModel') });"
+				onerror="jQuery.unblockUI();"
+				onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+			<a4j:jsFunction name="renameModel"
+				reRender="msnError, modelNameOutput, modelsList"
+				oncomplete="hideEditModelName();" action="#{modelBean.renameModel}">
+				<a4j:actionparam  name="modelName"  />
+			</a4j:jsFunction>
+
+			<a4j:jsFunction name="updateModelComment"
+				reRender="msnError, modelCommentOutput, modelsList"
+				action="#{modelBean.updateModelComment}"
+				oncomplete="hideEditModelComment();">
+				<a4j:actionparam  name="modelComment"  />
+			</a4j:jsFunction>
+
+		</a4j:region>
+
+		<table style="width: 100%; height: 100% !important; display: block;">
+			<tbody style="width: 100%">
+				<tr style="width: 100%; right: 0px; position: relative;">
+					<td style="width: 50px; padding: 0px; margin: 0px;"><img
+						id="modelImgOutput" src="#{modelBean.model.image}"
+						style="margin-right: -27px" /> <h:graphicImage
+							url="../image/icons/button-pencil02.gif" id="modelImgEdit"
+							onclick="showEditModelImg();" style="width:20px;"
+							title="#{messages.label_text_editor}" /> <rich:fileUpload
+							fileUploadListener="#{modelBean.listenerImageFile}"
+							immediateUpload="true"
+							onfileuploadcomplete="hideEditModelImg();"
+							id="modelImgInput" style="display:none;" maxFilesQuantity="1"
+							noDuplicate="true" acceptedTypes="jpg, gif, png, bmp"
+							addLabel="upLoad" listHeight="40px" listWidth="200px"
+							reRender="modelsList, modelImgOutput">
+							<f:facet name="label">
+								<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+							</f:facet>
+						</rich:fileUpload></td>
+					<td style="width: 700px; padding: 0px; margin: 0px;">
+						<h1>
+							<h:outputText id="modelNameOutput" value="#{modelBean.name}" />
+							<h:inputText id="modelNameInput" style="display:none"
+								value="#{modelBean.name}"
+								onkeypress="if(event.keyCode == 13){event.preventDefault();renameModel(getModelNameValueJS());}" />
+							<a4j:commandLink id="modelNameEditBefore">
+								<h:graphicImage url="../image/icons/button-pencil02.gif"
+									style="width:15px;margin-left:3px;"
+									title="#{messages.label_text_editor}"
+									onclick="showEditModelName();"/>
+							</a4j:commandLink>
+							<a4j:commandLink id="modelNameEditAfter">
+								<h:graphicImage url="../image/icons/button-pencil02.gif"
+									style="width:15px;margin-left:3px;"
+									title="#{messages.label_text_editor}"
+									onclick="renameModel(getModelNameValueJS());"/>
+							</a4j:commandLink>
+						</h1>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<br />
+		<h:outputText id="modelCommentOutput" value="#{modelBean.comment}" />
+		<h:inputText id="modelCommentInput" style="display:none"
+			value="#{modelBean.comment}"
+			reRender="modelCommentOutput"
+			onkeypress="if(event.keyCode == 13){event.preventDefault();updateModelComment(getCommentValueJS())}" />
+		<a4j:commandLink id="modelCommentEditBefore"
+			onclick="showEditModelComment()">
+			<h:graphicImage url="../image/icons/button-pencil02.gif"
+				style="width:10px;margin-left:3px;"
+				title="#{messages.label_text_editor}" />
+		</a4j:commandLink>
+		<a4j:commandLink id="modelCommentEditAfter"
+			onclick="updateModelComment(getCommentValueJS())">
+			<h:graphicImage url="../image/icons/button-pencil02.gif"
+				style="width:10px;margin-left:3px;"
+				title="#{messages.label_text_editor}" />
+		</a4j:commandLink>
+		<br />
+		<br />
+		<div class="divMenu">
+			<a4j:commandLink action="#{modelBean.deleteSubWorkflow}"
+				onclick="if(!confirm('Are you sure you want to delete the selected SubWorkflows?')){return false;}"
+				reRender="subwfList, msnError">
+				<h:graphicImage id="subwfbtDelete"
+					value="../image/icons/button-delete2.gif"
+					title='#{messages.HdfsInterface_delete_help}'
+					styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+
+			<a4j:commandLink id="subwflinkCopyModalPanel"
+				action="#{modelBean.copyBefore}"
+				oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalListModel')}.show();}"
+				reRender="msnError">
+				<h:graphicImage value="../image/icons/button-copy.gif"
+					title='#{messages.HdfsInterface_copy_help}'
+					styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+
+			<a4j:commandLink id="subwflinkMoveModalPanel"
+				action="#{modelBean.moveBefore}"
+				oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalListModel')}.show();}"
+				reRender="subwfList, msnError">
+				<h:graphicImage value="../image/icons/button-move.gif"
+					title='#{messages.HdfsInterface_move_help}'
+					styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+
+			<a4j:commandLink id="subwflinkPrivateModalPanel"
+				action="#{modelBean.addPrivate}" reRender="subwfList, msnError">
+				<h:graphicImage value="../image/icons/lock.png"
+					title='#{messages.model_addprivate_help}'
+					styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+
+			<a4j:commandLink id="subwflinkPublicModalPanel"
+				action="#{modelBean.addPublic}" reRender="subwfList, msnError">
+				<h:graphicImage value="../image/icons/lock_open.png"
+					title='#{messages.model_addpublic_help}'
+					styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+		</div>
+		<rich:panel style="border:none">
+
+			<rich:extendedDataTable id="subwfList"
+				value="#{modelBean.subWorkflowFromModel.rows}" var="item"
+				rowKeyVar="indexTable" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row">
+
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="50px;">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox
+							onclick="selectAllCheckbox(this, /subwfselect$/);" />
+					</f:facet>
+					<h:selectBooleanCheckbox id="subwfselect" value="#{item.selected}" />
+				</rich:column>
+
+				<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
+					style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_name}" />
+					</f:facet>
+					<a4j:commandLink value="#{item.row[0]}" title="#{item.row[0]}" action="#{modelBean.beforeRenameSubWorkfow}" onclick="#{rich:component('modalRenameSubWF')}.show()">
+						<a4j:actionparam  name="subWFName" value="#{item.row[0]}"   />
+					</a4j:commandLink>
+				</rich:column>
+
+				<rich:column style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_access_sa}" />
+					</f:facet>
+					<h:outputText value="#{item.row[1]}" title="#{item.row[1]}">
+					</h:outputText>
+				</rich:column>
+
+				<rich:column style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_dep}" />
+					</f:facet>
+					<h:outputText value="#{item.row[2]}" title="#{item.row[2]}">
+					</h:outputText>
+				</rich:column>
+			</rich:extendedDataTable>
+
+		</rich:panel>
+
+		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
+			<a4j:commandButton styleClass="greenButton" value="ok"
+				onclick="#{rich:component('modalEditModel')}.hide()" />
+		</rich:panel>
+	</h:form>
+
+</ui:composition>

@@ -2,18 +2,21 @@ package com.redsqirl.workflow.utils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.nio.file.Files;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
 /**
  * Implementation of the ModelManager.
@@ -21,12 +24,20 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * @author etienne
  *
  */
-public class ModelManager implements ModelManagerInt{
+public class ModelManager extends UnicastRemoteObject implements ModelManagerInt{
 
 	private static Logger logger = Logger.getLogger(ModelManager.class);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3513308750679949894L;
+	
+	public ModelManager() throws RemoteException{
+		super();
+	}
 	
 	@Override
-	public String create(String user, String newModelName) {
+	public String create(String user, String newModelName) throws RemoteException {
 		File modelFolder = WorkflowPrefManager.getSuperActionMainDir(user);
 		File modelFile = new File(modelFolder,newModelName);
 		String error = null;
@@ -37,89 +48,45 @@ public class ModelManager implements ModelManagerInt{
 		}
 		return error;
 	}
-
-	@Override
-	public List<ModelInt> getModels(String user){
-		List<ModelInt> ans = getUserModels(user);
-		Iterator<ModelInt> sysModelIt = getSysModels().iterator();
-		while(sysModelIt.hasNext()){
-			ModelInt cur = sysModelIt.next();
-			if( getUserModel(user,cur.getName()) == null){
-				ans.add(cur);
-			}
-		}
-		return ans;
-	}
 	
 	@Override
-	public ModelInt getModel(String modelName, String user) {
-		String str = getModelFromFile(WorkflowPrefManager.getSuperActionMainDir(user), modelName);
-		ModelInt ans = null;
-		if(str == null){
-			str = getModelFromFile(WorkflowPrefManager.getSuperActionMainDir(null), modelName);
-			if(str != null){
-				ans = new RedSqirlModel(null, new File(WorkflowPrefManager.getSuperActionMainDir(null),str));
-			}
-		}else{
-			ans = new RedSqirlModel(user,new File(WorkflowPrefManager.getSuperActionMainDir(user),str));
-		}
-		
-		return ans;
-	}
-	
-	protected ModelInt getSysModel(String modelName){
-		File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
-		String str = getModelFromFile(sysSADir, modelName);
-		ModelInt ans = null;
-		if(str != null){
-			ans = new RedSqirlModel(null, new File(sysSADir,str));
-		}
-		return ans;
-	}
-	
-	protected ModelInt getUserModel(String user, String modelName){
-		File userSADir = WorkflowPrefManager.getSuperActionMainDir(user);
-		String str = getModelFromFile(userSADir, modelName);
-		ModelInt ans = null;
-		if(str != null){
-			ans = new RedSqirlModel(user,new File(userSADir,str));
-		}
-		
-		return ans;
-	}
-	
-	@Override
-	public String move(ModelInt modelFrom, ModelInt modelTo, String subDataFlowName) {
-		Map<String, Set<String>> dependencies = modelFrom.getDependenciesPerSubWorkflows();
-		String error = copy(modelFrom, modelTo, subDataFlowName);
-		if(error == null){
-			try {
-				modelFrom.removeSubWorkflowDependencies(subDataFlowName, dependencies.get(subDataFlowName));
-				new File(modelFrom.getFileName(),subDataFlowName).delete();
-			} catch (Exception e) {
-				error = "Unexpected exception.";
-				logger.error(e,e);
-			}
-		}
-
-		return error;
-	}
-
-	@Override
-	public String copy(ModelInt modelFrom, ModelInt modelTo, String subDataFlowName) {
-		Map<String, Set<String>> dependencies = modelFrom.getDependenciesPerSubWorkflows();
+	public String remove(ModelInt model){
 		String error = null;
-		try {
-			Files.copy(new File(modelFrom.getFileName(),subDataFlowName).toPath(), 
-					new FileOutputStream(new File(modelTo.getFileName(), subDataFlowName)));
-			
-			modelTo.addSubWorkflowDependencies(subDataFlowName, dependencies.get(subDataFlowName));
-		} catch (Exception e) {
-			error = "Unexpected exception.";
-			logger.error(e,e);
+		try{
+			Iterator<String> it = model.getSubWorkflowNames().iterator();
+			while(it.hasNext()){
+				String cur = it.next();
+				model.delete(cur);
+			}
+			LocalFileSystem.delete(model.getFile());
+		}catch(Exception e){
+			error ="Unexpected failure to delete model: "+e.getMessage();
+			logger.error(error,e);
 		}
-		
 		return error;
+	}
+
+
+	@Override
+	public ModelInt getAvailableModel(String user, String modelName) throws RemoteException {
+		ModelInt ans = getUserModel(user, modelName);
+		if(!ans.getFile().exists()){
+			ans = getSysModel(modelName);
+		}
+		if(!ans.getFile().exists()){
+			ans = null;
+		}
+		return ans;
+	}
+	
+	public ModelInt getSysModel(String modelName) throws RemoteException{
+		File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
+		return modelName == null? null: new RedSqirlModel(null, new File(sysSADir,modelName));
+	}
+	
+	public ModelInt getUserModel(String user, String modelName) throws RemoteException{
+		File userSADir = WorkflowPrefManager.getSuperActionMainDir(user);
+		return modelName == null? null: new RedSqirlModel(user,new File(userSADir,modelName));
 	}
 
 
@@ -142,6 +109,7 @@ public class ModelManager implements ModelManagerInt{
 						return pathname.isDirectory();
 					}
 				});
+				Arrays.sort(modelList);
 				for(File model:modelList){
 					logger.info("Add model "+model.getName());
 					ansL.add(new RedSqirlModel(user, model));
@@ -175,5 +143,105 @@ public class ModelManager implements ModelManagerInt{
 		}
 		return ans;
 	}
+	
+
+	public String export(SubDataFlow toExport , Boolean privilege, String pathHdfs) throws RemoteException{
+		String error = null;
+		logger.info("Export "+toExport.getName()+" in "+pathHdfs);
+		error = toExport.save(pathHdfs, privilege);
+		return error;
+	}
+	
+	@Override
+	public String export(ModelInt model, Boolean privilege) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
+
+	@Override
+	public String createInstallFiles(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException {
+		String error = null;
+		String[] modelAndSW = RedSqirlModel.getModelAndSW(toInstall.getName());
+		String modelName = modelAndSW[0];
+		
+		if(!model.getName().equals(modelName)){
+			error = "Model name inconsistant between model and subworkflow";
+		}else{
+			error = model.install(toInstall, privilege);
+		}
+
+		return error;
+	}
+	
+	public Set<String> getSysSuperActions() throws RemoteException {
+		Set<String> ans = new LinkedHashSet<String>();
+		List<ModelInt> models = getSysModels();
+		Iterator<ModelInt> it = models.iterator();
+		while(it.hasNext()){
+			ModelInt cur = it.next();
+			ans.addAll(cur.getPublicFullNames());
+		}
+		return ans;
+	}
+	
+	public Set<String> getUserSuperActions(String user) throws RemoteException {
+		Set<String> ans = new LinkedHashSet<String>();
+		List<ModelInt> models = getUserModels(user);
+		Iterator<ModelInt> it = models.iterator();
+		while(it.hasNext()){
+			ModelInt cur = it.next();
+			logger.info("Load public interface of "+cur.getName());
+			ans.addAll(cur.getPublicFullNames());
+		}
+		return ans;
+	}
+
+	
+	public Set<String> getAvailableSuperActions(String user) throws RemoteException {
+		Set<String> ansL = new LinkedHashSet<String>();
+		ansL.addAll(getUserSuperActions(user));
+		ansL.addAll(getSysSuperActions());
+		return ansL;
+	}
+
+
+	public File getSuperActionHelpDir(String user) {
+		String tomcatpath = WorkflowPrefManager
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		String installPackage = WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, tomcatpath);
+		logger.debug("Install Package in: " + installPackage);
+		return user == null || user.isEmpty() ? new File(installPackage
+				+ WorkflowPrefManager.getPathSysHelpPref()) : new File(
+				installPackage + WorkflowPrefManager.getPathUserHelpPref(user));
+	}
+	
+	@Override
+	public List<ModelInt> getAvailableModels(String user) throws RemoteException {
+		List<ModelInt> ans = getUserModels(user);
+		Iterator<ModelInt> sysModelIt = getSysModels().iterator();
+		while(sysModelIt.hasNext()){
+			ModelInt cur = sysModelIt.next();
+			if( getUserModel(user,cur.getName()) == null){
+				ans.add(cur);
+			}
+		}
+		return ans;
+	}
+	
+	@Override
+	public Set<String> getSubWorkflowFullNameDependentOn(String user, Set<String> subworkflowFullNames) throws RemoteException{
+		Set<String> ans = new LinkedHashSet<String>();
+		Iterator<ModelInt> it = getAvailableModels(user).iterator();
+		while(it.hasNext()){
+			ModelInt cur = it.next();
+			ans.addAll(cur.getSubWorkflowFullNameDependentOn(subworkflowFullNames));
+		}
+		ans.removeAll(subworkflowFullNames);
+		return ans;
+	}
+	
 	
 }
