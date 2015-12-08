@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -20,6 +20,7 @@ import com.redsqirl.auth.AuthorizationListener;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SelectHeaderType;
 import com.redsqirl.dynamictable.SelectableRow;
+import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.utils.PackageManager;
@@ -34,19 +35,19 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private String workflowNameTmp = "wf-footer-123";
 	private Map<String, List<String[]>> tabsMap;
 	private SelectableTable tableGrid = new SelectableTable();
-	private LinkedList<String> columnIds;
 	private List<String> tabs;
 	private List<SelectItem> listPackages;
 	private List<SelectHeaderType> listActions;
-	private List<SelectHeaderType> listSelectedActions;
 	private String selectedPackage;
+	private Integer selectedTab;
+	private Map<String,String> mapActionPackage;
 
 
 	/** openCanvasConfigureTabsBean
 	 * 
 	 * Methods Used in AuthorizationListener.java to open the canvas.xhtml
 	 * 
-	 * @see AuthorizationListener.java - canvas.xhtml
+	 * @see AuthorizationListener.java
 	 * @author Igor.Souza
 	 */
 	public void openCanvasConfigureTabsBean() {
@@ -60,10 +61,13 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
 			wf.loadMenu();
 			tabsMap = wf.getRelativeMenu(getCurrentPage());
-			getworkFlowInterface().removeWorkflow(workflowNameTmp);
 
 			setTabs(new LinkedList<String>(getTabsMap().keySet()));
 
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
+			PackageManager pckManager = new PackageManager();
+			mapActionPackage = pckManager.getPackageOfActions(user);
 
 		} catch (Exception e) {
 			logger.error("Error openConfigureTabsBean " + e,e);
@@ -77,16 +81,22 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * 
 	 * @see canvas.xhtml
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void openConfigureTabsBean() {
+	public void openConfigureTabsBean() throws RemoteException {
 
-		setColumnIds(new LinkedList<String>());
-		getColumnIds().add("Name");
-		setTableGrid(new SelectableTable(columnIds));
+		setTableGrid(new SelectableTable());
 		for (String name : getTabsMap().keySet()) {
-			String[] value = new String[1];
-			value[0] = name;
-			getTableGrid().getRows().add(new SelectableRow(value));
+
+			List<SelectHeaderType> ans = new ArrayList<SelectHeaderType>();
+			List<String[]> l = getTabsMap().get(name);
+			for (String[] value : l) {
+				SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
+				ans.add(sht);
+			}
+			SelectableRowFooter str = new SelectableRowFooter(ans);
+			str.setNameTab(name);
+			getTableGrid().getRows().add(str);
 		}
 
 	}
@@ -102,7 +112,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			SelectableRow selectableRow = (SelectableRow) iterator.next();
 			if(selectableRow.isSelected()){
 				iterator.remove();
-				getTabsMap().remove(selectableRow.getRow()[0]);
+				getTabsMap().remove(selectableRow.getNameTab());
 			}
 		}
 	}
@@ -114,9 +124,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void createTab() throws RemoteException, Exception {
-		String[] value = new String[1];
-		value[0] = "";
-		getTableGrid().getRows().add(new SelectableRow(value));
+		getTableGrid().getRows().add(new SelectableRowFooter(new ArrayList<SelectHeaderType>()));
 	}
 
 	/** saveTabs
@@ -124,22 +132,29 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * Methods to save the list of tabs names
 	 * 
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void saveTabs() {
+	public void saveTabs() throws RemoteException {
 
+		Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
+
+		for (Iterator iterator = tableGrid.getRows().iterator(); iterator.hasNext();) {
+			SelectableRowFooter s = (SelectableRowFooter) iterator.next();
+			List<String> temp = new ArrayList<String>();
+			for (int i = 0; i < s.getSelectedActions().size(); ++i) {
+				temp.add(s.getSelectedActions().get(i).getType());
+			}
+			mapMenu.put(s.getNameTab() , temp);
+		}
+
+		DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+		wf.loadMenu(mapMenu);
+		wf.saveMenu();
+		tabsMap = wf.getRelativeMenu(getCurrentPage());
+		setTabs(new LinkedList<String>(getTabsMap().keySet()));
 	}
 
-	/** cancelChanges
-	 * 
-	 * Methods to just close the configure footer
-	 * 
-	 * @author Igor.Souza
-	 */
-	public void cancelChanges() {
-		tabsMap = null;
-	}
-
-	/** cancelChanges
+	/** openActionsPanel
 	 * 
 	 * open the settings configure the actions
 	 * 
@@ -152,35 +167,71 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		logger.info("openActionsPanel");
 		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
+		if(selectedTab != null){
+			setSelectedTab(Integer.parseInt(selectedTab));
 
-		listPackages = new ArrayList<SelectItem>();
-		listPackages.add(new SelectItem("All", "All"));
-		listPackages.add(new SelectItem("core", "core"));
+			listPackages = new ArrayList<SelectItem>();
+			listPackages.add(new SelectItem("all", "all"));
+			listPackages.add(new SelectItem("core", "core"));
 
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-		String user = (String) session.getAttribute("username");
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
 
-		PackageManager pckManager = new PackageManager();
-		for (String name : pckManager.getPackageNames(user)) {
-			SelectItem s = new SelectItem(name, name);
-			listPackages.add(s);
-		}
-		for (String name : pckManager.getPackageNames(null)) {
-			SelectItem s = new SelectItem(name, name);
-			listPackages.add(s);
-		}
-		if(listPackages != null && !listPackages.isEmpty()){
-			setSelectedPackage(listPackages.get(0).getLabel());
-			retrieveActions(getSelectedPackage());
+			PackageManager pckManager = new PackageManager();
+			for (String name : pckManager.getPackageNames(user)) {
+				SelectItem s = new SelectItem(name, name);
+				listPackages.add(s);
+			}
+			for (String name : pckManager.getPackageNames(null)) {
+				SelectItem s = new SelectItem(name, name);
+				listPackages.add(s);
+			}
+			if(listPackages != null && !listPackages.isEmpty()){
+				setSelectedPackage(listPackages.get(0).getLabel());
+				retrieveActions(getSelectedPackage());
+			}
+
+			calculateListSelectedActions();
+
 		}
 
 	}
-	
+
+	/** calculateListSelectedActions
+	 * 
+	 * Method to create the list of selected actions for each tab
+	 * 
+	 * @author Igor.Souza
+	 * @throws RemoteException 
+	 */
+	public void calculateListSelectedActions() throws RemoteException {
+
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		for (SelectHeaderType selectHeaderType : s.getSelectedActions()) {
+			for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
+				SelectHeaderType actions = (SelectHeaderType) iterator.next();
+				if(actions.getType().equals(selectHeaderType.getType())){
+					iterator.remove();
+				}
+			}
+		}
+
+	}
+
 	public void retrieveActions() throws RemoteException {
 		String selectedPackage = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedPackage");
 		retrieveActions(selectedPackage);
+		calculateListSelectedActions();
 	}
 
+	/** retrieveActions
+	 * 
+	 * Method to create the list of actions for each package
+	 * 
+	 * @param selectedPackage
+	 * @author Igor.Souza
+	 * @throws RemoteException 
+	 */
 	public void retrieveActions(String selectedPackage) throws RemoteException {
 
 		if(selectedPackage != null){
@@ -192,12 +243,26 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 			PackageManager pckManager = new PackageManager();
 			listActions = new ArrayList<SelectHeaderType>();
-			
-			if(selectedPackage.equals("All")){
-				List<String> ansList = pckManager.getActions(userInfoBean.getUserName());
-				for (String action : ansList) {
-					SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, action);
-					listActions.add(selectHeaderType);
+
+			if(selectedPackage.equals("all")){
+				for (String name : pckManager.getCoreActions()) {
+					SelectHeaderType s = new SelectHeaderType("core", name);
+					listActions.add(s);
+				}
+				Map<String,List<String>> map = pckManager.getActionsPerPackage(userInfoBean.getUserName());
+				for (String key : map.keySet()) {
+					List<String> ansList = map.get(key);
+					if(ansList != null && !ansList.isEmpty()){
+						for (String action : ansList) {
+							SelectHeaderType selectHeaderType = new SelectHeaderType(key, action);
+							listActions.add(selectHeaderType);
+						}
+					}
+				}
+			}else if(selectedPackage.equals("core")){
+				for (String name : pckManager.getCoreActions()) {
+					SelectHeaderType s = new SelectHeaderType("core", name);
+					listActions.add(s);
 				}
 			}else{
 				Map<String,List<String>> map = pckManager.getActionsPerPackage(userInfoBean.getUserName());
@@ -214,28 +279,102 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	}
 
-	public void cancelActionChanges() {
-		tabsMap = null;
+	/** cancelActions
+	 * 
+	 * re calculate the list of selected actions for the selected tab 
+	 * 
+	 * @author Igor.Souza
+	 */
+	public void cancelActions() throws RemoteException {
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<String[]> l = getTabsMap().get(s.getNameTab());
+		List<SelectHeaderType> ans = new ArrayList<SelectHeaderType>();
+		for (String[] value : l) {
+			SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
+			ans.add(sht);
+		}
+		s.setSelectedActions(ans);
+		setSelectedTab(null);
 	}
 
-	public void saveActions() {
-
-	}
-	
 	public void selectAll(){
-		
+
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+
+		for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
+			SelectHeaderType actions = (SelectHeaderType) iterator.next();
+			logger.info(actions.isSelected());
+			s.getSelectedActions().add(actions);
+			iterator.remove();
+		}
+
 	}
-	
+
 	public void select(){
-		
+
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+
+		for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
+			SelectHeaderType actions = (SelectHeaderType) iterator.next();
+			logger.info(actions.isSelected());
+			if(actions.isSelected()){
+				s.getSelectedActions().add(actions);
+				iterator.remove();
+			}
+		}
+
 	}
-	
+
 	public void unselect(){
-		
+
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+
+		for (Iterator<SelectHeaderType> iterator = s.getSelectedActions().iterator(); iterator.hasNext();) {
+			SelectHeaderType actions = (SelectHeaderType) iterator.next();
+			logger.info(actions.isSelected());
+			if(actions.isSelected()){
+				if(actions.getName().equals(getSelectedPackage()) || getSelectedPackage().equals("all")){
+					listActions.add(actions);
+					iterator.remove();
+				}else{
+					iterator.remove();
+				}
+			}
+		}
+
 	}
-	
+
 	public void unselectAll(){
-		
+
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+
+		for (Iterator<SelectHeaderType> iterator = s.getSelectedActions().iterator(); iterator.hasNext();) {
+			SelectHeaderType actions = (SelectHeaderType) iterator.next();
+			logger.info(actions.isSelected());
+			if(actions.getName().equals(getSelectedPackage()) || getSelectedPackage().equals("all")){
+				listActions.add(actions);
+				iterator.remove();
+			}else{
+				iterator.remove();
+			}
+		}
+
+	}
+
+	/** getTabSelectedActions
+	 * 
+	 * Methods to return the list of selected actions. Used in configureFooterActionsTabs.xhtml to Iterator the tabs 
+	 * 
+	 * @see configureFooterActionsTabs.xhtml
+	 * @return List<SelectHeaderType>
+	 * @author Igor.Souza
+	 */
+	public List<SelectHeaderType> getTabSelectedActions(){
+		if(getSelectedTab() != null){
+			SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+			return s.getSelectedActions();
+		}
+		return new ArrayList<SelectHeaderType>();
 	}
 
 	/** getMenuWAList
@@ -261,14 +400,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	public void setTabsMap(Map<String, List<String[]>> tabsMap) {
 		this.tabsMap = tabsMap;
-	}
-
-	public LinkedList<String> getColumnIds() {
-		return columnIds;
-	}
-
-	public void setColumnIds(LinkedList<String> columnIds) {
-		this.columnIds = columnIds;
 	}
 
 	public SelectableTable getTableGrid() {
@@ -311,12 +442,20 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		this.listActions = listActions;
 	}
 
-	public List<SelectHeaderType> getListSelectedActions() {
-		return listSelectedActions;
+	public Integer getSelectedTab() {
+		return selectedTab;
 	}
 
-	public void setListSelectedActions(List<SelectHeaderType> listSelectedActions) {
-		this.listSelectedActions = listSelectedActions;
+	public void setSelectedTab(Integer selectedTab) {
+		this.selectedTab = selectedTab;
+	}
+
+	public Map<String, String> getMapActionPackage() {
+		return mapActionPackage;
+	}
+
+	public void setMapActionPackage(Map<String, String> mapActionPackage) {
+		this.mapActionPackage = mapActionPackage;
 	}
 
 }

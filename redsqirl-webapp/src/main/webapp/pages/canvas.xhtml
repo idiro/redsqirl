@@ -2704,9 +2704,8 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalConfigureFooterTabs" width="450"
-			height="400" style="overflow:none;" resizeable="false"
-			styleClass="noMaskClass">
+		<rich:modalPanel id="modalConfigureFooterTabs" width="450" height="400"
+			 style="overflow:none;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
@@ -2877,6 +2876,26 @@
 
 			<h:panelGroup>
 				<a4j:include viewId="/pages/modalPackage.xhtml" ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="modalPackageSettings" width="820" height="600"
+			style="overflow:none;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_packages}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalPackageSettings')}.hide();" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/packageSettings.xhtml" ajaxRendered="true" />
 			</h:panelGroup>
 
 		</rich:modalPanel>

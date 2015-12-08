@@ -10,8 +10,6 @@
 
 <h:form>
 
-	<a4j:keepAlive beanName = "configureTabsBean"/>
-	
 	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 		onstop="jQuery.unblockUI();" />
@@ -54,19 +52,18 @@
 		
 		                </rich:column>
 		                     
-	                   <rich:columns value="#{configureTabsBean.columnIds == null? canvasBean.emptyList : configureTabsBean.columnIds}" 
-	                     	var="column" index="ind" style="border-bottom:0px;border-right:0px;" >
+	                   <rich:column style="border-bottom:0px;border-right:0px;" >
 	                     	
 		                    <f:facet name="header">
-		                    	<h:outputText value="#{column}" />
+		                    	<h:outputText value="#{messages.label_name}" />
 		                    </f:facet>
-		                    <h:inputText value="#{rowItem.row[ind]}" onkeyup="nospaces(this);" onkeypress="return disableEnterKey(event);" />
+		                    <h:inputText value="#{rowItem.nameTab}" onkeyup="nospaces(this);" onkeypress="return disableEnterKey(event);" />
 							<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.openActionsPanel}" value="..." 
 								oncomplete="#{rich:component('actionsPanel')}.show();" reRender="actionsPanel" >
 								<f:param name="selected" value="#{rowNb}" />
 							</a4j:commandButton>
 	                      
-	                  	</rich:columns>
+	                  	</rich:column>
 		               
 		       		</rich:dataTable>
 	               
@@ -96,7 +93,7 @@
 	</a4j:commandLink>
 	
 	<h:panelGrid columns="2" style="border:none; float:right;">
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();" />
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
 	</h:panelGrid>
 
@@ -110,109 +107,14 @@
 			<h:outputText value='#{messages.label_tab_actions}' />
 		</f:facet>
 		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer;width:22px;"
-				onclick="#{rich:component('actionsPanel')}.hide();" />
+			<a4j:commandLink title="#{messages.label_close}" action="#{configureTabsBean.cancelActions}" oncomplete="#{rich:component('actionsPanel')}.hide();" >
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" />
+		    </a4j:commandLink>
 		</f:facet>
 
-		<h:form>
-		
-			<table style="width:100%">
-		    	<tr style="width:100%">
-		        	<td style="width:45%">
-			
-			
-						<h:panelGroup style="width:150px" layout="block" id="listPackages" >
-			                 <select onchange="updatedActionsTableJS(this);" >
-			            		<a4j:repeat value="#{configureTabsBean.listPackages}" var="idx"  >
-									<h:outputText rendered="#{configureTabsBean.selectedPackage == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
-									<h:outputText rendered="#{configureTabsBean.selectedPackage != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
-								</a4j:repeat>
-			            	</select>
-			            </h:panelGroup>
-			            
-			             <script type="text/javascript">
-				            function updatedActionsTableJS(element){
-							    var idx=element.selectedIndex;
-							    var val=element.options[idx].value;
-							    var content=element.options[idx].innerHTML;
-							    updatedActionsTable(val);
-							}
-			            </script>
-						<a4j:jsFunction name="updatedActionsTable" action="#{configureTabsBean.retrieveActions}" reRender="listActions" >
-							<a4j:actionparam name="selectedPackage" />
-						</a4j:jsFunction>
-						
-						<br/>
-						
-						<rich:extendedDataTable id="listActions" var="item" enableContextMenu="false" selectionMode="none" 
-							value="#{configureTabsBean.listActions}" 
-							style="border:0px;height:270px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
-							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row" >
-			
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_package}" />
-								</f:facet>
-								<h:outputText value="#{item.name}" title="#{item.name}" />
-							</rich:column>
-							
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_action}" />
-								</f:facet>
-								<h:outputText value="#{item.type}" title="#{item.type}" />
-							</rich:column>
-			
-						</rich:extendedDataTable>
-				
-					</td>
-					<td style="width:10%">
-				
-						<div style="width:100%; height:270px; border: 0px solid; overflow-x: hidden;">
-			               	<a4j:commandButton styleClass="greenButton" style="width:80px;margin-top:90px;margin-left:2px;" value="#{messages.button_selectAll}" action="#{configureTabsBean.selectAll}" reRender="listActions, listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-			               	<br/>
-			               	<a4j:commandButton styleClass="greenButton" style="width:80px;margin-left:2px;" value="#{messages.button_select}" action="#{configureTabsBean.select}" reRender="listActions, listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-			               	<br/>
-			               	<a4j:commandButton styleClass="greenButton" style="width:80px;margin-left:2px;" value="#{messages.button_unselect}" action="#{configureTabsBean.unselect}" reRender="listActions, listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-			               	<br/>
-			               	<a4j:commandButton styleClass="greenButton" style="width:80px;margin-left:2px;" value="#{messages.button_unselectAll}" action="#{configureTabsBean.unselectAll}" reRender="listActions, listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-			            </div>
-	            
-	            	</td>
-	           		<td style="width:45%">
-				
-						<rich:extendedDataTable id="listSelectedActions" var="item" enableContextMenu="false" selectionMode="none" 
-							value="#{configureTabsBean.listSelectedActions}" 
-							style="border:0px;height:270px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
-							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row" >
-			
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_package}" />
-								</f:facet>
-								<h:outputText value="#{item.name}" title="#{item.name}" />
-							</rich:column>
-							
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_action}" />
-								</f:facet>
-								<h:outputText value="#{item.type}" title="#{item.type}" />
-							</rich:column>
-			
-						</rich:extendedDataTable>
-				
-					</td>
-				</tr>
-			</table>
-			
-			<h:panelGrid columns="2" style="border:none; float:right;">
-				<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelActionChanges}" onclick="#{rich:component('actionsPanel')}.hide();" />
-				<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveActions}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('actionsPanel')}.hide();}" reRender="msnError"/>
-			</h:panelGrid>
-			
-		</h:form>
+		<h:panelGroup style="width:100%">
+			<a4j:include viewId="/pages/configureFooterActionsTabs.xhtml" ajaxRendered="true" />
+		</h:panelGroup>
 		
 	</rich:modalPanel>
 

@@ -12,6 +12,7 @@ public class SelectableRowFooter extends SelectableRow{
 
 	private List<String> target;
 	private List<String> actions;
+	private List<SelectHeaderType> selectedActions;
 	
 	public SelectableRowFooter(String[] row, List<String> actions, List<String> target) {
 		super(row);
@@ -23,6 +24,11 @@ public class SelectableRowFooter extends SelectableRow{
 		super(row);
 		this.target = new LinkedList<String>();
 		this.actions = actions;
+	}
+	
+	public SelectableRowFooter(List<SelectHeaderType> selectedActions) {
+		super();
+		this.selectedActions = selectedActions;
 	}
 	
 	public List<String> getSource(){
@@ -46,6 +52,14 @@ public class SelectableRowFooter extends SelectableRow{
 
 	public void setActions(List<String> actions) {
 		this.actions = actions;
+	}
+
+	public List<SelectHeaderType> getSelectedActions() {
+		return selectedActions;
+	}
+
+	public void setSelectedActions(List<SelectHeaderType> selectedActions) {
+		this.selectedActions = selectedActions;
 	}
 	
 }

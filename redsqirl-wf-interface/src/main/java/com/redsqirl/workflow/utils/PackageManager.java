@@ -210,21 +210,11 @@ public class PackageManager extends UnicastRemoteObject {
 		if (error == null) {
 			logger.info("Install the packages one per one");
 			for (int i = 0; i < packs.length && error == null; ++i) {
-				logger.debug(packs[i].getPackageFile().getAbsolutePath() + "...");
-				error = packs[i].addPackage(user);
+				logger.info(packs[i].getPackageFile().getAbsolutePath() + "...");
+				error = packs[i].addPackage(user,packStr[i].endsWith(".zip"));
 			}
 		} else {
 			logger.info("No change have been made");
-		}
-
-		for (int i = 0; i < packStr.length; ++i) {
-			if (packStr[i].endsWith(".zip")) {
-				try {
-					LocalFileSystem.delete(packs[i].getPackageFile());
-				} catch (IOException e) {
-					logger.warn("Fail to free tmp directory");
-				}
-			}
 		}
 
 		return error;
@@ -571,6 +561,35 @@ public class PackageManager extends UnicastRemoteObject {
 		while (packageIt.hasNext()) {
 			actions.addAll(packageIt.next().getAction());
 		}
+		return actions;
+	}
+	
+	public Map<String,String> getPackageOfActions(String user){
+		Map<String,String> result = new LinkedHashMap<String,String>();
+		
+		for (String actionName : getCoreActions()) {
+			result.put(actionName, "core");
+		}
+		
+		Iterator<RedSqirlPackage> packageIt = getAllPackages(user).iterator();
+		while (packageIt.hasNext()) {
+			RedSqirlPackage pck = packageIt.next();
+			for (String actionName : pck.getAction()) {
+				result.put(actionName, pck.getName());
+			}
+		}
+		return result;
+	}
+	
+	public List<String> getCoreActions(){
+		List<String> actions = new LinkedList<String>();
+		actions.add("convert_file_text");
+		actions.add("convert");
+		actions.add("file_text_source");
+		actions.add("send_email");
+		actions.add("source");
+		actions.add("superactioninput");
+		actions.add("superactionoutput");
 		return actions;
 	}
 	

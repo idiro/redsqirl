@@ -8,11 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -32,8 +30,6 @@ public class RedSqirlPackage {
 	lib_dir = "lib",
 	/** Action list file name */
 	action_file = "actions.txt",
-	/** Footer file name */
-	footer_file = "footer.txt",
 	/** List of files name of file */
 	list_files = "files.txt",
 	
@@ -64,6 +60,13 @@ public class RedSqirlPackage {
 	}
 	
 	public String addPackage(String user){
+		return addPackage(user, false);
+	}
+	
+	public String addPackage(String user,boolean deleteInstallFile){
+		
+		logger.info("Installing path " + packageFile.getAbsolutePath());
+		
 		String error = null;
 		String packageName = getPackageProperty(property_name);
 		String packageVersion = getPackageProperty(property_version);
@@ -83,50 +86,28 @@ public class RedSqirlPackage {
 
 			File newPack = null;
 			if (user == null || user.isEmpty()) {
-				newPack = new File(
-						WorkflowPrefManager.pathSysPackagePref,
-						packageName);
+				newPack = new File(WorkflowPrefManager.pathSysPackagePref, packageName);
 			} else {
-				newPack = new File(
-						WorkflowPrefManager.getPathUserPackagePref(user),
-						packageName);
+				newPack = new File(WorkflowPrefManager.getPathUserPackagePref(user), packageName);
 			}
-			logger.debug("install...");
+			logger.info("install..." + newPack.getAbsolutePath());
 			newPack.mkdirs();
 			try {
-				logger.debug("create stucture...");
+				logger.info("create stucture...");
 				createFileList(newPack, files);
-				logger.debug("copy files...");
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + action_file, newPack.getAbsolutePath()
-						+ "/" + action_file);
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + footer_file, newPack.getAbsolutePath()
-						+ "/" + footer_file);
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + settings_file, newPack.getAbsolutePath()
-						+ "/" + settings_file);
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + properties_file,
-						newPack.getAbsolutePath() + "/"
-								+ properties_file);
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + help_dir, PackageManager.getHelpDir(user)
-						.getAbsolutePath());
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + image_dir, PackageManager.getImageDir(user)
-						.getAbsolutePath());
-				LocalFileSystem.copyfile(packageFile.getAbsolutePath()
-						+ "/" + lib_dir, PackageManager.getLibDir(user)
-						.getAbsolutePath());
+				logger.info("copy files...");
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + action_file, newPack.getAbsolutePath()+ "/" + action_file);
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + settings_file, newPack.getAbsolutePath()+ "/" + settings_file);
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + properties_file, newPack.getAbsolutePath() + "/"+ properties_file);
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + help_dir, PackageManager.getHelpDir(user).getAbsolutePath());
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + image_dir, PackageManager.getImageDir(user).getAbsolutePath());
+				LocalFileSystem.copyfile(packageFile.getAbsolutePath()+ "/" + lib_dir, PackageManager.getLibDir(user).getAbsolutePath());
 				Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
 				Properties prop = new Properties();
 				try {
-					prop.load(new FileReader(new File(packageFile.getAbsolutePath()
-							+ "/" + lang_file)));
+					prop.load(new FileReader(new File(packageFile.getAbsolutePath()	+ "/" + lang_file)));
 				} catch (Exception e) {
-					logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref + "', "
-							+ e.getMessage());
+					logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref + "', "+ e.getMessage());
 				}
 				langProp.putAll(prop);
 				WorkflowPrefManager.getProps().storeLangProperties(langProp);
@@ -136,19 +117,21 @@ public class RedSqirlPackage {
 				long time = date.getTime();
 				Timestamp ts = new Timestamp(time);
 				try{
-					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(newPack.getAbsolutePath() + "/"
-							+ properties_file),true));
-					bw.write("install_timestamp="+ts.toString()+"\n");
+					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(newPack.getAbsolutePath() + "/"+ properties_file),true));
+					bw.write("\n"+"install_timestamp="+ts.toString()+"\n");
 					bw.close();
 				}catch(Exception e){}
 				
+				if(error == null){
+					if(deleteInstallFile){
+						LocalFileSystem.delete(this.packageFile);
+					}
+					this.packageFile = newPack;
+					this.user = user;
+				}
 			} catch (IOException e) {
-				logger.info("Fail when writing files/directory in package");
-			}
-			
-			if(error == null){
-				this.packageFile = newPack;
-				this.user = user;
+				error = "Fail when writing files/directory in package";
+				logger.info(error);
 			}
 		}
 		return error;
@@ -217,12 +200,11 @@ public class RedSqirlPackage {
 							.isDirectory())
 						|| (children[i].getName().equals(action_file) 
 						|| children[i].getName().equals(properties_file)
-						|| children[i].getName().equals(footer_file)
 						|| children[i].getName().equals(settings_file)
 						|| children[i].getName().equals(lang_file)
 								&& children[i].isFile());
 			}
-			ok &= children.length == 8;
+			ok &= children.length == 7;
 			if (!ok) {
 				error = PMLanguageManager
 						.getText("PackageManager.wrongStructure");
@@ -342,22 +324,17 @@ public class RedSqirlPackage {
 	 * @param fileNames
 	 * @throws IOException
 	 */
-	public void createFileList(File dir, List<String> fileNames)
-			throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(dir,
-				list_files)));
-
+	public void createFileList(File dir, List<String> fileNames) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(dir,	list_files)));
 		Iterator<String> it = fileNames.iterator();
-		logger.debug("File list created...");
+		logger.info("File list created...");
 		while (it.hasNext()) {
 			String file = it.next().substring(1).replaceFirst("/", ":");
-			logger.debug(file);
+			logger.info(file);
 			bw.write(file + "\n");
 		}
-
 		bw.close();
 	}
-
 
 	/**
 	 * Get the list of files in the package
@@ -440,4 +417,5 @@ public class RedSqirlPackage {
 	public String getUser() {
 		return user;
 	}
+	
 }

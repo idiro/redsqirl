@@ -24,6 +24,7 @@ import org.json.JSONTokener;
 import com.idiro.BlockManager;
 import com.redsqirl.workflow.settings.SettingMenu;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 
 /**
  * Software preference manager.
@@ -84,7 +85,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * and a #{key}_desc property.
 	 */
 	pathSysLangCfgPref,
-	
+
 	/**
 	 * License path
 	 */
@@ -104,7 +105,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * Path to the idiro interface path 
 	 */
 	interfacePath,
-	
+
 	/**
 	 * Path System super action directory
 	 */
@@ -211,7 +212,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String core_settings = "core",
 			core_settings_oozie = core_settings+".oozie",
 			core_settings_hive = core_settings+".hive",
-			
+
 			/** Default oozie launcher queue for hadoop */
 			sys_oozie_launcher_queue = core_settings_oozie+".oozie_launcher_queue",
 			/** Default oozie running queue for hadoop */
@@ -220,14 +221,14 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_oozie = core_settings_oozie+".oozie_url",
 			/** Oozie xml schema location */
 			sys_oozie_xmlns = core_settings_oozie+".oozie_xmlns",
-			
+
 			/** Default Hive XML */
 			sys_hive_default_xml = core_settings_hive+".hive_default_xml",
 			/** Hive XML */
 			sys_hive_xml = core_settings_hive+".hive_xml",
 			/** Hive Extra Lib */
 			sys_hive_extralib = core_settings_hive+".hive_extra_lib",
-			
+
 			/** namenode path */
 			sys_namenode = core_settings+".namenode",
 			/** The Hadoop Home Folder (with /bin and /conf inside */
@@ -240,20 +241,20 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_install_package = core_settings+".package_dir",
 			/** URL for Package Manager */
 			sys_pack_manager_url = core_settings+".pack_manager_url",
-			
+
 			/** The admin user */
 			sys_admin_user = core_settings+".admin_user",
 			/** Allow a user to install */
 			sys_allow_user_install = core_settings+".allow_user_install",
-			
+
 			/** Sqirl nutcracker path */
 			sys_nutcracker_path = "nutcracker_path",
-			
+
 			/** Parallel clause for pig */
 			sys_pig_parallel = "pig_parallel",
 			/** Max number of workers for Giraph */
 			sys_max_workers = "max_workers";
-	
+
 	/** Hive JDBC Url */
 	public static final String user_hive = core_settings_hive+".hive_jdbc_url",
 			/** Path to Private Key */
@@ -274,9 +275,9 @@ public class WorkflowPrefManager extends BlockManager {
 
 	//set defaultTomcat path
 	public static String defaultTomcat = System.getProperty("catalina.base") + "/webapps";
-	
+
 	private static LocalProperties props;
-	
+
 	private static Map<String,SettingMenu> settingMenu = null;
 	private static Map<String,SettingMenu> defaultsettingMenu = null;
 
@@ -304,7 +305,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		logger.info("Get path sys home: "+pathSysHome);
 		changeSysHome(pathSysHome);
-		
+
 		/**
 		 * System lang preference file.These properties are optional and are
 		 * used by the front-end to give a bit more details about user
@@ -324,11 +325,11 @@ public class WorkflowPrefManager extends BlockManager {
 		String idiroInterfacePath = null;
 		try {
 			props = new LocalProperties();
-			
+
 			//FIXME - name property
 			workflowLibPath = getSysProperty("core.workflow_lib_path");
 			idiroInterfacePath = getSysProperty("core.idiro_interface_path");
-			
+
 		} catch (RemoteException e){
 			logger.info("Error trying to read local properties");
 		}
@@ -338,7 +339,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}else{
 			sysLibPath = workflowLibPath;
 		}
-		
+
 		pathSysSuperAction = pathSysHome+"/superactions";
 
 		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
@@ -346,10 +347,10 @@ public class WorkflowPrefManager extends BlockManager {
 		}else{
 			interfacePath = idiroInterfacePath;
 		}
-		
+
 	}
 
-	
+
 	/**
 	 * 
 	 * @return Returns the single allowed instance of ProcessRunner
@@ -366,7 +367,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		return runner;
 	}
-	
+
 	public String getPluginSetting(String name){
 		String[] packageName = name.split("\\.",2);
 		if(getSettingMenu().containsKey(packageName[0])){
@@ -378,11 +379,11 @@ public class WorkflowPrefManager extends BlockManager {
 	public static Map<String, SettingMenu> getSettingMenu(){
 		return settingMenu;
 	}
-	
+
 	public static Map<String, SettingMenu> getDefaultSettingMenu(){
 		return defaultsettingMenu;
 	}
-	
+
 	public static void readSettingMenu(){
 		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
 		File[] userPackages = new File(pathUserPackagePref).listFiles();
@@ -396,7 +397,31 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		settingMenu = ans;
 	}
-	
+
+	public static void readSettingMenu(String user){
+
+		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+		try {
+			List<RedSqirlPackage> rp = new PackageManager().getPackages(user);
+			for (RedSqirlPackage redSqirlPackage : rp) {
+				try{
+					
+					logger.info("readSettingMenu " + redSqirlPackage.getName());
+					logger.info("readSettingMenu " + redSqirlPackage.getPackageFile().getAbsoluteFile());
+					
+					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
+					JSONTokener tokener = new JSONTokener(r);
+					JSONObject json = new JSONObject(tokener);
+					ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+				}catch(Exception e){}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		settingMenu = ans;
+	}
+
 	public static void readDefaultSettingMenu(){
 		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
 
@@ -413,7 +438,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		defaultsettingMenu = ans;
 	}
-	
+
 	/**
 	 * Create the given user redsqirl home directory if it does not exist.
 	 * 
@@ -424,9 +449,9 @@ public class WorkflowPrefManager extends BlockManager {
 		logger.info(home.getAbsolutePath());
 
 		if (!home.exists()) {
-			
+
 			String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
-			
+
 			home.mkdirs();
 
 			File packageF = new File(getPathUserPackagePref(userName));
@@ -436,14 +461,14 @@ public class WorkflowPrefManager extends BlockManager {
 			File libPackage = new File(getUserPackageLibPath(userName));
 			logger.debug(libPackage.getAbsolutePath());
 			libPackage.mkdirs();
-			
+
 			File superactionF = getSuperActionMainDir(userName);
 			superactionF.mkdirs();
 			File userHelpTomcat = new File(installPackage+getPathUserHelpPref(userName));
 			File userImageTomcat = new File(installPackage+getPathUserImagePref(userName));
 			userHelpTomcat.mkdirs();
 			userImageTomcat.mkdirs();
-			
+
 			// Everybody is able to write in this home folder
 			logger.debug("set permissions...");
 			home.setWritable(true, false);
@@ -452,7 +477,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		createSysHome();
 	}
-	
+
 	public static void createSysHome(){
 		String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
 		{
@@ -502,7 +527,7 @@ public class WorkflowPrefManager extends BlockManager {
 				return pathname.getName().equalsIgnoreCase("icon_menu.txt");
 			}
 		});
-		
+
 		logger.info("createUserFooter " + menuDir.toString());
 
 		if (childrenoMenuDir.length <= 0) {
@@ -510,13 +535,13 @@ public class WorkflowPrefManager extends BlockManager {
 
 				//FileUtils.cleanDirectory(menuDir);
 				File file = new File(getPathIconMenu());
-				
+
 				logger.info("createUserFooter " + file.toString());
-				
+
 				PrintWriter s = new PrintWriter(file);
 
 				//default values
-				
+
 				s.println("menu:Utils");
 				s.println("source");
 				s.println("send_email");
@@ -524,12 +549,12 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("convert_file_text");
 				s.println("superactioninput");
 				s.println("superactionoutput");
-				
+
 				PackageManager p = new PackageManager();
 				List<String> listActions = p.getActions(userName);
-				
+
 				//pig
-				
+
 				if(listActions.contains("pig_text_source")){
 					s.println("menu:Pig");
 				}
@@ -570,9 +595,9 @@ public class WorkflowPrefManager extends BlockManager {
 				if(listActions.contains("pig_correlation")){
 					s.println("pig_correlation");
 				}
-				
+
 				//spark
-				
+
 				if(listActions.contains("spark_text_source")){
 					s.println("menu:Spark");
 				}
@@ -610,9 +635,9 @@ public class WorkflowPrefManager extends BlockManager {
 				if(listActions.contains("spark_correlation")){
 					s.println("spark_correlation");
 				}
-				
+
 				//hama
-				
+
 				/*if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
 						listActions.contains("Page_Rank_Action") ){
 					s.println("menu:Model");
@@ -862,8 +887,8 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPathIconMenu() {
 		return  pathUserPref+ "/icon_menu.txt";
 	}
-	
-	
+
+
 	/**
 	 * Get the Super Action directory
 	 * @param user
@@ -878,10 +903,10 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 
 		logger.info("Super action path for "+(user == null? "sys":user)+": "+ans.getPath());
-		
+
 		return ans;
 	}
-	
+
 	/**
 	 * User icon menu directory.
 	 * @param user
@@ -992,7 +1017,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String getPathtmpfolder() {
 		return pathTmpFolder;
 	}
-	
+
 	/**
 	 * @return the pathtmpclones
 	 */
@@ -1086,7 +1111,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void storeSysProperties(Properties prop) throws IOException {
 		props.storeSysProperties(prop);
 	}
-	
+
 	/**
 	 * @param prop
 	 * @throws IOException
@@ -1187,7 +1212,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Return user property default to system.
 	 * @param key
@@ -1214,7 +1239,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final LocalProperties getProps() {
 		return props;
 	}
-	
+
 	/**
 	 * 
 	 * @return the licence file path
@@ -1236,21 +1261,21 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPathUserSuperAction() {
 		return pathUserSuperAction;
 	}
-	
+
 	/**
 	 * @return the pathUserSuperAction
 	 */
 	public static String getPathUserSuperAction(String user) {
 		return getPathUserPref(user)+"/superactions";
 	}
-	
+
 	/**
 	 * @return the pathUserSuperAction
 	 */
 	public static String getPathOutputClasses() {
 		return pathOutputClasses;
 	}
-	
+
 	/**
 	 * @return the pathUserSuperAction
 	 */
@@ -1264,7 +1289,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPathDataFlowActionClasses() {
 		return pathDataFlowActionClasses;
 	}
-	
+
 	/**
 	 * @return the pathUserSuperAction
 	 */

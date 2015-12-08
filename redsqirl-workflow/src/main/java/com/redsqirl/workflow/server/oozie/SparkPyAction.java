@@ -24,8 +24,8 @@ public class SparkPyAction extends ShellAction{
 		 */
 		private static final long serialVersionUID = 233700291606047641L;
 
-		public static final String sys_spark_home = "spark_home",
-				sys_spark_master = "spark_master";
+		public static final String sys_spark_home = "redsqirl-spark-etl.spark_home",
+				sys_spark_master = "redsqirl-spark-etl.spark_master";
 		
 		private static Logger logger = Logger.getLogger(SparkPyAction.class);
 		
@@ -42,6 +42,11 @@ public class SparkPyAction extends ShellAction{
 			logger.info("Write launcher query in: " + files[0].getAbsolutePath());
 			String sparkHome = WorkflowPrefManager.getSysProperty(sys_spark_home);
 			String hadoopHome = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
+			
+			logger.info("sparkHome " + sparkHome);
+			logger.info("hadoopHome " + hadoopHome);
+			
+			
 			String user = System.getProperty("user.name");
 			if(sparkHome == null){
 				sparkHome = "";
