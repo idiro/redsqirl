@@ -402,7 +402,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
 		try {
-			List<RedSqirlPackage> rp = new PackageManager().getPackages(user);
+			List<RedSqirlPackage> rp = new PackageManager().getAvailablePackages(user);
 			for (RedSqirlPackage redSqirlPackage : rp) {
 				try{
 					
