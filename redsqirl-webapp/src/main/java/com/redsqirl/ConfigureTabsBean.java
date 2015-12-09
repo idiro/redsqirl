@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,16 +37,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	
 	protected ElementManager em = null;
 	protected Map<String, List<String[]>> menuWA;
-	private Map<String,String> allWANameWithClassName = null;
-	private LinkedHashSet<String> menuActions;
+	
 	private List<String> tabs;
-	private LinkedList<String> columnIds;
-	private LinkedList<String> target;
 	private SelectableTable tableGrid = new SelectableTable();
-	private SelectableTable tableGridOld = new SelectableTable();
-	private Integer index;
-	private String showTab = "N";
-
 	private Map<String, List<String[]>> tabsMap;
 	private List<SelectItem> listPackages;
 	private List<SelectHeaderType> listActions;
@@ -117,8 +109,16 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			List<SelectHeaderType> ans = new ArrayList<SelectHeaderType>();
 			List<String[]> l = getTabsMap().get(name);
 			for (String[] value : l) {
-				SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
-				ans.add(sht);
+				
+				if(value[0].startsWith(">")){
+					String superAction[] = value[0].split(">");
+					SelectHeaderType sht = new SelectHeaderType(superAction[1] , superAction[2]);
+					ans.add(sht);
+				}else{
+					SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
+					ans.add(sht);
+				}
+				
 			}
 			SelectableRowFooter str = new SelectableRowFooter(ans);
 			str.setNameTab(name);
@@ -187,7 +187,11 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			SelectableRowFooter s = (SelectableRowFooter) iterator.next();
 			List<String> temp = new ArrayList<String>();
 			for (int i = 0; i < s.getSelectedActions().size(); ++i) {
-				temp.add(s.getSelectedActions().get(i).getType());
+				if(s.getSelectedActions().get(i).isSuperAction()){
+					temp.add(">" + s.getSelectedActions().get(i).getName() + ">" + s.getSelectedActions().get(i).getType());
+				}else{
+					temp.add(s.getSelectedActions().get(i).getType());
+				}
 			}
 			mapMenu.put(s.getNameTab() , temp);
 		}
@@ -292,7 +296,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 			if(selectedPackage.equals("all")){
 				for (String name : pckManager.getCoreActions()) {
-					SelectHeaderType s = new SelectHeaderType("core", name);
+					SelectHeaderType s = new SelectHeaderType("core", name, false);
 					listActions.add(s);
 				}
 				Map<String,List<String>> map = pckManager.getActionsPerPackage(user);
@@ -300,14 +304,22 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					List<String> ansList = map.get(key);
 					if(ansList != null && !ansList.isEmpty()){
 						for (String action : ansList) {
-							SelectHeaderType selectHeaderType = new SelectHeaderType(key, action);
+							SelectHeaderType selectHeaderType = new SelectHeaderType(key, action, false);
+							listActions.add(selectHeaderType);
+						}
+					}
+				}
+				for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
+					if(modelInt.getName().equals(selectedPackage)){
+						for (String superAction : modelInt.getSubWorkflowNames()) {
+							SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction, true);
 							listActions.add(selectHeaderType);
 						}
 					}
 				}
 			}else if(selectedPackage.equals("core")){
 				for (String name : pckManager.getCoreActions()) {
-					SelectHeaderType s = new SelectHeaderType("core", name);
+					SelectHeaderType s = new SelectHeaderType("core", name, false);
 					listActions.add(s);
 				}
 			}else{
@@ -316,7 +328,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				List<String> ansList = map.get(selectedPackage);
 				if(ansList != null && !ansList.isEmpty()){
 					for (String action : ansList) {
-						SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, action);
+						SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, action, false);
 						listActions.add(selectHeaderType);
 					}
 				}else{
@@ -324,7 +336,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
 						if(modelInt.getName().equals(selectedPackage)){
 							for (String superAction : modelInt.getSubWorkflowNames()) {
-								SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction);
+								SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction, true);
 								listActions.add(selectHeaderType);
 							}
 						}
@@ -357,12 +369,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void selectAll(){
-
 		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 
 		for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
 			SelectHeaderType actions = (SelectHeaderType) iterator.next();
-			logger.info(actions.isSelected());
 			s.getSelectedActions().add(actions);
 			iterator.remove();
 		}
@@ -370,13 +380,13 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void select(){
-
 		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 
 		for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
 			SelectHeaderType actions = (SelectHeaderType) iterator.next();
-			logger.info(actions.isSelected());
 			if(actions.isSelected()){
+				logger.info(actions.getName());
+				logger.info(actions.getType());
 				s.getSelectedActions().add(actions);
 				iterator.remove();
 			}
@@ -385,13 +395,13 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void unselect(){
-
 		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 
 		for (Iterator<SelectHeaderType> iterator = s.getSelectedActions().iterator(); iterator.hasNext();) {
 			SelectHeaderType actions = (SelectHeaderType) iterator.next();
-			logger.info(actions.isSelected());
 			if(actions.isSelected()){
+				logger.info(actions.getName());
+				logger.info(actions.getType());
 				if(actions.getName().equals(getSelectedPackage()) || getSelectedPackage().equals("all")){
 					listActions.add(actions);
 					iterator.remove();
@@ -401,7 +411,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 
-
 	}
 
 	public void unselectAll(){
@@ -409,7 +418,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		for (Iterator<SelectHeaderType> iterator = s.getSelectedActions().iterator(); iterator.hasNext();) {
 			SelectHeaderType actions = (SelectHeaderType) iterator.next();
-			logger.info(actions.isSelected());
 			if(actions.getName().equals(getSelectedPackage()) || getSelectedPackage().equals("all")){
 				listActions.add(actions);
 				iterator.remove();
@@ -418,6 +426,73 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 
+	}
+	
+	public List<Integer> getAllSelected(){
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<Integer> listSelected = new ArrayList<Integer>();
+		for (int i = 0; i < s.getSelectedActions().size(); i++) {
+			SelectHeaderType actions = s.getSelectedActions().get(i);
+			if(actions.isSelected()){
+				listSelected.add(i);
+			}
+		}
+		return listSelected;
+	}
+	
+	public void goUp() {
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<SelectHeaderType> list = s.getSelectedActions();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			if(index > 0 && index != i){
+				list.add(index-1, list.get(index));
+				list.remove(index+1);
+			}
+		}
+		tableGrid.getRows().set(getSelectedTab(), s);
+	}
+
+	public void goDown() {
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<SelectHeaderType> list = s.getSelectedActions();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = listSelected.size()-1; i >=0 ; i--) {
+			int index = listSelected.get(i);
+			logger.info("go down: "+list.size()+" "+index+" "+listSelected.size()+" "+i);
+			if( list.size() - index != listSelected.size() - i){
+				if(index < list.size()-2){
+					list.add(index+2, list.get(index));
+					list.remove(index);
+				}else{
+					list.add(list.get(index));
+					list.remove(index);
+				}
+			}
+		}
+	}
+
+	public void goFirst() {
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<SelectHeaderType> list = s.getSelectedActions();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			list.add(i, list.get(index));
+			list.remove(index+1);
+		}
+	}
+
+	public void goLast() {
+		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+		List<SelectHeaderType> list = s.getSelectedActions();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			list.add(list.get(index-i));
+			list.remove(index-i);
+		}
 	}
 
 	/** getTabSelectedActions

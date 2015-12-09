@@ -44,7 +44,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * Avoid to call reflexive method again and again
 	 */
 	protected static Map<String, String> flowElement = new LinkedHashMap<String, String>();
-	
+
 	/**
 	 * Menu of action, each tab title is link to a list of action name (@see
 	 * {@link DataflowAction#getName()})
@@ -55,11 +55,11 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * Key: action name, Value: absolute help path, absolute image path
 	 */
 	protected Map<String, String[]> help;
-	
+
 	ActionManager() throws RemoteException{
 		super();
 	}
-	
+
 	/**
 	 * Load the icon menu.
 	 * 
@@ -178,10 +178,10 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			logger.error(LanguageManagerWF
 					.getText("workflow.loadclassexception"));
 		}
-		
+
 	}
-	
-	
+
+
 	public String loadMenu(Map<String, List<String>> newMenu) {
 
 		String error = "";
@@ -192,6 +192,10 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			nameWithClass = getAllWANameWithClassName();
 			Set<String> superActions = getSuperActions();
 
+			for (String key : nameWithClass.keySet()) {
+				logger.info("nameWithClass " + nameWithClass.get(key) + " key " + key);
+			}
+
 			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
 				LinkedList<String[]> new_list = new LinkedList<String[]>();
 				Iterator<String> it = cur.getValue().iterator();
@@ -199,20 +203,16 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 					String action = it.next();
 					try {
 						if (action != null && !action.isEmpty()) {
-							if (nameWithClass.get(action) != null
-									|| superActions.contains(action)) {
-								DataFlowElement dfe = createElementFromClassName(
-										nameWithClass, action);
-
+							logger.info("action '"	+ action + "'");
+							if (nameWithClass.get(action) != null || superActions.contains(action)) {
+								DataFlowElement dfe = createElementFromClassName(nameWithClass, action);
 								String[] parameters = new String[3];
 								parameters[0] = action;
 								parameters[1] = dfe.getImage();
-								parameters = setPrivilegeOfClass(dfe, action,
-										parameters);
+								parameters = setPrivilegeOfClass(dfe, action, parameters);
 								new_list.add(parameters);
 							} else {
-								logger.warn("unknown workflow action '"
-										+ action + "'");
+								logger.info("unknown workflow action '"	+ action + "'");
 							}
 						}
 					} catch (Exception e) {
@@ -237,7 +237,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 		return error;
 	}
-	
+
 
 	/**
 	 * Save the icon menu.
@@ -280,8 +280,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 	public DataFlowElement createElementFromClassName(
 			Map<String, String> namesWithClassName, String className)
-			throws RemoteException, InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
+					throws RemoteException, InstantiationException,
+					IllegalAccessException, ClassNotFoundException {
 		DataFlowElement dfe = null;
 		if (className.contains(">")) {
 			dfe = new SuperAction(className);
@@ -316,7 +316,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		saveMenu();
 		packageNotified(packageNames);
 	}
-	
+
 	public void packageNotified(Collection<String> packageNames){
 		File footerPackageNotificationFile = new File(WorkflowPrefManager.getPathFooterPackageNotification());
 		BufferedWriter bw = null;
@@ -338,7 +338,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			footerPackageNotificationFile.delete();
 		}
 	}
-	
+
 	public String[] setPrivilegeOfClass(DataFlowElement dfe, String name,
 			String[] parameters) throws RemoteException {
 		if (dfe instanceof SuperElement) {
@@ -360,7 +360,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 		return parameters;
 	}
-	
+
 
 	/**
 	 * List (cannonical class names) all the classes extending DataflowAction.
@@ -374,6 +374,9 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		File dataFlowActionClassFile = new File(WorkflowPrefManager.getPathDataFlowActionClasses());
 		List<String> dataFlowActionClassName = new LinkedList<String>();
 		if(dataFlowActionClassFile.exists()){
+
+			//logger.info("getDataflowActionClasses exist");
+
 			try{
 				BufferedReader br = new BufferedReader(new FileReader(dataFlowActionClassFile));
 				String line = null;
@@ -388,6 +391,9 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		}
 
 		if(!dataFlowActionClassFile.exists()){
+
+			//logger.info("getDataflowActionClasses not exist");
+
 			dataFlowActionClassName = WorkflowPrefManager
 					.getInstance()
 					.getNonAbstractClassesFromSuperClass(
@@ -407,7 +413,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				logger.error("Error while writing class file",e);
 				dataFlowActionClassFile.delete();
 			}
-			
+
 		}
 		return dataFlowActionClassName;
 	}
@@ -468,8 +474,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 				ans.put(key,
 						new String[] {
-								LocalFileSystem.relativize(curPath,
-										help.get(key)[0]),
+						LocalFileSystem.relativize(curPath,
+								help.get(key)[0]),
 								LocalFileSystem.relativize(curPath,
 										help.get(key)[1]) });
 			} catch (Exception e) {
@@ -518,8 +524,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			try {
 				ans.put(key,
 						new String[] {
-								LocalFileSystem.relativize(curPath,
-										helpSuperAction.get(key)[0]),
+						LocalFileSystem.relativize(curPath,
+								helpSuperAction.get(key)[0]),
 								LocalFileSystem.relativize(curPath,
 										helpSuperAction.get(key)[1]) });
 			} catch (Exception e) {
@@ -529,7 +535,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		}
 		return ans;
 	}
-	
+
 	public Set<String> getSuperActions(String wfName) throws RemoteException {
 		Set<String> ans = new ModelManager().getAvailableSuperActions(System
 				.getProperty("user.name"));
@@ -545,7 +551,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				.getProperty("user.name"));
 		return ans;
 	}
-	
+
 
 	/**
 	 * Get all the WorkflowAction available in the jars file
@@ -577,7 +583,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		// result.add(new String[]{"Red Sqirl Help", "", "test.html"});
 		return result;
 	}
-	
+
 
 	/**
 	 * Get all the WorkflowAction available in the jars file.
@@ -591,40 +597,45 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
-	public Map<String, String> getAllWANameWithClassName()
-			throws RemoteException {
+	public Map<String, String> getAllWANameWithClassName() throws RemoteException {
 
-		logger.debug("get all the Workflow actions");
+		logger.info("get all the Workflow actions");
 
 		if (flowElement.isEmpty()) {
 
-			Iterator<String> actionClassName = getDataflowActionClasses().iterator();
+			List<String> l = getDataflowActionClasses();
+			logger.info("getDataflowActionClasses size " + l.size());
+			
+			for (int i = 0; i < l.size(); i++) {
+				String className = l.get(i);
 
-			while (actionClassName.hasNext()) {
-				String className = actionClassName.next();
-
-				// logger.info("getAllWANameWithClassName " + className);
+				logger.info("getAllWANameWithClassName " + i + " " + className);
 
 				try {
-					DataflowAction wa = (DataflowAction) Class.forName(
-							className).newInstance();
+					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
 					if (!(wa instanceof SuperAction)) {
 						flowElement.put(wa.getName(), className);
+					}else{
+						logger.info("superAction " + className);
 					}
 				} catch (Exception e) {
+					logger.info("error " + className);
 					logger.error("Error instanciating class : " + className);
 					logger.debug(e);
 				}
 			}
 
-			logger.debug("WorkflowAction found : " + flowElement.toString());
+			logger.info("WorkflowAction found : " + flowElement.toString());
 		}
+		
+		logger.info("flowElement size " +flowElement.size());
+		
 		return flowElement;
 	}
-	
 
 
-	
+
+
 	protected List<String> getFooterPackages(){
 		File footerPackageNotificationFile = new File(WorkflowPrefManager.getPathFooterPackageNotification());
 		List<String> packageName = new LinkedList<String>();
@@ -643,14 +654,14 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		}
 		return packageName;
 	}
-	
+
 	public Collection<String> getPackageToNotify() throws RemoteException{
 		Set<String> ans = new PackageManager().getAvailablePackageNames(System.getProperty("user.name"));
 		ans.removeAll(getFooterPackages());
 		return ans;
 	}
-	
-	
+
+
 	protected Map<String,List<String>> getFooter(){
 		if(menuWA == null){
 			loadMenu();
@@ -675,5 +686,5 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	public void setMenuWA(Map<String, List<String[]>> menuWA) {
 		this.menuWA = menuWA;
 	}
-	
+
 }
