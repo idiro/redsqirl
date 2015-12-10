@@ -436,11 +436,17 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			while (actionListit.hasNext()) {
 				String[] parameters = new String[3];
 				String[] absCur = actionListit.next();
-				parameters[0] = absCur[0];
+				
+				if(absCur[0] != null && absCur[0].startsWith(">")){
+					String[] superAction = absCur[0].split(">");
+					parameters[0] = superAction[2];
+				}else{
+					parameters[0] = absCur[0];
+				}
+				
 				try {
 					logger.debug("loadMenu " + curPath + " " + absCur[1]);
-					parameters[1] = LocalFileSystem.relativize(curPath,
-							absCur[1]);
+					parameters[1] = LocalFileSystem.relativize(curPath,	absCur[1]);
 					parameters[2] = absCur[2];
 					newActionList.add(parameters);
 				} catch (Exception e) {

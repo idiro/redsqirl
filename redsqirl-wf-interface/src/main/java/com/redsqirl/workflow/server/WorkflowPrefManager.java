@@ -415,12 +415,21 @@ public class WorkflowPrefManager extends BlockManager {
 					
 					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
 					JSONTokener tokener = new JSONTokener(r);
-					JSONObject json = new JSONObject(tokener);
-					ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
-				}catch(Exception e){}
+					
+					if(tokener.more()){
+						JSONObject json = new JSONObject(tokener);
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}else{
+						JSONObject json = new JSONObject();
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}
+					
+				}catch(Exception e){
+					logger.error("error "+ e,e);
+				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("error "+ e,e);
 		}
 
 		settingMenu = ans;

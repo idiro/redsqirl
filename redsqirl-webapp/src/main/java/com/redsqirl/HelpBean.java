@@ -116,9 +116,18 @@ public class HelpBean extends BaseBean implements Serializable {
 			Iterator<String> it = helpRel.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
+				
+				String name = "";
+				if(key != null && key.startsWith(">")){
+					String[] superAction = key.split(">");
+					name = superAction[2];
+				}else{
+					name = key;
+				}
+				
 				String[] helpArray = new String[]{
 						key, 
-						WordUtils.capitalizeFully(key.replace("_", " ")),
+						WordUtils.capitalizeFully(name.replace("_", " ")),
 						helpRel.get(key)[0],
 						helpRel.get(key)[1]};
 

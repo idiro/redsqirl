@@ -41,7 +41,8 @@ public class RedSqirlPackage {
 	settings_file = "settings.json";
 
 	public static String property_version = "version",
-			property_name = "packageName";
+			property_name = "packageName",
+			property_desc= "description";
 	
 	private File packageFile;
 	

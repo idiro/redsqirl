@@ -292,7 +292,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 		return cur;
 	}
-	
+
 	public void navigationPackageSettings() throws RemoteException{
 
 		saveSettings();
@@ -302,12 +302,12 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
-		
+
 		setPathPosition(name);
 
 		mountPath(name);
 	}
-	
+
 	public String saveSettings() throws RemoteException{
 
 		StringBuffer newPath = new StringBuffer();
@@ -347,11 +347,11 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		return "success";
 	}
-	
+
 	public void applySettings() throws RemoteException{
 		saveSettings();
 	}
-	
+
 	public void addPropertyValue() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -369,7 +369,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 
 	}
-	
+
 	public void deletePropertyValue() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -386,7 +386,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 				setting.setExistUserProperty(false);
 				deleteProperty(label, setting.getUserValue(), scope);
 			}
-			
+
 			WorkflowPrefManager.readDefaultSettingMenu();
 			curMap = WorkflowPrefManager.getDefaultSettingMenu();
 
@@ -394,9 +394,9 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 
 	}
-	
+
 	public void deleteProperty(String name, String valueToDelete, String scope){
-		
+
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
 			pathToDelete.append(value+".");
@@ -442,8 +442,9 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String label = params.get("label");
+		String type = params.get("type");
 
-		if(label != null){
+		if(label != null && type != null){
 
 			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
 			setting.setUserValue(setting.getDefaultValue());
@@ -453,26 +454,45 @@ public class SettingsBean extends BaseBean implements Serializable  {
 				newPath.append("."+value);
 			}
 
-			setUserSettings(new ArrayList<String[]>());
-			calcSettings();
 
-			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
-				String nameSettings = newPath.substring(1) +"."+ settings.getKey();
-
-				if(settings.getValue().getScope().equals(Setting.Scope.USER)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						getUserSettings().add(value);
-					}
-				}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						getUserSettings().add(valueU);
+			if(type.equals(Setting.Scope.USER)){
+				setUserSettings(new ArrayList<String[]>());
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							getUserSettings().add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							getUserSettings().add(valueU);
+						}
 					}
 				}
-
 			}
-
+			
+			if(type.equals(Setting.Scope.SYSTEM)){
+				setSysSettings(new ArrayList<String[]>());
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							getSysSettings().add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							getSysSettings().add(valueU);
+						}
+					}
+				}
+			}
+			
 			storeNewSettings();
 
 			WorkflowPrefManager.readDefaultSettingMenu();

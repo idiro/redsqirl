@@ -28,8 +28,8 @@
 		</a4j:region>
 	
 		<h:panelGrid id="modelsList" columns="2">
-			<rich:panel id="systemSa" header="System Models"
-				style="width:397px;height:530px;" bodyClass="maxContent">
+			
+			<rich:panel id="systemSa" header="System Models" style="width:397px;height:530px;" bodyClass="maxContent">
 
 
             <h:panelGroup id="sysModelList" layout="block" style="overflow:auto;height:460px;" class="modelList">
@@ -93,8 +93,9 @@
                 </a4j:repeat>
             </h:panelGroup>
                 
-				<h:panelGrid id="model_sys_buttons" columns="2"
-					rendered="#{modelBean.admin}">
+				<h:panelGrid id="model_sys_buttons" columns="2" rendered="#{modelBean.admin}"
+					style="float:right;margin-right:25px;" >
+					
 					<a4j:commandButton styleClass="greenButton"
 						value="#{messages.button_sys_install}"
 						onclick="openInstallModelModal('false', 'model');" 
@@ -108,12 +109,12 @@
 						onclick="#{rich:component('modalAddModel')}.show()" >
                       	<f:param name="scope" value="System"/>
                      </a4j:commandButton>
+                     
 				</h:panelGrid>
 
 			</rich:panel>
 			
-			<rich:panel id="userSa" header="User Models"
-				style="width:397px;height:530px;" bodyClass="maxContent">
+			<rich:panel id="userSa" header="User Models" style="width:397px;height:530px;" bodyClass="maxContent">
 
            
             <h:panelGroup id="usModelList" layout="block" style="overflow:auto;height:460px;" >
@@ -179,8 +180,9 @@
                 </a4j:repeat>
             </h:panelGroup>
 
-				<h:panelGrid id="model_user_buttons" columns="2"
-					rendered="#{modelBean.userAllowInstall}">
+				<h:panelGrid id="model_user_buttons" columns="2" rendered="#{modelBean.userAllowInstall}" 
+					style="float:right;margin-right:25px;" >
+					
 					<a4j:commandButton styleClass="greenButton"
 						value="#{messages.button_user_install}"
 						onclick="openInstallPackageModal('true', 'model');"
@@ -202,7 +204,8 @@
 		</h:panelGrid>
 		
 		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
-			<a4j:commandButton styleClass="greenButton"	value="ok" onclick="#{rich:component('modalModels')}.hide()"/>
+			<a4j:commandButton styleClass="greenButton"	value="#{messages.label_menu_close}" 
+				onclick="#{rich:component('modalModels')}.hide()"/>
 		</rich:panel>
 		
 	</h:form>

@@ -46,38 +46,44 @@ public class SettingMenu implements Serializable{
 	protected void read(JSONObject json, String path, 
 			Properties sysProperties, Properties userProperties, Properties langProperties){
 		try{
-			readSettings((JSONArray) json.get("settings"),path,sysProperties, userProperties, langProperties);
+			if(json.has("settings")){
+				readSettings((JSONArray) json.get("settings"),path,sysProperties, userProperties, langProperties);
+			}
 		}catch(Exception e){
-			logger.warn(e,e);
+			logger.error("error " + e ,e);
 		}
 		readMenu(json, path,sysProperties, userProperties, langProperties);
 	}
 	
-	protected void readMenu(JSONObject json, String path, 
-			Properties sysProperties, Properties userProperties, Properties langProperties){
+	protected void readMenu(JSONObject json, String path, Properties sysProperties, Properties userProperties, Properties langProperties){
 		try{
-			JSONArray tabsArray = (JSONArray) json.get("tabs");
-			for(int i = 0; i < tabsArray.length();++i){
-				JSONObject tabObj = tabsArray.getJSONObject(i);
-				String tabName = null;
-				try{
-					tabName = tabObj.getString("name");
-				}catch(Exception e){}
-				if(tabName != null){
-					String newPath = path+"."+tabName;
-					menu.put(tabName, new SettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
-				}else{
-					String templateName = null;
+			
+			if(json.has("tabs")){
+				JSONArray tabsArray = (JSONArray) json.get("tabs");
+				for(int i = 0; i < tabsArray.length();++i){
+					JSONObject tabObj = tabsArray.getJSONObject(i);
+					String tabName = null;
 					try{
-						templateName = tabObj.getString("template_name");
+						tabName = tabObj.getString("name");
 					}catch(Exception e){}
-					if(templateName != null){
-						String newPath = path+"."+templateName;
-						menu.put(templateName, new TemplateSettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
+					if(tabName != null){
+						String newPath = path+"."+tabName;
+						menu.put(tabName, new SettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
+					}else{
+						String templateName = null;
+						try{
+							templateName = tabObj.getString("template_name");
+						}catch(Exception e){}
+						if(templateName != null){
+							String newPath = path+"."+templateName;
+							menu.put(templateName, new TemplateSettingMenu(tabObj,newPath,sysProperties,userProperties,langProperties));
+						}
 					}
 				}
 			}
+			
 		}catch(Exception e){
+			logger.error("error "+ e,e);
 		}
 	}
 	public void deleteAllProperties(){

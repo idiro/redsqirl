@@ -38,15 +38,13 @@ import org.json.JSONObject;
 import com.idiro.ProjectID;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 import com.redsqirl.workflow.settings.SettingMenu;
-import com.redsqirl.workflow.utils.ModelInt;
-import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -93,12 +91,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
-
-		/*
-		retrievesExtPackages();
-		retrievesRepoWelcomePage();
-		 */
-
+		
+		WorkflowPrefManager.readSettingMenu(getNameUser());
+		curMap = WorkflowPrefManager.getSettingMenu();
+		
 		calcSystemPackages();
 		calcUserPackages();
 	}
@@ -108,6 +104,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
+		
+		WorkflowPrefManager.readSettingMenu(getNameUser());
+		curMap = WorkflowPrefManager.getSettingMenu();
+		
 		calcSystemPackages();
 		calcUserPackages();
 	}
@@ -208,25 +208,41 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		setSystemPackages(calcPackage(pckManager.getSysPackageNames()));
+		setSystemPackages(calcPackage(pckManager.getSysPackageNames(), null));
 	}
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
-		setUserPackages(calcPackage(pckManager.getUserPackageNames(user)));
+		setUserPackages(calcPackage(pckManager.getUserPackageNames(user), user));
 	}
 	
-	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages){
+	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages, String user){
 		Iterator<String> it = pckPackages.iterator();
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
-			String pck = it.next();
+			String pckStr = it.next();
+			
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("../pages/packages/images/"+pck+"_package.gif");
-			rdm.setName(pck);
-
+			if(curMap != null && curMap.get(pckStr) != null){
+				SettingMenu settingMenu = curMap.get(pckStr);
+				if(settingMenu != null 
+					&& (settingMenu.getMenu() != null && settingMenu.getMenu().isEmpty())
+					&& (settingMenu.getProperties() != null && settingMenu.getProperties().isEmpty()) ){
+					rdm.setSettings(false);
+				}else{
+					rdm.setSettings(true);
+				}
+			}
+			
+			rdm.setImage("../pages/packages/images/"+pckStr+"_package.gif");
+			rdm.setName(pckStr);
+			
+			RedSqirlPackage pck = pckManager.getAvailablePackage(user, pckStr);
+			rdm.setVersionName(pck.getPackageProperty(RedSqirlPackage.property_version));
+			rdm.setVersionNote(pck.getPackageProperty(RedSqirlPackage.property_desc));
+			
 			result.add(rdm);
 		}
 		return result;
@@ -246,12 +262,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			setNameUser(null);
 		}
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		//WorkflowPrefManager.readSettingMenu(getNameUser());
+		//curMap = WorkflowPrefManager.getSettingMenu();
 
-		if(path == null){
-			path = new ArrayList<String>();
-		}
+		path = new ArrayList<String>();
 
 		setPathPosition(name);
 
@@ -648,8 +662,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String label = params.get("label");
+		String type = params.get("type");
 
-		if(label != null){
+		if(label != null && type != null){
 
 			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
 			setting.setUserValue(setting.getDefaultValue());
@@ -659,27 +674,47 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				newPath.append("."+value);
 			}
 
-			userSettings = new ArrayList<String[]>();
-			calcSettings();
-
-			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
-				String nameSettings = newPath.substring(1) +"."+ settings.getKey();
-
-				if(settings.getValue().getScope().equals(Setting.Scope.USER)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						userSettings.add(value);
-					}
-				}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						userSettings.add(valueU);
+			
+			if(type.equals(Setting.Scope.USER)){
+				userSettings = new ArrayList<String[]>();
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							userSettings.add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							userSettings.add(valueU);
+						}
 					}
 				}
-
+				storeNewSettings(null, userSettings);
 			}
-
-			storeNewSettings(null, userSettings);
+			
+			if(type.equals(Setting.Scope.SYSTEM)){
+				sysSettings = new ArrayList<String[]>();
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							sysSettings.add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							sysSettings.add(valueU);
+						}
+					}
+				}
+				storeNewSettings(sysSettings, null);
+			}
+			
 
 			WorkflowPrefManager.readSettingMenu(getNameUser());
 			curMap = WorkflowPrefManager.getSettingMenu();

@@ -52,7 +52,7 @@
 					
 					<rich:column style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
-							<h:outputText value="#{messages.label_package}" />
+							<h:outputText value="#{messages.label_module}" />
 						</f:facet>
 						<h:outputText value="#{item.name}" title="#{item.name}" />
 					</rich:column>
@@ -82,6 +82,10 @@
            	</td>
           		<td style="width:40%">
 		
+				<h:panelGroup style="width:150px" layout="block" >
+	                 <br/><br/>
+	            </h:panelGroup>
+		
 				<rich:extendedDataTable id="listSelectedActions" var="item" enableContextMenu="false" selectionMode="none" 
 					value="#{configureTabsBean.tabSelectedActions}" 
 					style="border:0px;height:270px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
@@ -97,7 +101,7 @@
 					
 					<rich:column style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
-							<h:outputText value="#{messages.label_package}" />
+							<h:outputText value="#{messages.label_module}" />
 						</f:facet>
 						<h:outputText value="#{item.name}" title="#{item.name}" />
 					</rich:column>
@@ -115,7 +119,7 @@
 			<td style="width:10%">
 			
 				<div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
-                	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_first}" action="#{configureTabsBean.goFirst}" reRender="listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
+                	<a4j:commandButton styleClass="greenButton" style="width:50px;margin-top:65px;" value="#{messages.button_first}" action="#{configureTabsBean.goFirst}" reRender="listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
                 	<br/>
                 	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_up}" action="#{configureTabsBean.goUp}" reRender="listSelectedActions" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
                 	<br/>
