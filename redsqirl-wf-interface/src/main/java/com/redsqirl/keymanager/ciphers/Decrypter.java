@@ -199,8 +199,7 @@ public class Decrypter extends KeyCipher {
 			
 			//valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 			
-			//FIXME 
-			//valid &= validateMacAddress(ans.get(mac));
+			valid &= validateMacAddress(ans.get(mac));
 			
 			//logger.info("valid mac " + valid);
 
