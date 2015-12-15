@@ -814,15 +814,17 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		return "adminLogin";
 	}
 
-
-	/**
-	 * cleanSession
-	 * 
-	 * Method to clean all Session and Context
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
+	public String getSoftware(){
+		return ProjectID.get();
+	}
+	
+	public String getSoftwareName(){
+		return ProjectID.getInstance().getName();
+	}
+	
+	public String getSoftwareVersion(){
+		return ProjectID.getInstance().getVersion();
+	}
 
 	public String getPassword() {
 		return password;

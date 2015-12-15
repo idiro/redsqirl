@@ -1106,8 +1106,8 @@
 	   		console.log("reinitializeCanvasScreen");
 			if(refresh != null){
 				backupAndCloseAll();
-				if(confirm(msg_refresh)){
-				   reOpenCanvas();
+				if(backUpWf != null && confirm(msg_refresh)){
+				   	reOpenCanvas();
 				}
 			}else{ 
 				if(backUpWf != null){
@@ -2323,11 +2323,12 @@
 										<f:param name="subWorkflowName"
 											value="#{canvasBean.nameWorkflow}" />
 									</rich:menuItem>
-									<!-- <rich:menuSeparator />
+									<rich:menuSeparator />
 									<rich:menuItem id="aboutMenuItem" submitMode="ajax"
-										value="#{messages.label_menu_about}" disable="true">
+										value="#{messages.label_menu_about}" disable="true"
+										onclick="#{rich:component('modalAbout')}.show();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
-									</rich:menuItem> -->
+									</rich:menuItem>
 
 								</rich:dropDownMenu>
 
@@ -3193,6 +3194,45 @@
 				</h:panelGrid>
 			</h:form>
 
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="modalAbout" width="300" height="195"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value='#{messages.label_menu_about}' />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalAbout')}.hide()" />
+			</f:facet>
+
+			<a target="_blank" style="float: right" href="http://redsqirl.com">
+				<h:graphicImage width="150px" url="../image/logo.png" />
+			</a>
+			<table style="margin-top:50px;font-size:13px;">
+				<tr>
+					<td><a target="_blank" href="http://redsqirl.com">#{messages.label_software}</a></td>
+					<td>#{userInfoBean.software}</td>
+				</tr>
+				<tr>
+					<td>#{messages.label_softwareName}</td>
+					<td>#{userInfoBean.softwareName}</td>
+				</tr>
+				<tr>
+					<td>#{messages.label_softwareVersion}</td>
+					<td>#{userInfoBean.softwareVersion}</td>
+				</tr>
+				<tr>
+					<td><a target="_blank" href="http://redsqirl.com/documentation">#{messages.label_softwareDocumentation}</a></td>
+				</tr>
+				<tr>
+					<td><a target="_blank" href="http://redsqirl.com">#{messages.label_softwareLicense}</a></td>
+				</tr>
+			</table>
 		</rich:modalPanel>
 	</a4j:region>
 	
