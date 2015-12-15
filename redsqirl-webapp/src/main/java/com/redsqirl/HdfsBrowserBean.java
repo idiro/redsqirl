@@ -35,7 +35,8 @@ public class HdfsBrowserBean extends HdfsBean {
 	 * 'F' for open.
 	 */
 	private String showSave;
-
+	private boolean createSave = false;
+	
 	public HdfsBrowserBean() {
 	}
 	
@@ -75,7 +76,7 @@ public class HdfsBrowserBean extends HdfsBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void createSaveFolder() throws RemoteException {
+	private void createSaveFolder() throws RemoteException {
 		logger.info("createSaveFolder");
 		
 		FacesContext fCtx = FacesContext.getCurrentInstance();
@@ -100,7 +101,7 @@ public class HdfsBrowserBean extends HdfsBean {
 				getBundleMessage("error.invalid.path");
 			}
 		}
-		
+		createSave = true;
 		usageRecordLog().addSuccess("CREATESAVEFOLDER");
 	}
 	
@@ -127,8 +128,18 @@ public class HdfsBrowserBean extends HdfsBean {
 	/**
 	 * @param showSave
 	 *            the showSave to set
+	 * @throws RemoteException 
 	 */
-	public void setShowSave(String showSave) {
+	public void setShowSave(String showSave) throws RemoteException {
+		if(!createSave){
+			createSaveFolder();
+		}
+		if("I".equals(showSave)){
+			setupZipExtension();
+		}else if("F".equals(showSave)){
+			setupRSExtension();
+		}
+		
 		this.showSave = showSave;
 	}
 

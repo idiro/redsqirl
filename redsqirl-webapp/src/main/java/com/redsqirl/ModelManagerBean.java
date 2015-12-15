@@ -144,7 +144,6 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	}
 	
 	public void checkExistenceCurrentSubWorkflow() throws RemoteException{
-		exists = "false";
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(currentSubworkflowName);
 		boolean system = asSystem.equals("System");
@@ -154,14 +153,15 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		logger.info(currentSubworkflowName);
 		logger.info(swa==null);
 		
+		String subWfToCheck = currentSubworkflowName; 
 		if(!currentSubworkflowName.contains(">")){
-			currentSubworkflowName = ">default>"+currentSubworkflowName;
+			subWfToCheck = ">default>"+currentSubworkflowName;
 		}
-
-		swa.setName(currentSubworkflowName);
 		
 		if(!getModelManager().getAvailableSuperActions(username).contains(swa.getName())){
 			exists = "true";
+		}else{
+			exists = "false";			
 		}
 	}
 	
@@ -257,79 +257,6 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 		return error;
 	}
-	
-	public void exportSa() throws RemoteException {
-		DataFlowInterface dfi = getworkFlowInterface();
-		SubDataFlow swa = dfi.getSubWorkflow(currentSubworkflowName);
-		logger.info("privilege : '" + privilege + "'");
-		Boolean privilegeVal = null;
-		if (privilege.equals("edit")) {
-
-		} else if (privilege.equals("run")) {
-			privilegeVal = new Boolean(false);
-		} else if (privilege.equals("license")) {
-			privilegeVal = new Boolean(true);
-		}
-		logger.info(privilege + " + " + privilegeVal);
-		if(!name.contains(">")){
-			name = ">default>"+name;
-		}
-		
-		swa.setName(name);
-
-		String filePath ="/user/"+getUserInfoBean().getUserName()+"/redsqirl-save/"+name+".srs";
-		String error = getModelManager().export(swa, privilegeVal,filePath);
-
-		if (error != null && !error.isEmpty()) {
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			logger.info(" " + error);
-			usageRecordLog().addError("ERROR EXPORTSUPERACTION", error);
-		} else {
-			MessageUseful
-					.addInfoMessage("Export Success for " + swa.getName());
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnSuccess", "msnSuccess");
-			usageRecordLog().addSuccess("EXPORTSUPERACTION");
-		}
-		
-	}
-
-	public void importSa() throws IOException {
-
-		String pathHdfs = getPathHDFS();
-		logger.info("path '" + pathHdfs + "'");
-		if (pathHdfs == null || pathHdfs.isEmpty()) {
-			MessageUseful.addErrorMessage("Path to get SubWorkflow is Empty");
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		} else {
-			SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
-			sdf.read(pathHdfs);
-			ModelInt model = getModelManager().getUserModel(userName, RedSqirlModel.getModelAndSW(sdf.getName())[0]);
-			String error = getModelManager().createInstallFiles(
-					model,
-					sdf, 
-					sdf.getPrivilege());
-
-			if (error != null && !error.isEmpty()) {
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-				usageRecordLog().addError("ERROR IMPORTSUPERACTION", error);
-			} else {
-				MessageUseful.addInfoMessage("Import Success");
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnSuccess", "msnSuccess");
-				usageRecordLog().addSuccess("IMPORTSUPERACTION");
-			}
-		}
-
-	}
-	
-
 	
 	public void removeSystemModel() throws RemoteException{
 		logger.info("rm sys model");

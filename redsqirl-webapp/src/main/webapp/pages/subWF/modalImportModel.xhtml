@@ -37,13 +37,13 @@
 		
 
 		<h:outputText value="#{messages.label_path_hdfs}" />
-		<h:inputText id="modelImportPathHdfs" value="#{browserHdfsBean.path}" onclick="prepareHDFSViewForImport();"/>
+		<h:inputText id="modelImportPathHdfs" value="#{browserHdfsBean.path}" style="width:350px" onclick="prepareHDFSViewForImport();"/>
 
-		<h:panelGrid columns="2">
+		<h:panelGrid columns="2" style="float:right;margin-top:20px;">
 
 			<a4j:commandButton styleClass="greenButton"
 				value="#{messages.button_cancel}" type="button"
-				onclick="#{rich:component('modalAddModel')}.hide();" />
+				onclick="#{rich:component('modalImportModel')}.hide();" />
 			<a4j:commandButton id="ImportModelButton"
 				value="#{messages.button_import}"
 				styleClass="greenButton"
