@@ -109,15 +109,15 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 		logger.info(privilege + " + " + privilegeVal);
 		
-		
+		String nameWithModel = currentSubworkflowName;
 		if(!currentSubworkflowName.contains(">")){
-			currentSubworkflowName = ">default>"+currentSubworkflowName;
+			nameWithModel = ">default>"+currentSubworkflowName;
 		}
 
-		swa.setName(currentSubworkflowName);
+		swa.setName(nameWithModel);
 		
 		String username = system ? null : getUserInfoBean().getUserName();
-		String modelName = RedSqirlModel.getModelAndSW(currentSubworkflowName)[0];
+		String modelName = RedSqirlModel.getModelAndSW(nameWithModel)[0];
 		String error = null;
 		ModelInt modelCur = null;
 		if(system){
