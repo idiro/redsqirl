@@ -25,6 +25,7 @@
 	            <a4j:actionparam name="user"/>
 	            <a4j:actionparam name="type"/>
 	        </a4j:jsFunction>
+	        
 		</a4j:region>
 	
 		<h:panelGrid id="modelsList" columns="2">
@@ -85,6 +86,14 @@
 		                        <f:param name="index" value="#{modelCurIdx}" />
 		                        <f:param name="scope" value="system" />
 		                    </a4j:commandButton>
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_export}"
+		                        action="#{modelBean.recordModel}"
+		                        oncomplete="#{rich:component('modalExportModel')}.show();" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="system" />
+		                    </a4j:commandButton>
 							
 						</h:panelGroup>
 						
@@ -93,7 +102,7 @@
                 </a4j:repeat>
             </h:panelGroup>
                 
-				<h:panelGrid id="model_sys_buttons" columns="2"
+				<h:panelGrid id="model_sys_buttons" columns="3"
 					rendered="#{modelBean.admin}">
 					<a4j:commandButton styleClass="greenButton"
 						value="#{messages.button_sys_install}"
@@ -106,6 +115,12 @@
 						action="#{modelBean.storeScope}"
 						reRender="AddUserModelButton, AddSysModelButton"
 						onclick="#{rich:component('modalAddModel')}.show()" >
+                      	<f:param name="scope" value="System"/>
+                     </a4j:commandButton>
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_import}"
+						action="#{modelBean.storeScope}"
+						onclick="#{rich:component('modalImportModel')}.show();">
                       	<f:param name="scope" value="System"/>
                      </a4j:commandButton>
 				</h:panelGrid>
@@ -172,6 +187,14 @@
 		                        <f:param name="scope" value="user" />
 		                    </a4j:commandButton>
 							
+	                        <a4j:commandButton
+		                        styleClass="greenButton"
+		                        value="#{messages.button_export}"
+		                        action="#{modelBean.recordModel}"
+		                        oncomplete="#{rich:component('modalExportModel')}.show();" >
+		                        <f:param name="index" value="#{modelCurIdx}" />
+		                        <f:param name="scope" value="user" />
+		                    </a4j:commandButton>
 						</h:panelGroup>
 						
 					 </div>
@@ -179,7 +202,7 @@
                 </a4j:repeat>
             </h:panelGroup>
 
-				<h:panelGrid id="model_user_buttons" columns="2"
+				<h:panelGrid id="model_user_buttons" columns="3"
 					rendered="#{modelBean.userAllowInstall}">
 					<a4j:commandButton styleClass="greenButton"
 						value="#{messages.button_user_install}"
@@ -192,6 +215,12 @@
 						action="#{modelBean.storeScope}"
 						reRender="AddUserModelButton, AddSysModelButton"
 						onclick="#{rich:component('modalAddModel')}.show()">
+                      	<f:param name="scope" value="User"/>
+                     </a4j:commandButton>
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_import}"
+						action="#{modelBean.storeScope}"
+						onclick="#{rich:component('modalImportModel')}.show();">
                       	<f:param name="scope" value="User"/>
                      </a4j:commandButton>
 

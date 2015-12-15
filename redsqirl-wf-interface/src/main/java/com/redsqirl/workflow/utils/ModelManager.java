@@ -65,8 +65,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		}
 		return error;
 	}
-
-
+	
 	@Override
 	public ModelInt getAvailableModel(String user, String modelName) throws RemoteException {
 		ModelInt ans = getUserModel(user, modelName);
@@ -150,12 +149,6 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		logger.info("Export "+toExport.getName()+" in "+pathHdfs);
 		error = toExport.save(pathHdfs, privilege);
 		return error;
-	}
-	
-	@Override
-	public String export(ModelInt model, Boolean privilege) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 
@@ -242,6 +235,5 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		ans.removeAll(subworkflowFullNames);
 		return ans;
 	}
-	
 	
 }

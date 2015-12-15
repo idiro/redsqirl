@@ -165,6 +165,99 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 	}
 	
+	public void exportModel() throws RemoteException {
+		String hdfsPath = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("hdfsPath");
+
+		DataFlowInterface dfi = getworkFlowInterface();
+		logger.info("privilege : '" + privilege + "'");
+		Boolean privilegeVal = null;
+		if (privilege.equals("edit")) {
+		} else if (privilege.equals("run")) {
+			privilegeVal = new Boolean(false);
+		} else if (privilege.equals("license")) {
+			privilegeVal = new Boolean(true);
+		}
+		logger.info("export model: "+hdfsPath+", "+privilegeVal);
+		String error = exportModel(rsModel, hdfsPath,privilegeVal);
+		displayErrorMessage(error, "EXPORTMODEL");
+	}
+	
+	protected String exportModel(ModelInt model, String hdfsDirectory,Boolean privilege) throws RemoteException{
+		String error = null;
+		
+		List<SubDataFlow> l = new LinkedList<SubDataFlow>();
+		Iterator<String> it = model.getSubWorkflowNames().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
+			sdf.setName(cur);
+			sdf.read(cur);
+			l.add(sdf);
+		}
+		File tmpFile = modelInstaller.exportModel(model, l, privilege);
+		Map<String,String> propHdfs = getHDFS().getProperties(hdfsDirectory+"/"+tmpFile.getName()); 
+		if( propHdfs != null && !propHdfs.isEmpty()){
+			error = "File "+hdfsDirectory+"/"+tmpFile.getName()+" already exists.";
+		}else{
+			logger.info("Copy "+tmpFile.getAbsolutePath()+" to "+hdfsDirectory+"/"+tmpFile.getName());
+			error = getHDFS().copyFromLocal(tmpFile.getAbsolutePath(), hdfsDirectory+"/"+tmpFile.getName());
+		}
+		tmpFile.delete();
+		
+		
+		return error;
+	}
+	
+	public void importModel() throws RemoteException {
+		String hdfsPath = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("hdfsPath");
+		String error = importModelPriv(hdfsPath,modelScope);
+		displayErrorMessage(error, "IMPORTMODEL");
+		if("system".equalsIgnoreCase(modelScope)){
+			calcSystemModels();
+		}else{
+			calcUserModels();
+		}
+	}
+	
+	private String importModelPriv(String pathHdfs, String scope) throws RemoteException {
+		String error = null;
+		logger.info("path '" + pathHdfs + "'");
+		if (pathHdfs == null || pathHdfs.isEmpty()) {
+			error = "Path to get SubWorkflow is Empty";
+		} else if(pathHdfs.lastIndexOf('-') == -1 ){
+			error = "File should have the format {name}-{version}.zip";
+		}else {
+			
+			String[] path = pathHdfs.split("/");
+			String tmpPath = WorkflowPrefManager.getPathtmpfolder()+"/"+path[path.length-1];
+			File tmpFile = new File(tmpPath);
+			String modelName = path[path.length-1].substring(0, path[path.length-1].lastIndexOf('-'));
+			logger.info("Copy "+pathHdfs+" "+tmpPath);
+			getHDFS().copyToLocal(pathHdfs, tmpPath);
+			ModelInt model = null;
+			if("system".equalsIgnoreCase(scope)){
+				model = getModelManager().getSysModel(modelName);
+			}else{
+				model = getModelManager().getUserModel(getUserInfoBean().getUserName(), modelName);
+			}
+			model.importModel(tmpFile);
+			tmpFile.delete();
+			List<SubDataFlow> l = new LinkedList<SubDataFlow>();
+			Iterator<String> it = model.getSubWorkflowNames().iterator();
+			while(it.hasNext()){
+				String cur = it.next();
+				SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
+				sdf.setName(cur);
+				sdf.read(cur);
+				l.add(sdf);
+			}
+			modelInstaller.installModelWebappFiles(model, l);
+		}
+		return error;
+	}
+	
 	public void exportSa() throws RemoteException {
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(currentSubworkflowName);
@@ -587,6 +680,12 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	public void toggleEditable() throws RemoteException{
 		logger.info("updateModel");
+		recordModel();
+		rsModel.setEditable(!rsModel.isEditable());
+		getModel().setEditable(rsModel.isEditable());
+	}
+	
+	public void recordModel()  throws RemoteException{
 		String modelIndex = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("index");
 		String modelScope = FacesContext.getCurrentInstance()
@@ -598,30 +697,15 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			setModel(getUserModels().get(Integer.valueOf(modelIndex)));
 			rsModel = getModelManager().getUserModel(userName,model.getName());
 		}
-		rsModel.setEditable(!rsModel.isEditable());
-		getModel().setEditable(rsModel.isEditable());
-		
 	}
 	
 	public void updateModel() throws RemoteException{
 		logger.info("updateModel");
-		String modelIndex = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("index");
-		updateModel(Integer.valueOf(modelIndex));
+		recordModel();
+		updateModelPriv();
 	}
 	
-	public void updateModel(int modelIndex) throws RemoteException{
-		
-		modelScope = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("scope");
-		
-		if(modelScope.equalsIgnoreCase("system")){
-			setModel(getSystemModels().get(modelIndex));
-			rsModel = getModelManager().getSysModel(model.getName());
-		}else{
-			setModel(getUserModels().get(modelIndex));
-			rsModel = getModelManager().getUserModel(userName,model.getName());
-		}
+	private void updateModelPriv() throws RemoteException{
 		name = rsModel.getName();
 		comment = rsModel.getComment();
 		version = rsModel.getVersion();

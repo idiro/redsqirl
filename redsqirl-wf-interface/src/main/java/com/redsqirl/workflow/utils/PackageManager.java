@@ -22,7 +22,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.idiro.utils.LocalFileSystem;
-import com.idiro.utils.UnZip;
+import com.idiro.utils.ZipUtils;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 /**
@@ -188,7 +188,7 @@ public class PackageManager extends UnicastRemoteObject {
 				String tmp = WorkflowPrefManager.pathSysHome;
 				tmp += "/tmp";
 				logger.info("unzip " + tmp);
-				UnZip uz = new UnZip();
+				ZipUtils uz = new ZipUtils();
 				logger.info("curPackage " + curPackage);
 				File tmpFile = new File(tmp);
 				uz.unZipIt(curPackage, tmpFile);

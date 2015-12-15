@@ -202,13 +202,20 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 							.newInstance();
 					Transformer transformer = transformerFactory.newTransformer();
 					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(tmpFile);
+					StreamResult result = null;
+					if(privilege != null){
+						result = new StreamResult(tmpFile);
+					}else{
+						result = new StreamResult(file);
+					}
 					logger.debug(4);
 					transformer.transform(source, result);
 					logger.debug(5);
 					
-					FileStream.encryptFile(tmpFile, file);
-					tmpFile.delete();
+					if(privilege != null){
+						FileStream.encryptFile(tmpFile, file);
+						tmpFile.delete();
+					}
 					
 					saved = true;
 					logger.debug("file saved successfully");

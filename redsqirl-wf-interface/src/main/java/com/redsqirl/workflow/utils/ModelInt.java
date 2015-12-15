@@ -149,6 +149,8 @@ public interface ModelInt extends Remote{
 	 */
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException;
 
+	public String importModel(File modelZipFile) throws RemoteException;
+	
 	/**
 	 * Delete a subworkflow
 	 * @param name

@@ -539,7 +539,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String save(final String filePath) throws RemoteException {
 		String error = null;
 		File file = null;
-		File tmpFile = null;
 
 		try {
 			String[] path = filePath.split("/");
@@ -547,7 +546,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String tempPath = WorkflowPrefManager.getPathuserpref() + "/tmp/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			file = new File(tempPath);
-			tmpFile = new File(tempPath + ".tmp");
 			logger.debug("Save xml: " + file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			Document doc = null;
@@ -566,13 +564,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(tmpFile);
+				StreamResult result = new StreamResult(file);
 				logger.debug(4);
 				transformer.transform(source, result);
 				logger.debug(5);
-
-				FileStream.encryptFile(tmpFile, file);
-				tmpFile.delete();
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));

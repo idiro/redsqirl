@@ -62,8 +62,10 @@
 
 	<h:panelGrid columns="2" id="copyMovelBt" style="border:none; float:right;">
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('modalListModel')}.hide();" />
-		<a4j:commandButton  styleClass="greenButton" action="#{modelBean.copyMoveSubWorkflow}" value="#{messages.button_ok}" 
+		<a4j:commandButton  styleClass="greenButton" rendered="#{modelBean.copyMove == 'M' || modelBean.copyMove == 'C'}" action="#{modelBean.copyMoveSubWorkflow}" value="#{messages.button_ok}" 
 			reRender="msnError,subwfList" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalListModel')}.hide();}"/>
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_ok}" 
+			onclick="#{rich:component('modalListModel')}.hide();"/>
 		<a4j:status
 				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivListModel') });"
 				onerror="jQuery.unblockUI();"

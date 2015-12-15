@@ -471,9 +471,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		String error = null;
 		try {
 			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
-			HdfsFileChecker hChN = new HdfsFileChecker(hdfsP);
 			FileChecker hChO = new FileChecker(new File(local_path));
-			if (!hChN.exists() && hChO.exists()) {
+			if (hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.copyFromLocalFile(false, localP, hdfsP);
 			} else {
@@ -509,7 +508,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			HdfsFileChecker hChO = new HdfsFileChecker(hdfsP);
 			if (!hChN.exists() && hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
-				fs.copyToLocalFile(false, localP, hdfsP);
+				fs.copyToLocalFile(false, hdfsP, localP);
 			} else {
 				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}

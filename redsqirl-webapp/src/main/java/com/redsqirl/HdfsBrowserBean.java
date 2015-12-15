@@ -37,6 +37,9 @@ public class HdfsBrowserBean extends HdfsBean {
 	private String showSave;
 
 	public HdfsBrowserBean() {
+	}
+	
+	public void setupRSExtension(){
 		List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 		listExtensions.add(new SelectItem("*.rs", "*.rs"));
 		listExtensions.add(new SelectItem("*.srs", "*.srs"));
@@ -49,7 +52,19 @@ public class HdfsBrowserBean extends HdfsBean {
 			listExtensionsString.add(calcString(listExtensions));
 			setListExtensionsString(listExtensionsString);
 		}
+	}
+	
+	public void setupZipExtension(){
+		List<SelectItem> listExtensions = new LinkedList<SelectItem>();
+		listExtensions.add(new SelectItem("*.zip", "*.zip"));
+		setExtensionsSelected(listExtensions.get(0).getLabel());
+		setListExtensions(listExtensions);
 		
+		List<String> listExtensionsString = new LinkedList<String>();
+		if(listExtensions != null && !listExtensions.isEmpty()){
+			listExtensionsString.add(calcString(listExtensions));
+			setListExtensionsString(listExtensionsString);
+		}
 	}
 
 	/**

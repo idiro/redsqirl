@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.ZipUtils;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
@@ -408,7 +410,15 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		return error;
 	}
 
-
+	public String importModel(File modelZipFile){
+		String error = null;
+		if(!getFile().exists()){
+			new ZipUtils().unZipIt(modelZipFile, getFile().getParentFile());			
+		}else{
+			error = "Model '"+getName()+"' already exists.";
+		}
+		return error;
+	}
 	
 	protected void writePrivateList(Set<String> privateSW){
 		try{

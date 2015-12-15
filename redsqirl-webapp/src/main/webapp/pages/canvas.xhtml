@@ -2298,28 +2298,6 @@
 										</h:panelGroup>
 									</f:facet>
 									
-									<rich:menuGroup value="#{messages.label_menu_subworkflow}">
-										<rich:menuItem id="installSubWorkflow" submitMode="ajax"
-											value="#{messages.label_menu_install_sub_workflow}"
-											disabled="#{canvasBean.workflowType == 'W'}"
-											onclick="#{rich:component('modalSubWfInstall')}.show();"
-											action="#{modelBean.mountSubName}">
-											<f:param name="subWorkflowName"
-												value="#{canvasBean.nameWorkflow}" />
-										</rich:menuItem>
-										<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
-											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
-											oncomplete="mountComboboxTypes();#{rich:component('modalSubWfimport')}.show();">
-										</rich:menuItem>
-										<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
-											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
-											disabled="#{canvasBean.workflowType == 'W'}"
-											oncomplete="#{rich:component('modalSubWfexport')}.show();"
-											action="#{modelBean.mountSubName}">
-											<f:param name="subWorkflowName"
-												value="#{canvasBean.nameWorkflow}" />
-										</rich:menuItem>
-									</rich:menuGroup>
 									<rich:menuItem id="manageModels" submitMode="ajax"
 										value="#{messages.label_menu_manage_models}"
 										reRender="modelsList"
@@ -2336,6 +2314,27 @@
 										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}"
 										oncomplete="#{rich:component('modalSettings')}.show();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="installSubWorkflow" submitMode="ajax"
+										value="#{messages.label_menu_install_sub_workflow}"
+										disabled="#{canvasBean.workflowType == 'W'}"
+										onclick="#{rich:component('modalSubWfInstall')}.show();"
+										action="#{modelBean.mountSubName}">
+										<f:param name="subWorkflowName"
+											value="#{canvasBean.nameWorkflow}" />
+									</rich:menuItem>
+									<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
+										value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
+										oncomplete="mountComboboxTypes();#{rich:component('modalSubWfimport')}.show();">
+									</rich:menuItem>
+									<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
+										value="#{messages.label_menu_export_sub_workflowto_hdfs}"
+										disabled="#{canvasBean.workflowType == 'W'}"
+										oncomplete="#{rich:component('modalSubWfexport')}.show();"
+										action="#{modelBean.mountSubName}">
+										<f:param name="subWorkflowName"
+											value="#{canvasBean.nameWorkflow}" />
 									</rich:menuItem>
 									<!-- <rich:menuSeparator />
 									<rich:menuItem id="aboutMenuItem" submitMode="ajax"
@@ -3106,6 +3105,48 @@
 			</h:form>
 		</rich:modalPanel>
 	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalExportModel" width="300" height="300"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_menu_export_model}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalExportModel')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/subWF/modalExportModel.xhtml"
+					ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalImportModel" width="300" height="300"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_menu_import_model}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalImportModel')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/subWF/modalImportModel.xhtml"
+					ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+		
+	</a4j:region>
+	
 	<a4j:region>
 		<rich:modalPanel id="modalSubWfexport" width="300" height="300"
 			style="overflow:auto;" resizeable="false">

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class ProcessesManager {
 
-	protected Logger logger = Logger.getLogger(ProcessesManager.class);
+	protected static Logger logger = Logger.getLogger(ProcessesManager.class);
 	protected String pid;
 	protected File file;
 	protected String fname;

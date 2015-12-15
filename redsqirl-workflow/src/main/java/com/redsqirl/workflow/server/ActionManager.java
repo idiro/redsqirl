@@ -38,7 +38,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 */
 	private static final long serialVersionUID = -1577582692193380573L;
 
-	static private Logger logger = Logger.getLogger(ActionManager.class);
+	private static Logger logger = Logger.getLogger(ActionManager.class);
 
 	/**
 	 * Avoid to call reflexive method again and again

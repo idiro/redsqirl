@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.idiro.utils.LocalFileSystem;
+import com.idiro.utils.ZipUtils;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
 /**
@@ -60,8 +63,6 @@ public interface ModelManagerInt extends Remote {
 
 	public String export(SubDataFlow toExport , Boolean privilege, String pathHdfs) throws RemoteException;
 	
-	public String export(ModelInt model, Boolean privilege) throws RemoteException;
-	
 	public String createInstallFiles(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException;
 	
 	public Set<String> getAvailableSuperActions(String user) throws RemoteException;
@@ -73,5 +74,5 @@ public interface ModelManagerInt extends Remote {
 	public File getSuperActionHelpDir(String user) throws RemoteException;
 
 	Set<String> getSubWorkflowFullNameDependentOn(String user, Set<String> subworkflowFullNames) throws RemoteException;
-	
+
 }
