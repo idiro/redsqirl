@@ -241,7 +241,7 @@ public class Decrypter extends KeyCipher {
 					
 					logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
 					
-					if(macTocheck.equals(sbMac.substring(sbMac.length() - 8))){
+					if(macTocheck.equalsIgnoreCase(sbMac.substring(sbMac.length() - 8))){
 						return true;
 					}
 				}
