@@ -90,8 +90,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			throw new Exception("No expressions to test");
 		}
 		logger.debug("expression is ok");
-		logger.info("nonAggregFeats " + nonAggregFeats);
-		logger.info("fields " + fields.getFieldNames().toString());
+		logger.debug("nonAggregFeats " + nonAggregFeats);
+		logger.debug("fields " + fields.getFieldNames().toString());
 
 		if (nonAggregFeats != null && !fields.getFieldNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation fields unknown");
@@ -101,7 +101,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		logger.debug("aggreg and feats ok");
 
 		expr = expr.trim();
-		logger.debug("expression : " + expr);
+		logger.info("expression : " + expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -134,7 +134,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			} else if (expr.endsWith("'") && expr.length() > 1) {
 				type = "STRING";
 			} else {
-				String error = "string quote \"'\" not closed";
+				String error = "string quote \"'\" not closed in expression "+expr;
 				logger.debug(error);
 				throw new Exception(error);
 			}
@@ -387,8 +387,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		if (trimExp.startsWith("(") && trimExp.endsWith(")")) {
 			trimExp = trimExp.substring(1, trimExp.length() - 1);
 		}
+		String pattern = "( OR | AND )(?=([^']*'[^']*')*[^']*$)";
 		String cleanUp = removeBracketContent(trimExp);
-		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ") || cleanUp.contains(" AND ");
+		return cleanUp.startsWith("NOT ") || cleanUp.split(pattern).length > 1;
 	}
 
 	/**
@@ -401,9 +402,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @throws Exception
 	 */
 	protected boolean runLogicalOperation(String expr, FieldList fields, Set<String> aggregFeat) throws Exception {
-
+		String pattern = "( OR | AND )(?=([^']*'[^']*')*[^']*$)";
 		logger.debug("logical operator ");
-		String[] split = expr.split("OR|AND");
+		String[] split = expr.split(pattern);
 		boolean ok = true;
 		int i = 0;
 		while (ok && i < split.length) {
