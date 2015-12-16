@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -229,6 +230,19 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 			}
 		}
 		return ans;
+	}
+	
+	public String getModuleOfSuperAction(String user, String superActionName) throws RemoteException {
+		List<ModelInt> ans = new ArrayList<ModelInt>();
+		ans.addAll(getUserModels(user));
+		ans.addAll(getSysModels());
+		
+		for (ModelInt modelInt : ans) {
+			if(modelInt.getPublicFullNames().equals(superActionName)){
+				return modelInt.getName();
+			}
+		}
+		return null;
 	}
 	
 	@Override

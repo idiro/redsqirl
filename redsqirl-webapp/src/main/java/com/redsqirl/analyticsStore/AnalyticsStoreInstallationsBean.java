@@ -142,38 +142,6 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 		return pckServer;
 	}
 
-	private String getSoftwareKey(){
-		Properties prop = new Properties();
-		InputStream input = null;
-
-		try {
-			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
-
-			// load a properties file
-			prop.load(input);
-
-			// get the property value and print it out
-
-			String licenseKey;
-			String[] value = ProjectID.get().trim().split("-");
-			if(value != null && value.length > 1){
-				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
-			}else{
-				licenseKey = ProjectID.get();
-			}
-
-			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String formatTitle(String title){
-		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-	}
-
 	public void enable() throws IOException {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();

@@ -751,7 +751,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPckManagerUri() {
 		String uri = getSysProperty(WorkflowPrefManager.sys_pack_manager_url);
 		if (uri == null || uri.isEmpty()) {
-			uri = "http://localhost:9090/redsqirl-repo";
+			uri = "http://localhost:9090/analytics-store";
 		}
 		return uri;
 	}

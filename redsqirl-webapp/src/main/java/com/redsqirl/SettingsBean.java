@@ -133,27 +133,6 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		return prop;
 	}
 
-	public boolean isAdmin(){
-		boolean admin = false;
-		try{
-			logger.debug("is admin");
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			HttpSession session = (HttpSession) fCtx.getExternalContext()
-					.getSession(false);
-			String user = (String) session.getAttribute("username");
-			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			if(admins != null){
-				for(String cur: admins){
-					admin = admin || cur.equals(user);
-					//logger.debug("admin user: "+cur);
-				}
-			}
-		}catch(Exception e){
-			logger.warn("Exception in isAdmin: "+e.getMessage());
-		}
-		return admin;
-	}
-
 	public void addNewLineSysSettings(){
 		String[] value = {nameSettings, nameSettings, titleSettings, valueSettings};
 		if(nameSettings != null && !"".equals(nameSettings)){

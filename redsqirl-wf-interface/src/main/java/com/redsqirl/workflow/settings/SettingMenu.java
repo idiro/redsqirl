@@ -169,6 +169,10 @@ public class SettingMenu implements Serializable{
 
 				String propertyName = path+"."+property;
 				properties.put(property, new Setting(scope,defaultValue,type,validator));
+				
+				//logger.info("1 " + propertyName+"_desc");
+				//logger.info("2 " + langProperties.getProperty(propertyName+"_desc",propertyName));
+				
 				properties.get(property).setDescription(langProperties.getProperty(propertyName+"_desc",propertyName));
 				properties.get(property).setLabel(langProperties.getProperty(propertyName+"_label",propertyName));
 				properties.get(property).setPropertyName(propertyName);

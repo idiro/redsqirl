@@ -24,22 +24,24 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 public class UsageRecordWriter implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(UsageRecordWriter.class);
 
-	private static String licenseKey;
+	private String licenseKey;
 	private String user;
-	
+
 	public UsageRecordWriter(String licenseKey ,String user) {
 		super();
 		this.licenseKey = licenseKey;
 		this.user = user;
 	}
-	
+
 	public UsageRecordWriter(String user) {
 		super();
 		this.user = user;
 	}
-	
+
 	public UsageRecordWriter() {
 		super();
 	}
@@ -59,12 +61,12 @@ public class UsageRecordWriter implements Serializable {
 	}
 
 	public File getCurrentFile() throws IOException{
-		
+
 		File folder = new File(WorkflowPrefManager.pathSysHome+"/usageRecordLog");
 		if(!folder.exists()){
 			folder.mkdir();
 		}
-		
+
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");
 		File cur = new File(WorkflowPrefManager.pathSysHome+"/usageRecordLog/usageRecordLog"+df.format(new Date())+".txt");
 		if(!cur.exists()){
@@ -72,12 +74,12 @@ public class UsageRecordWriter implements Serializable {
 		}
 		return cur;
 	}
-	
+
 	public String getZipPath() throws IOException{
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");
 		return WorkflowPrefManager.pathSysHome+"/usageRecordLog/usageRecordLog"+"-"+getSoftwareKey()+"-"+df.format(new Date())+".zip";
 	}
-	
+
 	public void addSuccess(String actionType, String description, String message) {
 		try {
 			write(actionType, Status.SUCCESS, description,message);
@@ -101,7 +103,7 @@ public class UsageRecordWriter implements Serializable {
 			logger.error(e,e);
 		}
 	}
-	
+
 	public void addWarn(String actionType, String description, String message) {
 		try {
 			write(actionType, Status.WARNING, description,message);
@@ -109,7 +111,7 @@ public class UsageRecordWriter implements Serializable {
 			logger.error(e,e);
 		}
 	}
-	
+
 	public void addWarn(String description, String message) {
 		try {
 			write("", Status.WARNING, description,message);
@@ -117,7 +119,7 @@ public class UsageRecordWriter implements Serializable {
 			logger.error(e,e);
 		}
 	}
-	
+
 
 	public void addError(String actionType, String description, String message) {
 		try {
@@ -126,7 +128,7 @@ public class UsageRecordWriter implements Serializable {
 			logger.error(e,e);
 		}
 	}
-	
+
 	public void addError(String description, String message) {
 		try {
 			write("", Status.ERROR, description,message);
@@ -163,7 +165,7 @@ public class UsageRecordWriter implements Serializable {
 			logger.error(e,e);
 		}
 	}
-	
+
 	private String getSoftwareKey(){
 		Properties prop = new Properties();
 		InputStream input = null;
@@ -191,17 +193,17 @@ public class UsageRecordWriter implements Serializable {
 		}
 		return null;
 	}
-    
-    private String formatTitle(String title){
+
+	private String formatTitle(String title){
 		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
 
-	public static String getLicenseKey() {
+	public String getLicenseKey() {
 		return licenseKey;
 	}
 
-	public static void setLicenseKey(String licenseKey) {
-		UsageRecordWriter.licenseKey = licenseKey;
+	public void setLicenseKey(String licenseKey) {
+		this.licenseKey = licenseKey;
 	}
 
 	public String getUser() {

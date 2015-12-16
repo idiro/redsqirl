@@ -9,11 +9,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -53,10 +50,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 
-/**
- * Simple login bean.
- *
- */
 public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 7765876811740798583L;
@@ -624,24 +617,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		return null;
 	}
 
-	public boolean isAdmin(){
-		boolean admin = false;
-		try{
-			logger.debug("is admin");
-			String user = email;
-			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			if(admins != null){
-				for(String cur: admins){
-					admin = admin || cur.equals(user);
-					logger.info("admin user: "+cur);
-				}
-			}
-		}catch(Exception e){
-			logger.error("Exception in isAdmin: "+e.getMessage());
-		}
-		return admin;
-	}
-
 	public void showOnline(){
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectType = params.get("selectType");
@@ -654,38 +629,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 	}
 
-	private String getSoftwareKey(){
-		Properties prop = new Properties();
-		InputStream input = null;
-
-		try {
-			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
-
-			// load a properties file
-			prop.load(input);
-
-			// get the property value and print it out
-
-			String licenseKey;
-			String[] value = ProjectID.get().trim().split("-");
-			if(value != null && value.length > 1){
-				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
-			}else{
-				licenseKey = ProjectID.get();
-			}
-
-			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String formatTitle(String title){
-		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-	}
-
 	private String generateWorkflowName(String path) {
 		String name;
 		int index = path.lastIndexOf("/");
@@ -695,21 +638,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			name = path;
 		}
 		return name.replace(".rs", "").replace(".srs", "").replace("sa_", "");
-	}
-
-	private static boolean netIsAvailable() {
-		try {
-			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
-			final URL url = new URL(wpm.getPckManagerUri());
-			final URLConnection conn = url.openConnection();
-			conn.setConnectTimeout(3000);
-			conn.connect();
-			return true;
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			return false;
-		}
 	}
 
 	public void calcSettings(){

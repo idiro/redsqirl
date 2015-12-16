@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -33,12 +35,13 @@ public class HelpBean extends BaseBean implements Serializable {
 	private static final long serialVersionUID = -7223013564153599958L;
 	private static final String workflowNameTmp = "calcHelpItens"; 
 	private static Logger logger = Logger.getLogger(HelpBean.class);
-	private List<String[]> helpHtml = null;
+	private Map<String,Map<String,String[]>> helpHtml = null;
 	private String fieldSearch;
 	private List<String[]> result = new ArrayList<String[]>();
 	private List<String> listHelp = new ArrayList<String>();
-	private List<String[]> helpHtmlSuperAction = null;
 	protected ElementManager em = null;
+	private Map<String, List<String[]>> helpAns;
+	private Map<String, List<String[]>> helpHtmlSA;
 
 
 	private ElementManager getEM() throws RemoteException{
@@ -78,11 +81,33 @@ public class HelpBean extends BaseBean implements Serializable {
 
 	protected void mountRelativeHelp() throws Exception{
 
-		Map<String,String[]> helpRel = null;
-		helpHtml = new LinkedList<String[]>();
+		Map<String,String[]> helpRel = new LinkedHashMap<String, String[]>();
+		helpAns = new LinkedHashMap<String, List<String[]>>();
+		
+		//helpHtml = new LinkedList<String[]>();
 		try {
-			helpRel = em.getRelativeHelp(getCurrentPage());
-			Iterator<String> it = helpRel.keySet().iterator();
+			
+			helpHtml = em.getRelativeHelp(getCurrentPage());
+			for (String packageName : helpHtml.keySet()) {
+				helpRel = helpHtml.get(packageName);
+				List<String[]> l = new ArrayList<String[]>();
+				for (String action : helpRel.keySet()) {
+					l.add(helpRel.get(action));
+				}
+				
+				Collections.sort(l, new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] o1, String[] o2) {
+						return o1[0].compareTo(o2[0]);
+					}
+				});
+				
+				helpAns.put(packageName, l);
+			}
+			
+			
+			/*Iterator<String> it = helpRel.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
 				String[] helpArray = new String[]{
@@ -100,7 +125,8 @@ public class HelpBean extends BaseBean implements Serializable {
 				public int compare(String[] o1, String[] o2) {
 					return o1[0].compareTo(o2[0]);
 				}
-			});
+			});*/
+			
 		} catch (Exception e) {
 			logger.error(e,e);
 		}
@@ -109,11 +135,32 @@ public class HelpBean extends BaseBean implements Serializable {
 
 	protected void mountRelativeHelpSuperAction() throws Exception{
 
-		Map<String,String[]> helpRel = null;
-		List<String[]> helpHtmlSA = new LinkedList<String[]>();
+		Map<String, Map<String, String[]>> helpRel = null;
+		helpHtmlSA = new LinkedHashMap<String, List<String[]>>();
+		Map<String,String[]> helpSA = new LinkedHashMap<String, String[]>();
+		
 		try {
 			helpRel = em.getRelativeHelpSuperAction(getCurrentPage());
-			Iterator<String> it = helpRel.keySet().iterator();
+			
+			for (String modelName : helpRel.keySet()) {
+				helpSA = helpRel.get(modelName);
+				List<String[]> l = new ArrayList<String[]>();
+				for (String superAction : helpSA.keySet()) {
+					l.add(helpSA.get(superAction));
+				}
+				
+				Collections.sort(l, new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] o1, String[] o2) {
+						return o1[0].compareTo(o2[0]);
+					}
+				});
+				
+				helpHtmlSA.put(modelName, l);
+			}
+			
+			/*Iterator<String> it = helpRel.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
 				
@@ -140,12 +187,11 @@ public class HelpBean extends BaseBean implements Serializable {
 				public int compare(String[] o1, String[] o2) {
 					return o1[0].compareTo(o2[0]);
 				}
-			});
+			});*/
+			
 		} catch (Exception e) {
 			logger.error(e,e);
 		}
-		
-		setHelpHtmlSuperAction(helpHtmlSA);
 
 	}
 
@@ -203,16 +249,69 @@ public class HelpBean extends BaseBean implements Serializable {
 	/**
 	 * @return the helpHtml
 	 */
-	public final List<String[]> getHelpHtml() {
+	public final Map<String,Map<String,String[]>> getHelpHtml() {
 		return helpHtml;
 	}
 
+	public void setHelpHtml(Map<String, Map<String, String[]>> helpHtml) {
+		this.helpHtml = helpHtml;
+	}
+	
+	public final List<String[]> getHelpHtmlList() {
+		List<String[]> result = new ArrayList<String[]>();
+		for (String name : helpHtml.keySet()) {
+			result.add(new String[] { name , WordUtils.capitalizeFully(name.replace("_", " ")) });
+		}
+		
+		Collections.sort(result, new Comparator<String[]>() {
+			@Override
+			public int compare(String[] o1, String[] o2) {
+				return o1[0].compareTo(o2[0]);
+			}
+		});
+		
+		return result;
+	}
+	
+	public final List<String[]> getHelpHtmlSuperActionList() {
+		List<String[]> result = new ArrayList<String[]>();
+		for (String name : helpHtmlSA.keySet()) {
+			result.add(new String[] { name , WordUtils.capitalizeFully(name.replace("_", " ")) });
+		}
+		
+		Collections.sort(result, new Comparator<String[]>() {
+			@Override
+			public int compare(String[] o1, String[] o2) {
+				return o1[0].compareTo(o2[0]);
+			}
+		});
+		
+		return result;
+	}
+
 	public final int getHelpSize(){
-		return helpHtml.size();
+		Map<String,String[]> helpRel = new LinkedHashMap<String, String[]>();
+		int count = 0;
+		for (String packageName : helpHtml.keySet()) {
+			helpRel = helpHtml.get(packageName);
+			List<String[]> l = new ArrayList<String[]>();
+			for (String action : helpRel.keySet()) {
+				count++;
+			}
+		}
+		return count;
 	}
 	
 	public final int getHelpSuperActionSize(){
-		return helpHtmlSuperAction.size();
+		List<String[]> helpRel = new ArrayList<String[]>();
+		int count = 0;
+		for (String modelName : helpHtmlSA.keySet()) {
+			helpRel = helpHtmlSA.get(modelName);
+			for (String[] action : helpRel) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public String getFieldSearch() {
@@ -239,12 +338,20 @@ public class HelpBean extends BaseBean implements Serializable {
 		this.listHelp = listHelp;
 	}
 
-	public List<String[]> getHelpHtmlSuperAction() {
-		return helpHtmlSuperAction;
+	public Map<String, List<String[]>> getHelpAns() {
+		return helpAns;
 	}
 
-	public void setHelpHtmlSuperAction(List<String[]> helpHtmlSuperAction) {
-		this.helpHtmlSuperAction = helpHtmlSuperAction;
+	public void setHelpAns(Map<String, List<String[]>> helpAns) {
+		this.helpAns = helpAns;
+	}
+
+	public Map<String, List<String[]>> getHelpHtmlSA() {
+		return helpHtmlSA;
+	}
+
+	public void setHelpHtmlSA(Map<String, List<String[]>> helpHtmlSA) {
+		this.helpHtmlSA = helpHtmlSA;
 	}
 
 }

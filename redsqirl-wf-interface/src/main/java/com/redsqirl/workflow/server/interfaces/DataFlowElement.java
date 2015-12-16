@@ -52,7 +52,7 @@ public interface DataFlowElement extends Remote{
 
 	/**
 	 * Get the input names and properties accepted for each
-	 * @return Input names and propteties for each action
+	 * @return Input names and properties for each action
 	 * @throws RemoteException
 	 */
 	public Map<String, DFELinkProperty> getInput() throws RemoteException;

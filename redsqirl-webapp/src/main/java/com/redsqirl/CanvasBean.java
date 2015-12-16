@@ -45,6 +45,7 @@ import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.ModelInstaller;
+import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlModel;
 
 public class CanvasBean extends BaseBean implements Serializable {
@@ -320,18 +321,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
-	/**
-	 * addLink
-	 * 
-	 * Method for add Link for two elements
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void addLink() {
-
-	}
-
 	public String[] getResultAfterAddingLink(){
 
 		logger.info("addLink");
@@ -413,7 +402,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		return label;
-
 	}
 
 	public void updateLinkPossibilities() {
@@ -1651,15 +1639,33 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String externalLink = null;
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
-
+			
 			tooltip.append("<center><span style='font-size:15px;'>"
 					+ WordUtils
 					.capitalizeFully(dfe.getName().replace('_', ' '))
 					+ ": " + dfe.getComponentId() + "</span></center><br/>");
+			
+			
+			
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
+			
+			String module = "";
+			if(dfe.getName() != null && dfe.getName().startsWith(">")){
+				module += getModelManager().getModuleOfSuperAction(user, dfe.getName());
+			}else{
+				PackageManager pcm = new PackageManager();
+				module += pcm.getPackageOfAction(user, dfe.getName());
+			}
+			if(!module.isEmpty()){
+				tooltip.append("Module: " + module + "<br/>");
+			}
+			
+			
 
 			String comment = dfe.getComment();
 			if (comment != null && !comment.isEmpty()) {
-				tooltip.append("<i>" + comment + "</i><br/>");
+				tooltip.append("<br/><i>" + comment + "</i><br/>");
 			}
 
 			try {
@@ -1719,12 +1725,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 								+ e.getValue().getPath() + "</span><br/>");
 					}
 				}
-				// tooltip.append("Path exist: " + e.getValue().isPathExists() +
-				// "<br/>");
-
-				//}
-
-				//for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
 
 				if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
 					tooltip.append("<br/>");

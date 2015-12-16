@@ -74,4 +74,6 @@ public interface ModelManagerInt extends Remote {
 
 	Set<String> getSubWorkflowFullNameDependentOn(String user, Set<String> subworkflowFullNames) throws RemoteException;
 	
+	public String getModuleOfSuperAction(String user, String superActionName) throws RemoteException;
+	
 }

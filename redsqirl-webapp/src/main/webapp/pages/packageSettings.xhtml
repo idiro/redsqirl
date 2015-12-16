@@ -77,22 +77,25 @@
 					     	<tr>
 				     			<td colspan="2">
 				     				<h:outputText value="#{packageMngBean.s.properties[obj].label}" style="font-size:15px;padding-left:200px;" /><br/><br/>
-				     				<h:outputText value="#{packageMngBean.s.properties[obj].description}" style="padding-left:200px;" /><br/>
 				     			</td>
 				     		</tr>
 			     			
 			     			<tr>
 			     				<td style="width:350px;">
 			     					
-			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;" title="#{messages.label_system}" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{packageMngBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border: 1px solid;" rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existSysProperty }" />
+			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;vertical-align:-6px;" title="#{messages.label_system}" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="#{packageMngBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border: 1px solid;" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existSysProperty }" 
+			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; !packageMngBean.s.properties[obj].existSysProperty }" />
 			     					<br/>
 			     					<br/>
 			     					
 			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}">
 			     					
 				     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" >
-									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" 
+									    	<h:graphicImage url="../image/icons/button-left_arrow.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
 									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
 									    	<f:param name="type" value="SYSTEM" />
@@ -117,15 +120,19 @@
 			     				</td>
 			     				<td>
 			     				
-			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;" title="#{messages.label_user}" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border: 1px solid;" rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty }" />
+			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;vertical-align:-6px;" title="#{messages.label_user}" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
+			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border: 1px solid;" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty }" 
+			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; !packageMngBean.s.properties[obj].existUserProperty }" />
 			     					<br/>
 			     					<br/>
 			     					
 			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}">
 			     					
 	 			     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" >
-									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" 
+									    	<h:graphicImage url="../image/icons/button-left_arrow.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
 									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
 									    	<f:param name="type" value="USER" />

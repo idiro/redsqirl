@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 import com.idiro.utils.LocalFileSystem;
@@ -26,6 +27,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.ModelInt;
 import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlModel;
@@ -55,6 +57,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * Key: action name, Value: absolute help path, absolute image path
 	 */
 	protected Map<String, String[]> help;
+	
+	protected Map<String,Map<String, String[]>> packageHelp;
 
 	ActionManager() throws RemoteException{
 		super();
@@ -153,10 +157,35 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 	public void loadHelp() {
 		help = new LinkedHashMap<String, String[]>();
+		packageHelp = new LinkedHashMap<String, Map<String, String[]>>();
 		Map<String, String> nameWithClass = null;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			Iterator<String> it = nameWithClass.keySet().iterator();
+			
+			String user = System.getProperty("user.name");
+			PackageManager pm = new PackageManager();
+			Map<String,List<String>> mapAction = pm.getActionsPerPackage(user);
+			
+			mapAction.put("core", pm.getCoreActions());
+			
+			Iterator<String> iterator = mapAction.keySet().iterator();
+			while (iterator.hasNext()) {
+				String packageName = iterator.next();
+				LinkedHashMap<String, String[]> aux = new LinkedHashMap<String, String[]>();
+				for (String actionName : mapAction.get(packageName)) {
+					try {
+						DataFlowElement dfe = (DataFlowElement) Class.forName(nameWithClass.get(actionName)).newInstance();
+						help.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
+						aux.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
+					} catch (Exception e) {
+						logger.error(LanguageManagerWF.getText("workflow.loadclassfail", new Object[] { actionName }));
+					}
+				}
+				packageHelp.put(packageName, aux);
+			}
+			
+			
+			/*Iterator<String> it = nameWithClass.keySet().iterator();
 			while (it.hasNext()) {
 				String actionName = it.next();
 
@@ -173,7 +202,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 							"workflow.loadclassfail",
 							new Object[] { actionName }));
 				}
-			}
+			}*/
+			
 		} catch (Exception e) {
 			logger.error(LanguageManagerWF
 					.getText("workflow.loadclassexception"));
@@ -462,28 +492,39 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	}
 
 
-	public Map<String, String[]> getRelativeHelp(File curPath) {
-		if (help == null || help.isEmpty()) {
+	public Map<String, Map<String, String[]>> getRelativeHelp(File curPath) {
+		if (packageHelp == null || packageHelp.isEmpty()) {
 			loadHelp();
 		}
 		if (curPath == null) {
-			return help;
+			return packageHelp;
 		}
 		logger.info("Load help " + curPath.getPath());
-		Map<String, String[]> ans = new LinkedHashMap<String, String[]>();
-		Iterator<String> helpit = help.keySet().iterator();
+		Map<String, Map<String, String[]>> ans = new LinkedHashMap<String, Map<String, String[]>>();
+		Iterator<String> helpit = packageHelp.keySet().iterator();
 		while (helpit.hasNext()) {
 			String key = helpit.next();
 			try {
 
 				// logger.info("getRelativeHelp " + key);
 
-				ans.put(key,
-						new String[] {
-						LocalFileSystem.relativize(curPath,
-								help.get(key)[0]),
-								LocalFileSystem.relativize(curPath,
-										help.get(key)[1]) });
+				Map<String, String[]> out = new LinkedHashMap<String, String[]>();
+				
+				Map<String, String[]> aux = packageHelp.get(key);
+				Iterator<String> it = aux.keySet().iterator();
+				while (it.hasNext()) {
+					String action = it.next();
+					
+					out.put(action, new String[] {
+							action,
+							WordUtils.capitalizeFully(action.replace("_", " ")),
+							LocalFileSystem.relativize(curPath,aux.get(action)[0]),
+							LocalFileSystem.relativize(curPath,aux.get(action)[1])
+							});
+				}
+				
+				ans.put(key, out);
+				
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");
@@ -492,19 +533,35 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		return ans;
 	}
 
-	public Map<String, String[]> getRelativeHelpSuperAction(File curPath) {
-		Map<String, String[]> helpSuperAction = null;
+	public Map<String, Map<String, String[]>> getRelativeHelpSuperAction(File curPath) {
+		Map<String, Map<String, String[]>> helpSuperAction = null;
 		if (helpSuperAction == null || helpSuperAction.isEmpty()) {
-			helpSuperAction = new LinkedHashMap<String, String[]>();
+			helpSuperAction = new LinkedHashMap<String, Map<String, String[]>>();
+			
 			try {
-				Iterator<String> it = getSuperActions().iterator();
+			
+				String user = System.getProperty("user.name");
+				ModelManager model = new ModelManager();
+				List<ModelInt> l = model. getAvailableModels(user);
+				for (ModelInt modelInt : l) {
+					
+					Map<String, String[]> out = new LinkedHashMap<String, String[]>();
+					for (String subworkflow : modelInt.getSubWorkflowFullNames()) {
+						DataFlowElement dfe = new SuperAction(subworkflow,true);
+						out.put(subworkflow, new String[] { dfe.getHelp(), dfe.getImage() });
+					}
+					
+					helpSuperAction.put(modelInt.getName(), out);
+					
+				}
+			
+			
+				/*Iterator<String> it = getSuperActions().iterator();
 				while (it.hasNext()) {
 					String actionName = it.next();
 					try {
 						DataFlowElement dfe = new SuperAction(actionName,true);
-
-						helpSuperAction.put(actionName,
-								new String[] { dfe.getHelp(), dfe.getImage() });
+						helpSuperAction.put(actionName,	new String[] { dfe.getHelp(), dfe.getImage() });
 						// logger.info("getRelativeHelpSuperAction " +
 						// dfe.getHelp());
 
@@ -513,27 +570,49 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 								"workflow.loadclassfail",
 								new Object[] { actionName }));
 					}
-				}
+				}*/
+				
+				
 			} catch (Exception e) {
 				logger.error(LanguageManagerWF
 						.getText("workflow.loadclassexception"));
 			}
 		}
+		
 		if (curPath == null) {
 			return helpSuperAction;
 		}
 		logger.info("Load helpSuperAction " + curPath.getPath());
-		Map<String, String[]> ans = new LinkedHashMap<String, String[]>();
+		Map<String, Map<String, String[]>> ans = new LinkedHashMap<String, Map<String, String[]>>();
 		Iterator<String> helpit = helpSuperAction.keySet().iterator();
 		while (helpit.hasNext()) {
 			String key = helpit.next();
 			try {
-				ans.put(key,
-						new String[] {
-						LocalFileSystem.relativize(curPath,
-								helpSuperAction.get(key)[0]),
-								LocalFileSystem.relativize(curPath,
-										helpSuperAction.get(key)[1]) });
+				
+				Map<String, String[]> out = new LinkedHashMap<String, String[]>();
+				Map<String, String[]> aux = helpSuperAction.get(key);
+				for (String action : aux.keySet()) {
+					
+					String value = "";
+					if(action != null && action.startsWith(">")){
+						String[] superAction = action.split(">");
+						value = superAction[2];
+					}else{
+						value = action;
+					}
+					
+					out.put(action,
+							new String[] {
+								action,
+								WordUtils.capitalizeFully(value.replace("_", " ")),
+								LocalFileSystem.relativize(curPath,	aux.get(action)[0]),
+								LocalFileSystem.relativize(curPath,	aux.get(action)[1]) 
+							});
+					
+				}
+				
+				ans.put(key, out);
+				
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");
@@ -691,6 +770,14 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 	public void setMenuWA(Map<String, List<String[]>> menuWA) {
 		this.menuWA = menuWA;
+	}
+
+	public Map<String, Map<String, String[]>> getPackageHelp() {
+		return packageHelp;
+	}
+
+	public void setPackageHelp(Map<String, Map<String, String[]>> packageHelp) {
+		this.packageHelp = packageHelp;
 	}
 
 }

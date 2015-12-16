@@ -47,7 +47,7 @@ public interface ElementManager  extends Remote{
 	 * @param curPath 
 	 * @return The help html file path relatively to the input for each action name (key).
 	 */
-	public Map<String, String[]> getRelativeHelp(File curPath) throws RemoteException;
+	public Map<String, Map<String, String[]>> getRelativeHelp(File curPath) throws RemoteException;
 
 	/**
 	 * Get the map (key: action name, value: class path name) for all actions
@@ -75,7 +75,7 @@ public interface ElementManager  extends Remote{
 	 * @return Get the relative help of all the Super Actions
 	 * @throws RemoteException
 	 */
-	public Map<String, String[]> getRelativeHelpSuperAction(File curPath) throws RemoteException;
+	public Map<String, Map<String, String[]>> getRelativeHelpSuperAction(File curPath) throws RemoteException;
 
 	/**
 	 * Save the icon menu.
