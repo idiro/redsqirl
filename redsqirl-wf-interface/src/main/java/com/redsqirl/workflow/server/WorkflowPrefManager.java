@@ -390,14 +390,17 @@ public class WorkflowPrefManager extends BlockManager {
 
 	public static void readSettingMenu(){
 		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
-		File[] userPackages = new File(pathUserPackagePref).listFiles();
-		for(int i = 0; i < userPackages.length;++i){
-			try{
-				Reader r = new FileReader(new File(userPackages[i],"settings.json"));
-				JSONTokener tokener = new JSONTokener(r);
-				JSONObject json = new JSONObject(tokener);
-				ans.put(userPackages[i].getName(), new SettingMenu(userPackages[i].getName(), json));
-			}catch(Exception e){}
+		File userPackageFile = new File(pathUserPackagePref);
+		if(userPackageFile.exists()){
+			File[] userPackages = userPackageFile.listFiles();
+			for(int i = 0; i < userPackages.length;++i){
+				try{
+					Reader r = new FileReader(new File(userPackages[i],"settings.json"));
+					JSONTokener tokener = new JSONTokener(r);
+					JSONObject json = new JSONObject(tokener);
+					ans.put(userPackages[i].getName(), new SettingMenu(userPackages[i].getName(), json));
+				}catch(Exception e){}
+			}
 		}
 		settingMenu = ans;
 	}
