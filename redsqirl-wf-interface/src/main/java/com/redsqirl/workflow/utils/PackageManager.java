@@ -573,6 +573,19 @@ public class PackageManager extends UnicastRemoteObject {
 		return result;
 	}
 	
+	public String getPackageOfAction(String user, String actionName){
+		Iterator<RedSqirlPackage> packageIt = getAllPackages(user).iterator();
+		while (packageIt.hasNext()) {
+			RedSqirlPackage pck = packageIt.next();
+			for (String action : pck.getAction()) {
+				if(action.equals(actionName)){
+					return pck.getName();
+				}
+			}
+		}
+		return null;
+	}
+	
 	public List<String> getCoreActions(){
 		List<String> actions = new LinkedList<String>();
 		actions.add("convert_file_text");

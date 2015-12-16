@@ -38,24 +38,19 @@ import org.json.JSONObject;
 import com.idiro.ProjectID;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 import com.redsqirl.workflow.settings.SettingMenu;
-import com.redsqirl.workflow.utils.ModelInt;
-import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 public class PackageMngBean extends BaseBean implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
@@ -94,10 +89,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
 
-		/*
-		retrievesExtPackages();
-		retrievesRepoWelcomePage();
-		 */
+		WorkflowPrefManager.readSettingMenu(getNameUser());
+		curMap = WorkflowPrefManager.getSettingMenu();
 
 		calcSystemPackages();
 		calcUserPackages();
@@ -108,6 +101,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
+
+		WorkflowPrefManager.readSettingMenu(getNameUser());
+		curMap = WorkflowPrefManager.getSettingMenu();
+
 		calcSystemPackages();
 		calcUserPackages();
 	}
@@ -208,24 +205,40 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		setSystemPackages(calcPackage(pckManager.getSysPackageNames()));
+		setSystemPackages(calcPackage(pckManager.getSysPackageNames(), null));
 	}
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
-		setUserPackages(calcPackage(pckManager.getUserPackageNames(user)));
+		setUserPackages(calcPackage(pckManager.getUserPackageNames(user), user));
 	}
-	
-	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages){
+
+	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages, String user){
 		Iterator<String> it = pckPackages.iterator();
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
-			String pck = it.next();
+			String pckStr = it.next();
+
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("../pages/packages/images/"+pck+"_package.gif");
-			rdm.setName(pck);
+			if(curMap != null && curMap.get(pckStr) != null){
+				SettingMenu settingMenu = curMap.get(pckStr);
+				if(settingMenu != null 
+						&& (settingMenu.getMenu() != null && settingMenu.getMenu().isEmpty())
+						&& (settingMenu.getProperties() != null && settingMenu.getProperties().isEmpty()) ){
+					rdm.setSettings(false);
+				}else{
+					rdm.setSettings(true);
+				}
+			}
+
+			rdm.setImage("../pages/packages/images/"+pckStr+"_package.gif");
+			rdm.setName(pckStr);
+
+			RedSqirlPackage pck = pckManager.getAvailablePackage(user, pckStr);
+			rdm.setVersionName(pck.getPackageProperty(RedSqirlPackage.property_version));
+			rdm.setVersionNote(pck.getPackageProperty(RedSqirlPackage.property_desc));
 
 			result.add(rdm);
 		}
@@ -236,7 +249,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
-		
+
 		String type = params.get("type");
 		if(type.equalsIgnoreCase("U")){
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
@@ -246,12 +259,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			setNameUser(null);
 		}
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		//WorkflowPrefManager.readSettingMenu(getNameUser());
+		//curMap = WorkflowPrefManager.getSettingMenu();
 
-		if(path == null){
-			path = new ArrayList<String>();
-		}
+		path = new ArrayList<String>();
 
 		setPathPosition(name);
 
@@ -389,7 +400,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return cur;
 	}
-	
+
 	public void applySettings() throws RemoteException{
 		saveSettings();
 	}
@@ -453,8 +464,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		for (String value : getPath()) {
 			newPath.append(value+".");
 		}
+		String title = newPath.toString();
 		newPath.append(getNameNewTemplate());
 
+		List<String[]> langSettings = new ArrayList<String[]>();
 		sysSettings = new ArrayList<String[]>();
 		userSettings = new ArrayList<String[]>();
 		calcSettings();
@@ -471,9 +484,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				userSettings.add(value);
 			}
 			logger.info("newPath " + newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
+
+			String[] langValue = {nameSettings, title+setting.getKey()};
+			langSettings.add(langValue);
 		}
 
 		storeNewSettings(sysSettings, userSettings);
+		storeNewSettingsLand(langSettings);
 
 		setPackageSelected(null);
 		setNameNewTemplate(null);
@@ -592,7 +609,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				setting.setExistUserProperty(false);
 				deleteProperty(label, setting.getUserValue(), scope);
 			}
-			
+
 			WorkflowPrefManager.readSettingMenu(getNameUser());
 			curMap = WorkflowPrefManager.getSettingMenu();
 
@@ -600,9 +617,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 
 	}
-	
+
 	public void deleteProperty(String name, String valueToDelete, String scope){
-		
+
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
 			pathToDelete.append(value+".");
@@ -648,8 +665,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String label = params.get("label");
+		String type = params.get("type");
 
-		if(label != null){
+		if(label != null && type != null){
 
 			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
 			setting.setUserValue(setting.getDefaultValue());
@@ -659,27 +677,47 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				newPath.append("."+value);
 			}
 
-			userSettings = new ArrayList<String[]>();
-			calcSettings();
 
-			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
-				String nameSettings = newPath.substring(1) +"."+ settings.getKey();
-
-				if(settings.getValue().getScope().equals(Setting.Scope.USER)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						userSettings.add(value);
-					}
-				}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
-					if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
-						String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
-						userSettings.add(valueU);
+			if(type.equals(Setting.Scope.USER)){
+				userSettings = new ArrayList<String[]>();
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							userSettings.add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getUserValue() != null && !settings.getValue().getUserValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getUserValue()};
+							userSettings.add(valueU);
+						}
 					}
 				}
-
+				storeNewSettings(null, userSettings);
 			}
 
-			storeNewSettings(null, userSettings);
+			if(type.equals(Setting.Scope.SYSTEM)){
+				sysSettings = new ArrayList<String[]>();
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							sysSettings.add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							sysSettings.add(valueU);
+						}
+					}
+				}
+				storeNewSettings(sysSettings, null);
+			}
+
 
 			WorkflowPrefManager.readSettingMenu(getNameUser());
 			curMap = WorkflowPrefManager.getSettingMenu();
@@ -759,6 +797,29 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	}
 
+	public void storeNewSettingsLand(List<String[]> langSettings){
+		try {
+			Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
+
+			for (String[] value : langSettings) {
+				Properties prop = new Properties();
+
+				String desc = (String) langProp.get(value[1]+"_desc");
+				String label = (String) langProp.get(value[1]+"_label");
+
+				prop.put(value[0]+"_desc", desc);
+				prop.put(value[0]+"_label", label);
+
+				langProp.putAll(prop);
+			}
+
+			WorkflowPrefManager.getProps().storeLangProperties(langProp);
+
+		} catch (IOException e) {
+			logger.error("Error " + e,e);
+		}
+	}
+
 	private Properties getProps(List<String[]> l){
 		Properties prop = new Properties();
 		Iterator<String[]> it = l.iterator();
@@ -768,7 +829,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return prop;
 	}
-	
+
 	private void removePackage(String user, String name){
 		String[] uninstallPackage = new String[]{name};
 		String error = pckManager.removePackage(user, uninstallPackage);
@@ -807,70 +868,42 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void disable(String[] packageName, String user) {
 
-		String softwareKey = getSoftwareKey();
+		//check if there is internet connection
+		if(netIsAvailable()){
+			
+			String softwareKey = getSoftwareKey();
 
-		try {
+			try {
 
-			String uri = getRepoServer()+"rest/installations/disable";
+				String uri = getRepoServer()+"rest/installations/disable";
 
-			StringBuffer names = new StringBuffer();
-			for (String value : packageName) {
-				names.append(","+value);
-			}
-
-			if(names != null && !"".equals(names.toString())){
-				JSONObject object = new JSONObject();
-				object.put("packageName", names.substring(1));
-				object.put("softwareKey", softwareKey);
-				if(user != null && !"".equals(user)){
-					object.put("user", user);
+				StringBuffer names = new StringBuffer();
+				for (String value : packageName) {
+					names.append(","+value);
 				}
 
-				Client client = Client.create();
-				WebResource webResource = client.resource(uri);
+				if(names != null && !"".equals(names.toString())){
+					JSONObject object = new JSONObject();
+					object.put("packageName", names.substring(1));
+					object.put("softwareKey", softwareKey);
+					if(user != null && !"".equals(user)){
+						object.put("user", user);
+					}
 
-				ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
-				String ansServer = response.getEntity(String.class);
+					Client client = Client.create();
+					WebResource webResource = client.resource(uri);
+
+					ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+					String ansServer = response.getEntity(String.class);
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 
-		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 
 	}
-
-	private String getSoftwareKey(){
-		Properties prop = new Properties();
-		InputStream input = null;
-
-		try {
-			input = new FileInputStream(WorkflowPrefManager.pathSystemPref +  "/licenseKey.properties");
-
-			// load a properties file
-			prop.load(input);
-
-			// get the property value and print it out
-
-			String licenseKey;
-			String[] value = ProjectID.get().trim().split("-");
-			if(value != null && value.length > 1){
-				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
-			}else{
-				licenseKey = ProjectID.get();
-			}
-
-			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String formatTitle(String title){
-		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-	}
-
 
 	public void setPackageScope(){
 		String userEnv = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("user");

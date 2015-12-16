@@ -25,6 +25,7 @@ public class RedSqirlModule implements Serializable{
 	private String type;
 	private String json;
 	private boolean editable;
+	private boolean settings;
 	
 	public int getId() {
 		return id;
@@ -158,6 +159,14 @@ public class RedSqirlModule implements Serializable{
 	 */
 	public void setEditable(boolean editable) {
 		this.editable = editable;
+	}
+
+	public boolean isSettings() {
+		return settings;
+	}
+
+	public void setSettings(boolean settings) {
+		this.settings = settings;
 	}
 	
 }

@@ -9,7 +9,7 @@ public class SelectHeaderType implements Serializable{
 	private String name;
 	private String type;
 	private boolean selected;
-	private String path;
+	private boolean superAction;
 	
 	public SelectHeaderType() {
 		super();
@@ -21,11 +21,11 @@ public class SelectHeaderType implements Serializable{
 		this.type = type;
 	}
 	
-	public SelectHeaderType(String name, String type, String path) {
+	public SelectHeaderType(String name, String type, boolean superAction) {
 		super();
 		this.name = name;
 		this.type = type;
-		this.path = path;
+		this.superAction = superAction;
 	}
 
 	public String getName() {
@@ -52,12 +52,12 @@ public class SelectHeaderType implements Serializable{
 		this.selected = selected;
 	}
 
-	public String getPath() {
-		return path;
+	public boolean isSuperAction() {
+		return superAction;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setSuperAction(boolean superAction) {
+		this.superAction = superAction;
 	}
-	
+
 }

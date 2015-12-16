@@ -198,6 +198,7 @@ public class Decrypter extends KeyCipher {
 			//logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 			
 			//valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			
 			valid &= validateMacAddress(ans.get(mac));
 			
 			//logger.info("valid mac " + valid);
@@ -229,15 +230,20 @@ public class Decrypter extends KeyCipher {
 			while (networks.hasMoreElements()) {
 				NetworkInterface network = networks.nextElement();
 				mac = network.getHardwareAddress();
-				StringBuilder sbMac = new StringBuilder();
-				for (int i = 0; i < mac.length; ++i) {
-					sbMac.append(String.format("%02X", mac[i]));
-				}
-				
-				logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
-				
-				if(macTocheck.equals(sbMac.substring(sbMac.length() - 8))){
-					return true;
+				if(mac != null){
+					
+					StringBuilder sbMac = new StringBuilder();
+					for (int i = 0; i < mac.length; ++i) {
+						sbMac.append(String.format("%02X", mac[i]));
+					}
+					
+					//logger.info("Mac " + sbMac.toString());
+					
+					logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
+					
+					if(macTocheck.equals(sbMac.substring(sbMac.length() - 8))){
+						return true;
+					}
 				}
 				
 			}

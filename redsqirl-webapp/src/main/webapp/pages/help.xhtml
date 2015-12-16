@@ -255,14 +255,18 @@
 		    <a class="stopLink" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
 		    
 			<h2>Available Actions (#{helpBean.helpSize})</h2>
-			<ul>
-			    <ui:repeat value="#{helpBean.helpHtml}" var="action">
-				    <li>
-				    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
-				    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
-				    </li>
-			    </ui:repeat>
-			</ul>
+			
+			<ui:repeat value="#{helpBean.helpHtmlList}" var="pck">
+				<h:outputText value="#{pck[1]}" style="padding-left:10px;font-size:20px;" />
+				<ul>
+				    <ui:repeat value="#{helpBean.helpAns[pck[0]]}" var="action">
+					    <li>
+					    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
+					    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+					    </li>
+				    </ui:repeat>
+				</ul>
+			</ui:repeat>
 	
 			<table>
 				<tr>
@@ -281,16 +285,19 @@
 				</tr>
 			</table>
 			
-			<ul>
-				<h:panelGroup id="helpHtmlSuperAction" >
-				    <ui:repeat value="#{helpBean.helpHtmlSuperAction}" var="action">
-					    <li>
-					    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
-					    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
-					    </li>
-				    </ui:repeat>
-			    </h:panelGroup>
-			</ul>
+			<h:panelGroup id="helpHtmlSuperAction" >
+				<ui:repeat value="#{helpBean.helpHtmlSuperActionList}" var="model">
+					<h:outputText value="#{model[1]}" style="padding-left:10px;font-size:20px;" />
+					<ul>
+					    <ui:repeat value="#{helpBean.helpHtmlSA[model[0]]}" var="action">
+						    <li>
+						    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
+						    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+						    </li>
+					    </ui:repeat>
+					</ul>
+				</ui:repeat>
+			</h:panelGroup>
 			
 	    </div>
 	    

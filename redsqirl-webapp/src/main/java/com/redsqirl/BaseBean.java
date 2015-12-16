@@ -2,6 +2,12 @@ package com.redsqirl;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
@@ -18,6 +25,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.ProjectID;
 import com.redsqirl.auth.UsageRecordWriter;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
@@ -34,7 +42,7 @@ import com.redsqirl.workflow.utils.ModelManagerInt;
 
 /** BaseBean
  * 
- * Class to the methods common to all Beans
+ * Class with methods common to all Beans
  * 
  * @author Igor.Souza
  */
@@ -42,7 +50,7 @@ public class BaseBean {
 
 
 	private static Logger bb_logger = Logger.getLogger(BaseBean.class);
-	
+
 	/** getBundleMessage
 	 * 
 	 * Methods to put message on the screen. Retrieves the message from aplication.properties
@@ -58,7 +66,7 @@ public class BaseBean {
 		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
 		MessageUseful.addErrorMessage(bundle.getString(msg));
 	}
-	
+
 	/** getMessageResources
 	 * 
 	 * Methods retrieve message. Retrieves the message from aplication.properties
@@ -74,7 +82,7 @@ public class BaseBean {
 		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
 		return bundle.getString(msg);
 	}
-	
+
 	/** getMessageResourcesWithParameter
 	 * 
 	 * Methods retrieve message. Retrieves the message from aplication.properties with parameters
@@ -89,7 +97,7 @@ public class BaseBean {
 		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
 		return MessageFormat.format(bundle.getString(msgid), args);
 	}
-	
+
 	/** mapToList
 	 * 
 	 * Methods to transform the map into a list of the Entry object(value, key). Object used to display dynamic fields
@@ -149,7 +157,7 @@ public class BaseBean {
 
 		return (SSHDataStoreArray) session.getAttribute("ssharray");
 	}
-	
+
 	/** getHDFS
 	 * 
 	 * Methods to retrieve the object DataStore HDFS from context
@@ -164,7 +172,7 @@ public class BaseBean {
 
 		return (HdfsDataStore) session.getAttribute("hdfs");
 	}
-	
+
 	/** getHDFSBrowser
 	 * 
 	 * Methods to retrieve the object DataStore HDFS from context
@@ -194,7 +202,7 @@ public class BaseBean {
 
 		return (JobManager) session.getAttribute("oozie");
 	}
-	
+
 	/** getPrefs
 	 * 
 	 * Methods to retrieve the object prefs from context
@@ -209,21 +217,27 @@ public class BaseBean {
 
 		return (PropertiesManager) session.getAttribute("prefs");
 	}
-	
+
 	public ModelManagerInt getModelManager() throws RemoteException{
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
 		return (ModelManagerInt) session.getAttribute("samanager");
 	}
-	
 
+	/** getCurrentPage
+	 * 
+	 * 
+	 * 
+	 * @return file
+	 * @author 
+	 */
 	public File getCurrentPage(){
-		
+
 		bb_logger.info("getCurrentPage ");
-		
+
 		String currentPage = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRequestURI();
-		
+
 		File f = null;
 		//		logger.info(currentPage);
 		if (currentPage != null && !currentPage.isEmpty()) {
@@ -236,9 +250,9 @@ public class BaseBean {
 			}
 			currentPage = currentPage.substring(0, pos.get(pos.size() - 1));
 			try {
-				
+
 				bb_logger.info("tomcatPath " + WorkflowPrefManager.defaultTomcat);
-				
+
 				f = new File(
 						WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path,WorkflowPrefManager.defaultTomcat)
@@ -253,18 +267,32 @@ public class BaseBean {
 			} catch (Exception e) {
 				//logger.info("E");
 			}
-			
+
 		}
 
 		return f;
 	}
-	
+
+	/** checkString
+	 * 
+	 * check the string with the regex expression
+	 * 
+	 * @return boolean
+	 * @author Igor.Souza
+	 */
 	public boolean checkString(String regex, String value){
 		return value.matches(regex);
 	}
-	
+
+	/** UsageRecordWriter
+	 * 
+	 * method to create a log file
+	 * 
+	 * @return UsageRecordWriter
+	 * @author Igor.Souza
+	 */
 	public UsageRecordWriter usageRecordLog() {
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 		ServletContext sc = (ServletContext) context.getExternalContext().getContext();
@@ -281,19 +309,29 @@ public class BaseBean {
 			bb_logger.error("usageRecord file not found");
 			return new UsageRecordWriter();
 		}
-		
+
 	}
 
-
+	/** isAdmin
+	 * 
+	 * method to check if the user is admin
+	 * 
+	 * @return boolean
+	 * @author Igor.Souza
+	 */
 	public boolean isAdmin(){
 		boolean admin = false;
 		try{
 			bb_logger.debug("is admin");
+			
 			FacesContext context = FacesContext.getCurrentInstance();
-			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-					.evaluateExpressionGet(context, "#{userInfoBean}",
-							UserInfoBean.class);
-			String user = userInfoBean.getUserName();
+			
+			//UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+			//String user = userInfoBean.getUserName();
+			
+			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
+			
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
 			if(admins != null){
 				for(String cur: admins){
@@ -307,8 +345,84 @@ public class BaseBean {
 		return admin;
 	}
 
+	/** isUserAllowInstall
+	 * 
+	 * method to check if the user is allowed to install a package or not
+	 * 
+	 * @return boolean
+	 * @author Igor.Souza
+	 */
 	public boolean isUserAllowInstall(){
 		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
+
+	/** netIsAvailable
+	 * 
+	 * method to check if there is internet connection or not
+	 * 
+	 * @return boolean
+	 * @author Igor.Souza
+	 */
+	public boolean netIsAvailable() {
+		try {
+			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+			final URL url = new URL(wpm.getPckManagerUri());
+			final URLConnection conn = url.openConnection();
+			conn.setConnectTimeout(3000);
+			conn.connect();
+			return true;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			return false;
+		}
+	}
 	
+	
+	/** getSoftwareKey
+	 * 
+	 * method to retrieve the softwarekey 
+	 * 
+	 * @return string
+	 * @author Igor.Souza
+	 */
+	public String getSoftwareKey(){
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
+
+			// load a properties file
+			prop.load(input);
+
+			// get the property value and print it out
+
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+
+			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/** formatTitle
+	 * 
+	 * method to format the string 
+	 * 
+	 * @return string
+	 * @author Igor.Souza
+	 */
+	private String formatTitle(String title){
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+	}
+
 }

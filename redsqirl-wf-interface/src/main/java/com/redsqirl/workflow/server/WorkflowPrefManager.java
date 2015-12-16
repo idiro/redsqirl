@@ -415,12 +415,21 @@ public class WorkflowPrefManager extends BlockManager {
 					
 					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
 					JSONTokener tokener = new JSONTokener(r);
-					JSONObject json = new JSONObject(tokener);
-					ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
-				}catch(Exception e){}
+					
+					if(tokener.more()){
+						JSONObject json = new JSONObject(tokener);
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}else{
+						JSONObject json = new JSONObject();
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}
+					
+				}catch(Exception e){
+					logger.error("error "+ e,e);
+				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("error "+ e,e);
 		}
 
 		settingMenu = ans;
@@ -742,7 +751,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPckManagerUri() {
 		String uri = getSysProperty(WorkflowPrefManager.sys_pack_manager_url);
 		if (uri == null || uri.isEmpty()) {
-			uri = "http://localhost:9090/redsqirl-repo";
+			uri = "http://localhost:9090/analytics-store";
 		}
 		return uri;
 	}

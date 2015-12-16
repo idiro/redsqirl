@@ -23,7 +23,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -63,8 +62,6 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 	private List<String> selectedTypes;
 
-	//private List<SelectItem> moduleTypes;
-
 	public AnalyticsStoreSearchBean() {
 
 	}
@@ -91,14 +88,13 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			selectedTypes.add("package");
 		}
 
-		/*if(moduleTypes == null){
-			moduleTypes = new ArrayList<SelectItem>();
-			moduleTypes.add(new SelectItem("model","Module"));
-			moduleTypes.add(new SelectItem("package","Package"));
-		}*/
-
 		try {
-			retrieveAllPackageList();
+			
+			//check if there is internet connection
+			if(netIsAvailable()){
+				retrieveAllPackageList();
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -240,7 +236,6 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 
 		setShowDefaultInstallation("N");
-
 	}
 
 	public String installPackage(RedSqirlInstallations redSqirlInstallations) throws RemoteException{
@@ -381,39 +376,6 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		return "";
 	}
-
-	private String getSoftwareKey(){
-		Properties prop = new Properties();
-		InputStream input = null;
-
-		try {
-			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
-
-			// load a properties file
-			prop.load(input);
-
-			// get the property value and print it out
-
-			String licenseKey;
-			String[] value = ProjectID.get().trim().split("-");
-			if(value != null && value.length > 1){
-				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
-			}else{
-				licenseKey = ProjectID.get();
-			}
-
-			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String formatTitle(String title){
-		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-	}
-
 
 	public String getSearchValue() {
 		return searchValue;
