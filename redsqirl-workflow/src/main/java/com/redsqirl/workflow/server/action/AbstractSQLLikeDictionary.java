@@ -146,6 +146,13 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			}
 			if (type == null) {
 				try {
+					Float.valueOf(expr);
+					type = "FLOAT";
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				try {
 					Double.valueOf(expr);
 					type = "DOUBLE";
 				} catch (Exception e) {
