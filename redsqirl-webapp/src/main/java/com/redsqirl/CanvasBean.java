@@ -877,6 +877,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				setDf(df);
 				df.setName(nameWorkflow);
 				msg = df.save(path);
+				df.setPath(path);
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
 				idMap.get(nameWorkflow).clear();
 				while (itCompIds.hasNext()) {
@@ -1665,7 +1666,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			try {
-				errorOut = dfe.updateOut();
+				errorOut = dfe.checkEntry();
 			} catch (Exception e) {
 				logger.error(e, e);
 				errorOut = "Unexpected program error while checking this action.";
