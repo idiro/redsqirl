@@ -1253,6 +1253,12 @@
 	            jQuery("#formMenu\\:settingsMenuItem").click();
 	   		}
         });
+	   	
+	   	shortcut.add("Ctrl+Alt+m",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+	            jQuery("#formMenu\\:manageModelsItem").click();
+	   		}
+        });
 
 	   	shortcut.add("Ctrl+Shift+c",function() {
 	   		if( !jQuery(".rich-mp-container").is(":visible") ){
@@ -2297,11 +2303,12 @@
 										</h:panelGroup>
 									</f:facet>
 									
-									<rich:menuItem id="manageModels" submitMode="ajax"
+									<rich:menuItem id="manageModelsItem" submitMode="ajax"
 										value="#{messages.label_menu_manage_models}"
 										reRender="modelsList"
 										oncomplete="#{rich:component('modalModels')}.show();"
 										action="#{modelBean.refreshModelList}">
+										<h:outputText value="Ctrl+Alt+M" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="installationMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_package}"
@@ -2327,7 +2334,6 @@
 									<rich:menuItem id="aboutMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_about}" disable="true"
 										onclick="#{rich:component('modalAbout')}.show();">
-										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>
 
 								</rich:dropDownMenu>

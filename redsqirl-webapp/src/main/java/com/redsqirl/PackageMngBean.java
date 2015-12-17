@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.idiro.ProjectID;
+import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
 import com.redsqirl.dynamictable.SettingsControl;
@@ -89,8 +90,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		String user = (String) session.getAttribute("username");
+		
+		getPrefs().readSettingMenu(user);
+		curMap = getPrefs().getSettingMenu();
 
 		calcSystemPackages();
 		calcUserPackages();
@@ -102,8 +106,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		String user = (String) session.getAttribute("username");
+		
+		logger.info("start " + user);
+		
+		getPrefs().readSettingMenu(user);
+		curMap = getPrefs().getSettingMenu();
 
 		calcSystemPackages();
 		calcUserPackages();
@@ -233,12 +242,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				}
 			}
 
-			rdm.setImage("../pages/packages/images/"+pckStr+"_package.gif");
-			rdm.setName(pckStr);
-
 			RedSqirlPackage pck = pckManager.getAvailablePackage(user, pckStr);
+			rdm.setName(pckStr);
 			rdm.setVersionName(pck.getPackageProperty(RedSqirlPackage.property_version));
 			rdm.setVersionNote(pck.getPackageProperty(RedSqirlPackage.property_desc));
+			rdm.setImage(LocalFileSystem.relativize(getCurrentPage(),pck.getTomcatImage().getAbsolutePath()));
 
 			result.add(rdm);
 		}
@@ -318,6 +326,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		listSetting = new ArrayList<String>();
 		if(!s.isTemplate()){
+			
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
+			
 			for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
 				listSetting.add(settings.getKey());
 				Setting setting = settings.getValue();
@@ -336,10 +348,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				}else if(settings.getValue().getScope().equals(Setting.Scope.USER)){
 
 					if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
-						setting.setUserValue(setting.getUserPropetyValue());
+						setting.setUserValue(setting.getUserPropetyValue(user));
 					}
 
-					if(setting.getUserPropetyValue() != null){
+					if(setting.getUserPropetyValue(user) != null){
 						setting.setExistUserProperty(true);
 					}else{
 						setting.setExistUserProperty(false);
@@ -350,7 +362,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 						setting.setSysValue(setting.getSysPropetyValue());
 					}
 					if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
-						setting.setUserValue(setting.getUserPropetyValue());
+						setting.setUserValue(setting.getUserPropetyValue(user));
 					}
 
 					if(setting.getSysPropetyValue() != null){
@@ -359,7 +371,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 						setting.setExistSysProperty(false);
 					}
 
-					if(setting.getUserPropetyValue() != null){
+					if(setting.getUserPropetyValue(user) != null){
 						setting.setExistUserProperty(true);
 					}else{
 						setting.setExistUserProperty(false);
@@ -376,8 +388,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		saveSettings();
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		getPrefs().readSettingMenu(getNameUser());
+		curMap = getPrefs().getSettingMenu();
 
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -495,8 +507,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		setPackageSelected(null);
 		setNameNewTemplate(null);
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		getPrefs().readSettingMenu(getNameUser());
+		curMap = getPrefs().getSettingMenu();
 
 		mountPath(name);
 	}
@@ -569,8 +581,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			}
 		}
 
-		WorkflowPrefManager.readSettingMenu(getNameUser());
-		curMap = WorkflowPrefManager.getSettingMenu();
+		getPrefs().readSettingMenu(getNameUser());
+		curMap = getPrefs().getSettingMenu();
 
 		mountPath(getPathPosition());
 	}
@@ -610,8 +622,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				deleteProperty(label, setting.getUserValue(), scope);
 			}
 
-			WorkflowPrefManager.readSettingMenu(getNameUser());
-			curMap = WorkflowPrefManager.getSettingMenu();
+			getPrefs().readSettingMenu(getNameUser());
+			curMap = getPrefs().getSettingMenu();
 
 			mountPath(getPathPosition());
 		}
@@ -719,8 +731,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			}
 
 
-			WorkflowPrefManager.readSettingMenu(getNameUser());
-			curMap = WorkflowPrefManager.getSettingMenu();
+			getPrefs().readSettingMenu(getNameUser());
+			curMap = getPrefs().getSettingMenu();
 
 			mountPath(getPathPosition());
 

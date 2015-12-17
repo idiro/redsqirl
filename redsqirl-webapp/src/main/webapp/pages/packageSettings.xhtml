@@ -95,7 +95,7 @@
 			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}">
 			     					
 				     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" >
-									    	<h:graphicImage url="../image/icons/button-left_arrow.gif" style="width:20px;" 
+									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
 									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
 									    	<f:param name="type" value="SYSTEM" />
@@ -132,7 +132,7 @@
 			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}">
 			     					
 	 			     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" >
-									    	<h:graphicImage url="../image/icons/button-left_arrow.gif" style="width:20px;" 
+									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
 									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
 									    	<f:param name="type" value="USER" />

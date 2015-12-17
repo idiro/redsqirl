@@ -143,6 +143,10 @@ public class Setting implements Serializable{
 		return Scope.SYSTEM.equals(scope) ? null : WorkflowPrefManager.getUserProperty(propertyName);
 	}
 	
+	public String getUserPropetyValue(String user){
+		return Scope.SYSTEM.equals(scope) ? null : WorkflowPrefManager.getProps().getUserProperties(user).getProperty(propertyName);
+	}
+	
 	public void setUserValue(String userValue) {
 		this.userValue = userValue;
 	}

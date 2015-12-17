@@ -154,8 +154,8 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		try {
 
-			WorkflowPrefManager.readDefaultSettingMenu();
-			curMap = WorkflowPrefManager.getDefaultSettingMenu();
+			getPrefs().readDefaultSettingMenu();
+			curMap = getPrefs().getDefaultSettingMenu();
 
 			if(path == null){
 				path = new ArrayList<String>();
@@ -276,8 +276,8 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		saveSettings();
 
-		WorkflowPrefManager.readDefaultSettingMenu();
-		curMap = WorkflowPrefManager.getDefaultSettingMenu();
+		getPrefs().readDefaultSettingMenu();
+		curMap = getPrefs().getDefaultSettingMenu();
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
@@ -366,8 +366,8 @@ public class SettingsBean extends BaseBean implements Serializable  {
 				deleteProperty(label, setting.getUserValue(), scope);
 			}
 
-			WorkflowPrefManager.readDefaultSettingMenu();
-			curMap = WorkflowPrefManager.getDefaultSettingMenu();
+			getPrefs().readDefaultSettingMenu();
+			curMap = getPrefs().getDefaultSettingMenu();
 
 			mountPath(getPathPosition());
 		}
@@ -474,8 +474,8 @@ public class SettingsBean extends BaseBean implements Serializable  {
 			
 			storeNewSettings();
 
-			WorkflowPrefManager.readDefaultSettingMenu();
-			curMap = WorkflowPrefManager.getDefaultSettingMenu();
+			getPrefs().readDefaultSettingMenu();
+			curMap = getPrefs().getDefaultSettingMenu();
 
 			mountPath(getPathPosition());
 

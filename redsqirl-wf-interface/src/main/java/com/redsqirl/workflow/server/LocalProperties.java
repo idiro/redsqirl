@@ -5,13 +5,22 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
+import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 
 public class LocalProperties extends UnicastRemoteObject implements PropertiesManager {
 
@@ -19,12 +28,82 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		super();
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7151397795232865426L;
-	
 	private static Logger logger = Logger.getLogger(LocalProperties.class);
+	
+	private Map<String,SettingMenu> settingMenu = null;
+	private Map<String,SettingMenu> defaultsettingMenu = null;
+	
+
+	public void readSettingMenu(String user) throws RemoteException{
+
+		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+		try {
+			
+			logger.info("readSettingMenu " + user);
+			
+			List<RedSqirlPackage> rp = new PackageManager().getAvailablePackages(user);
+			for (RedSqirlPackage redSqirlPackage : rp) {
+				try{
+					
+					logger.info("readSettingMenu " + redSqirlPackage.getName());
+					logger.info("readSettingMenu " + redSqirlPackage.getPackageFile().getAbsoluteFile());
+					
+					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
+					JSONTokener tokener = new JSONTokener(r);
+					
+					if(tokener.more()){
+						JSONObject json = new JSONObject(tokener);
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}else{
+						JSONObject json = new JSONObject();
+						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
+					}
+					
+				}catch(Exception e){
+					logger.error("error "+ e,e);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("error "+ e,e);
+		}
+
+		settingMenu = ans;
+	}
+
+	public void readDefaultSettingMenu() throws RemoteException{
+		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+
+		logger.info("read setting path " + WorkflowPrefManager.pathSystemPref);
+
+		File sysPackages = new File(WorkflowPrefManager.pathSystemPref);
+		try{
+			Reader r = new FileReader(new File(sysPackages,"settings.json"));
+			JSONTokener tokener = new JSONTokener(r);
+			JSONObject json = new JSONObject(tokener);
+			ans.put("core", new SettingMenu("core", json));
+		}catch(Exception e){
+			logger.info("read error " + e,e);
+		}
+		defaultsettingMenu = ans;
+	}
+	
+	public Map<String, SettingMenu> getSettingMenu() throws RemoteException{
+		return settingMenu;
+	}
+
+	public Map<String, SettingMenu> getDefaultSettingMenu() throws RemoteException{
+		return defaultsettingMenu;
+	}
+	
+	public String getPluginSetting(String name) throws RemoteException{
+		String[] packageName = name.split("\\.",2);
+		if(getSettingMenu().containsKey(packageName[0])){
+			return getSettingMenu().get(packageName[0]).getPropertyValue(packageName[1]);
+		}
+		return null;
+	}
+
 	
 	/**
 	 * Get the properties for System
@@ -78,7 +157,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref)));
 		} catch (Exception e) {
 			logger.error("Error when loading '" + WorkflowPrefManager.pathUserCfgPref + "', "
-					+ e.getMessage());
+					+ e.getMessage(), e);
 		}
 		return prop;
 	}

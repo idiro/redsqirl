@@ -4,27 +4,17 @@ package com.redsqirl.workflow.server;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-//import java.util.prefs.Preferences;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import com.idiro.BlockManager;
-import com.redsqirl.workflow.settings.SettingMenu;
-import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.RedSqirlPackage;
+//import java.util.prefs.Preferences;
 
 /**
  * Software preference manager.
@@ -282,8 +272,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	private static LocalProperties props;
 
-	private static Map<String,SettingMenu> settingMenu = null;
-	private static Map<String,SettingMenu> defaultsettingMenu = null;
+	
 
 	/**
 	 * Constructor.
@@ -301,7 +290,6 @@ public class WorkflowPrefManager extends BlockManager {
 			Properties properties = new Properties();
 			properties.load(input);
 			pathSysHome = properties.getProperty("path_sys_home");
-			readSettingMenu();
 		} catch (IOException e) {
 			logger.warn("idiro.properties not found. Using default path_sys_home");
 			pathSysHome = "/usr/share/redsqirl";
@@ -370,89 +358,6 @@ public class WorkflowPrefManager extends BlockManager {
 			}
 		}
 		return runner;
-	}
-
-	public String getPluginSetting(String name){
-		String[] packageName = name.split("\\.",2);
-		if(getSettingMenu().containsKey(packageName[0])){
-			return getSettingMenu().get(packageName[0]).getPropertyValue(packageName[1]);
-		}
-		return null;
-	}
-
-	public static Map<String, SettingMenu> getSettingMenu(){
-		return settingMenu;
-	}
-
-	public static Map<String, SettingMenu> getDefaultSettingMenu(){
-		return defaultsettingMenu;
-	}
-
-	public static void readSettingMenu(){
-		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
-		File userPackageFile = new File(pathUserPackagePref);
-		if(userPackageFile.exists()){
-			File[] userPackages = userPackageFile.listFiles();
-			for(int i = 0; i < userPackages.length;++i){
-				try{
-					Reader r = new FileReader(new File(userPackages[i],"settings.json"));
-					JSONTokener tokener = new JSONTokener(r);
-					JSONObject json = new JSONObject(tokener);
-					ans.put(userPackages[i].getName(), new SettingMenu(userPackages[i].getName(), json));
-				}catch(Exception e){}
-			}
-		}
-		settingMenu = ans;
-	}
-
-	public static void readSettingMenu(String user){
-
-		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
-		try {
-			List<RedSqirlPackage> rp = new PackageManager().getAvailablePackages(user);
-			for (RedSqirlPackage redSqirlPackage : rp) {
-				try{
-					
-					logger.info("readSettingMenu " + redSqirlPackage.getName());
-					logger.info("readSettingMenu " + redSqirlPackage.getPackageFile().getAbsoluteFile());
-					
-					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
-					JSONTokener tokener = new JSONTokener(r);
-					
-					if(tokener.more()){
-						JSONObject json = new JSONObject(tokener);
-						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
-					}else{
-						JSONObject json = new JSONObject();
-						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
-					}
-					
-				}catch(Exception e){
-					logger.error("error "+ e,e);
-				}
-			}
-		} catch (IOException e) {
-			logger.error("error "+ e,e);
-		}
-
-		settingMenu = ans;
-	}
-
-	public static void readDefaultSettingMenu(){
-		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
-
-		logger.info("read setting path " + pathSystemPref);
-
-		File sysPackages = new File(pathSystemPref);
-		try{
-			Reader r = new FileReader(new File(sysPackages,"settings.json"));
-			JSONTokener tokener = new JSONTokener(r);
-			JSONObject json = new JSONObject(tokener);
-			ans.put("core", new SettingMenu("core", json));
-		}catch(Exception e){
-			logger.info("read error " + e,e);
-		}
-		defaultsettingMenu = ans;
 	}
 
 	/**

@@ -64,6 +64,14 @@ public class RedSqirlPackage {
 		return addPackage(user, false);
 	}
 	
+	public File getTomcatImage(){
+		File ans = new File(new File(PackageManager.getImageDir(isSystem()?null:user),"model"),packageFile.getName()+"_package.gif");
+		return ans;
+	}
+	
+	private boolean isSystem() {
+		return user == null || user.isEmpty();
+	}
 	public String addPackage(String user,boolean deleteInstallFile){
 		
 		logger.info("Installing path " + packageFile.getAbsolutePath());
