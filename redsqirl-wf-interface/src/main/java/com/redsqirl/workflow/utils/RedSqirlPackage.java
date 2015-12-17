@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -65,8 +66,57 @@ public class RedSqirlPackage {
 	}
 	
 	public File getTomcatImage(){
-		File ans = new File(new File(PackageManager.getImageDir(isSystem()?null:user),"model"),packageFile.getName()+"_package.gif");
+		File ans = new File(PackageManager.getImageDir(isSystem()?null:user),packageFile.getName()+"_package.gif");
+		if(!ans.exists()){
+			ans = new File(RedSqirlPackage.getDefaultImage());
+		}
 		return ans;
+	}
+	
+	private static String getDefaultImage() {
+		String absolutePath = "";
+		String imageFile = "/image/defaultPackage.gif";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(imageFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("default Package image abs Path : " + absolutePath);
+			logger.debug("default Package image Path : " + path);
+			logger.debug("default Package image ans : " + ans);
+		}
+		return absolutePath;
+	}
+	
+	public static List<String> listFilesRecursively(String path) {
+		List<String> files = new ArrayList<String>();
+		logger.debug(path);
+		if (path != null && !path.isEmpty()) {
+			File root = new File(path);
+			File[] list = root.listFiles();
+
+			if (list == null)
+				return files;
+
+			for (File f : list) {
+				if (f.isDirectory()) {
+					files.addAll(listFilesRecursively(f.getAbsolutePath()));
+				} else {
+					files.add(f.getAbsolutePath().toString());
+				}
+			}
+		}
+		return files;
+
 	}
 	
 	private boolean isSystem() {
