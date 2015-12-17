@@ -163,6 +163,9 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		if(!model.getName().equals(modelName)){
 			error = "Model name inconsistant between model and subworkflow";
 		}else{
+			if(!model.getFile().exists()){
+				model.createModelDir();
+			}
 			error = model.install(toInstall, privilege);
 		}
 
