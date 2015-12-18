@@ -47,7 +47,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private Integer selectedTab;
 	private Map<String,String> mapActionPackage;
 
-	
+
 	private ElementManager getEM() throws RemoteException{
 		if(em == null){
 			DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
@@ -266,15 +266,15 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				SelectItem s = new SelectItem(name, name);
 				listPackages.add(s);
 			}
-			if(listPackages != null && !listPackages.isEmpty()){
-				setSelectedPackage(listPackages.get(0).getLabel());
-				retrieveActions(getSelectedPackage());
-			}
-
-
+			
 			for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
 				SelectItem s = new SelectItem(modelInt.getName(), modelInt.getName());
 				listPackages.add(s);
+			}
+			
+			if(listPackages != null && !listPackages.isEmpty()){
+				setSelectedPackage(listPackages.get(0).getLabel());
+				retrieveActions(getSelectedPackage());
 			}
 
 			calculateListSelectedActions();
@@ -294,6 +294,11 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 		for (SelectHeaderType selectHeaderType : s.getSelectedActions()) {
+			if(selectHeaderType.getType().startsWith(">")){
+				String superAction[] = selectHeaderType.getType().split(">");
+				selectHeaderType.setName(superAction[1]);
+				selectHeaderType.setType(superAction[2]);
+			}
 			for (Iterator<SelectHeaderType> iterator = listActions.iterator(); iterator.hasNext();) {
 				SelectHeaderType actions = (SelectHeaderType) iterator.next();
 				if(actions.getType().equals(selectHeaderType.getType())){
@@ -345,11 +350,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					}
 				}
 				for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
-					if(modelInt.getName().equals(selectedPackage)){
-						for (String superAction : modelInt.getSubWorkflowNames()) {
-							SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction, true);
-							listActions.add(selectHeaderType);
-						}
+					for (String superAction : modelInt.getPublicSubWorkflowNames()) {
+						SelectHeaderType selectHeaderType = new SelectHeaderType(getModelManager().getModuleOfSuperAction(user, superAction), superAction, true);
+						listActions.add(selectHeaderType);
 					}
 				}
 			}else if(selectedPackage.equals("core")){
@@ -370,8 +373,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 					for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
 						if(modelInt.getName().equals(selectedPackage)){
-							for (String superAction : modelInt.getSubWorkflowNames()) {
-								SelectHeaderType selectHeaderType = new SelectHeaderType(selectedPackage, superAction, true);
+							for (String superAction : modelInt.getPublicSubWorkflowNames()) {
+								SelectHeaderType selectHeaderType = new SelectHeaderType(getModelManager().getModuleOfSuperAction(user, superAction), superAction, true);
 								listActions.add(selectHeaderType);
 							}
 						}
