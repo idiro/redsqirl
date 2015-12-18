@@ -56,10 +56,10 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	/**
 	 * Key: action name, Value: absolute help path, absolute image path
 	 */
-	protected Map<String, String[]> help;
-	
-	protected Map<String,Map<String, String[]>> packageHelp;
+	private Map<String, Map<String, String[]>> packageHelp;
 
+	private Map<String, Map<String, String[]>> modelHelp;
+	
 	ActionManager() throws RemoteException{
 		super();
 	}
@@ -74,7 +74,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * @return null if ok, or all the error found
 	 * 
 	 */
-	public String loadMenu() {
+	protected String loadMenu() {
 
 		String error = "";
 		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
@@ -154,9 +154,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 		return error;
 	}
-
-	public void loadHelp() {
-		help = new LinkedHashMap<String, String[]>();
+	
+	protected void loadPackageHelp() {
 		packageHelp = new LinkedHashMap<String, Map<String, String[]>>();
 		Map<String, String> nameWithClass = null;
 		try {
@@ -175,7 +174,6 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				for (String actionName : mapAction.get(packageName)) {
 					try {
 						DataFlowElement dfe = (DataFlowElement) Class.forName(nameWithClass.get(actionName)).newInstance();
-						help.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
 						aux.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
 					} catch (Exception e) {
 						logger.error(LanguageManagerWF.getText("workflow.loadclassfail", new Object[] { actionName }));
@@ -184,26 +182,6 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				packageHelp.put(packageName, aux);
 			}
 			
-			
-			/*Iterator<String> it = nameWithClass.keySet().iterator();
-			while (it.hasNext()) {
-				String actionName = it.next();
-
-				// logger.info("loadHelp " + actionName);
-
-				try {
-					DataFlowElement dfe = (DataFlowElement) Class.forName(
-							nameWithClass.get(actionName)).newInstance();
-
-					help.put(actionName,
-							new String[] { dfe.getHelp(), dfe.getImage() });
-				} catch (Exception e) {
-					logger.error(LanguageManagerWF.getText(
-							"workflow.loadclassfail",
-							new Object[] { actionName }));
-				}
-			}*/
-			
 		} catch (Exception e) {
 			logger.error(LanguageManagerWF
 					.getText("workflow.loadclassexception"));
@@ -211,8 +189,40 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 	}
 
+	protected void loadModelHelp() {
+		modelHelp = new LinkedHashMap<String, Map<String, String[]>>();
+		try {
 
-	public String loadMenu(Map<String, List<String>> newMenu) {
+			String user = System.getProperty("user.name");
+			ModelManager model = new ModelManager();
+			List<ModelInt> l = model. getAvailableModels(user);
+			for (ModelInt modelInt : l) {
+
+				Map<String, String[]> out = new LinkedHashMap<String, String[]>();
+				for (String subworkflow : modelInt.getPublicSubWorkflowNames()) {
+					DataFlowElement dfe = new SuperAction(modelInt.getFullName(subworkflow),true);
+					out.put(subworkflow, new String[] { dfe.getHelp(), dfe.getImage() });
+				}
+
+				modelHelp.put(modelInt.getName(), out);
+
+			}
+
+		} catch (Exception e) {
+			logger.error(LanguageManagerWF
+					.getText("workflow.loadclassexception"));
+		}
+	}
+
+	public String saveMenu(Map<String, List<String>> newMenu) {
+		String error = loadMenu(newMenu);
+		if(error == null){
+			error = saveMenu();
+		}
+		return error;
+	}
+	
+	protected String loadMenu(Map<String, List<String>> newMenu) {
 
 		String error = "";
 		menuWA = new LinkedHashMap<String, List<String[]>>();
@@ -275,7 +285,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 * @return null if ok, or all the error found
 	 * 
 	 */
-	public String saveMenu() {
+	protected String saveMenu() {
 
 		String error = "";
 
@@ -449,13 +459,11 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	}
 
 	public Map<String, List<String[]>> getRelativeMenu(File curPath) {
-		if (menuWA == null || menuWA.isEmpty()) {
-			loadMenu();
-			logger.info("getRelativeMenu loadMenu ");
-		}
+		loadMenu();
 		if (curPath == null) {
 			return menuWA;
 		}
+		
 		logger.info("Load menu " + curPath.getPath());
 		Map<String, List<String[]>> ans = new LinkedHashMap<String, List<String[]>>();
 		Iterator<String> menuWAit = menuWA.keySet().iterator();
@@ -466,14 +474,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			while (actionListit.hasNext()) {
 				String[] parameters = new String[3];
 				String[] absCur = actionListit.next();
-				
-				if(absCur[0] != null && absCur[0].startsWith(">")){
-					String[] superAction = absCur[0].split(">");
-					parameters[0] = superAction[2];
-				}else{
-					parameters[0] = absCur[0];
-				}
-				
+				parameters[0] = absCur[0];
 				try {
 					logger.debug("loadMenu " + curPath + " " + absCur[1]);
 					parameters[1] = LocalFileSystem.relativize(curPath,	absCur[1]);
@@ -491,17 +492,27 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		return ans;
 	}
 
-
-	public Map<String, Map<String, String[]>> getRelativeHelp(File curPath) {
+	public Map<String, Map<String, String[]>> getRelativePackageHelp(File curPath) {
+		//packageHelp is static
 		if (packageHelp == null || packageHelp.isEmpty()) {
-			loadHelp();
+			loadPackageHelp();
 		}
+		return getRelativeHelp(curPath, packageHelp);
+	}
+	
+	public Map<String, Map<String, String[]>> getRelativeModelHelp(File curPath) {
+		loadModelHelp();
+		return getRelativeHelp(curPath, modelHelp);
+	}
+
+	public Map<String, Map<String, String[]>> getRelativeHelp(File curPath, Map<String, Map<String, String[]>> absoluteHelp) {
 		if (curPath == null) {
-			return packageHelp;
+			return absoluteHelp;
 		}
+		
 		logger.info("Load help " + curPath.getPath());
 		Map<String, Map<String, String[]>> ans = new LinkedHashMap<String, Map<String, String[]>>();
-		Iterator<String> helpit = packageHelp.keySet().iterator();
+		Iterator<String> helpit = absoluteHelp.keySet().iterator();
 		while (helpit.hasNext()) {
 			String key = helpit.next();
 			try {
@@ -510,7 +521,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 				Map<String, String[]> out = new LinkedHashMap<String, String[]>();
 				
-				Map<String, String[]> aux = packageHelp.get(key);
+				Map<String, String[]> aux = absoluteHelp.get(key);
 				Iterator<String> it = aux.keySet().iterator();
 				while (it.hasNext()) {
 					String action = it.next();
@@ -521,94 +532,6 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 							LocalFileSystem.relativize(curPath,aux.get(action)[0]),
 							LocalFileSystem.relativize(curPath,aux.get(action)[1])
 							});
-				}
-				
-				ans.put(key, out);
-				
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				logger.error("Error Getting relative paths for Help");
-			}
-		}
-		return ans;
-	}
-
-	public Map<String, Map<String, String[]>> getRelativeHelpSuperAction(File curPath) {
-		Map<String, Map<String, String[]>> helpSuperAction = null;
-		if (helpSuperAction == null || helpSuperAction.isEmpty()) {
-			helpSuperAction = new LinkedHashMap<String, Map<String, String[]>>();
-			
-			try {
-			
-				String user = System.getProperty("user.name");
-				ModelManager model = new ModelManager();
-				List<ModelInt> l = model. getAvailableModels(user);
-				for (ModelInt modelInt : l) {
-					
-					Map<String, String[]> out = new LinkedHashMap<String, String[]>();
-					for (String subworkflow : modelInt.getSubWorkflowFullNames()) {
-						DataFlowElement dfe = new SuperAction(subworkflow,true);
-						out.put(subworkflow, new String[] { dfe.getHelp(), dfe.getImage() });
-					}
-					
-					helpSuperAction.put(modelInt.getName(), out);
-					
-				}
-			
-			
-				/*Iterator<String> it = getSuperActions().iterator();
-				while (it.hasNext()) {
-					String actionName = it.next();
-					try {
-						DataFlowElement dfe = new SuperAction(actionName,true);
-						helpSuperAction.put(actionName,	new String[] { dfe.getHelp(), dfe.getImage() });
-						// logger.info("getRelativeHelpSuperAction " +
-						// dfe.getHelp());
-
-					} catch (Exception e) {
-						logger.error(LanguageManagerWF.getText(
-								"workflow.loadclassfail",
-								new Object[] { actionName }));
-					}
-				}*/
-				
-				
-			} catch (Exception e) {
-				logger.error(LanguageManagerWF
-						.getText("workflow.loadclassexception"));
-			}
-		}
-		
-		if (curPath == null) {
-			return helpSuperAction;
-		}
-		logger.info("Load helpSuperAction " + curPath.getPath());
-		Map<String, Map<String, String[]>> ans = new LinkedHashMap<String, Map<String, String[]>>();
-		Iterator<String> helpit = helpSuperAction.keySet().iterator();
-		while (helpit.hasNext()) {
-			String key = helpit.next();
-			try {
-				
-				Map<String, String[]> out = new LinkedHashMap<String, String[]>();
-				Map<String, String[]> aux = helpSuperAction.get(key);
-				for (String action : aux.keySet()) {
-					
-					String value = "";
-					if(action != null && action.startsWith(">")){
-						String[] superAction = action.split(">");
-						value = superAction[2];
-					}else{
-						value = action;
-					}
-					
-					out.put(action,
-							new String[] {
-								action,
-								WordUtils.capitalizeFully(value.replace("_", " ")),
-								LocalFileSystem.relativize(curPath,	aux.get(action)[0]),
-								LocalFileSystem.relativize(curPath,	aux.get(action)[1]) 
-							});
-					
 				}
 				
 				ans.put(key, out);
@@ -770,14 +693,6 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 	public void setMenuWA(Map<String, List<String[]>> menuWA) {
 		this.menuWA = menuWA;
-	}
-
-	public Map<String, Map<String, String[]>> getPackageHelp() {
-		return packageHelp;
-	}
-
-	public void setPackageHelp(Map<String, Map<String, String[]>> packageHelp) {
-		this.packageHelp = packageHelp;
 	}
 
 }

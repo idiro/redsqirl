@@ -1636,10 +1636,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String externalLink = null;
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
-			
+			String elementName = dfe.getName();
+			String tooltipeName1 = elementName.startsWith(">") ?elementName.substring(elementName.lastIndexOf(">")+1):elementName;
+			String tooltipName = WordUtils.capitalizeFully(tooltipeName1.replace('_', ' '));
 			tooltip.append("<center><span style='font-size:15px;'>"
-					+ WordUtils
-					.capitalizeFully(dfe.getName().replace('_', ' '))
+					+ tooltipName
 					+ ": " + dfe.getComponentId() + "</span></center><br/>");
 			
 			
@@ -2162,10 +2163,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 
 					logger.info(compId+" privilege "+privilege);
+					String elementName = e.getName();
 					jsonElements
 					.put(new Object[] {
 							elements.get(compId),
-							e.getName(),
+							elementName.startsWith(">") ? elementName.substring(elementName.lastIndexOf(">")+1): elementName,
 							LocalFileSystem.relativize(
 									getCurrentPage(), e.getImage()),
 									e.getX(), 

@@ -13,18 +13,6 @@ import java.util.Map;
  *
  */
 public interface ElementManager  extends Remote{
-	
-	/**
-	 * Load the icon menu.
-	 * 
-	 * The icon menu is read from a directory. All the directory are tab, and
-	 * each line in each file is an action. The files can be commented by '#' on
-	 * the beginning of each line.
-	 * 
-	 * @return null if ok, or all the error found
-	 * 
-	 */
-	public String loadMenu() throws RemoteException;
 
 	/**
 	 * Load the current menu from action names
@@ -32,7 +20,7 @@ public interface ElementManager  extends Remote{
 	 * @return null if ok, or all the errors found
 	 * @throws RemoteException
 	 */
-	public String loadMenu(Map<String, List<String>> newMenu) throws RemoteException;
+	public String saveMenu(Map<String, List<String>> newMenu) throws RemoteException;
 	
 	/**
 	 * Return the footer menu with html and gif path relative to tomcat environment
@@ -47,7 +35,10 @@ public interface ElementManager  extends Remote{
 	 * @param curPath 
 	 * @return The help html file path relatively to the input for each action name (key).
 	 */
-	public Map<String, Map<String, String[]>> getRelativeHelp(File curPath) throws RemoteException;
+	public Map<String, Map<String, String[]>> getRelativePackageHelp(File curPath) throws RemoteException;
+	
+	
+	public Map<String, Map<String, String[]>> getRelativeModelHelp(File curPath) throws RemoteException;
 
 	/**
 	 * Get the map (key: action name, value: class path name) for all actions
@@ -68,23 +59,6 @@ public interface ElementManager  extends Remote{
 	 *             if one action cannot be load
 	 */
 	public List<String[]> getAllWA() throws RemoteException;
-
-	/**
-	 * Get the relative help of all the Super Actions
-	 * @param curPath
-	 * @return Get the relative help of all the Super Actions
-	 * @throws RemoteException
-	 */
-	public Map<String, Map<String, String[]>> getRelativeHelpSuperAction(File curPath) throws RemoteException;
-
-	/**
-	 * Save the icon menu.
-	 * 
-	 * 
-	 * @return null if ok, or all the error found
-	 * 
-	 */
-	public String saveMenu() throws RemoteException;
 	
 	/**
 	 * Add the package actions to the footer

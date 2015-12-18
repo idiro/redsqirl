@@ -291,8 +291,8 @@
 					<ul>
 					    <ui:repeat value="#{helpBean.helpHtmlSA[model[0]]}" var="action">
 						    <li>
-						    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
-						    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+						    	<img id="image_help_#{model[0]}_#{action[0]}" width="25px" src="#{action[3]}"/>
+						    	<a class="stopLink" id="help_#{model[0]}_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
 						    </li>
 					    </ui:repeat>
 					</ul>
