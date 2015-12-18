@@ -1650,7 +1650,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			
 			String module = "";
 			if(dfe.getName() != null && dfe.getName().startsWith(">")){
-				module += getModelManager().getModuleOfSuperAction(user, dfe.getName());
+				module += RedSqirlModel.getModelAndSW(dfe.getName())[0];
 			}else{
 				PackageManager pcm = new PackageManager();
 				module += pcm.getPackageOfAction(user, dfe.getName());
