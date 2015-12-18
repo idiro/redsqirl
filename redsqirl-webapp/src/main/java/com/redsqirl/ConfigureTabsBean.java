@@ -72,7 +72,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		try{
 			ElementManager em = getEM();
-			em.loadMenu();
 			tabsMap = em.getRelativeMenu(getCurrentPage());
 
 			setTabs(new LinkedList<String>(getTabsMap().keySet()));
@@ -195,8 +194,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				mapMenu.put(s.getNameTab() , temp);
 			}
 
-			em.loadMenu(mapMenu);
-			em.saveMenu();
+			em.saveMenu(mapMenu);
 			tabsMap = em.getRelativeMenu(getCurrentPage());
 			setTabs(new LinkedList<String>(getTabsMap().keySet()));
 

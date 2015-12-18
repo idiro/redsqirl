@@ -63,8 +63,8 @@ public class HelpBean extends BaseBean implements Serializable {
 
 		try {
 			getEM();
-			mountRelativeHelp();
-			mountRelativeHelpSuperAction();
+			mountPackageRelativeHelp();
+			mountRelativeModelHelp();
 		} catch (RemoteException e) {
 			logger.error(e);
 		} catch (Exception e) {
@@ -76,10 +76,10 @@ public class HelpBean extends BaseBean implements Serializable {
 	public void refreshRelativeHelp() throws Exception{
 		logger.info("refreshRelativeHelp");
 		getEM();
-		mountRelativeHelpSuperAction();
+		mountRelativeModelHelp();
 	}
 
-	protected void mountRelativeHelp() throws Exception{
+	protected void mountPackageRelativeHelp() throws Exception{
 
 		Map<String,String[]> helpRel = new LinkedHashMap<String, String[]>();
 		helpAns = new LinkedHashMap<String, List<String[]>>();
@@ -87,7 +87,7 @@ public class HelpBean extends BaseBean implements Serializable {
 		//helpHtml = new LinkedList<String[]>();
 		try {
 			
-			helpHtml = em.getRelativeHelp(getCurrentPage());
+			helpHtml = em.getRelativePackageHelp(getCurrentPage());
 			for (String packageName : helpHtml.keySet()) {
 				helpRel = helpHtml.get(packageName);
 				List<String[]> l = new ArrayList<String[]>();
@@ -106,41 +106,20 @@ public class HelpBean extends BaseBean implements Serializable {
 				helpAns.put(packageName, l);
 			}
 			
-			
-			/*Iterator<String> it = helpRel.keySet().iterator();
-			while (it.hasNext()) {
-				String key = it.next();
-				String[] helpArray = new String[]{
-						key, 
-						WordUtils.capitalizeFully(key.replace("_", " ")),
-						helpRel.get(key)[0],
-						helpRel.get(key)[1]};
-
-				helpHtml.add(helpArray);
-				listHelp.add(key);
-			}
-			Collections.sort(helpHtml, new Comparator<String[]>() {
-
-				@Override
-				public int compare(String[] o1, String[] o2) {
-					return o1[0].compareTo(o2[0]);
-				}
-			});*/
-			
 		} catch (Exception e) {
 			logger.error(e,e);
 		}
 
 	}
 
-	protected void mountRelativeHelpSuperAction() throws Exception{
+	protected void mountRelativeModelHelp() throws Exception{
 
 		Map<String, Map<String, String[]>> helpRel = null;
 		helpHtmlSA = new LinkedHashMap<String, List<String[]>>();
 		Map<String,String[]> helpSA = new LinkedHashMap<String, String[]>();
 		
 		try {
-			helpRel = em.getRelativeHelpSuperAction(getCurrentPage());
+			helpRel = em.getRelativeModelHelp(getCurrentPage());
 			
 			for (String modelName : helpRel.keySet()) {
 				helpSA = helpRel.get(modelName);
@@ -159,35 +138,6 @@ public class HelpBean extends BaseBean implements Serializable {
 				
 				helpHtmlSA.put(modelName, l);
 			}
-			
-			/*Iterator<String> it = helpRel.keySet().iterator();
-			while (it.hasNext()) {
-				String key = it.next();
-				
-				String name = "";
-				if(key != null && key.startsWith(">")){
-					String[] superAction = key.split(">");
-					name = superAction[2];
-				}else{
-					name = key;
-				}
-				
-				String[] helpArray = new String[]{
-						key, 
-						WordUtils.capitalizeFully(name.replace("_", " ")),
-						helpRel.get(key)[0],
-						helpRel.get(key)[1]};
-
-				helpHtmlSA.add(helpArray);
-				listHelp.add(key);
-			}
-			Collections.sort(helpHtmlSA, new Comparator<String[]>() {
-
-				@Override
-				public int compare(String[] o1, String[] o2) {
-					return o1[0].compareTo(o2[0]);
-				}
-			});*/
 			
 		} catch (Exception e) {
 			logger.error(e,e);

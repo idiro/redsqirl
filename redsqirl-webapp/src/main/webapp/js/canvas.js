@@ -1396,11 +1396,16 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     });
     srcImageText.setStroke(null);
 
+    
     var typeText = new Kinetic.Text({
         text : elementType
     });
+    var helpId = elementType;
+    if(helpId.indexOf('>') === 0){
+    	helpId = helpId.substring(1).replace(">","_");
+    }
 
-    var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, idElement, arc1,arc2,arc3);
+    var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, helpId, idElement, arc1,arc2,arc3);
     
     polygonLayer.add(group);
     
@@ -1556,32 +1561,32 @@ function mountObj(canvasName) {
                 
                 //alert(jQuery(this).attr("src"));
                 
-                
-                
                 imgTab.src = jQuery(this).attr("src");
                 var srcImageText = jQuery(this).attr("src");
                 
                 //label on footer
                 var nameObj = jQuery(this).next().text();
-                var labelText = jQuery(this).next().text();
+                
+                var priv = jQuery(this).next().next().text();
+                if(!priv){
+                	priv = null;
+                }
+                
+
+                var helpId = nameObj;
+                var labelText = nameObj;
+                if(nameObj.indexOf('>') === 0){
+                	helpId = nameObj.substring(1).replace(">","_");
+                	labelText = nameObj.substring(1+nameObj.lastIndexOf(">"));
+                }
                 var labelTextSize8 = labelText;
                 if(labelText.length > 8){
                     labelTextSize8 = labelText.substring(0,7).concat(".");
                 }
-                var priv = jQuery(this).next().next().text();
-                if(priv){
-
-                }else{
-                	priv = null;
-                }
                 
                 labelTextSize8 = labelTextSize8.replace("_"," ");
                 labelTextSize8 = ucFirstAllWords(labelTextSize8);
-
-                var typeText = new Kinetic.Text({
-                    text : jQuery(this).next().text()
-                });
-                typeText.setStroke(null);
+                
                 
                 var typeLabel = new Kinetic.Text({
                     x:posInitTextX,
@@ -1622,12 +1627,12 @@ function mountObj(canvasName) {
                 posInitTextX = posInitTextX + 70;
 
                 polygonTabFake.on('dragstart',function() {
-                    jQuery("#help_"+typeText.getText()).click();
+                    jQuery("#help_"+helpId).click();
                     jQuery('#body').css('cursor','url('+ polygonTabImage + ') 30 30,default');
                 });
                 
                 polygonTabFake.on('click',function() {
-                    jQuery("#help_"+typeText.getText()).click();
+                    jQuery("#help_"+helpId).click();
                 });
                 
                 polygonTabFake.on('mouseover',function(e) {
@@ -1650,7 +1655,7 @@ function mountObj(canvasName) {
                     if (mousePosStage !== undefined){
                     
                         canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
-                                typeText.getText(),
+                                nameObj,
                                 srcImageText,
                                 mousePosStage.x - 30,
                                 mousePosStage.y - 30,
@@ -2143,7 +2148,7 @@ function showContextMenu(group, e){
     //e.cancelBubble = true;
 }
 
-function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
+function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, helpId, groupId, arc1,arc2,arc3) {
     
 	//console.log("createGroup");
 	
@@ -2159,7 +2164,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     });
     
     group1.on('click',function() {
-         jQuery("#help_"+typeText.getText()).click();
+         jQuery("#help_"+helpId).click();
     });
     
 //    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
@@ -2499,31 +2504,6 @@ function polygonOnClick(obj,e, canvasName){
 			}
 
 		}
-		/*else {
-			var polygonLayer = canvasArray[canvasName].polygonLayer;
-			var layer = canvasArray[canvasName].layer;
-			
-			canvasArray[canvasName].down = true;
-			
-			var polygonGroup = getElement(polygonLayer, obj.getParent().getId());
-			arrow.setPoints([ polygonGroup.getX() + 40,
-					polygonGroup.getY() + 50,
-					polygonGroup.getX() + 40 + 1,
-					polygonGroup.getY() + 50 + 1 ]);
-
-			var idOutput = obj.getName();
-			arrow.setName("arrow" + idOutput);
-
-			arrow.output = obj.getParent();
-
-			var cloneArrow = arrow.clone();
-			cloneArrow.isArrow = true;
-			layer.add(cloneArrow);
-			
-			canvasArray[canvasName].oldIdSelected = obj.getParent().getId();
-			
-			layer.draw();
-		}*/
 	}
 	
 }
