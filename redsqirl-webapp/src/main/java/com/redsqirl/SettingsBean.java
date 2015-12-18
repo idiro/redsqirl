@@ -53,6 +53,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
 	private List<String> listSetting = new ArrayList<String>();
 	private String pathPosition;
+	private boolean canEdit;
 
 	public void calcSettings(){
 		logger.info("calcSettings");
@@ -255,9 +256,20 @@ public class SettingsBean extends BaseBean implements Serializable  {
 				}
 
 			}
+			
+			//check if is admin
+			canEditPackageSettings();
 
 		}
 
+	}
+	
+	private void canEditPackageSettings() throws RemoteException{
+		if(isAdmin()){
+			setCanEdit(true);
+		}else{
+			setCanEdit(false);
+		}
 	}
 
 	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
@@ -581,6 +593,14 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 	public void setPathPosition(String pathPosition) {
 		this.pathPosition = pathPosition;
+	}
+
+	public boolean isCanEdit() {
+		return canEdit;
+	}
+
+	public void setCanEdit(boolean canEdit) {
+		this.canEdit = canEdit;
 	}
 
 }

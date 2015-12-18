@@ -2,11 +2,9 @@ package com.redsqirl;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -35,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.idiro.ProjectID;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
@@ -80,6 +77,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<String[]> userSettings = null;
 	private String template;
 	private String nameUser;
+	private boolean canEdit;
 
 	private Map<String, SettingMenu> curMap;
 	private SettingMenu s;
@@ -379,9 +377,19 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 				}
 
+				//check if is admin
+				canEditPackageSettings();
 			}
 		}
 
+	}
+	
+	private void canEditPackageSettings() throws RemoteException{
+		if(isAdmin()){
+			setCanEdit(true);
+		}else{
+			setCanEdit(false);
+		}
 	}
 
 	public void navigationPackageSettings() throws RemoteException{
@@ -1232,6 +1240,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setNameUser(String nameUser) {
 		this.nameUser = nameUser;
+	}
+
+	public boolean isCanEdit() {
+		return canEdit;
+	}
+
+	public void setCanEdit(boolean canEdit) {
+		this.canEdit = canEdit;
 	}
 
 }
