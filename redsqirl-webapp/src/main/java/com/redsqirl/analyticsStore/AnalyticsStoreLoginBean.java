@@ -2,10 +2,8 @@ package com.redsqirl.analyticsStore;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -110,7 +108,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	public void init() {
 
 		typeLogin = new ArrayList<SelectItem>();
-		
+
 		showNoLicense="N";
 
 		//check if there is internet connection
@@ -134,8 +132,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		String softwareKey = getSoftwareKey();
 		logger.info("softwareKey " + softwareKey);
 		String key = null;
@@ -215,7 +213,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);*/
 
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		AnalyticsStoreSearchBean analyticsStoreSearchBean = (AnalyticsStoreSearchBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreSearchBean}", AnalyticsStoreSearchBean.class);
 		try {
@@ -225,7 +223,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		// To to login page
 		return null;
 	}
@@ -444,13 +442,13 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 			JSONObject object = new JSONObject();
 			object.put("numberUsers", numberUsers);
-			
+
 			String version = "0.1";
 			String[] value = ProjectID.getInstance().getVersion().split("-");
 			if(value != null && value.length > 1){
 				version = value[value.length-1];
 			}
-			
+
 			object.put("version", version);
 			object.put("mac", getMacAdress());
 			object.put("installationName", getHostName());
@@ -510,7 +508,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				MessageUseful.addInfoMessage(getMessageResources("success_message"));
 				request.setAttribute("msnSuccess", "msnSuccess");
-				
+
 			}
 
 		}catch(Exception e){
@@ -721,7 +719,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			List<SelectItem> result = new LinkedList<SelectItem>();
 			while(it.hasNext()){
 				com.redsqirl.workflow.utils.RedSqirlPackage pck = it.next();
-				
+
 				String version = pck.getPackageProperty(com.redsqirl.workflow.utils.RedSqirlPackage.property_version);
 				result.add(new SelectItem(pck.getName(),pck.getName()+"-"+version));
 			}
@@ -746,7 +744,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		request.setAttribute("msnSuccess", "msnSuccess");
 
 		updateUninstalMenu();
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		AnalyticsStoreSearchBean analyticsBean = (AnalyticsStoreSearchBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreSearchBean}", AnalyticsStoreSearchBean.class);
 		analyticsBean.updateShowDefaultInstallation();

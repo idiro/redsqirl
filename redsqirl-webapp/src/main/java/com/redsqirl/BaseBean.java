@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.idiro.ProjectID;
+import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.auth.UsageRecordWriter;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
@@ -326,11 +327,18 @@ public class BaseBean {
 			
 			FacesContext context = FacesContext.getCurrentInstance();
 			
-			//UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-			//String user = userInfoBean.getUserName();
-			
 			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
+			
+			if(user == null){
+				UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+				user = userInfoBean.getUserName();
+			}
+			
+			if(user == null){
+				AnalyticsStoreLoginBean analyticsStoreLoginBean = (AnalyticsStoreLoginBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreLoginBean}", AnalyticsStoreLoginBean.class);
+				user = analyticsStoreLoginBean.getEmail();
+			}
 			
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
 			if(admins != null){
