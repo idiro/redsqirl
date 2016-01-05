@@ -2173,7 +2173,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 									e.getX(), 
 									e.getY(),
 									compId ,
-									privilege
+									privilege,
+									elementName
 					});
 
 				}
