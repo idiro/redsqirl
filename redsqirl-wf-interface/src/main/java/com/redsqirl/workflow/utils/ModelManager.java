@@ -229,12 +229,12 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 	}
 	
 	public String getModuleOfSuperAction(String user, String superActionName) throws RemoteException {
-		List<ModelInt> ans = new ArrayList<ModelInt>();
-		ans.addAll(getUserModels(user));
-		ans.addAll(getSysModels());
-		
+		List<ModelInt> ans = getAvailableModels(user);
 		for (ModelInt modelInt : ans) {
-			if(modelInt.getPublicFullNames().equals(superActionName)){
+			
+			//logger.info("getModuleOfSuperAction " + modelInt.getPublicSubWorkflowNames());
+			
+			if(modelInt.getPublicSubWorkflowNames().contains(superActionName)){
 				return modelInt.getName();
 			}
 		}

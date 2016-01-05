@@ -91,8 +91,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
 		
-		getPrefs().readSettingMenu(user);
-		curMap = getPrefs().getSettingMenu();
+		if(getPrefs() != null){
+			getPrefs().readSettingMenu(user);
+			curMap = getPrefs().getSettingMenu();
+		}
 
 		calcSystemPackages();
 		calcUserPackages();

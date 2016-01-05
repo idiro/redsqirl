@@ -106,9 +106,11 @@
 			<h:outputText value='#{messages.label_tab_actions}' />
 		</f:facet>
 		<f:facet name="controls">
+			<h:form>
 			<a4j:commandLink title="#{messages.label_close}" action="#{configureTabsBean.cancelActions}" oncomplete="#{rich:component('actionsPanel')}.hide();" >
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" />
 		    </a4j:commandLink>
+		    </h:form>
 		</f:facet>
 
 		<h:panelGroup style="width:100%">

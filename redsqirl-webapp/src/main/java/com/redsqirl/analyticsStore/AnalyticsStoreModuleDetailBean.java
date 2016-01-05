@@ -128,8 +128,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				e.printStackTrace();
 			}
 
-			if (moduleVersion == null){
-				moduleVersion = versionList.get(0);
+			if (moduleVersion == null && versionList != null && !versionList.isEmpty()){
+				moduleVersion = versionList.get(versionList.size()-1);
 			}
 
 			//dependency

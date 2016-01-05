@@ -108,28 +108,119 @@ jQuery(function() {
 				
 					<h:outputText value="#{messages.label_setting_modal}" style="font-size:50px;position:relative;left:-80px;color:#818286;margin-left:680px;" />
 				
-					<div id="sysSettingsTabPanel" style="border:none;padding-left:290px;overflow: auto;height:calc(92% - 300px);position:absolute;background:none;overflow-x:hidden;overflow-y:auto;">
-	                
-	                    <a4j:repeat value="#{analyticsStoreLoginBean.sysSettings}" var="setting" >
-	                        <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
-	                        <br />
-	                        <h:inputText value="#{setting[3]}" size="100" disabled="#{not analyticsStoreLoginBean.adm}" style="margin-right:22px;" />
-	                        <br />
-	                        <br />
-	                    </a4j:repeat>
-	                
-		                <a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('admNewSettings')}.show();" >
-			            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
-			            </a4j:commandLink>
-	                    
-	                </div>
+					<div id="sysSettingsTabPanel" style="border:none;padding-left:290px;overflow: auto;height:calc(92% - 300px);position:absolute;background:none;overflow-x:hidden;overflow-y:auto; width:50%;">
+		    
+				    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
+					    	<ui:repeat value="#{analyticsStoreLoginBean.path}" var="item">
+					    		<a4j:commandLink value="#{item}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
+					    			styleClass="packageSettingsTab" rendered="#{item ne analyticsStoreLoginBean.pathPosition}" >
+						    		<f:param name="name" value="#{item}" />
+						    	</a4j:commandLink>
+						    	&#32;&#32;
+					    	</ui:repeat>
+				    	</h:panelGroup>
+					    
+					    <br/>
+					    <br/>
+					    <br/>
+					    
+					    <h:panelGrid columns="2" width="100%" >
+					    
+						    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:2px;position:absolute;top:100px;height:70%;overflow:auto;width:165px;" >
+						    
+							    <ui:repeat value="#{analyticsStoreLoginBean.listSubMenu}" var="sc">
+							     	
+							     	<a4j:commandButton value="#{sc.name}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" 
+							     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
+							     		<f:param name="name" value="#{sc.name}" />
+							     	</a4j:commandButton>
+							     	
+							     	<br/>
+						    		<br/>
+						    		<br/>
+						    		
+							    </ui:repeat>
+						    </h:panelGroup>
+					     
+					     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:170px;" rendered="#{not empty analyticsStoreLoginBean.listSetting}" >
+						     	<table>
+						     		
+						     		<tr>
+					     				<td colspan="2">
+					     					<h:outputText value="#{analyticsStoreLoginBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
+					     				</td>
+					     			</tr>
+						     		<tr>
+						     			<td colspan="2">
+						     				<br/>
+						     			</td>
+						     		</tr>
+						     		
+							     	<ui:repeat value="#{analyticsStoreLoginBean.listSetting}" var="obj">
+							     	
+							     		<tr>
+							     			<td colspan="2">
+							     				<h:outputText value="#{analyticsStoreLoginBean.s.properties[obj].label}" style="font-size:15px;padding-left:200px;" /><br/><br/>
+							     			</td>
+							     		</tr>
+						     			<tr>
+						     				<td colspan="2">
+						     					
+						     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;vertical-align:-6px;" title="#{messages.label_system}" />
+						     					<h:inputText title="#{analyticsStoreLoginBean.s.properties[obj].description}" value="#{analyticsStoreLoginBean.s.properties[obj].sysValue}" 
+						     						style="background-color:#FF3333;border: 1px solid;" 
+						     						rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty}" />
+						     					<br/>
+						     					<br/>
+						     				
+						     					<h:panelGrid columns="3">
+						     					
+						     						<a4j:commandLink action="#{analyticsStoreLoginBean.setDefaultValue}" >
+												    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
+												    		title="#{messages.label_default_value} #{analyticsStoreLoginBean.s.properties[obj].defaultValue}"/>
+												    	<f:param name="label" value="#{analyticsStoreLoginBean.s.properties[obj].label}" />
+												    	<f:param name="type" value="SYSTEM" />
+												    </a4j:commandLink>
+				 			     					
+				 			     					<a4j:commandLink action="#{analyticsStoreLoginBean.deletePropertyValue}" reRender="listSettingSettings" 
+				 			     						rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty}" >
+												    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
+												    	<f:param name="label" value="#{analyticsStoreLoginBean.s.properties[obj].label}" />
+												    	<f:param name="scope" value="SYSTEM" />
+												    </a4j:commandLink>
+												    
+												    <a4j:commandLink action="#{analyticsStoreLoginBean.addPropertyValue}" reRender="listSettingSettings" 
+												    	rendered="#{!analyticsStoreLoginBean.s.properties[obj].existSysProperty}" >
+												    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
+												    	<f:param name="label" value="#{analyticsStoreLoginBean.s.properties[obj].label}" />
+												    	<f:param name="scope" value="SYSTEM" />
+												    </a4j:commandLink>
+											   
+											    </h:panelGrid>
+						     				
+						     				</td>
+						     			</tr>
+						     			<tr>
+							     			<td colspan="2">
+							     				<br/>
+							     				<br/>
+							     			</td>
+							     		</tr>
+						     			
+							     	</ui:repeat>
+						     	</table>
+					     	</h:panelGroup>
+				    
+				    	</h:panelGrid>
+				    
+				    </div>
 					
 				</td>
 			</tr>
 			<tr style="position: fixed; bottom: 110px;" >
 				<td>
-					<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.storeNewSettings}" 
-						styleClass="greenButton" style="margin-left:690px;" />		
+					<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.saveSettings}" 
+						styleClass="greenButton" style="margin-left:690px;" />
 				</td>
 			</tr>
 		</table>
@@ -139,37 +230,7 @@ jQuery(function() {
 	</h:form>
 	
 	
-	<rich:modalPanel id="admNewSettings" width="500" height="300" style="overflow:auto;" resizeable="false" >
-		
-		<h:form>
-		
-			<f:facet name="header">
-				<h:outputText value='#{messages.label_add_new_line}' />
-			</f:facet>
-		
-			<h:panelGrid columns="2">
-			
-				<h:outputText value="#{messages.label_name}" class="formLabel" />
-				<h:inputText value="#{analyticsStoreLoginBean.nameSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSettings');" />
-				
-				<h:outputText value="#{messages.label_title_key}" class="formLabel" />
-				<h:inputText value="#{analyticsStoreLoginBean.titleSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSettings');" />
-				
-				<h:outputText value="#{messages.label_value}" class="formLabel" />
-				<h:inputText value="#{analyticsStoreLoginBean.valueSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSettings');" />
-				
-			</h:panelGrid>
-					
-			<br/><br/>
-	           
-        	<a4j:commandButton id="btAddNewLineSettings" value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.addNewLineSettings}" 
-           		reRender="sysSettingsTabPanel" oncomplete="#{rich:component('admNewSettings')}.hide();" />
-           
-            <a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('admNewSettings')}.hide();" />
-           
-    	</h:form>
-
-	</rich:modalPanel>
+	
 	
 
 </body>
