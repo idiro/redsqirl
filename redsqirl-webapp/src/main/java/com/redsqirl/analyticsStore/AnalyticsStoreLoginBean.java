@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -40,8 +41,11 @@ import ch.ethz.ssh2.Connection;
 import com.google.common.io.Files;
 import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
+import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.settings.Setting;
+import com.redsqirl.workflow.settings.SettingMenu;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -103,7 +107,14 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	private String mac;
 
 	private String showNoLicense;
-
+	
+	private Map<String, SettingMenu> curMap;
+	private List<String> path;
+	private SettingMenu s;
+	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
+	private List<String> listSetting = new ArrayList<String>();
+	private String pathPosition;
+	
 	@PostConstruct
 	public void init() {
 
@@ -298,6 +309,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 		logger.info("Key " + key);
 
+		defaultSettings();
+		
 		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
 				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
 			return license();
@@ -698,14 +711,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		return prop;
 	}
 
-	public void addNewLineSettings(){
-		String[] value = {nameSettings, nameSettings, titleSettings, valueSettings};
-		if(nameSettings != null && !"".equals(nameSettings)){
-			getSysSettings().add(value);
-			storeNewSettings();
-		}
-	}
-
 	public void calcSystemPackages() {
 		logger.info("calcSystemPackages");
 
@@ -818,6 +823,304 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		return "settings";
 	}
 
+	
+	
+	public void defaultSettings() {
+		logger.info("defaultSettings");
+
+		try {
+			
+			WorkflowPrefManager.getInstance();
+			WorkflowPrefManager.getProps().readDefaultSettingMenu();
+
+			curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
+
+			if(path == null){
+				path = new ArrayList<String>();
+			}
+
+			setPathPosition(WorkflowPrefManager.core_settings);
+			mountPath(WorkflowPrefManager.core_settings);
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void mountPath(String name) throws RemoteException{
+
+		if(path.contains(name)){
+			boolean removeValue = false;
+			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
+				String value = (String) iterator.next();
+				if(value.equals(name)){
+					removeValue = true;
+					continue;
+				}
+				if(removeValue){
+					iterator.remove();
+				}
+			}
+		}else{
+			path.add(name);
+		}
+
+		s = mountPackageSettings(path);
+
+		listSubMenu = new ArrayList<SettingsControl>();
+		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
+			SettingsControl sc = new SettingsControl();
+
+			String n = null;
+			if(settingsMenu.getKey().contains(".")){
+				n = settingsMenu.getKey().substring(settingsMenu.getKey().lastIndexOf(".")+1, settingsMenu.getKey().length());
+			}else{
+				n = settingsMenu.getKey();
+			}
+
+			sc.setName(n);
+			listSubMenu.add(sc);
+		}
+
+		listSetting = new ArrayList<String>();
+
+		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+			listSetting.add(settings.getKey());
+			Setting setting = settings.getValue();
+			if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+
+				if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
+					setting.setSysValue(setting.getSysPropetyValue());
+				}
+
+				if(setting.getSysPropetyValue() != null){
+					setting.setExistSysProperty(true);
+				}else{
+					setting.setExistSysProperty(false);
+				}
+
+			}else if(settings.getValue().getScope().equals(Setting.Scope.USER)){
+
+				if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
+					setting.setUserValue(setting.getUserPropetyValue());
+				}
+
+				if(setting.getUserPropetyValue() != null){
+					setting.setExistUserProperty(true);
+				}else{
+					setting.setExistUserProperty(false);
+				}
+
+			}else{
+				if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
+					setting.setSysValue(setting.getSysPropetyValue());
+				}
+				if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
+					setting.setUserValue(setting.getUserPropetyValue());
+				}
+
+				if(setting.getSysPropetyValue() != null){
+					setting.setExistSysProperty(true);
+				}else{
+					setting.setExistSysProperty(false);
+				}
+
+				if(setting.getUserPropetyValue() != null){
+					setting.setExistUserProperty(true);
+				}else{
+					setting.setExistUserProperty(false);
+				}
+
+			}
+
+		}
+
+	}
+
+	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
+		SettingMenu cur = null;
+		Iterator<String> itPath = path.iterator();
+		if(itPath.hasNext()){
+			cur = curMap.get(itPath.next());
+		}
+		while(itPath.hasNext()){
+			cur = cur.getMenu().get(itPath.next());
+		}
+		return cur;
+	}
+
+	public void navigationPackageSettings() throws RemoteException{
+
+		saveSettings();
+
+		WorkflowPrefManager.getInstance();
+		WorkflowPrefManager.getProps().readDefaultSettingMenu();
+		
+		curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		setPathPosition(name);
+
+		mountPath(name);
+	}
+
+	public String saveSettings() throws RemoteException{
+
+		StringBuffer newPath = new StringBuffer();
+		for (String value : getPath()) {
+			newPath.append("."+value);
+		}
+
+		setSysSettings(new ArrayList<String[]>());
+		calcSettings();
+
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			String nameSettings = newPath.substring(1) +"."+ setting.getKey();
+			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
+					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
+					getSysSettings().add(value);
+				}
+			}else{
+				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
+					String[] valueS = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
+					getSysSettings().add(valueS);
+				}
+			}
+		}
+
+		storeNewSettings();
+
+		return "success";
+	}
+
+	public void applySettings() throws RemoteException{
+		saveSettings();
+	}
+
+	public void addPropertyValue() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+		String scope = params.get("scope");
+
+		if(label != null && scope != null){
+			label = label.substring(label.lastIndexOf(".")+1, label.length());
+			Setting setting = s.getProperties().get(label);
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				setting.setExistSysProperty(true);
+			}
+		}
+
+	}
+
+	public void deletePropertyValue() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+		String scope = params.get("scope");
+
+		if(label != null && scope != null){
+			label = label.substring(label.lastIndexOf(".")+1, label.length());
+			Setting setting = s.getProperties().get(label);
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				setting.setExistSysProperty(false);
+				deleteProperty(label, setting.getSysValue(), scope);
+			}
+
+			WorkflowPrefManager.getInstance();
+			WorkflowPrefManager.getProps().readDefaultSettingMenu();
+			curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
+
+			mountPath(getPathPosition());
+		}
+
+	}
+
+	public void deleteProperty(String name, String valueToDelete, String scope){
+
+		StringBuffer pathToDelete = new StringBuffer();
+		for (String value : getPath()) {
+			pathToDelete.append(value+".");
+		}
+		pathToDelete.append(name);
+
+		List<String[]> deleteSettings = new ArrayList<String[]>();
+		String nameSettings = pathToDelete.toString();
+		String[] value = {nameSettings, nameSettings, nameSettings, valueToDelete};
+		logger.info("newPath " + pathToDelete.toString() +"="+ valueToDelete);
+		deleteSettings.add(value);
+
+		setSysSettings(new ArrayList<String[]>());
+		calcSettings();
+
+		for (String[] deletesettings : deleteSettings) {
+
+			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+				for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
+					String[] settings = (String[]) iterator.next();
+					if(deletesettings[0].equals(settings[0])){
+						iterator.remove();
+					}
+				}
+			}
+
+		}
+
+		storeNewSettings();
+	}
+
+	public void setDefaultValue() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String label = params.get("label");
+		String type = params.get("type");
+
+		if(label != null && type != null){
+
+			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
+			setting.setUserValue(setting.getDefaultValue());
+
+			StringBuffer newPath = new StringBuffer();
+			for (String value : getPath()) {
+				newPath.append("."+value);
+			}
+			
+			if(type.equals(Setting.Scope.SYSTEM)){
+				setSysSettings(new ArrayList<String[]>());
+				calcSettings();
+				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
+					if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							getSysSettings().add(value);
+						}
+					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
+						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
+							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
+							getSysSettings().add(valueU);
+						}
+					}
+				}
+			}
+			
+			storeNewSettings();
+
+			WorkflowPrefManager.getInstance();
+			WorkflowPrefManager.getProps().readDefaultSettingMenu();
+			curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
+						
+			mountPath(getPathPosition());
+
+		}
+
+	}
+	
+	
 
 	// Getters & Setters
 
@@ -1007,6 +1310,54 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void setMac(String mac) {
 		this.mac = mac;
+	}
+
+	public Map<String, SettingMenu> getCurMap() {
+		return curMap;
+	}
+
+	public void setCurMap(Map<String, SettingMenu> curMap) {
+		this.curMap = curMap;
+	}
+
+	public List<String> getPath() {
+		return path;
+	}
+
+	public void setPath(List<String> path) {
+		this.path = path;
+	}
+
+	public SettingMenu getS() {
+		return s;
+	}
+
+	public void setS(SettingMenu s) {
+		this.s = s;
+	}
+
+	public List<SettingsControl> getListSubMenu() {
+		return listSubMenu;
+	}
+
+	public void setListSubMenu(List<SettingsControl> listSubMenu) {
+		this.listSubMenu = listSubMenu;
+	}
+
+	public List<String> getListSetting() {
+		return listSetting;
+	}
+
+	public void setListSetting(List<String> listSetting) {
+		this.listSetting = listSetting;
+	}
+
+	public String getPathPosition() {
+		return pathPosition;
+	}
+
+	public void setPathPosition(String pathPosition) {
+		this.pathPosition = pathPosition;
 	}
 
 }
