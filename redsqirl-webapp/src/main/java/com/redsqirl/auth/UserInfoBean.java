@@ -618,7 +618,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		} catch (Exception e) {
 			logger.error("Fail to initialise registry, Exception: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			return false;
 		}
 
