@@ -1213,12 +1213,30 @@ function addElements(canvasName, positions, selecteds) {
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
 		if(getElement(polygonLayer, positionsArrays[i][0]) == null){
-//			alert(positionsArrays[i][6]);
-			var group = addElement(canvasName, positionsArrays[i][1],
-					positionsArrays[i][2], positionsArrays[i][3],
+			
+			/*
+			alert(positionsArrays[i][0]);
+			alert(positionsArrays[i][1]);
+			alert(positionsArrays[i][2]);
+			alert(positionsArrays[i][3]);
+			alert(positionsArrays[i][4]);
+			alert(positionsArrays[i][5]);
+			alert(positionsArrays[i][6]);
+			alert(positionsArrays[i][7]);
+			*/
+			
+			var group = addElement(
+					canvasName, 
+					positionsArrays[i][1],
+					positionsArrays[i][2],
+					positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
-					positionsArrays[i][0], selecteds,positionsArrays[i][6], positionsArrays[i][7]);
+					positionsArrays[i][0],
+					selecteds,
+					positionsArrays[i][6],
+					positionsArrays[i][7]
+					);
 			maxX = Math.max(maxX,positionsArrays[i][3]);
 			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
@@ -1252,7 +1270,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName) {
     
 	//console.log("addElement");
 	
@@ -1423,7 +1441,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
     
-    group.elementType = elementType;
+    group.elementType = elementTypeName;
     
     group.privilege = privilege;
     
@@ -1847,7 +1865,7 @@ function getSelectedSAIconsCommaDelimited(){
 
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value.selected){
-        	if(value.getParent().elementType.startsWith("sa")){
+        	if(value.getParent().elementType.indexOf('>')==0){
         		ans = ans.concat(",",value.getParent().getChildren()[4].getText());
         	}
         }
@@ -2118,7 +2136,6 @@ function showContextMenu(group, e){
                     temp[temp.length] = item;
                 }
             }
-            
         }
     }
     
@@ -2130,7 +2147,9 @@ function showContextMenu(group, e){
 		jQuery(this).closest("table").next(".context-menu-shadow").remove();
 		jQuery(this).closest("table").remove();
 	});
+	
     cmenuCanvas = jQuery.contextMenu.create(temp);
+    
     if(group.elementType.indexOf('>')==0){
         if(group.privilege != null){
             if(!jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").hasClass("context-menu-item-disabled")){

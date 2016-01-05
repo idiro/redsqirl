@@ -72,7 +72,7 @@
 
 		try{
 		        	
-			var list =  #{browserHdfsBean.listExtensionsString} ,
+			var list =  #{browserHdfsBean.listExtensionsString == null ? canvasBean.emptyList : browserHdfsBean.listExtensionsString} ,
 		    	textext = jQuery(e.target).textext()[0],
 		        query = (data ? data.query : '') || '' ;
 		

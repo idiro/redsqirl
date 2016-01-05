@@ -229,7 +229,9 @@
 					styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 		</div>
-		<rich:panel style="border:none">
+		
+		
+		<div style="width:100%;height:170px;">
 
 			<rich:extendedDataTable id="subwfList"
 				value="#{modelBean.subWorkflowFromModel.rows}" var="item"
@@ -275,7 +277,9 @@
 				</rich:column>
 			</rich:extendedDataTable>
 
-		</rich:panel>
+		</div>
+
+		<br/><br/>
 
 		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
 			<a4j:commandButton styleClass="greenButton" value="ok"
