@@ -90,7 +90,9 @@ public class MapRedCtrlATextType extends MapRedDir{
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		String patternStr = Pattern.quote(delimiter);
 		List<String> selectLine = selectLine(maxToRead);
-		if(selectLine != null){
+		if(selectLine == null){
+			logger.info("No data in "+getPath());
+		}else{
 			Iterator<String> it = selectLine.iterator();
 			while(it.hasNext()){
 				String l = it.next();

@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import com.redsqirl.dynamictable.FileSystemHistory;
 import com.redsqirl.dynamictable.UnselectableTable;
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -404,11 +405,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			setSelectedOutPut(outputN);
 			
 		}else {
-			/*if(getNameOutput() != null && !getNameOutput().isEmpty()){
-			setNameOutput(getNameOutput());
-			logger.info("display out: " + getNameOutput());
-			updateDFEOutputTable();
-		}else{*/
 			if(outputFormList != null && !outputFormList.isEmpty()){
 				outputN = outputFormList.get(0).getName();
 				setNameOutput(outputN);
@@ -486,7 +482,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						logger.info("Error when getting the field: " + e.getMessage());
 					}
 					grid = new UnselectableTable(gridTitle);
-					if(dfeOut.isPathValid() == null){
+					String error = dfeOut.isPathValid();
+					if( error != null){
+						logger.info("Path invalid: "+error);
+					}else{
 						try {
 
 							int mRow = Math.max(10, Math.min(150, 1000/(gridTitle.size()+1) ));
@@ -497,48 +496,33 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 							setMaxRows(mRow+"");
 
 							List<Map<String, String>> outputLines = dfeOut.select(mRow);
-
-							if (outputLines != null) {
-
-								/*for (Map<String, String> line : outputLines) {
-								int i = 0;
-								Object[] rowCur = new Object[gridTitle.size()];
-								for (String feat : line.keySet()) {
-									rowCur[i] = line.get(feat);
-									++i;
-								}
-								grid.add(rowCur);
-							}*/
-
+							FieldList fl = dfeOut.getFields();
+							if (outputLines == null) {
+								logger.info("No dataset to display.");
+							}else{
+								logger.info(outputLines);
 								for (Map<String, String> line : outputLines) {
 									int i = 0;
-									int j = 0;
-									Object[] rowCur = new Object[gridTitle.size()];
-									for (String feat : line.keySet()) {
-										if(feat != null ){
-											String title = gridTitle.get(j);
-											if(title != null && !"".equals(title)){
-												String[] type = title.split(" ");
-												if(type != null && type.length > 0 && line.get(feat) != null && !line.get(feat).isEmpty()){
-													if(type[1].equalsIgnoreCase("float")){
-														rowCur[i] = Float.parseFloat(line.get(feat));
-													}else if(type[1].equalsIgnoreCase("double")){
-														rowCur[i] = Double.parseDouble(line.get(feat));
-													}else if(type[1].equalsIgnoreCase("int")){
-														rowCur[i] = Integer.parseInt(line.get(feat));
-													}else {
-														rowCur[i] = line.get(feat);
-													}
-												}else{
-													rowCur[i] = "";
-												}
-											}
-											++i;
-											++j;
+									Object[] rowCur = new Object[fl.getSize()];
+									Iterator<String> fieldIt = fl.getFieldNames().iterator();
+									while(fieldIt.hasNext()){
+										String field = fieldIt.next();
+										FieldType type = fl.getFieldType(field);
+										String curData = line.get(field);
+										if(FieldType.FLOAT.equals(type)){
+											rowCur[i] = Float.parseFloat(curData);
+										}else if(FieldType.DOUBLE.equals(type)){
+											rowCur[i] = Double.parseDouble(curData);
+										}else if(FieldType.INT.equals(type)){
+											rowCur[i] = Integer.parseInt(curData);
+										}else {
+											rowCur[i] = curData;
 										}
+										++i;
 									}
 									grid.add(rowCur);
 								}
+								logger.info(grid.getRows());
 							}
 
 							if(grid.getRows().isEmpty()){
