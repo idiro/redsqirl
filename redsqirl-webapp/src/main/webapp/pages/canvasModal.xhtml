@@ -619,7 +619,7 @@
 			                       			<a4j:commandLink value="output #{item.name}"
 			                       			    rendered="#{item.link == null &amp;&amp; item.showGridDataOutput == 'Y'}" 
 			                       			    action="#{canvasModalBean.outputTab.displayOutput}"
-			                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup,downloadcsvbutton">
+			                       				reRender="displayTable,displayTableNumberRows,displayTableNumberRowsPanelGroup,downloadcsvbutton">
 				                                <a4j:actionparam name="outputName" value="#{item.name}" />
 				                                <a4j:actionparam name="resetMaxRows" value="Y" />
 				                            </a4j:commandLink>
@@ -710,6 +710,7 @@
 		                <br/>
 		                <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
 		                
+		                <a4j:outputPanel ajaxRendered="true">
 		                    <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
 		                        var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		                        rowKeyVar="rowNb" enableContextMenu="false"
@@ -735,6 +736,7 @@
 		                        </rich:columns>
 		        
 		                    </rich:scrollableDataTable>
+		                </a4j:outputPanel>
 		        
 		                </div>
 		                
