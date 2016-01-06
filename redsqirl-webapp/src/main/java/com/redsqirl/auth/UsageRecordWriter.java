@@ -62,13 +62,14 @@ public class UsageRecordWriter implements Serializable {
 
 	public File getCurrentFile() throws IOException{
 
+		
 		File folder = new File(WorkflowPrefManager.pathSysHome+"/usageRecordLog");
 		if(!folder.exists()){
 			folder.mkdir();
 		}
 
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");
-		File cur = new File(WorkflowPrefManager.pathSysHome+"/usageRecordLog/usageRecordLog"+df.format(new Date())+".txt");
+		File cur = new File(folder,"usageRecordLog"+df.format(new Date())+".txt");
 		if(!cur.exists()){
 			cur.createNewFile();
 		}

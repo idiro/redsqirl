@@ -39,6 +39,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 	/** Delimiter Key */
 	public final static String key_delimiter = "delimiter";
 	
+	protected int NB_FILE_TO_READ_MAX = 100;
 	private static Logger logger = Logger.getLogger(MapRedDir.class);
 
 	public MapRedDir() throws RemoteException{
@@ -169,7 +170,6 @@ public abstract class MapRedDir extends MapRedHdfs{
 	
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
-		//if (isPathValid() == null && isPathExists()) {
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			
@@ -184,11 +184,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 			
 			if(stat != null && stat.length > 0){
 				ans = new ArrayList<String>(maxToRead);
-				int i =0;
-				int read =0;
-				Map<String,List<String>> fileNameAndContent = new HashMap<String,List<String>>();
 				
-				int numberFiles = 10;
 				SortedSet<Map.Entry<FileStatus,Long>> filesSortedBySize = new TreeSet<Map.Entry<FileStatus,Long>>(
 				        new Comparator<Map.Entry<FileStatus,Long>>() {
 				            @Override public int compare(Map.Entry<FileStatus,Long> e1, Map.Entry<FileStatus,Long> e2) {
@@ -196,41 +192,23 @@ public abstract class MapRedDir extends MapRedHdfs{
 				            }
 				        }
 				    );
-				for(int k=0;k < stat.length;++k){
+				//We limit the number of file to be 100
+				int max_read = Math.min(stat.length, NB_FILE_TO_READ_MAX);
+				for(int k=0; k <  max_read;++k){
 					filesSortedBySize.add(new AbstractMap.SimpleEntry<FileStatus, Long>(stat[k],stat[k].getLen()));
 				}
-				
-				//Get the 10 biggest files
-				Iterator<Map.Entry<FileStatus,Long>> fbIter = filesSortedBySize.iterator();
-				List<Map.Entry<FileStatus,Long>> biggestFiles = new LinkedList<Map.Entry<FileStatus,Long>>();
-				while(fbIter.hasNext() ){
-					biggestFiles.add(fbIter.next());
-					++i;
-				}
 	
-				//Read the biggest files
-				Iterator<Map.Entry<FileStatus,Long>>  biggerFiles = biggestFiles.iterator();
-				while(biggerFiles.hasNext() && ans.size() < maxToRead){
-					Map.Entry<FileStatus,Long> cur = biggerFiles.next();
+				//Read the biggest files first
+				Iterator<Map.Entry<FileStatus,Long>>  fileIt = filesSortedBySize.iterator();
+				while(fileIt.hasNext() && ans.size() < maxToRead){
+					Map.Entry<FileStatus,Long> cur = fileIt.next();
 					FileStatus file = cur.getKey();
-					logger.info(ans.size()+" is the size of the return list. -- biggest ");
-					fileNameAndContent.put(file.getPath().getName(),hdfsInt.select(file.getPath().toString(),
+					logger.info("Number of line already read: "+ans.size());
+					ans.addAll(hdfsInt.select(file.getPath().toString(),
 							",",
-							(int) Math.ceil(maxToRead - read)
+							maxToRead - ans.size()
 							));
-					read+=fileNameAndContent.get(file.getPath().getName()).size();
 				}
-				
-				Set<String> names =new TreeSet<String>(fileNameAndContent.keySet());
-				
-				Iterator<String> namesItr = names.iterator();
-				
-				while(namesItr.hasNext()){
-					String name = namesItr.next();
-					
-					ans.addAll(fileNameAndContent.get(name));
-				}
-
 			}
 		} catch (IOException e) {
 			String error = "Unexpected error: " + e.getMessage();
@@ -241,8 +219,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 			logger.error("Fail to close FileSystem: " + e, e);
 			ans = null;
 		}
-
-		//}
+		
 		return ans;
 	}
 
