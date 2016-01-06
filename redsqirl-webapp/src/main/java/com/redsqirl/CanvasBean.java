@@ -33,7 +33,6 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.useful.WorkflowHelpUtils;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
@@ -546,7 +545,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		usageRecordLog().addSuccess("LOADWORKFLOW");
 		
 	}
-	
 
 	/**
 	 * loadSubWorkflow
@@ -651,7 +649,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return error;
 
 	}
-
 
 	/**
 	 * Push the object position on the backend
@@ -781,6 +778,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 	}
+	
 	public void checkName() {
 
 		logger.info("checkName");

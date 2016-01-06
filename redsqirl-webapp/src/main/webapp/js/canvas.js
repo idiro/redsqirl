@@ -2183,7 +2183,17 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     });
     
     group1.on('click',function() {
-         jQuery("#help_"+helpId).click();
+    	
+    	if (this.elementType) {
+    		var auxId = this.elementType;
+            if(auxId.indexOf('>') === 0){
+            	helpId = auxId.substring(1).replace(">","_");
+            }else{
+            	helpId = auxId;
+            }
+    	}
+    	
+        jQuery("#help_"+helpId).click();
     });
     
 //    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
