@@ -567,7 +567,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		String[] method = AbstractSQLLikeDictionary.find(list, expr);
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
-			String[] splitStr = expr.split(escapeString(method[0]));
+
+			String pattern = escapeString(method[0])+"(?![^\\(]*\\))";
+			
+			String[] splitStr = expr.split(pattern);
 			if (aggregFeat == null) {
 				ok = check(method, splitStr, fields);
 			} else if (aggregFeat.isEmpty()) {
