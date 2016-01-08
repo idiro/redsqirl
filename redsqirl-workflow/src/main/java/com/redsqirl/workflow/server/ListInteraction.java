@@ -74,6 +74,18 @@ public class ListInteraction extends UserInteraction {
 		}
 	}
 
+	protected void reInitAfterError() throws RemoteException{
+		if(tree.getFirstChild("list") == null){
+			tree.add("list");
+		}
+		if(tree.getFirstChild("list").getFirstChild("values") == null){
+			tree.getFirstChild("list").add("values");
+		}
+		if(tree.getFirstChild("list").getFirstChild("output") == null){
+			tree.getFirstChild("list").add("output");
+		}
+	}
+
 	/**
 	 * Set if Radio Buttons are displayed for the list
 	 * 
@@ -113,7 +125,8 @@ public class ListInteraction extends UserInteraction {
 				ans = getTree().getFirstChild("list").getFirstChild("output")
 						.getFirstChild().getHead();
 			} catch (Exception e) {
-				logger.error(getId() + ": Tree structure incorrect");
+				logger.error(getId() + ": Tree structure incorrect",e);
+				reInitAfterError();
 			}
 		}
 		return ans;
@@ -157,8 +170,16 @@ public class ListInteraction extends UserInteraction {
 	 * @throws RemoteException
 	 */
 	public void setPossibleValues(List<String> values) throws RemoteException {
-		Tree<String> vals = tree.getFirstChild("list").getFirstChild("values");
-		vals.removeAllChildren();
+		Tree<String> vals = null;
+		try{
+			vals = tree.getFirstChild("list").getFirstChild("values");
+			vals.removeAllChildren();
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+			vals = tree.getFirstChild("list").getFirstChild("values");
+		}
+		
 		Iterator<String> it = values.iterator();
 		while (it.hasNext()) {
 			vals.add("value").add(it.next());
@@ -172,8 +193,16 @@ public class ListInteraction extends UserInteraction {
 	 */
 	public String setValue(String value) throws RemoteException {
 		String error = null;
-		Tree<String> output = tree.getFirstChild("list")
+		Tree<String> output = null;
+		try{
+			output = tree.getFirstChild("list")
 				.getFirstChild("output");
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+			output = tree.getFirstChild("list")
+				.getFirstChild("output");
+		}
 		if (getPossibleValues().contains(value)) {
 			output.removeAllChildren();
 			output.add(value);

@@ -107,6 +107,20 @@ public class AppendListInteraction extends UserInteraction{
 			list = tree.add("applist");
 			list.add("values");
 			list.add("output");
+		}else{
+			reInitAfterError();
+		}
+	}
+	
+	protected void reInitAfterError() throws RemoteException{
+		if(tree.getFirstChild("applist") == null){
+			tree.add("applist");
+		}
+		if(tree.getFirstChild("applist").getFirstChild("values") == null){
+			tree.getFirstChild("applist").add("values");
+		}
+		if(tree.getFirstChild("applist").getFirstChild("output") == null){
+			tree.getFirstChild("applist").add("output");
 		}
 	}
 	/**
@@ -182,8 +196,15 @@ public class AppendListInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void setPossibleValues(List<String> values) throws RemoteException{
-		Tree<String> vals = tree.getFirstChild("applist").getFirstChild("values");
-		vals.removeAllChildren();
+		Tree<String> vals = null;
+		try{
+			vals = tree.getFirstChild("applist").getFirstChild("values");
+			vals.removeAllChildren();
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+			vals = tree.getFirstChild("applist").getFirstChild("values");
+		}
 		Iterator<String> it = values.iterator();
 		while(it.hasNext()){
 			vals.add("value").add(it.next());
@@ -208,9 +229,8 @@ public class AppendListInteraction extends UserInteraction{
 				values.add(rows.next().getFirstChild().getHead());
 			}
 		}catch(Exception e){
-			values = null;
-			 
-			logger.error(getId()+": Tree structure incorrect");
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
 		}
 		return values;
 	}
@@ -222,9 +242,16 @@ public class AppendListInteraction extends UserInteraction{
 	 */
 	public String setValues(List<String> values)  throws RemoteException{
 		String error = null;
-		Tree<String> output =  tree.getFirstChild("applist").getFirstChild("output");
-		if(getPossibleValues().containsAll(values)){
+		Tree<String> output = null;
+		try{
+			output = tree.getFirstChild("applist").getFirstChild("output");
 			output.removeAllChildren();
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+			output = tree.getFirstChild("applist").getFirstChild("output");
+		}
+		if(getPossibleValues().containsAll(values)){
 			Iterator<String> it = values.iterator();
 			while(it.hasNext()){
 				output.add("value").add(it.next());
@@ -241,7 +268,15 @@ public class AppendListInteraction extends UserInteraction{
 	@Override
 	public void replaceOutputInTree(String oldName, String newName)
 			throws RemoteException {
-		List<Tree<String>> vals = tree.getFirstChild("applist").getFirstChild("values").getSubTreeList();
+		List<Tree<String>> vals = null;
+		try{
+			vals = tree.getFirstChild("applist").getFirstChild("values").getSubTreeList();
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+			vals = tree.getFirstChild("applist").getFirstChild("values").getSubTreeList();
+		}
+		
 		if(vals != null && !vals.isEmpty()){
 			Iterator<Tree<String>> itValPos = vals.iterator();
 			while(itValPos.hasNext()){
