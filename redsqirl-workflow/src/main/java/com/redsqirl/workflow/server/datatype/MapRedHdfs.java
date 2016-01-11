@@ -278,7 +278,7 @@ public abstract class MapRedHdfs extends DataOutput{
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
 						for (String s : line.split(Pattern
-								.quote(delimiter))) {
+								.quote(delimiter),-1)) {
 
 							String nameColumn;
 							if (schemaList != null && !schemaList.isEmpty() 
@@ -417,7 +417,7 @@ public abstract class MapRedHdfs extends DataOutput{
 		if(typeAns.equals(FieldType.STRING)){
 			int nbValues = exValue.size();
 			logger.info(nbValues+" / "+numberOfValues);
-			if(nbValues < 101 && nbValues * 100 /numberOfValues < 5){
+			if(numberOfValues > 0 && nbValues < 101 && nbValues * 100 /numberOfValues < 5){
 				typeAns = FieldType.CATEGORY;
 			}
 		}

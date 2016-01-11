@@ -71,6 +71,15 @@ public class TableInteraction extends UserInteraction {
 		}
 	}
 	
+	protected void reInitAfterError() throws RemoteException{
+		if(tree.getFirstChild("table") == null){
+			tree.add("table");
+		}
+		if(tree.getFirstChild("table").getFirstChild("columns") == null){
+			tree.getFirstChild("table").add("columns");
+		}
+	}
+	
 	public void setNonEmptyChecker() throws RemoteException{
 		setChecker(new DFEInteractionChecker() {
 			
@@ -110,7 +119,14 @@ public class TableInteraction extends UserInteraction {
 	 */
 	public List<String> getColumnNames() throws RemoteException{
 		List<String> colNames = new LinkedList<String>();
-		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+		Tree<String> columns = null;
+		try{
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}catch(Exception e){
+			logger.error(getId() + ": Tree structure incorrect",e);
+			reInitAfterError();
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}
 		Tree<String> found = null;
 		if(columns.getChildren("column") != null){
 			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
@@ -120,12 +136,13 @@ public class TableInteraction extends UserInteraction {
 		}
 		return colNames;
 	}
+	
 	/**
 	 * Remove all columns
 	 * @throws RemoteException
 	 */
 	public void removeColumns() throws RemoteException{
-		tree.getFirstChild("table").remove("columns");
+		tree.getFirstChild("table").getFirstChild("columns").removeAllChildren();
 	}
 	/**
 	 * Remove a column by name
@@ -152,7 +169,14 @@ public class TableInteraction extends UserInteraction {
 			String regex,
 			Collection<String> constraintValue,
 			EditorInteraction editor) throws RemoteException{
-		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+		Tree<String> columns = null;
+		try{
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}catch(Exception e){
+			logger.error(getId() + ": Tree structure incorrect",e);
+			reInitAfterError();
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}
 		Tree<String> column = columns.add("column");
 		columnName = removeSpaceColumnName(columnName);
 		column.add("title").add(columnName);
@@ -184,8 +208,14 @@ public class TableInteraction extends UserInteraction {
 	 * @throws RemoteException
 	 */
 	protected Tree<String> findColumn(String columnName) throws RemoteException{
-		columnName = removeSpaceColumnName(columnName);
-		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+		columnName = removeSpaceColumnName(columnName);Tree<String> columns = null;
+		try{
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}catch(Exception e){
+			logger.error(getId() + ": Tree structure incorrect",e);
+			reInitAfterError();
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}
 		Tree<String> found = null;
 		if(columns.getChildren("column") != null){
 			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
@@ -318,7 +348,14 @@ public class TableInteraction extends UserInteraction {
 		List<Tree<String>> values = null;
 		Tree<String> constraint = null;
 
-		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+		Tree<String> columns = null;
+		try{
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}catch(Exception e){
+			logger.error(getId() + ": Tree structure incorrect",e);
+			reInitAfterError();
+			columns = tree.getFirstChild("table").getFirstChild("columns");
+		}
 		if(columns.getChildren("column") != null){
 			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
 			while(it.hasNext()){
@@ -356,7 +393,14 @@ public class TableInteraction extends UserInteraction {
 		Map<String,String> regex = new LinkedHashMap<String,String>();
 		Tree<String> constraint = null;
 		try{
-			Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+			Tree<String> columns = null;
+			try{
+				columns = tree.getFirstChild("table").getFirstChild("columns");
+			}catch(Exception e){
+				logger.error(getId() + ": Tree structure incorrect",e);
+				reInitAfterError();
+				columns = tree.getFirstChild("table").getFirstChild("columns");
+			}
 			if(columns.getChildren("column") != null){
 				Iterator<Tree<String>> it = columns.getChildren("column").iterator();
 				while(it.hasNext()){
@@ -507,7 +551,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error(getId()+": Tree structure incorrect");
+			logger.warn(getId()+": Tree structure incorrect",e);
 		}
 		return values;
 	}
@@ -544,7 +588,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error(getId()+": Tree structure incorrect");
+			logger.warn(getId()+": Tree structure incorrect",e);
 		}
 		return values;
 	}

@@ -58,6 +58,18 @@ public class InputInteraction extends UserInteraction{
 			input.add("regex");
 		}
 	}
+	
+	protected void reInitAfterError() throws RemoteException{
+		if(tree.getFirstChild("input") == null){
+			tree.add("input");
+		}
+		if(tree.getFirstChild("input").getFirstChild("regex") == null){
+			tree.getFirstChild("input").add("regex");
+		}
+		if(tree.getFirstChild("input").getFirstChild("output") == null){
+			tree.getFirstChild("input").add("output");
+		}
+	}
 	/**
 	 * Get the value currently stored in the interaction
 	 * @return value stored in interaction
@@ -70,6 +82,8 @@ public class InputInteraction extends UserInteraction{
 				ans = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 			}
 		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
 			ans = "";
 		}
 		return ans;
@@ -86,7 +100,8 @@ public class InputInteraction extends UserInteraction{
 				ans = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error(getId()+": Tree structure incorrect");
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
 		}
 		return ans;
 	}
@@ -123,7 +138,12 @@ public class InputInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void setRegex(String regex) throws RemoteException{
-		getTree().getFirstChild("input").getFirstChild("regex").removeAllChildren();
+		try{
+			getTree().getFirstChild("input").getFirstChild("regex").removeAllChildren();
+		}catch(Exception e){
+			logger.warn(getId()+": Tree structure incorrect",e);
+			reInitAfterError();
+		}
 		getTree().getFirstChild("input").getFirstChild("regex").add(regex);
 	}
 
