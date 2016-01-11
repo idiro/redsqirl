@@ -30,7 +30,6 @@ import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.test.TestUtils;
-import com.redsqirl.workflow.utils.ModelInstaller;
 import com.redsqirl.workflow.utils.ModelManager;
 
 /**
@@ -245,7 +244,7 @@ public class SubWorkflowTests {
 			//Install
 			logger.info("install...");
 			ModelManager saMan = new ModelManager();
-			ModelInstaller installer = new ModelInstaller(saMan);
+			ModelManager installer = new ModelManager();
 			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 			error = installer.installSA(saMan.getUserModel(userName, "default"), sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
@@ -271,7 +270,7 @@ public class SubWorkflowTests {
 		String error = null;
 		try{
 			ModelManager saMan = new ModelManager();
-			ModelInstaller installer = new ModelInstaller(new ModelManager());
+			ModelManager installer = new ModelManager();
 			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 
 			//Create
@@ -299,7 +298,7 @@ public class SubWorkflowTests {
 
 			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
 			assertTrue("Fail to create SuperAction", sw != null);
-			new ModelInstaller(new ModelManager()).installSA(saMan.getUserModel(userName, "default"), sw, null);
+			new ModelManager().installSA(saMan.getUserModel(userName, "default"), sw, null);
 			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
 			
@@ -321,7 +320,7 @@ public class SubWorkflowTests {
 		String error = null;
 		try{
 			ModelManager saMan = new ModelManager();
-			ModelInstaller installer = new ModelInstaller(saMan);
+			ModelManager installer = new ModelManager();
 			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
 
 			//Create
@@ -350,7 +349,7 @@ public class SubWorkflowTests {
 			
 			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
 			assertTrue("Fail to create SuperAction", sw != null);
-			new ModelInstaller(new ModelManager()).installSA(saMan.getUserModel(userName, "default"), sw, null);
+			new ModelManager().installSA(saMan.getUserModel(userName, "default"), sw, null);
 			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
 			List<String> aggComponents = w.getComponentIds();

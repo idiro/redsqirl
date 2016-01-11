@@ -18,7 +18,6 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 import com.redsqirl.workflow.utils.ModelManager;
-import com.redsqirl.workflow.utils.ModelInstaller;
 
 /**
  * 
@@ -104,9 +103,8 @@ public class SuperActionTests {
 			//Install
 			logger.debug("Install the sub workflow");
 			ModelManager saMan = new ModelManager();
-			ModelInstaller installer = new ModelInstaller(saMan);
-			installer.uninstallSA(saMan.getUserModel(userName, "default"), sName);
-			error = installer.installSA(saMan.getUserModel(userName, "default"), sw, null);
+			saMan.uninstallSA(saMan.getUserModel(userName, "default"), sName);
+			error = saMan.installSA(saMan.getUserModel(userName, "default"), sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
 			
 			
