@@ -15,13 +15,13 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.6</version>
+		<version>0.7</version>
 	</parent>
 
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-webapp</artifactId>
 	<packaging>war</packaging>
-	<version>${hadoop.version}-0.6</version>
+	<version>${hadoop.version}-0.7</version>
 	<name>Red Sqirl - Web Application</name>
 
 

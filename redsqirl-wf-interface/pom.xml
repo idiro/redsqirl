@@ -10,7 +10,7 @@
     <parent>
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.6</version>
+	<version>0.7</version>
     </parent>
 
 
@@ -18,7 +18,7 @@
     <groupId>idiro</groupId>
     <artifactId>redsqirl-wf-interface</artifactId>
     <packaging>jar</packaging>
-    <version>${hadoop.version}-0.6</version>
+    <version>${hadoop.version}-0.7</version>
     <name>Red Sqirl - Interface</name>
     <description>Provide the interface used by Red Sqirl app</description>
     <url>http://ns.local.net/dev/idiro-wf-interface</url>

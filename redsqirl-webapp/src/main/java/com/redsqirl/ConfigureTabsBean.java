@@ -107,7 +107,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 				if(value[0].startsWith(">")){
 					String superAction[] = value[0].split(">");
-					SelectHeaderType sht = new SelectHeaderType(superAction[1] , superAction[2]);
+					SelectHeaderType sht = new SelectHeaderType(superAction[1] , superAction[2], true);
 					ans.add(sht);
 				}else{
 					SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
