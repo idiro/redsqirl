@@ -17,18 +17,18 @@ import com.redsqirl.workflow.utils.PMLanguageManager;
 
 public class Decrypter extends KeyCipher {
 	// Software Keys
-	private String appName, appName2, macAddr, nbCluster, dateStr;
+	private String appName, appName2, macAddr, dateStr; //nbCluster,
 
 	public static String encrypt = "encrypt", decrypt = "decrypt", software = "software", module = "module", name = "title", license = "license",
-		modLicense = "modLicense", version = "version", mac = "mac", clusterNb = "clusterNb", userName = "user", date = "date";
+		modLicense = "modLicense", version = "version", mac = "mac", userName = "user", date = "date"; //clusterNb = "clusterNb",
 
 	private Map<String, String> ans;
 	
-	public int numberCluster;
+	//public int numberCluster;
 
 	// Module Keys
 	private String key, key2, module1, module2, user, user2;
-	private int clusterNbInt, dateInt;
+	private int dateInt; //clusterNbInt,
 
 	private static Logger logger = Logger.getLogger(Decrypter.class);
 
@@ -53,20 +53,20 @@ public class Decrypter extends KeyCipher {
 
 		macAddr = indentStr(cipher, key.substring(10, 18), -vals[2]);
 		
-		nbCluster = indentStr(cipher, key.substring(18, 19), -vals[3])	+ indentStr(cipher, key.substring(19, 20), -vals[4]);
-		clusterNbInt = Integer.valueOf(cipher.indexOf(nbCluster.charAt(0)) * 62 + cipher.indexOf(nbCluster.charAt(1))).intValue();
+		//nbCluster = indentStr(cipher, key.substring(18, 19), -vals[3])	+ indentStr(cipher, key.substring(19, 20), -vals[4]);
+		//clusterNbInt = Integer.valueOf(cipher.indexOf(nbCluster.charAt(0)) * 62 + cipher.indexOf(nbCluster.charAt(1))).intValue();
 
-		dateStr = indentStr(cipher, key.substring(20, 21), -vals[2]) + indentStr(cipher, key.substring(21, 22), -vals[3]);
+		dateStr = indentStr(cipher, key.substring(18, 19), -vals[2]) + indentStr(cipher, key.substring(19, 20), -vals[3]);
 		dateInt = Integer.valueOf(cipher.indexOf(dateStr.charAt(0)) * 62 + cipher.indexOf(dateStr.charAt(1))).intValue();
 		 
 		
 		ans.put(name + "1", appName);
 		ans.put(name + "2", appName2);
 		ans.put(mac, macAddr);
-		ans.put(clusterNb, String.valueOf(clusterNbInt));
+		//ans.put(clusterNb, String.valueOf(clusterNbInt));
 		ans.put(date, String.valueOf(dateInt));
 		
-		setNumberCluster(clusterNbInt);
+		//setNumberCluster(clusterNbInt);
 	}
 
 	public int transformBack(char t) {
@@ -336,12 +336,12 @@ public class Decrypter extends KeyCipher {
 		return error.length() == 0 ? null : error.toString();
 	}
 
-	public int getNumberCluster() {
+	/*public int getNumberCluster() {
 		return numberCluster;
 	}
 
 	public void setNumberCluster(int numberCluster) {
 		this.numberCluster = numberCluster;
-	}
+	}*/
 
 }

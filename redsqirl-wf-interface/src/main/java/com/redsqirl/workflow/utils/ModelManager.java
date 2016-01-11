@@ -217,11 +217,17 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 	
 	@Override
 	public List<ModelInt> getAvailableModels(String user) throws RemoteException {
-		List<ModelInt> ans = getUserModels(user);
+		logger.info("getAvailableModels");
+		List<ModelInt> ans = new ArrayList<ModelInt>();
+		ans = getUserModels(user);
+		logger.info("getAvailableModels ans " + ans.size());
 		Iterator<ModelInt> sysModelIt = getSysModels().iterator();
 		while(sysModelIt.hasNext()){
 			ModelInt cur = sysModelIt.next();
-			if( getUserModel(user,cur.getName()) == null){
+			logger.info("getAvailableModels user " + user);
+			logger.info("getAvailableModels getName " + cur.getName());
+			if(!getUserModel(user,cur.getName()).getFile().exists()){
+				logger.info("getAvailableModels if ");
 				ans.add(cur);
 			}
 		}

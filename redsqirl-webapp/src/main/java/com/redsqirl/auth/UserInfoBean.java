@@ -129,9 +129,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	private boolean checkPassword = false;
 
-	public int numberCluster;
+	//public int numberCluster;
 
-	public String errorNumberCluster;
+	//public String errorNumberCluster;
 
 	/**
 	 * Init the progress bar.
@@ -240,7 +240,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					Decrypter decrypt = new Decrypter();
 					decrypt.decrypt(licence);
 
-					setNumberCluster(decrypt.getNumberCluster());
+					//setNumberCluster(decrypt.getNumberCluster());
 
 					/*File file = new File(WorkflowPrefManager.getPathUsersFolder());
 					int homes = 0;
@@ -443,12 +443,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			return null;
 		}
 
-		if (!succ && getErrorNumberCluster() != null) {
+		/*if (!succ && getErrorNumberCluster() != null) {
 			getBundleMessage("error_number_cluster");
 			invalidateSession();
 			buildBackend = false;
 			return "failure";
-		}
+		}*/
 
 		if (!succ) {
 			getBundleMessage("error.rmi.connection");
@@ -895,22 +895,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public void setForceSignIn(String forceSignIn) {
 		this.forceSignIn = forceSignIn;
-	}
-
-	public int getNumberCluster() {
-		return numberCluster;
-	}
-
-	public void setNumberCluster(int numberCluster) {
-		this.numberCluster = numberCluster;
-	}
-
-	public String getErrorNumberCluster() {
-		return errorNumberCluster;
-	}
-
-	public void setErrorNumberCluster(String errorNumberCluster) {
-		this.errorNumberCluster = errorNumberCluster;
 	}
 
 }

@@ -15,7 +15,7 @@
     <parent>
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.6</version>
+	<version>0.7</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -25,7 +25,7 @@
     <name>Red Sqirl - Workflow</name>
     <description>Programme to interact with a Hadoop cluster</description>
     <url>http://ns.local.net/dev/redsqirl-workflow</url>
-    <version>${hadoop.version}-0.6</version>
+    <version>${hadoop.version}-0.7</version>
 
     <distributionManagement>
 	<repository>
