@@ -2,10 +2,8 @@ package com.redsqirl.analyticsStore;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -18,7 +16,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
 import com.redsqirl.PackageMngBean;
 import com.redsqirl.auth.UserInfoBean;
@@ -38,9 +34,8 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
-import com.redsqirl.workflow.utils.ModelInstaller;
 import com.redsqirl.workflow.utils.ModelInt;
-import com.redsqirl.workflow.utils.ModelManagerInt;
+import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlModel;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
@@ -301,7 +296,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
 			System.out.println("folder.getPath  " + folder.getPath());
 
-			ModelManagerInt saManager = getModelManager();
+			ModelManager saManager = new ModelManager();
 			DataFlowInterface dfi = getworkFlowInterface();
 
 			List<String> curSuperActions = null;
@@ -329,11 +324,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 						if (error == null){
 							ModelInt model = null;
 							if(userInstall){
-								model = getModelManager().getUserModel(userInfoBean.getUserName(), RedSqirlModel.getModelAndSW(swa.getName())[0]);
+								model = saManager.getUserModel(userInfoBean.getUserName(), RedSqirlModel.getModelAndSW(swa.getName())[0]);
 							}else{
-								model = getModelManager().getSysModel(RedSqirlModel.getModelAndSW(swa.getName())[0]);
+								model = saManager.getSysModel(RedSqirlModel.getModelAndSW(swa.getName())[0]);
 							}
-							error = new ModelInstaller(saManager).installSA(model, swa, swa.getPrivilege());
+							error = saManager.installSA(model, swa, swa.getPrivilege());
 						}
 
 						dfi.removeWorkflow(workflowName);

@@ -501,6 +501,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	 */
 	@Override
 	public String copyToLocal(String hdfs_path, String local_path) throws RemoteException{
+		return copyToLocal(hdfs_path, local_path,false);
+	}
+	
+	public String copyToLocal(String hdfs_path, String local_path, boolean writtableByAll) throws RemoteException{
 		String error = null;
 		try {
 			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
@@ -509,6 +513,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			if (!hChN.exists() && hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.copyToLocalFile(false, hdfsP, localP);
+				if(writtableByAll){
+					new File(local_path).setWritable(true, false);
+				}
 			} else {
 				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}
@@ -519,7 +526,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					new Object[] { e.getMessage() });
 		}
 		if (error != null) {
-			logger.debug(error);
+			logger.warn(error);
 		}
 		return error;
 	}
@@ -702,10 +709,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			logger.debug(1);
 		} catch (IOException e) {
 			logger.error("Error in filesystem");
-			logger.error(e);
+			logger.error(e,e);
 		} catch (Exception e) {
 			logger.error("Not expected exception: " + e);
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 		}
 		logger.debug("Properties of " + path + ": " + prop.toString());
 		return prop;

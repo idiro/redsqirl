@@ -63,7 +63,7 @@ public interface ModelManagerInt extends Remote {
 
 	public String export(SubDataFlow toExport , Boolean privilege, String pathHdfs) throws RemoteException;
 	
-	public String createInstallFiles(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException;
+	public String installSA(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException;
 	
 	public Set<String> getAvailableSuperActions(String user) throws RemoteException;
 

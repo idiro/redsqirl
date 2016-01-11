@@ -395,6 +395,11 @@ public class WorkflowPrefManager extends BlockManager {
 			home.setWritable(true, false);
 			home.setReadable(true, false);
 			superactionF.setReadable(true, false);
+			
+			File tmp = new File(getPathtmpfolder());
+			tmp.mkdirs();
+			tmp.setWritable(true,false);
+			
 		}
 		createSysHome();
 	}

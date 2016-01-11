@@ -30,11 +30,12 @@
 	            <a4j:actionparam name="hdfsPath"/>
 	        </a4j:jsFunction>
 	        
-	        <a4j:jsFunction name="prepareHDFSViewForImport" action="#{browserHdfsBean.setupZipExtension}"
-	            oncomplete="openModalFileHdfs('I');">
+	        <a4j:jsFunction name="prepareHDFSViewForImport" action="#{browserHdfsBean.setupZipExtension}" reRender="modalFileHdfs, hdfsfsFile"
+	            oncomplete="console.log('openModalFileHdfs');mountComboboxExtensionsFileSystemModalHDFS();refreshHdfsOpenFileTable();#{rich:component('modalFileHdfs')}.show();">
+					<a4j:actionparam name="openCtrl" assignTo="#{browserHdfsBean.showSave}" value="I" />
 	        </a4j:jsFunction>
-		</a4j:region>
-		
+	        
+		</a4j:region>		
 
 		<h:outputText value="#{messages.label_path_hdfs}" />
 		<h:inputText id="modelImportPathHdfs" value="#{browserHdfsBean.path}" style="width:350px" onclick="prepareHDFSViewForImport();"/>

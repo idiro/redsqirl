@@ -2,7 +2,6 @@ package com.redsqirl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,8 +31,8 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
-import com.redsqirl.workflow.utils.ModelInstaller;
 import com.redsqirl.workflow.utils.ModelInt;
+import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.RedSqirlModel;
 
 public class ModelManagerBean extends BaseBean implements Serializable {
@@ -73,7 +72,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			uninstallSysSa = new ArrayList<SelectItem>();
 	private String modelScope;
 
-	private ModelInstaller modelInstaller;
+	private ModelManager modelMan;
 
 	private String userName;
 
@@ -84,7 +83,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	public ModelManagerBean(){
 		try {
-			modelInstaller = new ModelInstaller(getModelManager());
+			modelMan = new ModelManager();
 			userName = getUserInfoBean().getUserName();
 		} catch (RemoteException e) {
 			logger.error("Fail to create "+this.getClass()+": "+e,e);
@@ -121,13 +120,13 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		String error = null;
 		ModelInt modelCur = null;
 		if(system){
-			modelCur = getModelManager().getSysModel(modelName);
+			modelCur = modelMan.getSysModel(modelName);
 		}else{
-			modelCur = getModelManager().getUserModel(username,modelName);
+			modelCur = modelMan.getUserModel(username,modelName);
 		}
-		modelInstaller.uninstallSA(modelCur,swa.getName());
+		modelMan.uninstallSA(modelCur,swa.getName());
 		
-		error = modelInstaller.installSA(modelCur, swa, privilegeVal);
+		error = modelMan.installSA(modelCur, swa, privilegeVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -158,7 +157,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			subWfToCheck = ">default>"+currentSubworkflowName;
 		}
 		
-		if(!getModelManager().getAvailableSuperActions(username).contains(swa.getName())){
+		if(!modelMan.getAvailableSuperActions(username).contains(swa.getName())){
 			exists = "true";
 		}else{
 			exists = "false";			
@@ -195,7 +194,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			sdf.read(cur);
 			l.add(sdf);
 		}
-		File tmpFile = modelInstaller.exportModel(model, l, privilege);
+		File tmpFile = modelMan.exportModel(model, l, privilege);
 		Map<String,String> propHdfs = getHDFS().getProperties(hdfsDirectory+"/"+tmpFile.getName()); 
 		if( propHdfs != null && !propHdfs.isEmpty()){
 			error = "File "+hdfsDirectory+"/"+tmpFile.getName()+" already exists.";
@@ -210,18 +209,21 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	}
 	
 	public void importModel() throws RemoteException {
+		boolean system = asSystem.equals("System");
 		String hdfsPath = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("hdfsPath");
-		String error = importModelPriv(hdfsPath,modelScope);
+		String error = importModelPriv(hdfsPath,system);
 		displayErrorMessage(error, "IMPORTMODEL");
-		if("system".equalsIgnoreCase(modelScope)){
-			calcSystemModels();
-		}else{
-			calcUserModels();
+		if(error == null){
+			if(system){
+				calcSystemModels();
+			}else{
+				calcUserModels();
+			}
 		}
 	}
 	
-	private String importModelPriv(String pathHdfs, String scope) throws RemoteException {
+	private String importModelPriv(String pathHdfs, boolean system) throws RemoteException {
 		String error = null;
 		logger.info("path '" + pathHdfs + "'");
 		if (pathHdfs == null || pathHdfs.isEmpty()) {
@@ -231,29 +233,39 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}else {
 			
 			String[] path = pathHdfs.split("/");
-			String tmpPath = WorkflowPrefManager.getPathtmpfolder()+"/"+path[path.length-1];
+			String tmpPath = WorkflowPrefManager.getPathTmpFolder(getUserInfoBean().getUserName())+"/"+path[path.length-1];
 			File tmpFile = new File(tmpPath);
+			
 			String modelName = path[path.length-1].substring(0, path[path.length-1].lastIndexOf('-'));
 			logger.info("Copy "+pathHdfs+" "+tmpPath);
-			getHDFS().copyToLocal(pathHdfs, tmpPath);
-			ModelInt model = null;
-			if("system".equalsIgnoreCase(scope)){
-				model = getModelManager().getSysModel(modelName);
-			}else{
-				model = getModelManager().getUserModel(getUserInfoBean().getUserName(), modelName);
+			error = getHDFS().copyToLocal(pathHdfs, tmpPath,true);
+			if(error == null){
+				ModelInt model = null;
+				if(system){
+					model = modelMan.getSysModel(modelName);
+				}else{
+					model = modelMan.getUserModel(getUserInfoBean().getUserName(), modelName);
+				}
+				error = model.importModel(tmpFile);
+				if(error == null){
+					List<SubDataFlow> l = new LinkedList<SubDataFlow>();
+					Set<String> lSWN = model.getSubWorkflowNames();
+					Iterator<String> it = lSWN.iterator();
+					logger.info("Install help for: "+lSWN.toString());
+					while(it.hasNext()){
+						String cur = it.next();
+						logger.info("Init "+cur);
+						SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
+						sdf.setName(cur);
+						sdf.readFromLocal(new File(model.getFile(),cur));
+						l.add(sdf);
+					}
+					logger.info("Call modelInstaller");
+					error = modelMan.installModelWebappFiles(model, l);
+				}
 			}
-			model.importModel(tmpFile);
+			logger.info("Delete zip file");
 			tmpFile.delete();
-			List<SubDataFlow> l = new LinkedList<SubDataFlow>();
-			Iterator<String> it = model.getSubWorkflowNames().iterator();
-			while(it.hasNext()){
-				String cur = it.next();
-				SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
-				sdf.setName(cur);
-				sdf.read(cur);
-				l.add(sdf);
-			}
-			modelInstaller.installModelWebappFiles(model, l);
 		}
 		return error;
 	}
@@ -265,7 +277,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		String name = params.get("name");
 
 		if(isAdmin() && name != null){
-			modelInstaller.uninstallModel(getModelManager().getSysModel(name));
+			modelMan.uninstallModel(modelMan.getSysModel(name));
 			calcSystemModels();
 		}
 		usageRecordLog().addSuccess("REMOVESYSTEMMODEL");
@@ -280,7 +292,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		if(isUserAllowInstall() && name != null){
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
-			modelInstaller.uninstallModel(getModelManager().getUserModel(user,name));
+			modelMan.uninstallModel(modelMan.getUserModel(user,name));
 			calcUserModels();
 		}
 		usageRecordLog().addSuccess("REMOVEUSERMODEL");
@@ -291,7 +303,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		logger.info("create sys model");
 		String newModelName = name;
 		if(isAdmin() && newModelName != null){
-			ModelInt mInt = getModelManager().getSysModel(newModelName);
+			ModelInt mInt = modelMan.getSysModel(newModelName);
 			if(!mInt.getFile().exists() ){
 				mInt.createModelDir();
 				calcSystemModels();
@@ -312,7 +324,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		//Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String newModelName = name;
 		if(isUserAllowInstall() && newModelName != null){
-			ModelInt mInt = getModelManager().getUserModel(userName,newModelName);
+			ModelInt mInt = modelMan.getUserModel(userName,newModelName);
 			if(!mInt.getFile().exists() ){
 				mInt.createModelDir();
 				calcUserModels();
@@ -350,15 +362,21 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	public void deleteSubWorkflow() throws RemoteException{
 
 		List<Integer> posToDell = subWorkflowFromModel.getAllSelected();
+		String error = "";
 		if(posToDell != null){
 			for (int i = 0; i < posToDell.size(); i++) {
 				int pos = posToDell.get(i);
 				String subWFName = subWorkflowFromModel.getRow(pos).get(getMessageResources("label_name"));
-				rsModel.delete(subWFName);
+				String errorCur = modelMan.uninstallSA(rsModel, subWFName);
+				if(errorCur != null && !errorCur.isEmpty()){
+					error += errorCur +"\n";
+				}
 			}
 		}
-
-		usageRecordLog().addSuccess("DELETESUBWORKFLOW");
+		if(error.isEmpty()){
+			error = null;
+		}
+		displayErrorMessage(error,"DELETESUBWORKFLOW");
 	}
 	
 	public void renameModel() throws RemoteException {
@@ -367,9 +385,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		String error = null;
 		ModelInt newModel = null;
 		if(rsModel.isSystem()){
-			 newModel = getModelManager().getSysModel(newModelName);
+			 newModel = modelMan.getSysModel(newModelName);
 		}else{
-			 newModel = getModelManager().getUserModel(userName,newModelName);
+			 newModel = modelMan.getUserModel(userName,newModelName);
 		}
 		
 		if(!newModel.getFile().exists() ){
@@ -509,9 +527,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			logger.warn("model not selected");
 		}
 		if(user.equals("system")){
-			modelTo = getModelManager().getSysModel(modelToStr);
+			modelTo = modelMan.getSysModel(modelToStr);
 		}else{
-			modelTo = getModelManager().getUserModel(userName,modelToStr);
+			modelTo = modelMan.getUserModel(userName,modelToStr);
 		}
 		logger.info("Subworkflows to copy/move: "+subWFNamesToCopy.toString());
 		error = copyMoveSubWorkflow(modelTo,subWFNamesToCopy,"M".equals(copyMove),false);
@@ -534,7 +552,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			
 			if(remove && !force){
 				Set<String> dependent = 
-						getModelManager().getSubWorkflowFullNameDependentOn(userName, subWFNames);
+						modelMan.getSubWorkflowFullNameDependentOn(userName, subWFNames);
 				if(!dependent.isEmpty()){
 					error = "The following super actions will be broken: "+dependent.toString();
 				}
@@ -591,9 +609,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 						String newName = ">"+modelToName +">"+ oldName;
 						subDataFlow.renameSA(">"+modelFromName+">"+oldName, newName);
 					}
-					modelInstaller.installSA(modelTo, subDataFlow, subDataFlow.getPrivilege());
+					modelMan.installSA(modelTo, subDataFlow, subDataFlow.getPrivilege());
 					if(removeOld){
-						modelInstaller.uninstallSA(modelFrom, subDataFlowPrevFullName);
+						modelMan.uninstallSA(modelFrom, subDataFlowPrevFullName);
 					}
 				}
 			} catch (Exception e) {
@@ -619,10 +637,10 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 				.getExternalContext().getRequestParameterMap().get("scope");
 		if(modelScope.equalsIgnoreCase("system")){
 			setModel(getSystemModels().get(Integer.valueOf(modelIndex)));
-			rsModel = getModelManager().getSysModel(model.getName());
+			rsModel = modelMan.getSysModel(model.getName());
 		}else{
 			setModel(getUserModels().get(Integer.valueOf(modelIndex)));
-			rsModel = getModelManager().getUserModel(userName,model.getName());
+			rsModel = modelMan.getUserModel(userName,model.getName());
 		}
 	}
 	
@@ -723,8 +741,8 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		sdf.readFromLocal(new File(rsModel.getFile(),oldNameSubWf));
 		sdf.setName(rsModel.getFullName(newNameSubWf));
 		
-		modelInstaller.installSA(rsModel, sdf, sdf.getPrivilege());
-		modelInstaller.uninstallSA(rsModel, rsModel.getFullName(oldNameSubWf));
+		modelMan.installSA(rsModel, sdf, sdf.getPrivilege());
+		modelMan.uninstallSA(rsModel, rsModel.getFullName(oldNameSubWf));
 	}
 	
 	private void updateModelGrid() throws RemoteException{
@@ -768,7 +786,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 
 	public void calcSystemModels() throws RemoteException{
 		logger.info("sys model");
-		setSystemModels(calcModel(getModelManager().getSysModels()));
+		setSystemModels(calcModel(modelMan.getSysModels()));
 		updateModelGrid();
 	}
 
@@ -776,7 +794,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		logger.info("user models");
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
-		setUserModels(calcModel(getModelManager().getUserModels(user)));
+		setUserModels(calcModel(modelMan.getUserModels(user)));
 		updateModelGrid();
 	}
 	

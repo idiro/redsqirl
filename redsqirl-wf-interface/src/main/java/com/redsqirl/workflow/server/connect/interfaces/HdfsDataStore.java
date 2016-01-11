@@ -25,4 +25,14 @@ public interface HdfsDataStore extends DataStore{
 	 * @throws RemoteException
 	 */
 	String copyToLocal(String hdfs_path, String local_path) throws RemoteException;
+	
+	/**
+	 * Copy from HDFS and then set permission for everyone to overwrite the file.
+	 * @param hdfs_path
+	 * @param local_path
+	 * @param writtableByAll
+	 * @return
+	 * @throws RemoteException
+	 */
+	String copyToLocal(String hdfs_path, String local_path, boolean writtableByAll) throws RemoteException;
 }

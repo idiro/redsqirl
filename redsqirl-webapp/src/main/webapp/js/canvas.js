@@ -1441,7 +1441,11 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
     
-    group.elementType = elementTypeName;
+    if(elementTypeName){
+        group.elementType = elementTypeName;
+    }else{
+        group.elementType = elementType;
+    }
     
     group.privilege = privilege;
     

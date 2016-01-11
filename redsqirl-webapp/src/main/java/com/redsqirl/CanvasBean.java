@@ -43,7 +43,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
-import com.redsqirl.workflow.utils.ModelInstaller;
+import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlModel;
 
@@ -104,7 +104,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String> runningElements;
 	private List<String> doneElements;
 
-	private ModelInstaller modelInstaller;
+	private ModelManager modelMan;
 
 	private String userName;
 
@@ -154,7 +154,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			workflowMap.put(getNameWorkflow(), getDf());
 
 			calcWorkflowUrl();
-			modelInstaller = new ModelInstaller(getModelManager());
+			modelMan = new ModelManager();
 			
 			userName = getUserInfoBean().getUserName();
 		} catch (RemoteException e) {
@@ -2346,7 +2346,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String nameSubWorkflow = params.get("nameSubWorkflow");
 		String[] modelAndSW = RedSqirlModel.getModelAndSW(nameSubWorkflow);
 
-		File file = new File(getModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
+		File file = new File(new ModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
 				modelAndSW[1]);
 
 		loadSubWorkFlowFromLocal(file.getAbsolutePath());
@@ -2652,8 +2652,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 								fullName,
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						modelInstaller.installSA(getModelManager().getUserModel(userName, "default"), sw,null);
+						error = modelMan.installSA(new ModelManager().getUserModel(userName, "default"), sw,null);
 					}catch(Exception e){
+						logger.error(e,e);
 						error = e.getMessage();
 					}
 
@@ -2669,8 +2670,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 						logger.info("aggregateElements  " + error);
 
 						if(error != null){
-							modelInstaller.uninstallSA(
-									getModelManager().getUserModel(userName, "default"),
+							modelMan.uninstallSA(
+									new ModelManager().getUserModel(userName, "default"),
 									getInputNameSubWorkflow()
 									);
 						}else{
@@ -2712,7 +2713,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameSA = params.get("nameSA");
 		if(nameSA != null){
-			modelInstaller.uninstallSA(getModelManager().getUserModel(userName, "default"), nameSA);
+			modelMan.uninstallSA(new ModelManager().getUserModel(userName, "default"), nameSA);
 		}
 	}
 

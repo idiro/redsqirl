@@ -3,6 +3,7 @@ package com.redsqirl.workflow.utils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.idiro.utils.LocalFileSystem;
+import com.idiro.utils.ZipUtils;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
@@ -144,6 +146,71 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		return ans;
 	}
 	
+	public String uninstallModel(ModelInt model)throws RemoteException {
+		String error = null;
+		Iterator<String> it = model.getSubWorkflowNames().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			error = uninstallSA(model,cur);
+		}
+		try {
+			LocalFileSystem.delete(model.getFile());
+		} catch (IOException e) {
+			logger.error(e,e);
+			error = "Fail to delete completely model '"+model.getName()+"'";
+		}
+		return error;
+	}
+
+	public String uninstallSA(ModelInt model, String saName) throws RemoteException {
+		if(saName.contains(">")){
+			saName = RedSqirlModel.getModelAndSW(saName)[1];
+		}
+		File helpFile = new File(getSuperActionHelpDir(model.getUser()), model.getName()+"/"+saName + ".html");
+		helpFile.delete();
+		model.delete(saName);
+
+		return null;
+	}
+	
+	
+	public String installModelWebappFiles(ModelInt model, List<SubDataFlow> toInstall) throws RemoteException{
+		String error = null;
+		logger.info("Install "+toInstall.size()+" models");
+		Iterator<SubDataFlow> it = toInstall.iterator();
+		while(it.hasNext() && error == null){
+			SubDataFlow cur = it.next();
+			logger.info(cur.getName());
+			error = model.installHelp(cur);
+		}
+		return error;
+	}
+	
+	public File exportModel(ModelInt model, List<SubDataFlow> l, Boolean privilege) throws RemoteException{
+		String tmpPath = WorkflowPrefManager.getPathtmpfolder()+"/"+model.getName();
+		File tmpModel = new File(tmpPath);		
+		try{
+			LocalFileSystem.delete(tmpModel);
+		}catch(Exception e){}
+		
+		LocalFileSystem.copyfile(model.getFile().getAbsolutePath(), tmpPath);
+		Iterator<SubDataFlow> it = l.iterator();
+		while(it.hasNext()){
+			SubDataFlow cur = it.next();
+			cur.saveLocal(new File(tmpModel,RedSqirlModel.getModelAndSW(cur.getName())[1]), privilege);
+		}
+		File tmpModelZip = new File(WorkflowPrefManager.getPathtmpfolder()+"/"+model.getName()+"-"+model.getVersion()+".zip");
+		try{
+			LocalFileSystem.delete(tmpModelZip);
+		}catch(Exception e){}
+		new ZipUtils().zipIt(tmpModel, tmpModelZip);
+		try{
+			LocalFileSystem.delete(tmpModel);
+		}catch(Exception e){}
+		
+		return tmpModelZip;
+	}
+	
 
 	public String export(SubDataFlow toExport , Boolean privilege, String pathHdfs) throws RemoteException{
 		String error = null;
@@ -155,19 +222,20 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 
 
 	@Override
-	public String createInstallFiles(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException {
+	public String installSA(ModelInt model, SubDataFlow toInstall, Boolean privilege) throws RemoteException {
+		logger.info("Install "+toInstall.getName());
 		String error = null;
-		String[] modelAndSW = RedSqirlModel.getModelAndSW(toInstall.getName());
-		String modelName = modelAndSW[0];
-		
-		if(!model.getName().equals(modelName)){
-			error = "Model name inconsistant between model and subworkflow";
+		String saName = toInstall.getName();
+		if(saName.startsWith(">")){
+			saName = RedSqirlModel.getModelAndSW(toInstall.getName())[1];
 		}else{
-			if(!model.getFile().exists()){
-				model.createModelDir();
-			}
-			error = model.install(toInstall, privilege);
+			toInstall.setName(">"+model.getName()+">"+saName);
 		}
+		if(!model.getFile().exists()){
+			model.createModelDir();
+		}
+		logger.info("Install "+saName);
+		error = model.install(toInstall, privilege);
 
 		return error;
 	}

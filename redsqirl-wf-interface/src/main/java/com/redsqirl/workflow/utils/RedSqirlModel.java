@@ -245,6 +245,21 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		return ans;
 	}
 
+	public Set<String> getDependencyFileLines(){
+		Set<String> ans = new LinkedHashSet<String>();
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(new File(new File(modelFile,conf_dir),dependency_file)));
+			String line = null;
+			while( (line = br.readLine()) != null){
+				ans.add(line);
+			}
+			br.close();
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		return ans;
+	}
+	
 	@Override
 	public Set<String> getAllDependencies() {
 
@@ -319,14 +334,14 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 
 	@Override
 	public void addSubWorkflowDependencyLines(Set<String> dependencyLine){
-		Set<String> toWrite = getAllDependencies();
+		Set<String> toWrite = getDependencyFileLines();
 		toWrite.addAll(dependencyLine);
 		writeSubWorkflowDependencies(toWrite);
 	}
 
 	@Override
 	public void addSubWorkflowDependencies(String subworkflowName, Set<String> dependencies) {
-		Set<String> toWrite = getAllDependencies();
+		Set<String> toWrite = getDependencyFileLines();
 		Iterator<String> it = dependencies.iterator();
 		while(it.hasNext()){
 			toWrite.add(subworkflowName+":"+it.next());
@@ -345,7 +360,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	
 	@Override
 	public void removeSubWorkflowDependencies(String subworkflowName, Set<String> dependencies) {
-		Set<String> toWrite = getAllDependencies();
+		Set<String> toWrite = getDependencyFileLines();
 		toWrite.removeAll(dependencies);
 		writeSubWorkflowDependencies(toWrite);
 	}
@@ -358,16 +373,14 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException{
 		String[] modelWSA = getModelAndSW(toInstall.getName());
 		
-		File mainFile = new File(WorkflowPrefManager.getPathTmpFolder(user),modelWSA[1]);
-		File helpFile = new File(WorkflowPrefManager.getPathTmpFolder(user),modelWSA[1]+".html");
+		File mainFile = new File(getFile(),modelWSA[1]);
+		File helpFile = new File(getSuperActionHelpDir(getUser()),modelWSA[0]+"/"+modelWSA[1]+".html");
 		
 		String error = null;
 		if (mainFile.exists()) {
 			mainFile.delete();
-			helpFile.delete();
 		}
 		mainFile.getParentFile().mkdirs();
-		helpFile.getParentFile().mkdirs();
 		
 		logger.info("Check installation file");
 		error = toInstall.check();
@@ -378,26 +391,16 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 			
 			if (error != null) {
 				mainFile.delete();
+				logger.info(error);
 			} else {
-				logger.info("Save help into: " + helpFile.getPath());
-				String helpContent = toInstall.buildHelpFileContent();
-				try {
-					FileWriter fw = new FileWriter(helpFile);
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.write(helpContent);
-					bw.close();
-
-				} catch (IOException e) {
-					error = "Fail to write the help file";
-					logger.error(error + ": " + e.toString(), e);
-				}
+				error = installHelp(toInstall);
 
 				if (error != null) {
+					logger.info(error);
 					mainFile.delete();
 					helpFile.delete();
 				}else{
 					mainFile.setWritable(true,false);
-					helpFile.setReadable(true,false);
 				}
 			}
 		}
@@ -409,11 +412,46 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		
 		return error;
 	}
+	
+	public String installHelp(SubDataFlow toInstall) throws RemoteException{
+		String error = null;
+		String saName = toInstall.getName();
+		if(saName.startsWith(">")){
+			saName = getModelAndSW(toInstall.getName())[1];
+		}
+		
+		File helpDir = getSuperActionHelpDir(getUser());
+		helpDir.mkdirs();
+		
+		File helpFile = new File(helpDir, getName()+"/"+saName+".html");
+		
+		helpFile.getParentFile().mkdirs();
+		if(helpFile.exists()){
+			helpFile.delete();
+		}
+		logger.info("Save help into: " + helpFile.getPath());
+		String helpContent = toInstall.buildHelpFileContent();
+		try {
+			FileWriter fw = new FileWriter(helpFile);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(helpContent);
+			bw.close();
+
+		} catch (IOException e) {
+			error = "Fail to write the help file";
+			logger.error(error + ": " + e.toString(), e);
+		}
+		return error;
+	}
 
 	public String importModel(File modelZipFile){
 		String error = null;
 		if(!getFile().exists()){
-			new ZipUtils().unZipIt(modelZipFile, getFile().getParentFile());			
+			logger.info(System.getProperty("user.name")+": Unzip "+modelZipFile.getAbsolutePath()+" in "+getFile().getParentFile().getAbsolutePath());
+			new ZipUtils().unZipIt(modelZipFile, getFile().getParentFile());
+			if(!getFile().exists()){
+				error = "Model unsuccessfully unzipped";
+			}
 		}else{
 			error = "Model '"+getName()+"' already exists.";
 		}
@@ -462,6 +500,17 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		}catch(Exception e){
 			logger.error(e,e);
 		}
+	}
+	
+	public static File getSuperActionHelpDir(String user) {
+		String tomcatpath = WorkflowPrefManager
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		String installPackage = WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, tomcatpath);
+		logger.debug("Install Package in: " + installPackage);
+		return user == null || user.isEmpty() ? new File(installPackage
+				+ WorkflowPrefManager.getPathSysHelpPref()) : new File(
+				installPackage + WorkflowPrefManager.getPathUserHelpPref(user));
 	}
 	
 	public static List<String> listFilesRecursively(String path) {
