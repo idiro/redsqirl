@@ -60,8 +60,13 @@
 	
 	<h:panelGrid columns="2" style="border:none; float:right;">
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAggregate')}.hide()" />
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" 
-		oncomplete="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });undoRedoAggregate();" reRender="errorTable,msnError"/>
+		
+		<a4j:region>
+			<a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalAggregate') });" />
+			
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" 
+			oncomplete="undoRedoAggregate();" reRender="errorTable,msnError"/>
+		</a4j:region>
 	</h:panelGrid>
        
 </h:panelGrid>

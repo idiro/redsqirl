@@ -1054,6 +1054,7 @@
 	    		undoRedoExpand(getSelectedSAIconsCommaDelimited());
 		    }else{
 		    	alert("You need select one object or select just Super Actions");
+		    	jQuery('#canvas-tabs').unblock();
 			}
 	    	//]]>
 	    }
@@ -1361,7 +1362,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="console.log('openModalAggregate'); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 				
@@ -1374,7 +1375,7 @@
 					oncomplete="console.log('aggregate'); tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();" >
 				</a4j:jsFunction>
 					
-				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
+				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" oncomplete="refreshRelativeHelp();" >
 					<a4j:actionparam name="nameSA" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1770,11 +1771,14 @@
                 
                 <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas'); reOpenCanvasJS(data);" />
                 
-                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" />
+                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" oncomplete="jQuery('#canvas-tabs').unblock();" />
                     
 			</a4j:region>
 			
 			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });" />
+			
 				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" 
 					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){loadSubWorkflowFromCanvas();}" >
 					<a4j:actionparam name="nameSubWorkflow" />
@@ -1908,7 +1912,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus(); jQuery('#canvas-tabs').unblock();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -2184,12 +2188,12 @@
 									</rich:menuItem>
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_aggregate}"
-										onclick="checkOpenModalAggregate()">
+										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();">
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
-										onclick="checkExpand();">
+										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkExpand();">
 										<h:outputText value="Ctrl+Shift+R" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
@@ -2379,7 +2383,7 @@
 					
 						<span style="cursor: pointer;">
 							<img src="../image/icons/button-aggregate.gif" alt="aggregate" class="shortMenuIcon" 
-								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_aggregate}" />
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();" title="#{messages.label_menu_aggregate}" />
 						</span>
 					
 						<span style="cursor: pointer;"> <img

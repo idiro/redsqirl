@@ -110,13 +110,9 @@ jQuery(function() {
 					
 						<h:outputText value="#{messages.label_license_key}" title="#{messages.label_license_key}" style="font-size:50px;position:relative;color:#818286;" />
 						
-						<p><h:outputText  value='#{messages.label_noKeyFound}' rendered="#{analyticsStoreLoginBean.showNoLicense == 'Y'}"/></p>
+						<p><h:outputText value='#{messages.label_noKeyFound}' rendered="#{analyticsStoreLoginBean.showNoLicense == 'Y'}"/></p>
 						
-						<p><h:outputText  value='#{messages.label_keyGeneration}'/></p>
-					
-						<h:outputText value="#{messages.label_number_cluster}" title="#{messages.label_number_cluster_desc}" />
-						<h:inputText value="#{analyticsStoreLoginBean.numberUsers}" style="width:400px;" 
-							onkeypress="return enableEnterKey(event, 'btUpdateLicenseKeyOnLine');" title="#{messages.label_number_cluster}" />
+						<p><h:outputText value='#{messages.label_keyGeneration}'/></p>
 						
 						<br/><br/>
 						
