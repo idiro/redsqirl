@@ -110,12 +110,17 @@ public class InputInteraction extends UserInteraction{
 	 * Replace the values in regex and value
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName, boolean regex)
 			throws RemoteException {
 		String val = getValue();
 		if(val != null && !val.isEmpty()){
-			getTree().getFirstChild("input").getFirstChild("output")
+			if(regex){
+				getTree().getFirstChild("input").getFirstChild("output")
+				.getFirstChild().setHead(val.replaceAll(oldName, newName));
+			}else{
+				getTree().getFirstChild("input").getFirstChild("output")
 					.getFirstChild().setHead(val.replaceAll(Pattern.quote(oldName), newName));
+			}
 		}
 	}
 	/**

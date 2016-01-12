@@ -108,16 +108,18 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	}
 	public String createSubXml(String dfId, DataFlow df, List<DataFlowElement> list,
 			File directory) throws RemoteException {
-		return createXml(dfId,df, list,new File(directory,dfId));
+		df.cleanProject();
+		return createXml(dfId,df, list,new File(directory,dfId),true);
 	}
 	
 	public String createMainXml(DataFlow df, List<DataFlowElement> list,
 			File directory) throws RemoteException {
-		return createXml(df.getName(),df, list,directory);
+		return createXml(df.getName(),df, list,directory,false);
 	}
 	
 	public String createXml(String wfId,DataFlow df, List<DataFlowElement> list,
-			File directory) throws RemoteException {
+			File directory,
+			boolean ignoreBuffered) throws RemoteException {
 		
 
 		logger.info("createXml");
@@ -159,7 +161,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 				logger.info("Create the scripts...");
 
-				createOozieJob(doc, errorNodeName, okEndNodeName, scripts, list);
+				createOozieJob(doc, errorNodeName, okEndNodeName, scripts, list, ignoreBuffered);
 
 				logger.info("Order the actions and build the dependency tree...");
 
@@ -293,7 +295,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * @throws RemoteException
 	 */
 	protected List<String> createDelete(Document doc, String error,
-			String endElement, File directoryToWrite, List<DataFlowElement> list)
+			String endElement, File directoryToWrite, List<DataFlowElement> list,
+			boolean ignoreBuffered)
 			throws RemoteException {
 
 		logger.info("createDelete");
@@ -312,9 +315,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					String key = itS.next();
 					DFEOutput o = cur.getDFEOutput().get(key);
 
-					if (o != null && o.getSavingState() == SavingState.TEMPORARY
-							&& (cur.getOutputComponent().get(key) != null 
-							&& !cur.getOutputComponent().get(key).isEmpty())) {
+					if (o != null 
+							&& ( SavingState.TEMPORARY.equals(o.getSavingState()) 
+							|| (ignoreBuffered && SavingState.BUFFERED.equals(o.getSavingState()))
+							) && cur.getOutputComponent().get(key) != null 
+							&& !cur.getOutputComponent().get(key).isEmpty()) {
 						mapO.put(key, o);
 					}
 				}
@@ -367,13 +372,13 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * @throws RemoteException
 	 */
 	protected void createOozieJob(Document doc, String error,
-			String endElement, File directoryToWrite, List<DataFlowElement> list)
+			String endElement, File directoryToWrite, List<DataFlowElement> list, boolean ignoreBuffered)
 			throws RemoteException {
 
 		logger.info("createOozieJob");
 
 		// Get delete list
-		List<String> deleteList = createDelete(doc, error, endElement, directoryToWrite, list);
+		List<String> deleteList = createDelete(doc, error, endElement, directoryToWrite, list, ignoreBuffered);
 
 		logger.info("createDelete OK");
 		

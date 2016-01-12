@@ -590,6 +590,7 @@ function CommandAggregate() {
     Command.call(this);
     this.cloneId = "";
     this.nameSA = "";
+    this.nameModel = "";
 };
 
 CommandAggregate.prototype = Object.create(Command.prototype);
@@ -600,7 +601,7 @@ CommandAggregate.prototype.undo = function(){
 	//alert("undo");
 	deleteAllElements();
 	replaceWFByClone("",this.cloneId, false);
-	undoAggregate(this.nameSA);
+	undoAggregate(this.nameModel,this.nameSA);
 	console.timeStamp("CommandAggregate.prototype.undo end");
 };
 

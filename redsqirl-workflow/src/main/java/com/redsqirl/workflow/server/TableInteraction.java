@@ -636,7 +636,7 @@ public class TableInteraction extends UserInteraction {
 	 * Replace the value only in the content of each row (not the column names).
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName, boolean regex)
 			throws RemoteException {
 		List<Tree<String>> rows = getTree().getFirstChild("table").getChildren("row");
 		if(rows != null && !rows.isEmpty()){
@@ -649,8 +649,13 @@ public class TableInteraction extends UserInteraction {
 					try{
 						String content = lColRow.getFirstChild().getHead();
 						logger.info("replace "+oldName+" by "+newName+" in "+content);
-						lColRow.getFirstChild().setHead(
-								content.replaceAll(Pattern.quote(oldName), newName));
+						if(regex){
+							lColRow.getFirstChild().setHead(
+									content.replaceAll(oldName, newName));
+						}else{
+							lColRow.getFirstChild().setHead(
+									content.replaceAll(Pattern.quote(oldName), newName));
+						}
 					}catch(NullPointerException e){}
 				}
 			}
@@ -668,8 +673,13 @@ public class TableInteraction extends UserInteraction {
 						try{
 							String content = curValue.getFirstChild().getHead();
 							logger.info("replace "+oldName+" by "+newName+" in "+content);
-							curValue.getFirstChild().setHead(
-									content.replaceAll(Pattern.quote(oldName), newName));
+							if(regex){
+								curValue.getFirstChild().setHead(
+									content.replaceAll(oldName, newName));
+							}else{
+								curValue.getFirstChild().setHead(
+										content.replaceAll(Pattern.quote(oldName), newName));
+							}
 						}catch(NullPointerException e){}
 					}
 				}catch(Exception e){

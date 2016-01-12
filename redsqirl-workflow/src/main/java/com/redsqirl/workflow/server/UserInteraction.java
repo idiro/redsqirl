@@ -248,30 +248,34 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	@Override
-	public final void replaceInTree(String oldName, String newName) throws RemoteException{
+	public final void replaceInTree(String oldName, String newName, boolean regex) throws RemoteException{
 		if(!isReplaceDisable()){
 			logger.info("replace "+oldName+" by "+newName);
-			replaceOutputInTree(oldName, newName);
+			replaceOutputInTree(oldName, newName, regex);
 			logger.info(getTree().toString());
 		}
 	}
 
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName,boolean regex)
 			throws RemoteException {
-		replaceOutputInTree(getTree(),oldName,newName);
+		replaceOutputInTree(getTree(),oldName,newName,regex);
 	}
 
-	protected void replaceOutputInTree(Tree<String> curTree, String oldName, String newName) throws RemoteException{
+	protected void replaceOutputInTree(Tree<String> curTree, String oldName, String newName,boolean regex) throws RemoteException{
 		if(curTree == null || curTree.isEmpty()){
 			try{
-				curTree.setHead(curTree.getHead().replaceAll(Pattern.quote(oldName), newName));
+				if(regex){
+					curTree.setHead(curTree.getHead().replaceAll(oldName, newName));
+				}else{
+					curTree.setHead(curTree.getHead().replaceAll(Pattern.quote(oldName), newName));
+				}
 			}catch(Exception e){
 				logger.error(e.getMessage(),e);
 			}
 		}
 		Iterator<Tree<String>> it = curTree.getSubTreeList().iterator();
 		while(it.hasNext()){
-			replaceOutputInTree(it.next(),oldName,newName);
+			replaceOutputInTree(it.next(),oldName,newName,regex);
 		}
 	}
 

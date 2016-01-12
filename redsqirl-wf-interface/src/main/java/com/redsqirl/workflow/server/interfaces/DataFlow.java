@@ -241,9 +241,12 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param componentIds
 	 * @param oldStr String to replace
 	 * @param newStr The replacement
+	 * @param regex True if oldStr is a regular expression
 	 * @throws RemoteException
 	 */
-	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException;
+
+	void replaceInAllElements(List<String> componentIds, String oldStr, String newStr, boolean regex)
+			throws RemoteException;
 	
 	/**
 	 * Get the WorkflowAction corresponding to the componentId.
@@ -458,5 +461,6 @@ public interface DataFlow extends Remote, Cloneable{
 	public void setPath(String path) throws RemoteException;
 
 	Set<String> getSADependencies() throws RemoteException;
+
 	
 }

@@ -266,7 +266,7 @@ public class AppendListInteraction extends UserInteraction{
 	 * Replace the values in Possible values and values
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName,boolean regex)
 			throws RemoteException {
 		List<Tree<String>> vals = null;
 		try{
@@ -283,7 +283,11 @@ public class AppendListInteraction extends UserInteraction{
 				Tree<String> cur = itValPos.next();
 				try{
 					String valCur = cur.getFirstChild().getHead(); 
-					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					if(regex){
+						cur.getFirstChild().setHead(valCur.replaceAll(oldName, newName));
+					}else{
+						cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					}
 				}catch(Exception e){
 					logger.error(e.getMessage(),e);
 				}
@@ -296,7 +300,11 @@ public class AppendListInteraction extends UserInteraction{
 				Tree<String> cur = itVals.next();
 				try{
 					String valCur = cur.getFirstChild().getHead(); 
-					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					if(regex){
+						cur.getFirstChild().setHead(valCur.replaceAll(oldName, newName));
+					}else{
+						cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					}
 				}catch(Exception e){
 					logger.error(e.getMessage(),e);
 				}

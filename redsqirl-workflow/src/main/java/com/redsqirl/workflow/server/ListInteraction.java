@@ -136,7 +136,7 @@ public class ListInteraction extends UserInteraction {
 	 * Replace the values in Possible values and value
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName, boolean regex)
 			throws RemoteException {
 		List<Tree<String>> vals = tree.getFirstChild("list").getFirstChild("values").getSubTreeList();
 		if(!vals.isEmpty()){
@@ -145,14 +145,22 @@ public class ListInteraction extends UserInteraction {
 				Tree<String> cur = itValPos.next();
 				try{
 					String valCur = cur.getFirstChild().getHead(); 
-					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					if(regex){
+						cur.getFirstChild().setHead(valCur.replaceAll(oldName, newName));
+					}else{
+						cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+					}
 				}catch(Exception e){
 					logger.error(e.getMessage(),e);
 				}
 			}
 			String val = getValue();
 			if(val != null && !val.isEmpty()){
-				setValue(val.replaceAll(Pattern.quote(oldName), newName));
+				if(regex){
+					setValue(val.replaceAll(oldName, newName));
+				}else{
+					setValue(val.replaceAll(Pattern.quote(oldName), newName));
+				}
 			}
 		}
 	}

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -327,7 +328,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 							}
 							String oldName = curEl.getComponentId();
 							cloneFrom.changeElementId(oldName,newName);
-							cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), oldName, newName);
+							
+							cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(),
+									"([_ \\.]|^)("+Pattern.quote(oldName)+")([_ \\.]|$)", "$1"+newName+"$3",true);
 							curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
 						}
 					}

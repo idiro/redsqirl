@@ -13,7 +13,9 @@
 
 	<h:outputText value="#{messages.name_sub_workflow}" title="#{messages.name_sub_workflow}" />
 	<h:inputText value="#{canvasBean.inputNameSubWorkflow}" />
-	
+	<h:outputText value="#{messages.name_model}" title="#{messages.name_model}" />
+	<h:inputText value="#{canvasBean.inputNameModel}" />
+	<br/>
 	<h:outputText value="#{messages.name_inpuputlist}" title="#{messages.name_inpuputlist}" />
 	
 	<rich:dataTable value="#{canvasBean.inputNamesList}" var="item" rowKeyVar="indexTable"
