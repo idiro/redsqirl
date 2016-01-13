@@ -38,9 +38,9 @@
 
 					<h:form id="exportToHDFS">
 						<br/>
-						<h:outputText value="Name" />
+						<h:outputText value="#{messages.label_path_hdfs}" />
 						<br/>
-						<h:inputText id="modelExportPathHdfs" value="#{browserHdfsBean.path}" onclick="openModalFileHdfs('E');"/>
+						<h:inputText id="modelExportPathHdfs" value="#{browserHdfsBean.pathExport}" onclick="openModalFileHdfs('E');"/>
 						<br/>
 						<h:outputText value="Privileges" />
 						<h:selectOneRadio id="editable"

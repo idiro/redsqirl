@@ -37,7 +37,17 @@ public class HdfsBrowserBean extends HdfsBean {
 	private String showSave;
 	private boolean createSave = false;
 	
+	private String pathImport;
+	private String pathExport;
+	
 	public HdfsBrowserBean() {
+		
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		String userName = (String) session.getAttribute("username");
+		
+		setPathImport("/user/" + userName + "/redsqirl-save");
+		setPathExport("/user/" + userName + "/redsqirl-save");
 	}
 	
 	public void setupRSExtension(){
@@ -141,6 +151,22 @@ public class HdfsBrowserBean extends HdfsBean {
 		}
 		
 		this.showSave = showSave;
+	}
+
+	public String getPathImport() {
+		return pathImport;
+	}
+
+	public void setPathImport(String pathImport) {
+		this.pathImport = pathImport;
+	}
+
+	public String getPathExport() {
+		return pathExport;
+	}
+
+	public void setPathExport(String pathExport) {
+		this.pathExport = pathExport;
 	}
 
 }
