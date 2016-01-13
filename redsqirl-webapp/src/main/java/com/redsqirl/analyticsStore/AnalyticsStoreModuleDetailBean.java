@@ -13,6 +13,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import javax.faces.context.FacesContext;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +54,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(AnalyticsStoreModuleDetailBean.class);
+
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
 	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
@@ -59,7 +63,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 	private boolean installed;
 	private boolean userInstall;
-	
+
 	private String showRestartMSG;
 
 	private List<RedSqirlModule> versionList;
@@ -151,7 +155,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				packagesInstalled = pckMng.getSysPackageNames();
 			}
 
-			
+
 
 			if (packagesInstalled.contains(moduleVersion.getName())){
 				RedSqirlPackage rs = null;
@@ -289,7 +293,42 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 			ZipFile zipFile = new ZipFile(packagePath);
 
-			String extractedPackagePath = packagePath.substring(0, packagePath.length()-4);
+			String[] path = zipFile.getFile().getAbsolutePath().split("/");
+			String modelName = path[path.length-1].substring(0, path[path.length-1].lastIndexOf('-'));
+			ModelManager modelMan = new ModelManager();
+			ModelInt model = null;
+			if(userInstall){
+				model = modelMan.getUserModel(getUserInfoBean().getUserName(), modelName);
+			}else{
+				model = modelMan.getSysModel(modelName);
+			}
+			error = model.importModel(zipFile.getFile());
+			if(error == null){
+				List<SubDataFlow> l = new LinkedList<SubDataFlow>();
+				Set<String> lSWN = model.getSubWorkflowNames();
+				Iterator<String> it = lSWN.iterator();
+				logger.info("Install help for: "+lSWN.toString());
+				while(it.hasNext()){
+					String cur = it.next();
+					logger.info("Init "+cur);
+					SubDataFlow sdf = getworkFlowInterface().getNewSubWorkflow();
+					sdf.setName(cur);
+					sdf.readFromLocal(new File(model.getFile(),cur));
+					l.add(sdf);
+				}
+				logger.info("Call modelInstaller");
+				error = modelMan.installModelWebappFiles(model, l);
+			}
+			if(error == null){
+				model.setEditable(false);
+			}
+			logger.info("Delete zip file");
+			File file = new File(packagePath);
+			file.delete();
+
+
+
+			/*String extractedPackagePath = packagePath.substring(0, packagePath.length()-4);
 			System.out.println("extractedPackagePath  " + extractedPackagePath);
 			zipFile.extractAll(extractedPackagePath);
 
@@ -349,7 +388,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			File file = new File(packagePath);
 			file.delete();
 
-			FileUtils.deleteDirectory(new File(extractedPackagePath));
+			FileUtils.deleteDirectory(new File(extractedPackagePath));*/
 
 			if (error == null || "".equals(error)){
 				MessageUseful.addInfoMessage("Model Installed.");
@@ -510,10 +549,10 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}else{
 			packageMngBean.calcSystemPackages();
 		}
-		
+
 
 		String isADMPage = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("admPage");
-		
+
 		if(isADMPage != null && isADMPage.equals("N")){
 			setShowRestartMSG("N");
 		}else{
