@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.ZipUtils;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -373,6 +374,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException{
 		String[] modelWSA = getModelAndSW(toInstall.getName());
 		
+		File tmpMainFile = new File(WorkflowPrefManager.getPathTmpFolder(getUser()),modelWSA[1]);
 		File mainFile = new File(getFile(),modelWSA[1]);
 		File helpFile = new File(getSuperActionHelpDir(getUser()),modelWSA[0]+"/"+modelWSA[1]+".html");
 		
@@ -387,7 +389,9 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 
 		if (error == null) {
 			logger.info("Save main file into: " + mainFile.getPath());
-			error = toInstall.saveLocal(mainFile, privilege);
+			error = toInstall.saveLocal(tmpMainFile, privilege);
+			LocalFileSystem.copyfile(tmpMainFile.getAbsolutePath(), mainFile.getAbsolutePath());
+			tmpMainFile.delete();
 			
 			if (error != null) {
 				mainFile.delete();

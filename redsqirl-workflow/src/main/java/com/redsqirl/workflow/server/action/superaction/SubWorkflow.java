@@ -137,6 +137,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 				error = "Cannot install a faulty super action";
 			}else{
 				error = saveXmlOnLocal(f,newPrivilege);
+				f.setWritable(true,false);
 			}
 
 		}catch(Exception e){

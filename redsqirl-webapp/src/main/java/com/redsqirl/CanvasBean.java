@@ -2517,7 +2517,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		setInputNameSubWorkflow((nameWorkflow.replaceAll("[^A-Za-z0-9]", "")+RandomString.getRandomName(4)).toLowerCase());
-		if(inputNameModel == null || !inputNameModel.matches("[A-Za-z][A-Za-z0-9_\\-]")){
+		if(inputNameModel == null || !inputNameModel.matches("[A-Za-z][A-Za-z0-9_\\-]*")){
 			setInputNameModel("default");
 		}
 		

@@ -95,10 +95,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		String error = null;
 		//Check the names
 		String regex = "[A-Za-z][A-Za-z0-9\\-_]*";
-		String regexMsg = "";
 		if(!currentSubworkflowName.matches(regex)){
 			error = getMessageResources("msg_error_agg_subworkflow_name"); 
-		}else if(!currentModelName.matches(regexMsg)){
+		}else if(!currentModelName.matches(regex)){
 			error = getMessageResources("msg_error_agg_model_name");
 		}
 		if(error != null){
@@ -122,10 +121,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 		logger.info(privilege + " + " + privilegeVal);
 		
-		String nameWithModel = currentSubworkflowName;
-		if(!currentSubworkflowName.contains(">")){
-			nameWithModel = ">"+currentModelName+">"+currentSubworkflowName;
-		}
+		String nameWithModel = ">"+currentModelName+">"+currentSubworkflowName;
 
 		swa.setName(nameWithModel);
 		
@@ -143,6 +139,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 
 		displayErrorMessage(error, "INSTALLSUBWORKFLOW");
 		if(error == null){
+			MessageUseful.addInfoMessage("Install Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}
@@ -163,7 +160,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			subWfToCheck = ">"+currentModelName+">"+currentSubworkflowName;
 		}
 		
-		if(!modelMan.getAvailableSuperActions(username).contains(swa.getName())){
+		if(!modelMan.getAvailableSuperActions(username).contains(subWfToCheck)){
 			exists = "true";
 		}else{
 			exists = "false";			
