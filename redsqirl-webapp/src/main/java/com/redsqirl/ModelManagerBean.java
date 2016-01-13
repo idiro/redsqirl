@@ -220,8 +220,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	public void importModel() throws RemoteException {
 		boolean system = asSystem.equals("System");
-		String hdfsPath = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("hdfsPath");
+		String hdfsPath = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("hdfsPath");
 		String error = importModelPriv(hdfsPath,system);
 		displayErrorMessage(error, "IMPORTMODEL");
 		if(error == null){

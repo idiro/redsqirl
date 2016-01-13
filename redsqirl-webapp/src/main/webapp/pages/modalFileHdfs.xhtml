@@ -225,7 +225,7 @@
     	    rendered="#{browserHdfsBean.showSave == 'I'}"
     		reRender="msnError,errorTable,formMenu,modelImportPathHdfs"
     		oncomplete="#{rich:component('modalFileHdfs')}.hide();">
-    		<a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{browserHdfsBean.path}" noEscape="true"/>
+    		<a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{browserHdfsBean.pathImport}" noEscape="true"/>
     	</a4j:commandButton>
     	
     	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton" action="#{canvasBean.checkName}"
@@ -239,7 +239,7 @@
     	    value="#{messages.button_ok}" rendered="#{browserHdfsBean.showSave == 'E'}"
             oncomplete="#{rich:component('modalFileHdfs')}.hide();"
             reRender="modelExportPathHdfs" >
-            <a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
+            <a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{browserHdfsBean.pathExport}" noEscape="true"/>
         </a4j:commandButton>
 	
 	</rich:panel>
