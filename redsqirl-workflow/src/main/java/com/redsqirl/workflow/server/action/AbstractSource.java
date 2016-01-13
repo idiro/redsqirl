@@ -120,7 +120,7 @@ public abstract class AbstractSource extends DataflowAction {
 				LanguageManagerWF.getText("source.datatype_interaction.title"),
 				LanguageManagerWF.getText("source.datatype_interaction.legend"),
 				0, 0);
-
+		dataType.setReplaceDisable(true);
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
 		posValues.addAll(WorkflowInterface.getInstance().getBrowsersName());
@@ -170,7 +170,7 @@ public abstract class AbstractSource extends DataflowAction {
 						.getText("source.datasubtype_interaction.title"),
 				LanguageManagerWF
 						.getText("source.datasubtype_interaction.legend"), 0, 0);
-
+		dataSubtype.setReplaceDisable(true);
 		dataSubtype.setDisplayRadioButton(true);
 	}
 	
@@ -229,7 +229,8 @@ public abstract class AbstractSource extends DataflowAction {
 				LanguageManagerWF.getText("source.browse_interaction.title"),
 				LanguageManagerWF.getText("source.browse_interaction.legend"),
 				0, 0);
-
+		browser.setReplaceDisable(true);
+		
 		page3.addInteraction(browser);
 
 		page3.setChecker(new PageChecker() {

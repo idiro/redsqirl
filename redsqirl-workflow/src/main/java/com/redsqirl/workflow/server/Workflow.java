@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -1388,6 +1389,23 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	public void moveToTopRightCorner(int offset_x, int offset_y) throws RemoteException{
+		int min_x = Integer.MAX_VALUE;
+		int min_y = Integer.MAX_VALUE;
+		Iterator<DataFlowElement> it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			min_x = Math.min(min_x, cur.getX());
+			min_y = Math.min(min_y, cur.getY());
+		}
+		it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			cur.setPosition(cur.getX()-min_x+offset_x, cur.getY()-min_y+offset_y);
+		}
+		
+	}
+	
 	public SubDataFlow createSA(List<String> componentIds,
 			String subworkflowName, String subworkflowComment,
 			Map<String, Entry<String, String>> inputs,
@@ -1516,10 +1534,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 										.getAliasesPerComponentInput()
 										.get(inputs.get(inputName).getKey())
 										.getKey();
+								
 
 								sw.getElement(curEl.getComponentId())
-										.replaceInAllInteraction(oldAlias,
-												newAlias);
+										.replaceInAllInteraction(
+												"([_ \\.]|^)("+Pattern.quote(oldAlias)+")([_ \\.]|$)", "$1"+newAlias+"$3",true);
 
 								positionSuperActionInput.move(
 										(int) positionSuperActionInput.getX()
@@ -1569,6 +1588,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			throw new Exception(error);
 		}
 
+		sw.moveToTopRightCorner(50, 50);
+		
 		return sw;
 	}
 
@@ -1601,8 +1622,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		// List inputs and outputs element
 		logger.info("List inputs and outputs element");
+		DataFlowElement elementToExpand = copy.getElement(superActionId); 
 		Map<String, Map<String, String>> componentWithNamePerInputs = new LinkedHashMap<String, Map<String, String>>();
-		Iterator<DataFlowElement> it = copy.getElement(superActionId)
+		Iterator<DataFlowElement> it = elementToExpand
 				.getAllInputComponent().iterator();
 		while (it.hasNext()) {
 			DataFlowElement curEl = it.next();
@@ -1644,6 +1666,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> replaceInternalActions = new LinkedHashMap<String, String>();
 		// Change Name?
 		logger.info("Change SubWorkflow ids and link");
+		int pos_x = 0;
+		int pos_y = 0;
+		for (String id : sw.getComponentIds()) {
+			DataFlowElement df = sw.getElement(id);
+			pos_x += df.getX();
+			pos_y += df.getY();
+		}
+		pos_x /= sw.getComponentIds().size();
+		pos_y /= sw.getComponentIds().size(); 
 		for (String id : sw.getComponentIds()) {
 			DataFlowElement df = sw.getElement(id);
 			logger.info(id);
@@ -1676,7 +1707,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						DataFlowElement elCur = itInCur.next();
 						if ((new SubWorkflowInput().getName()).equals(elCur
 								.getName())) {
-							// Create new input link
+							// Link to a workflow source
 							Iterator<String> itOrigInput = componentWithNamePerInputs
 									.get(elCur.getComponentId()).keySet()
 									.iterator();
@@ -1766,10 +1797,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.iterator();
 				while (itReplace.hasNext()) {
 					String key = itReplace.next();
-					df.replaceInAllInteraction(key,
-							replaceInternalActions.get(key));
+					df.replaceInAllInteraction("([_ \\.]|^)("+Pattern.quote(key)+")([_ \\.]|$)",
+							"$1"+replaceInternalActions.get(key)+"$3",true);
 				}
-
+				df.setPosition(Math.max(10,df.getX()-pos_x+elementToExpand.getX()), Math.max(10,df.getY()-pos_y+elementToExpand.getY()));
 				addElement(df);
 			}
 		}
@@ -1779,8 +1810,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Iterator<String> itReplaceAliases = replaceAliases.keySet().iterator();
 		while (itReplaceAliases.hasNext()) {
 			String key = itReplaceAliases.next();
-			replaceInAllElements(getComponentIds(), key,
-					replaceAliases.get(key));
+			replaceInAllElements(getComponentIds(), 
+					"([_ \\.]|^)("+Pattern.quote(key)+")([_ \\.]|$)",
+					"$1"+replaceAliases.get(key)+"$3",true);
 		}
 
 		return error;
@@ -1896,9 +1928,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								.getKey();
 						String oldAlias = curEl.getAliasesPerComponentInput()
 								.get(outputs.get(outputName).getKey()).getKey();
-
+						
 						getElement(curEl.getComponentId())
-								.replaceInAllInteraction(oldAlias, newAlias);
+								.replaceInAllInteraction(
+										"([_ \\.]|^)("+Pattern.quote(oldAlias)+")([_ \\.]|$)", "$1"+newAlias+"$3",true);
 					}
 
 				}
@@ -1941,7 +1974,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	@Override
 	public void replaceInAllElements(List<String> componentIds, String oldStr,
-			String newStr) throws RemoteException {
+			String newStr, boolean regex) throws RemoteException {
 		logger.info("replace " + oldStr + " by " + newStr + " in "
 				+ componentIds);
 		if (componentIds != null) {
@@ -1950,7 +1983,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				String componentId = it.next();
 				DataFlowElement dfe = getElement(componentId);
 				if (dfe != null) {
-					dfe.replaceInAllInteraction(oldStr, newStr);
+					dfe.replaceInAllInteraction(oldStr, newStr,regex);
 				}
 			}
 		}

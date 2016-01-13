@@ -417,13 +417,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 	
 	@Override
-	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException{
+	public void replaceInAllInteraction(String oldStr, String newStr, boolean regex)  throws RemoteException{
 		try {
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
 				waLogger.info("replace "+oldStr+" by "+newStr+" in "+ interCur.getName());
-				interCur.replaceInTree(oldStr, newStr);
+				interCur.replaceInTree(oldStr, newStr,regex);
 			}
 		} catch (Exception e) {
 			waLogger.error(e.getMessage(),e);

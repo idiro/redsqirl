@@ -87,6 +87,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String[]> inputNamesList = new ArrayList<String[]>();
 	private List<String[]> outputNamesList = new ArrayList<String[]>();
 	private String inputNameSubWorkflow;
+	private String inputNameModel;
 	private List<String> componentIds;
 	private String inputAreaSubWorkflow;
 	private String idGroup;
@@ -1032,7 +1033,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			if (error == null) {
-				getDf().replaceInAllElements(elements, string, replaceString);
+				getDf().replaceInAllElements(elements, string, replaceString,false);
 				Iterator<String> it = elements.iterator();
 				for (String groupId : groupIds) {
 					String cur = idMap.get(getNameWorkflow()).get(groupId);
@@ -2516,7 +2517,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		setInputNameSubWorkflow((nameWorkflow.replaceAll("[^A-Za-z0-9]", "")+RandomString.getRandomName(4)).toLowerCase());
-
+		if(inputNameModel == null || !inputNameModel.matches("[A-Za-z][A-Za-z0-9_\\-]*")){
+			setInputNameModel("default");
+		}
+		
 		setInputNamesList(new ArrayList<String[]>());
 		for (String name : ansIn.keySet()) {
 			logger.info("openAggregate ansIn: " + name + " " + ansIn.get(name));
@@ -2593,18 +2597,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	public String[] getAggregationDetails(){
+		return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
+	}
 
 	public void aggregate() {
 		logger.info("aggregate ");
 
 		String error = null;
 		//logger.info("name sub workflow " + getInputNameSubWorkflow());
-		String pattern= "[a-zA-Z][A-Za-z0-9_]*";
+		String pattern= "[a-zA-Z][A-Za-z0-9_\\-]*";
 		if(!getInputNameSubWorkflow().matches(pattern)){
 			//check regex
 			error = getMessageResources("msg_error_agg_subworkflow_name");
+		}else if(!getInputNameModel().matches(pattern)){
+			error = getMessageResources("msg_error_agg_model_name");
 		}
-		String fullName = ">default>"+getInputNameSubWorkflow();
+		String fullName = ">"+getInputNameModel()+">"+getInputNameSubWorkflow();
 
 		if(error == null){
 			try {
@@ -2652,7 +2662,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 								fullName,
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						error = modelMan.installSA(new ModelManager().getUserModel(userName, "default"), sw,null);
+						error = modelMan.installSA(new ModelManager().getUserModel(userName, getInputNameModel()), sw,null);
 					}catch(Exception e){
 						logger.error(e,e);
 						error = e.getMessage();
@@ -2671,7 +2681,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 						if(error != null){
 							modelMan.uninstallSA(
-									new ModelManager().getUserModel(userName, "default"),
+									new ModelManager().getUserModel(userName, getInputNameModel()),
 									getInputNameSubWorkflow()
 									);
 						}else{
@@ -2712,8 +2722,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameSA = params.get("nameSA");
+		String nameModel = params.get("nameModel");
 		if(nameSA != null){
-			modelMan.uninstallSA(new ModelManager().getUserModel(userName, "default"), nameSA);
+			modelMan.uninstallSA(new ModelManager().getUserModel(userName, nameModel), nameSA);
 		}
 	}
 
@@ -3091,6 +3102,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setFirstTime(String firstTime) {
 		this.firstTime = firstTime;
+	}
+
+	public String getInputNameModel() {
+		return inputNameModel;
+	}
+
+	public void setInputNameModel(String inputNameModel) {
+		this.inputNameModel = inputNameModel;
 	}
 
 }

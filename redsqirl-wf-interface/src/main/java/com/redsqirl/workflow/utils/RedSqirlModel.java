@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -15,6 +16,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -26,7 +28,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.ProjectID;
+import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.ZipUtils;
+import com.redsqirl.keymanager.ciphers.Decrypter;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
@@ -74,6 +79,59 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		}catch(Exception e){
 			error = "Cannot create files and directory in "+modelFile.getAbsolutePath();
 			logger.error(error + e.getMessage(),e);
+		}
+		return error;
+	}
+	
+	@Override
+	public String readLicense(String userName){
+		String modelLicense = null;
+		try {
+			File licenseFile = new File(
+					WorkflowPrefManager.getPathSystemLicence());
+			Properties props = new Properties();
+			String modelLicensePropKey = getName()+"-"+getVersion();
+			props.load(new FileInputStream(licenseFile));
+			modelLicensePropKey = modelLicensePropKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+			modelLicense =  props.getProperty(userName+"_"+modelLicensePropKey,"system_"+props.getProperty(modelLicensePropKey));
+		} catch(Exception e) {
+			logger.error(e,e);
+		}
+		return modelLicense;
+	}
+	
+	@Override
+	public String isLicenseValid(String userName){
+		String error = null;
+		String softwareLicense = null;
+		String softwareLicenseKey = ProjectID.get().trim().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+		String modelLicense = readLicense(userName);
+		File licenseFile = new File(
+				WorkflowPrefManager.getPathSystemLicence());
+		Properties props = new Properties();
+		if (licenseFile.exists()) {
+			try {
+				props.load(new FileInputStream(licenseFile));
+				softwareLicense = props.getProperty(softwareLicenseKey);
+			} catch(Exception e) {
+				logger.error(e,e);
+			}
+			logger.info(props.toString());
+			logger.info("subworkflow license "+modelLicense);
+		}
+		
+		if(modelLicense ==null){
+			error =  "There is no license for "+getName()+" when trying to run ";
+		}else{
+			Decrypter dec = new Decrypter();
+			dec.decrypt_key_module(modelLicense);
+
+			Map<String,String> keyModule = new HashMap<String,String>();
+			keyModule.put(Decrypter.userName,System.getProperty("user.name"));
+			keyModule.put(Decrypter.name,getName());
+			keyModule.put(Decrypter.license,softwareLicense);
+			
+			error = dec.validateAllValuesModule(keyModule);
 		}
 		return error;
 	}
@@ -373,6 +431,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException{
 		String[] modelWSA = getModelAndSW(toInstall.getName());
 		
+		File tmpMainFile = new File(WorkflowPrefManager.getPathTmpFolder(getUser()),modelWSA[1]);
 		File mainFile = new File(getFile(),modelWSA[1]);
 		File helpFile = new File(getSuperActionHelpDir(getUser()),modelWSA[0]+"/"+modelWSA[1]+".html");
 		
@@ -387,7 +446,9 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 
 		if (error == null) {
 			logger.info("Save main file into: " + mainFile.getPath());
-			error = toInstall.saveLocal(mainFile, privilege);
+			error = toInstall.saveLocal(tmpMainFile, privilege);
+			LocalFileSystem.copyfile(tmpMainFile.getAbsolutePath(), mainFile.getAbsolutePath());
+			tmpMainFile.delete();
 			
 			if (error != null) {
 				mainFile.delete();

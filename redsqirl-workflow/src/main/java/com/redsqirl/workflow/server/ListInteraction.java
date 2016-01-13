@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -136,23 +137,20 @@ public class ListInteraction extends UserInteraction {
 	 * Replace the values in Possible values and value
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName, boolean regex)
 			throws RemoteException {
 		List<Tree<String>> vals = tree.getFirstChild("list").getFirstChild("values").getSubTreeList();
 		if(!vals.isEmpty()){
-			Iterator<Tree<String>> itValPos = vals.iterator();
-			while(itValPos.hasNext()){
-				Tree<String> cur = itValPos.next();
-				try{
-					String valCur = cur.getFirstChild().getHead(); 
-					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
-				}catch(Exception e){
-					logger.error(e.getMessage(),e);
-				}
-			}
+
+			setPossibleValues(replaceInChoiceArray(oldName, newName, getPossibleValues(), regex));
+				
 			String val = getValue();
 			if(val != null && !val.isEmpty()){
-				setValue(val.replaceAll(Pattern.quote(oldName), newName));
+				if(regex){
+					setValue(val.replaceAll(oldName, newName));
+				}else{
+					setValue(val.replaceAll(Pattern.quote(oldName), newName));
+				}
 			}
 		}
 	}

@@ -67,12 +67,17 @@ public class EditorInteraction extends UserInteraction{
 	 * Replace the values in the output
 	 */
 	@Override
-	public void replaceOutputInTree(String oldName, String newName)
+	public void replaceOutputInTree(String oldName, String newName,boolean regex)
 			throws RemoteException {
 		String val = getValue();
 		if(val != null && !val.isEmpty()){
-			getTree().getFirstChild("editor").getFirstChild("output")
-					.getFirstChild().setHead(val.replaceAll(Pattern.quote(oldName), newName));
+			if(regex){
+				getTree().getFirstChild("editor").getFirstChild("output")
+					.getFirstChild().setHead(val.replaceAll(oldName, newName));
+			}else{
+				getTree().getFirstChild("editor").getFirstChild("output")
+				.getFirstChild().setHead(val.replaceAll(Pattern.quote(oldName), newName));
+			}
 		}
 	}
 	

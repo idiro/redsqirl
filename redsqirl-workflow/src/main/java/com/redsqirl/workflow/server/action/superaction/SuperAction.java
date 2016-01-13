@@ -400,11 +400,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				String curOutName = itOut.next();
 				try{
 					DFEOutput out = saWf.getElement(curOutName).getDFEInput().get(SubWorkflowOutput.input_name).get(0);
-					if(SavingState.TEMPORARY.equals(getDFEOutput().get(curOutName).getSavingState())){
-						out.setSavingState(SavingState.BUFFERED);
-					}else{
-						out.setSavingState(getDFEOutput().get(curOutName).getSavingState());
-					}
+					out.setSavingState(SavingState.RECORDED);
 					out.setPath(getDFEOutput().get(curOutName).getPath());
 				}catch(NullPointerException e){
 					error = LanguageManagerWF.getText("superaction.needrefresh", new Object[]{name,componentId,curOutName});

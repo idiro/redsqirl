@@ -48,6 +48,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	private String comment = null;
 	private String version = null;
 
+	private String currentModelName = "default";
 	private String currentSubworkflowName = "";
 
 	private String privilege = "";
@@ -91,7 +92,19 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	}
 	
 	public void installCurrentSubWorkflow() throws RemoteException {
-
+		String error = null;
+		//Check the names
+		String regex = "[A-Za-z][A-Za-z0-9\\-_]*";
+		if(!currentSubworkflowName.matches(regex)){
+			error = getMessageResources("msg_error_agg_subworkflow_name"); 
+		}else if(!currentModelName.matches(regex)){
+			error = getMessageResources("msg_error_agg_model_name");
+		}
+		if(error != null){
+			displayErrorMessage(error, "INSTALLSUBWORKFLOW");
+			return;
+		}
+		
 		logger.info("subWorkflow actual name  " + currentSubworkflowName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(currentSubworkflowName);
@@ -108,16 +121,12 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 		logger.info(privilege + " + " + privilegeVal);
 		
-		String nameWithModel = currentSubworkflowName;
-		if(!currentSubworkflowName.contains(">")){
-			nameWithModel = ">default>"+currentSubworkflowName;
-		}
+		String nameWithModel = ">"+currentModelName+">"+currentSubworkflowName;
 
 		swa.setName(nameWithModel);
 		
 		String username = system ? null : getUserInfoBean().getUserName();
 		String modelName = RedSqirlModel.getModelAndSW(nameWithModel)[0];
-		String error = null;
 		ModelInt modelCur = null;
 		if(system){
 			modelCur = modelMan.getSysModel(modelName);
@@ -128,17 +137,11 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		
 		error = modelMan.installSA(modelCur, swa, privilegeVal);
 
-		if (error != null && !error.isEmpty()) {
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			logger.info(" " + error);
-			usageRecordLog().addError("ERROR INSTALLSUBWORKFLOW", error);
-		} else {
+		displayErrorMessage(error, "INSTALLSUBWORKFLOW");
+		if(error == null){
 			MessageUseful.addInfoMessage("Install Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
-			usageRecordLog().addSuccess("INSTALLSUBWORKFLOW");
 		}
 	}
 	
@@ -154,10 +157,10 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		
 		String subWfToCheck = currentSubworkflowName; 
 		if(!currentSubworkflowName.contains(">")){
-			subWfToCheck = ">default>"+currentSubworkflowName;
+			subWfToCheck = ">"+currentModelName+">"+currentSubworkflowName;
 		}
 		
-		if(!modelMan.getAvailableSuperActions(username).contains(swa.getName())){
+		if(!modelMan.getAvailableSuperActions(username).contains(subWfToCheck)){
 			exists = "true";
 		}else{
 			exists = "false";			
@@ -262,6 +265,10 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 					}
 					logger.info("Call modelInstaller");
 					error = modelMan.installModelWebappFiles(model, l);
+				}
+				
+				if(error == null){
+					model.setEditable(false);
 				}
 			}
 			logger.info("Delete zip file");
@@ -564,15 +571,27 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			if(error == null){
 				DataFlowInterface dfi = getworkFlowInterface();
 				List<SubDataFlow> subDF = new ArrayList<SubDataFlow>(subWFNames.size());
+				error = "";
 				for (String subWFName: subWFNames) {
 					subWFNames.add(subWFName);;
 					SubDataFlow sdCur = dfi.getNewSubWorkflow();
 					sdCur.setName(rsModel.getFullName(subWFName));
 					sdCur.readFromLocal(new File(rsModel.getFile(),subWFName));
 					logger.info(subWFName+": "+new File(rsModel.getFile(),subWFName)+" "+sdCur.getName());
+					Boolean privilegeCur = sdCur.getPrivilege(); 
+					if(privilegeCur != null){
+						if(privilegeCur){
+							error += getMessageResourcesWithParameter("msg_err_subwf_copy_licensed",new String[]{sdCur.getName()});
+						}else{
+							error += getMessageResourcesWithParameter("msg_err_subwf_copy_runonly",new String[]{sdCur.getName()});
+						}
+						error += "\n";
+					}
 					subDF.add(sdCur);
 				}
-				error = changeSWofModels(rsModel,modelTo,subWFNames,subDF,remove);
+				if(error.isEmpty()){
+					error = changeSWofModels(rsModel,modelTo,subWFNames,subDF,remove);					
+				}
 			}
 		}
 		return error;
@@ -833,7 +852,6 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	}
 
 	public void setName(String name) {
-
 		this.name = name;
 	}
 
@@ -1051,5 +1069,13 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	 */
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getCurrentModelName() {
+		return currentModelName;
+	}
+
+	public void setCurrentModelName(String currentModelName) {
+		this.currentModelName = currentModelName;
 	}
 }

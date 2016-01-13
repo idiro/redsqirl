@@ -43,9 +43,10 @@ public interface DFEInteraction extends Remote {
 	 * conflicts.
 	 * @param oldName
 	 * @param newName
+	 * @param regex True if oldName is a regular expression.
 	 * @throws RemoteException
 	 */
-	public void replaceInTree(String oldName, String newName) throws RemoteException;
+	void replaceInTree(String oldName, String newName, boolean regex) throws RemoteException;
 	
 	/**
 	 * Get the Display Type of the interaction
@@ -159,6 +160,7 @@ public interface DFEInteraction extends Remote {
 	 * @throws RemoteException
 	 */
 	public void setReplaceDisable(boolean replaceDisable) throws RemoteException;
+
 	
 
 }

@@ -83,9 +83,10 @@ public interface DataFlowElement extends Remote{
 	 * Replace in all interaction a string by another
 	 * @param oldStr
 	 * @param newStr
+	 * @param regex
 	 * @throws RemoteException
 	 */
-	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException;
+	void replaceInAllInteraction(String oldStr, String newStr, boolean regex) throws RemoteException;
 	
 	/**
 	 * Regenerate the path in all the outputs
@@ -341,4 +342,6 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	public void cleanThisAndAllElementAfter() throws RemoteException;
+
+
 }

@@ -74,8 +74,11 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		}
 
 		List<Map<String, String>> lRow = getValues();
-		Set<String> relations = hj.getAliases().keySet();
+		Set<String> relations = hj.getJoinAliases().keySet();
 		if (relations.size() != lRow.size()) {
+			logger.info("Number of relations: "+relations.size());
+			logger.info("Number of rows: "+lRow.size());
+			logger.info("Relations: "+relations.toString());
 			msg = SqlLanguageManager
 					.getText("sql.join_relationship_interaction.checkrownb");
 		} else {
@@ -91,7 +94,7 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 					String relation = row.get(table_table_title);
 					String rel = row.get(table_feat_title);
 					String type = getDictionary().getReturnType(
-							rel, inFeats);
+							rel, hj.getInFields(relation));
 
 					if (type == null) {
 						msg = SqlLanguageManager
@@ -100,19 +103,6 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 										new Object[] { rowNb });
 					} else {
 						featType.add(type);
-					}
-
-					Iterator<String> itRelation = relations.iterator();
-					while (itRelation.hasNext() && msg == null) {
-						String curTab = itRelation.next();
-						if (rel.contains(curTab + ".")
-								&& !curTab.equalsIgnoreCase(relation)) {
-							msg = SqlLanguageManager
-									.getText(
-											"sql.join_relationship_interaction.checktable2times",
-											new Object[] { rowNb, curTab,
-													relation });
-						}
 					}
 
 				} catch (Exception e) {
