@@ -21,7 +21,9 @@
 			<a4j:jsFunction name="intallSW"
 				reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 				action="#{modelBean.installCurrentSubWorkflow}"
-				oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfInstall')}.hide();}" />
+				oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfInstall')}.hide();}">
+				<a4j:actionparam name="subWfName" value="#{canvasBean.nameWorkflow}" />
+			</a4j:jsFunction>
 		</a4j:region>
 
 		<div style="width: 270px; height: 200px;">

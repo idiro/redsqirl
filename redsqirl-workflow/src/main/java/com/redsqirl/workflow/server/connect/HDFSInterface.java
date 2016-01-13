@@ -469,11 +469,15 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public String copyFromLocal(String local_path, String hdfs_path) throws RemoteException{
 		String error = null;
+		File failFile = new File(local_path+".crc");
 		try {
 			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
 			FileChecker hChO = new FileChecker(new File(local_path));
 			if (hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
+				if(failFile.exists()){
+					failFile.delete();
+				}
 				fs.copyFromLocalFile(false, localP, hdfsP);
 			} else {
 				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
@@ -485,6 +489,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					new Object[] { e.getMessage() });
 		}
 		if (error != null) {
+			if(failFile.exists()){
+				failFile.delete();
+			}
 			logger.debug(error);
 		}
 		return error;
@@ -506,12 +513,16 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	
 	public String copyToLocal(String hdfs_path, String local_path, boolean writtableByAll) throws RemoteException{
 		String error = null;
+		File failFile = new File(local_path+".crc");
 		try {
 			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
 			FileChecker hChN = new FileChecker(new File(local_path));
 			HdfsFileChecker hChO = new HdfsFileChecker(hdfsP);
 			if (!hChN.exists() && hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
+				if(failFile.exists()){
+					failFile.delete();
+				}
 				fs.copyToLocalFile(false, hdfsP, localP);
 				if(writtableByAll){
 					new File(local_path).setWritable(true, false);
@@ -527,6 +538,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		if (error != null) {
 			logger.warn(error);
+			if(failFile.exists()){
+				failFile.delete();
+			}
 		}
 		return error;
 	}
