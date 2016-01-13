@@ -376,6 +376,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		if(error.isEmpty()){
 			error = null;
 		}
+		
+		updateSubWorkflowFromModel();
+		
 		displayErrorMessage(error,"DELETESUBWORKFLOW");
 	}
 	

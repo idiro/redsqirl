@@ -233,49 +233,47 @@
 		
 		<div style="width:100%;height:170px;">
 
-			<rich:extendedDataTable id="subwfList"
-				value="#{modelBean.subWorkflowFromModel.rows}" var="item"
-				rowKeyVar="indexTable" width="100%" style="border:none;"
-				onRowMouseOver="this.style.backgroundColor='#f2b97a'"
-				enableContextMenu="false"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-				rowClasses="even-row, odd-row">
-
-				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="50px;">
-					<f:facet name="header">
-						<h:selectBooleanCheckbox
-							onclick="selectAllCheckbox(this, /subwfselect$/);" />
-					</f:facet>
-					<h:selectBooleanCheckbox id="subwfselect" value="#{item.selected}" />
-				</rich:column>
-
-				<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
-					style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_name}" />
-					</f:facet>
-					<a4j:commandLink value="#{item.row[0]}" title="#{item.row[0]}" action="#{modelBean.beforeRenameSubWorkfow}" onclick="#{rich:component('modalRenameSubWF')}.show()">
-						<a4j:actionparam  name="subWFName" value="#{item.row[0]}"   />
-					</a4j:commandLink>
-				</rich:column>
-
-				<rich:column style="border-bottom:0px;border-right:0px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_access_sa}" />
-					</f:facet>
-					<h:outputText value="#{item.row[1]}" title="#{item.row[1]}">
-					</h:outputText>
-				</rich:column>
-
-				<rich:column style="border-bottom:0px;border-right:0px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_dep}" />
-					</f:facet>
-					<h:outputText value="#{item.row[2]}" title="#{item.row[2]}">
-					</h:outputText>
-				</rich:column>
-			</rich:extendedDataTable>
+ 			<a4j:outputPanel ajaxRendered="true">
+				<rich:extendedDataTable id="subwfList"
+					value="#{modelBean.subWorkflowFromModel.rows}" var="item"
+					rowKeyVar="indexTable" width="100%" style="border:none;"
+					onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+					enableContextMenu="false"
+					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+					rowClasses="even-row, odd-row">
+	
+					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
+						<f:facet name="header">
+							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /subwfselect$/);" />
+						</f:facet>
+						<h:selectBooleanCheckbox id="subwfselect" value="#{item.selected}" />
+					</rich:column>
+	
+					<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
+						style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
+						<f:facet name="header">
+							<h:outputText value="#{messages.label_name}" />
+						</f:facet>
+						<a4j:commandLink value="#{item.row[0]}" title="#{item.row[0]}" action="#{modelBean.beforeRenameSubWorkfow}" onclick="#{rich:component('modalRenameSubWF')}.show()">
+							<a4j:actionparam name="subWFName" value="#{item.row[0]}" />
+						</a4j:commandLink>
+					</rich:column>
+	
+					<rich:column style="border-bottom:0px;border-right:0px;">
+						<f:facet name="header">
+							<h:outputText value="#{messages.label_access_sa}" />
+						</f:facet>
+						<h:outputText value="#{item.row[1]}" title="#{item.row[1]}" />
+					</rich:column>
+	
+					<rich:column style="border-bottom:0px;border-right:0px;">
+						<f:facet name="header">
+							<h:outputText value="#{messages.label_dep}" />
+						</f:facet>
+						<h:outputText value="#{item.row[2]}" title="#{item.row[2]}" />
+					</rich:column>
+				</rich:extendedDataTable>
+			</a4j:outputPanel>
 
 		</div>
 

@@ -86,8 +86,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private String pathFileModule;
 
-	private String numberUsers;
-
 	private List<String[]> sysSettings = null;
 
 	private String nameSettings;
@@ -321,6 +319,25 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	public String getCheckIfExistSoftwareKey(){
+		String softwareKey = getSoftwareKey();
+		logger.info("softwareKey " + softwareKey);
+		String key = null;
+		if(softwareKey != null){
+			String[] ans = softwareKey.split("=");
+			if(ans != null && ans.length > 1){
+				key = ans[1];
+			}
+		}
+		logger.info("Key " + key);
+		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
+				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
+			return "Y";
+		}else{
+			return "N";
+		}
+	}
 
 	public void doAdmLoginOnLine() throws IOException {
 
@@ -454,7 +471,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			String uri = getRepoServer()+"rest/licensekey";
 
 			JSONObject object = new JSONObject();
-			object.put("numberUsers", numberUsers);
 
 			String version = "0.1";
 			String[] value = ProjectID.getInstance().getVersion().split("-");
@@ -1206,14 +1222,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public String getTmpExtension() {
 		return tmpExtension;
-	}
-
-	public String getNumberUsers() {
-		return numberUsers;
-	}
-
-	public void setNumberUsers(String numberUsers) {
-		this.numberUsers = numberUsers;
 	}
 
 	public String getNameFileModule() {
