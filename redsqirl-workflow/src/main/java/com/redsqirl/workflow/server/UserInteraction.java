@@ -3,6 +3,7 @@ package com.redsqirl.workflow.server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -362,6 +363,25 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			}
 		}
 		return possibleValues;
+	}
+	
+
+	protected List<String> replaceInChoiceArray(String oldName, String newName, List<String> values, boolean regex){
+		Iterator<String> itValPos = values.iterator();
+		List<String> newValues = new ArrayList<String>(values.size());
+		while(itValPos.hasNext()){
+			String valCur = itValPos.next();
+			if(regex){
+				newValues.add(valCur.replaceAll(oldName, newName));
+			}else{
+				newValues.add(valCur.replaceAll(Pattern.quote(oldName), newName));
+			}
+		}
+		if(values.containsAll(newValues)){
+			newValues = values;
+		}
+		
+		return newValues;
 	}
 	/**
 	 * Check the input tree

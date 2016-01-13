@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -303,6 +304,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
+	
 	/**
 	 * Check if the column exceeds the column constraint 
 	 * @param columnName
@@ -311,12 +313,7 @@ public class TableInteraction extends UserInteraction {
 	 */
 	protected String checkCountConstraint(String columnName) throws RemoteException{
 		String error = null;
-		int countConst = 0;
-		try{
-			countConst = Integer.valueOf(
-					findColumn(columnName).getFirstChild("constraint").getFirstChild("count").getFirstChild().getHead()
-					);
-		}catch(Exception e){}
+		int countConst = getCountConstrant(columnName);
 
 		if(countConst > 0){
 			logger.debug("Check count constraint for "+columnName+": "+countConst);
@@ -420,6 +417,50 @@ public class TableInteraction extends UserInteraction {
 		}catch(Exception e){}
 
 		return regex;
+	}
+	
+	protected Map<String,Integer> getColumnsCount() throws RemoteException{
+		Map<String,Integer> counts = new LinkedHashMap<String,Integer>();
+		Tree<String> constraint = null;
+		try{
+			Tree<String> columns = null;
+			try{
+				columns = tree.getFirstChild("table").getFirstChild("columns");
+			}catch(Exception e){
+				logger.error(getId() + ": Tree structure incorrect",e);
+				reInitAfterError();
+				columns = tree.getFirstChild("table").getFirstChild("columns");
+			}
+			if(columns.getChildren("column") != null){
+				Iterator<Tree<String>> it = columns.getChildren("column").iterator();
+				while(it.hasNext()){
+					try{
+						Tree<String> column = it.next();
+						String columnName = column.getFirstChild("title").getFirstChild().getHead();
+						constraint = column.getFirstChild("constraint");
+
+						if( constraint != null && constraint.getFirstChild("count") != null){
+							counts.put(columnName, Integer.valueOf(constraint.getFirstChild("count").getFirstChild().getHead()));
+
+						}
+					}catch(Exception e){}
+				}
+			}
+
+		}catch(Exception e){}
+
+		return counts;
+	}
+
+	
+	protected int getCountConstrant(String columnName){
+		int countConst = 0;
+		try{
+			countConst = Integer.valueOf(
+					findColumn(columnName).getFirstChild("constraint").getFirstChild("count").getFirstChild().getHead()
+					);
+		}catch(Exception e){}
+		return countConst;
 	}
 
 	/**
@@ -660,31 +701,21 @@ public class TableInteraction extends UserInteraction {
 				}
 			}
 		}
+		
+		//Replace in constraint values
 		List<Tree<String>> columns = getTree().getFirstChild("table").getFirstChild("columns").getChildren("column");
 		if(columns != null && !columns.isEmpty()){
-			Iterator<Tree<String>> it = columns.iterator();
-			while(it.hasNext()){
-				Tree<String> column = it.next();
-				try{
-					Iterator<Tree<String>> valueConstraints = column.getFirstChild("constraint").getFirstChild("values")
-							.getChildren("value").iterator();
-					while(valueConstraints.hasNext()){
-						Tree<String> curValue = valueConstraints.next();
-						try{
-							String content = curValue.getFirstChild().getHead();
-							logger.info("replace "+oldName+" by "+newName+" in "+content);
-							if(regex){
-								curValue.getFirstChild().setHead(
-									content.replaceAll(oldName, newName));
-							}else{
-								curValue.getFirstChild().setHead(
-										content.replaceAll(Pattern.quote(oldName), newName));
-							}
-						}catch(NullPointerException e){}
-					}
-				}catch(Exception e){
-					
-				}
+			Map<String,Set<String>> posVals = getColumnsPosValue();
+			Map<String,String> regVals = getColumnsRegex();
+			Map<String,Integer> countVals = getColumnsCount();
+			Iterator<String> posValIt = posVals.keySet().iterator();
+			while(posValIt.hasNext()){
+				String posValColumn = posValIt.next();
+				Set<String> posValCur = posVals.get(posValColumn);
+				List<String> vals = new ArrayList<String>(posValCur.size());
+				vals.addAll(posValCur);
+				vals = replaceInChoiceArray(oldName, newName, vals, regex);
+				updateColumnConstraint(posValColumn, regVals.get(posValColumn), countVals.get(posValColumn) , vals);
 			}
 		}
 	}
