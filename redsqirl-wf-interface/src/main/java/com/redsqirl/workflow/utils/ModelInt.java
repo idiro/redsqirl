@@ -175,10 +175,14 @@ public interface ModelInt extends Remote{
 	String getFullName(String saName) throws RemoteException;
 
 	String createModelDir() throws RemoteException;
+	
+	public String readLicense(String userName) throws RemoteException;
 
 	String getComment() throws RemoteException;
 	
 	void setComment(String comment) throws RemoteException;
 
 	File getTomcatImage() throws RemoteException;
+
+	String isLicenseValid(String userName) throws RemoteException;
 }

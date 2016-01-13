@@ -266,6 +266,10 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 					logger.info("Call modelInstaller");
 					error = modelMan.installModelWebappFiles(model, l);
 				}
+				
+				if(error == null){
+					model.setEditable(false);
+				}
 			}
 			logger.info("Delete zip file");
 			tmpFile.delete();
@@ -564,15 +568,27 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			if(error == null){
 				DataFlowInterface dfi = getworkFlowInterface();
 				List<SubDataFlow> subDF = new ArrayList<SubDataFlow>(subWFNames.size());
+				error = "";
 				for (String subWFName: subWFNames) {
 					subWFNames.add(subWFName);;
 					SubDataFlow sdCur = dfi.getNewSubWorkflow();
 					sdCur.setName(rsModel.getFullName(subWFName));
 					sdCur.readFromLocal(new File(rsModel.getFile(),subWFName));
 					logger.info(subWFName+": "+new File(rsModel.getFile(),subWFName)+" "+sdCur.getName());
+					Boolean privilegeCur = sdCur.getPrivilege(); 
+					if(privilegeCur != null){
+						if(privilegeCur){
+							error += getMessageResourcesWithParameter("msg_err_subwf_copy_licensed",new String[]{sdCur.getName()});
+						}else{
+							error += getMessageResourcesWithParameter("msg_err_subwf_copy_runonly",new String[]{sdCur.getName()});
+						}
+						error += "\n";
+					}
 					subDF.add(sdCur);
 				}
-				error = changeSWofModels(rsModel,modelTo,subWFNames,subDF,remove);
+				if(error.isEmpty()){
+					error = changeSWofModels(rsModel,modelTo,subWFNames,subDF,remove);					
+				}
 			}
 		}
 		return error;

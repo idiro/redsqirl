@@ -329,56 +329,11 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		
 		Boolean licensed = getPrivilege();
 		logger.info("privilege "+licensed);
-		String swLicense= null;
-		
-		
-		String softwareLicenseKey = ProjectID.get().trim().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-		logger.info("license key "+licensed);
-		String softwareLicense = null;
-		
-		String name = null;
-		try {
-			name = getName();
-		} catch (RemoteException e1) {
-			e1.printStackTrace();
-		}
-		logger.info("subworkflow "+name);
-		
-		if(licensed !=null && licensed){
-			File licenseP = new File(
-					WorkflowPrefManager.getPathSystemLicence());
-			Properties props = new Properties();
-			String licenseKey=null ;
-			if (licenseP.exists()) {
-				try {
-					licenseKey = name;
-					props.load(new FileInputStream(licenseP));
-					licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-					swLicense =  props.getProperty(licenseKey,props.getProperty(licenseKey+"srs"));
-					softwareLicense = props.getProperty(softwareLicenseKey);
-				} catch(Exception e) {
-					logger.error(e,e);
-				}
-				logger.info(props.toString());
-				
-				logger.info("key for license "+licenseKey);
-				logger.info("subworkflow license "+swLicense);
-			}
-			
-			if(swLicense ==null){
-					return "There is no license for "+name+" when trying to run ";
-			}else{
-				Decrypter dec = new Decrypter();
-				dec.decrypt_key_module(swLicense);
 
-				Map<String,String> keyModule = new HashMap<String,String>();
-				keyModule.put(Decrypter.userName,System.getProperty("user.name"));
-				keyModule.put(Decrypter.name,name);
-				keyModule.put(Decrypter.license,softwareLicense);
-				
-				error = dec.validateAllValuesModule(keyModule);
-			}
-			
+		String userName = System.getProperty("user.name");		
+		String modelName = RedSqirlModel.getModelAndSW(getName())[0];
+		if(licensed !=null && licensed){
+			error = new ModelManager().getAvailableModel(userName, modelName).isLicenseValid(System.getProperty("user.name"));
 		}
 			
 		if(error != null){
