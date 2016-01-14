@@ -469,9 +469,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public String copyFromLocal(String local_path, String hdfs_path) throws RemoteException{
 		String error = null;
-		File failFile = new File(local_path+".crc");
+		Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
+		File failFile = new File(localP.getParent().toString(),"."+localP.getName()+".crc");
 		try {
-			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
 			FileChecker hChO = new FileChecker(new File(local_path));
 			if (hChO.exists()) {
 				FileSystem fs = NameNodeVar.getFS();
@@ -513,9 +513,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	
 	public String copyToLocal(String hdfs_path, String local_path, boolean writtableByAll) throws RemoteException{
 		String error = null;
-		File failFile = new File(local_path+".crc");
+		Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
+		File failFile = new File(localP.getParent().toString(),"."+localP.getName()+".crc");
 		try {
-			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
 			FileChecker hChN = new FileChecker(new File(local_path));
 			HdfsFileChecker hChO = new HdfsFileChecker(hdfsP);
 			if (!hChN.exists() && hChO.exists()) {
