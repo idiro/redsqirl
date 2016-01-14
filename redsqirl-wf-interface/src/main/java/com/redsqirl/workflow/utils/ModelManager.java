@@ -154,6 +154,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 			error = uninstallSA(model,cur);
 		}
 		try {
+			model.resetImage();
 			LocalFileSystem.delete(model.getFile());
 		} catch (IOException e) {
 			logger.error(e,e);
@@ -178,6 +179,10 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		String error = null;
 		logger.info("Install "+toInstall.size()+" models");
 		Iterator<SubDataFlow> it = toInstall.iterator();
+		File imageFile = new File(model.getFile(),RedSqirlModel.conf_dir+"/"+model.getName()+".gif");
+		if(imageFile.exists()){
+			model.setImage(imageFile);
+		}
 		while(it.hasNext() && error == null){
 			SubDataFlow cur = it.next();
 			logger.info(cur.getName());
