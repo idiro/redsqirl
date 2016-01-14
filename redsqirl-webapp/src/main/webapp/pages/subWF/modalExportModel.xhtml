@@ -24,7 +24,7 @@
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
 			
-	        <a4j:jsFunction name="exportModel" action="#{modelBean.exportModel}"
+	        <a4j:jsFunction name="exportModel" action="#{modelBean.exportModel}" reRender="msnError, errorTable,msnErrorPage"
 	            oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalExportModel')}.hide();}">
 	            <a4j:actionparam name="hdfsPath"/>
 	        </a4j:jsFunction>
@@ -56,7 +56,6 @@
 			<h:panelGrid columns="3">
 				<a4j:commandButton styleClass="greenButton"
 					value="#{messages.button_cancel}" type="button"
-					reRender="errorTable"
 					onclick="#{rich:component('modalExportModel')}.hide();" />
 				<a4j:commandButton styleClass="greenButton"
 					value="Export" 

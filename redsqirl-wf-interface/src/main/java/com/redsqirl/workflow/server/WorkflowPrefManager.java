@@ -368,7 +368,10 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void createUserHome(String userName) {
 		File home = new File(getPathUserPref(userName));
 		logger.info(home.getAbsolutePath());
-
+		{
+			
+		}
+		
 		if (!home.exists()) {
 
 			String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
@@ -396,9 +399,8 @@ public class WorkflowPrefManager extends BlockManager {
 			home.setReadable(true, false);
 			superactionF.setReadable(true, false);
 			
-			File tmp = new File(getPathtmpfolder());
-			tmp.mkdirs();
-			tmp.setWritable(true,false);
+			File userTmp = new File(getPathTmpFolder(userName));
+			userTmp.mkdirs();
 			
 		}
 		createSysHome();
@@ -439,6 +441,14 @@ public class WorkflowPrefManager extends BlockManager {
 			if(!sysImageTomcat.exists()){
 				sysImageTomcat.mkdirs();
 			}
+		}
+		{
+			File sysPathTmp = new File(getSysPathTmp());
+			if(!sysPathTmp.exists()){
+				sysPathTmp.mkdirs();
+			}
+			sysPathTmp.setWritable(true,false);
+			sysPathTmp.setReadable(true,false);
 		}
 	}
 
@@ -839,6 +849,10 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static final String getPathtmpfolder() {
 		return pathTmpFolder;
+	}
+	
+	public static final String getSysPathTmp(){
+		return pathSysHome+"/tmp";
 	}
 
 	/**

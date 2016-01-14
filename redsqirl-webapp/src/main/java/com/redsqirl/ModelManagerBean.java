@@ -93,6 +93,8 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	public void installCurrentSubWorkflow() throws RemoteException {
 		String error = null;
+		String wfName  = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("subWfName");
 		//Check the names
 		String regex = "[A-Za-z][A-Za-z0-9\\-_]*";
 		if(!currentSubworkflowName.matches(regex)){
@@ -107,7 +109,12 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		
 		logger.info("subWorkflow actual name  " + currentSubworkflowName);
 		DataFlowInterface dfi = getworkFlowInterface();
-		SubDataFlow swa = dfi.getSubWorkflow(currentSubworkflowName);
+		SubDataFlow swa = dfi.getSubWorkflow(wfName);
+		if(swa == null){
+			error = "Workflow "+wfName+" does not exist";
+			displayErrorMessage(error, "INSTALLSUBWORKFLOW");
+			return;
+		}
 		boolean system = asSystem.equals("System");
 		
 		logger.info("privilege : '" + privilege + "'");
@@ -235,7 +242,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}else {
 			
 			String[] path = pathHdfs.split("/");
-			String tmpPath = WorkflowPrefManager.getPathTmpFolder(getUserInfoBean().getUserName())+"/"+path[path.length-1];
+			String tmpPath = WorkflowPrefManager.getSysPathTmp()+"/"+path[path.length-1];
 			File tmpFile = new File(tmpPath);
 			
 			String modelName = path[path.length-1].substring(0, path[path.length-1].lastIndexOf('-'));

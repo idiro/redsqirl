@@ -1538,7 +1538,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 								sw.getElement(curEl.getComponentId())
 										.replaceInAllInteraction(
-												"([_ \\.]|^)("+Pattern.quote(oldAlias)+")([_ \\.]|$)", "$1"+newAlias+"$3",true);
+												"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
 
 								positionSuperActionInput.move(
 										(int) positionSuperActionInput.getX()
@@ -1664,8 +1664,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		Map<String, String> replaceInternalActions = new LinkedHashMap<String, String>();
-		// Change Name?
-		logger.info("Change SubWorkflow ids and link");
+		
+		//Get the average position so that we can repositionned relatively in the canvas.
 		int pos_x = 0;
 		int pos_y = 0;
 		for (String id : sw.getComponentIds()) {
@@ -1675,6 +1675,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		pos_x /= sw.getComponentIds().size();
 		pos_y /= sw.getComponentIds().size(); 
+		
+		// Change Name?
+		logger.info("Change SubWorkflow ids and link");
 		for (String id : sw.getComponentIds()) {
 			DataFlowElement df = sw.getElement(id);
 			logger.info(id);
@@ -1775,12 +1778,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 													.get(elOutput), df);
 									// Add alias to replace
 									replaceAliases
-											.put(df.getAliasesPerComponentInput()
-													.get(elCur.getComponentId())
+											.put(copy.getElement(elOutput).getAliasesPerComponentInput()
+													.get(elementToExpand.getComponentId())
 													.getKey(),
-													df.getAliasesPerComponentInput()
-															.get(elOutput)
-															.getKey());
+													getElement(elOutput).getAliasesPerComponentInput()
+													.get(df.getComponentId())
+													.getKey()
+													);
 								}
 							} catch (Exception e) {
 								// Expected if the output is not used in another
@@ -1793,11 +1797,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 
 				// Replace in the interactions id changes we have seen so far...
+				logger.info("Replace inside the interaction "+df.getComponentId()+": "+replaceInternalActions.toString());
 				Iterator<String> itReplace = replaceInternalActions.keySet()
 						.iterator();
 				while (itReplace.hasNext()) {
 					String key = itReplace.next();
-					df.replaceInAllInteraction("([_ \\.]|^)("+Pattern.quote(key)+")([_ \\.]|$)",
+					df.replaceInAllInteraction("([_ \\W]|^)("+Pattern.quote(key)+")([_ \\W]|$)",
 							"$1"+replaceInternalActions.get(key)+"$3",true);
 				}
 				df.setPosition(Math.max(10,df.getX()-pos_x+elementToExpand.getX()), Math.max(10,df.getY()-pos_y+elementToExpand.getY()));
@@ -1806,12 +1811,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		// Replace the superaction aliases
-		logger.info("Replace the superaction aliases");
+		logger.info("Replace the superaction aliases: "+replaceAliases.toString());
 		Iterator<String> itReplaceAliases = replaceAliases.keySet().iterator();
 		while (itReplaceAliases.hasNext()) {
 			String key = itReplaceAliases.next();
 			replaceInAllElements(getComponentIds(), 
-					"([_ \\.]|^)("+Pattern.quote(key)+")([_ \\.]|$)",
+					"([_ \\W]|^)("+Pattern.quote(key)+")([_ \\W]|$)",
 					"$1"+replaceAliases.get(key)+"$3",true);
 		}
 
@@ -1931,7 +1936,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						
 						getElement(curEl.getComponentId())
 								.replaceInAllInteraction(
-										"([_ \\.]|^)("+Pattern.quote(oldAlias)+")([_ \\.]|$)", "$1"+newAlias+"$3",true);
+										"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
 					}
 
 				}

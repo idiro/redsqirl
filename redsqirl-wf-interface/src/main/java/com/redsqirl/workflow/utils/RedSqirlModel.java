@@ -213,16 +213,23 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 
 	@Override
 	public void resetImage() {
-		setImage(new File(getDefaultImage()));	
+		File defaultImg = new File(getDefaultImage());
+		File img = getTomcatImage();
+		if(!defaultImg.getAbsolutePath().equals(img)){
+			img.delete();
+		}	
 	}
 
 	@Override
 	public void setImage(File imageFile) {
 		try {
-			Files.copy(imageFile.toPath(), new FileOutputStream(new File(new File(modelFile,conf_dir), modelFile.getName()+".gif")));
+			File localModelFile = new File(new File(modelFile,conf_dir), getName()+".gif");
+			if(!localModelFile.getAbsolutePath().equals(imageFile.getAbsolutePath())){
+				Files.copy(imageFile.toPath(), new FileOutputStream(localModelFile));
+			}
 			File modelDir = new File(PackageManager.getImageDir(isSystem()?null:user),"model");
 			modelDir.mkdir();
-			Files.copy(imageFile.toPath(), new FileOutputStream(new File(modelDir, modelFile.getName()+".gif")));
+			Files.copy(imageFile.toPath(), new FileOutputStream(new File(modelDir, getName()+".gif")));
 		} catch (FileNotFoundException e) {
 			logger.warn(e,e);
 		} catch (IOException e) {

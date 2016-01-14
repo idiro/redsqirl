@@ -330,7 +330,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 							cloneFrom.changeElementId(oldName,newName);
 							
 							cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(),
-									"([_ \\.]|^)("+Pattern.quote(oldName)+")([_ \\.]|$)", "$1"+newName+"$3",true);
+									"([_ \\W]|^)("+Pattern.quote(oldName)+")([_ \\W]|$)", "$1"+newName+"$3",true);
 							curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
 						}
 					}

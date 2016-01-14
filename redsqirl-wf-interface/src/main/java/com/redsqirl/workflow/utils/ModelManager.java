@@ -154,6 +154,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 			error = uninstallSA(model,cur);
 		}
 		try {
+			model.resetImage();
 			LocalFileSystem.delete(model.getFile());
 		} catch (IOException e) {
 			logger.error(e,e);
@@ -178,6 +179,10 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		String error = null;
 		logger.info("Install "+toInstall.size()+" models");
 		Iterator<SubDataFlow> it = toInstall.iterator();
+		File imageFile = new File(model.getFile(),RedSqirlModel.conf_dir+"/"+model.getName()+".gif");
+		if(imageFile.exists()){
+			model.setImage(imageFile);
+		}
 		while(it.hasNext() && error == null){
 			SubDataFlow cur = it.next();
 			logger.info(cur.getName());
@@ -187,7 +192,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 	}
 	
 	public File exportModel(ModelInt model, List<SubDataFlow> l, Boolean privilege) throws RemoteException{
-		String tmpPath = WorkflowPrefManager.getPathtmpfolder()+"/"+model.getName();
+		String tmpPath = WorkflowPrefManager.getSysPathTmp()+"/"+model.getName();
 		File tmpModel = new File(tmpPath);		
 		try{
 			LocalFileSystem.delete(tmpModel);
@@ -199,7 +204,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 			SubDataFlow cur = it.next();
 			cur.saveLocal(new File(tmpModel,RedSqirlModel.getModelAndSW(cur.getName())[1]), privilege);
 		}
-		File tmpModelZip = new File(WorkflowPrefManager.getPathtmpfolder()+"/"+model.getName()+"-"+model.getVersion()+".zip");
+		File tmpModelZip = new File(WorkflowPrefManager.getSysPathTmp()+"/"+model.getName()+"-"+model.getVersion()+".zip");
 		try{
 			LocalFileSystem.delete(tmpModelZip);
 		}catch(Exception e){}
