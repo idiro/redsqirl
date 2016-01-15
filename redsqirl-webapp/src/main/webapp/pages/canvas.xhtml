@@ -549,6 +549,16 @@
 
 	    	  console.log("addElementJS");
 	    	  
+	    	  /* console.log("canvasName " + canvasName);
+	    	  console.log("path " + path);
+	    	  console.log("positions " + positions);
+	    	  console.log("links " + links);
+	    	  console.log("selecteds " + selecteds);
+	    	  console.log("reset " + path);
+	    	  console.log("workflowType " + workflowType);
+	    	  console.log("forceRefresh " + forceRefresh);
+	    	  console.log("setWf " + setWf); */
+	    	  
 	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
 	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
 	    	  setWf = typeof setWf !== 'undefined' ? setWf : true;
@@ -1048,6 +1058,8 @@
 	    function checkExpand(){
 
 	    	console.log("checkExpand");
+	    	
+	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
 		    
 	    	 //<![CDATA[
 	    	if(getSelectedSAIconsCommaDelimited() == getSelectedIconsCommaDelimited()){
@@ -1520,7 +1532,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);jQuery('#canvas-tabs').unblock();"
+					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);"
 					reRender="errorTable" />
 				
 				<a4j:jsFunction name="regeneratePathsProject"
@@ -1912,10 +1924,18 @@
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
 
-				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus(); jQuery('#canvas-tabs').unblock();"
-					reRender="tabFlowchart" />
+			</a4j:region>
 
+			<a4j:region>
+			
+				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatusRebuildJS();"
+					reRender="tabFlowchart" />
+			
+				<a4j:jsFunction name="updateAllArcsStatusRebuildJS"
+					data="#{canvasBean.allOutputStatus}"
+					oncomplete="console.log('updateAllArcsStatusRebuildJS'); updateArcStatus(data); jQuery('#canvas-tabs').unblock();"
+					reRender="errorTable" />
 			</a4j:region>
 
 			<a4j:region>
@@ -2191,11 +2211,6 @@
 										value="#{messages.label_menu_aggregate}"
 										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();">
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
-									</rich:menuItem>
-									<rich:menuItem id="expandMenuItem" submitMode="ajax"
-										value="#{messages.label_menu_expand}"
-										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkExpand();">
-										<h:outputText value="Ctrl+Shift+R" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem submitMode="none"

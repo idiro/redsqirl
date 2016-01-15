@@ -58,6 +58,7 @@ var menu_dataoutput = "Data Output...";
 var menu_clean = "Clean the Data";
 var menu_oozieLog = "Oozie Action Logs";
 var menu_editSa = "Edit SuperAction";
+var menu_expand = "Expand";
 var menu_refreshSa = "Refresh SuperAction";
 
 var contextMenuCanvasAction = [
@@ -68,6 +69,7 @@ var contextMenuCanvasAction = [
                                {"Clean the Data":function(menuItem,menu){cleanElementJS(rightClickGroup);}},
                                {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
                                {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){openSubWorkflow(rightClickGroup.elementType);}}},
+                               {"Expand": function(menuItem,menu){checkExpand();}},
                                {"Refresh SuperAction": function(menuItem,menu){refreshSubWorkflowJS(rightClickGroup);}}
                                ];
 
@@ -1272,7 +1274,18 @@ function checkImg(src){
 
 function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName) {
     
-	//console.log("addElement");
+	console.log("addElement");
+	
+	console.log("canvasName " + canvasName);
+	console.log("elementType " + elementType);
+	console.log("elementImg " + elementImg);
+	console.log("posx " + posx);
+	console.log("posy " + posy);
+	console.log("numSides " + numSides);
+	console.log("idElement " + idElement);
+	console.log("selecteds " + selecteds);
+	console.log("privilege " + privilege);
+	console.log("elementTypeName " + elementTypeName);
 	
     //alert(idElement+": "+privilege);
     
@@ -2134,10 +2147,9 @@ function showContextMenu(group, e){
         
         if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) != 0 && key.indexOf(menu_clean) != 0 && key.indexOf(menu_oozieLog) != 0)){
             if(group.elementType.indexOf('>')==0){
-            //if(group.elementType && group.elementType.indexOf('>')==0){
                     temp[temp.length] = item;
             }else{
-                if( key.indexOf(menu_editSa)!=0 && key.indexOf(menu_refreshSa)!=0){
+                if( key.indexOf(menu_editSa)!=0 && key.indexOf(menu_refreshSa)!=0 && key.indexOf(menu_expand)!=0){
                     temp[temp.length] = item;
                 }
             }
@@ -2156,7 +2168,6 @@ function showContextMenu(group, e){
     cmenuCanvas = jQuery.contextMenu.create(temp);
     
     if(group.elementType.indexOf('>')==0){
-    //if(group.elementType && group.elementType.indexOf('>')==0){
         if(group.privilege != null){
             if(!jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").hasClass("context-menu-item-disabled")){
                 jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").addClass("context-menu-item-disabled");
@@ -2350,7 +2361,13 @@ function openChangeIdModalJS(group){
 
 function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     
-	//console.log("createPolygon");
+	console.log("createPolygon");
+	
+	/*console.log("imgTab " + imgTab);
+	console.log("posInitX " + posInitX);
+	console.log("poxInitY " + poxInitY);
+	console.log("numSides " + numSides);
+	console.log("canvasName " + canvasName);*/
 	
     imgHeight = imgTab.height;
     imgWidth = imgTab.width;
@@ -2367,10 +2384,14 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     var offsetY = imgHeight/2;
     
     //FIXME - error on footer in the first time open
+    //if((isNaN(offsetX) && isNaN(offsetY)) || (offsetX == 0 && offsetY == 0)){ - this hack the erro on AWS
     if(isNaN(offsetX) && isNaN(offsetY)){
         offsetX = 25;
         offsetY = 25;
     }
+    
+    console.log("offsetX " + offsetX);
+    console.log("offsetY " + offsetY);
     
     var polygonTab = new Kinetic.RegularPolygon({
         x : 40,
