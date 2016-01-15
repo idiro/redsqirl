@@ -1409,6 +1409,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
+	
+	public String[] getChangeWfComment() throws RemoteException{
+		return new String[]{getSavedWfComment(),getCommentWf()};
+	}
 
 	public String getSavedWfComment() throws RemoteException {
 		logger.info("getSavedWfComment");

@@ -576,6 +576,7 @@ CommandChangeCommentWf.prototype.getName = function(){
 
 function execChangeCommentWfCommand(oldComment, newComment){
     console.timeStamp("execChangeCommentWfCommand begin");
+    console.log('hahaho');
     if(oldComment != newComment){
         canvasArray[selectedCanvas].commandHistory.execute(
         new CommandChangeCommentWf(oldComment, newComment));
