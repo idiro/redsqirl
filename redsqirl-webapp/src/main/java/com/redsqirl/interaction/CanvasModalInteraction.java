@@ -33,7 +33,7 @@ public abstract class CanvasModalInteraction extends BaseBean implements Seriali
 	 */
 	private static final long serialVersionUID = 6266349903239331092L;
 
-	static protected Logger logger = Logger.getLogger(CanvasModalInteraction.class);
+	static private Logger logger = Logger.getLogger(CanvasModalInteraction.class);
 	
 	/**
 	 * The back-end interaction

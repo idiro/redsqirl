@@ -11,6 +11,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.CanvasModalOutputTab;
 import com.redsqirl.FileSystemBean;
 import com.redsqirl.dynamictable.SelectHeaderType;
@@ -27,6 +29,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 */
 	private static final long serialVersionUID = 3020683683280306022L;
 
+	static private Logger logger = Logger.getLogger(BrowserInteraction.class);
 	/**
 	 * List of the field name
 	 */
@@ -88,6 +91,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		try{
 			if (tree.getFirstChild("browse")
 					.getFirstChild("output").getChildren("property") != null) {
+				//logger.info(printTree(tree.getFirstChild("browse").getFirstChild("output")));
 				List<Tree<String>> props = tree.getFirstChild("browse")
 						.getFirstChild("output").getFirstChild("property").getSubTreeList();
 				if (props != null) {
@@ -100,7 +104,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			}
 
 		}catch(Exception e){
-			logger.info("Exception: "+e.getMessage());
+			logger.info("Exception: "+e.getMessage(),e);
 		}
 
 		//set fields
@@ -141,7 +145,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		Tree<String> myProperty = inter.getTree().getFirstChild("browse").getFirstChild("output").add("property");
 
 		for (SelectItem item : listProperties) {
-			logger.info("Add property: " + item.getLabel() + ": " + item.getValue());
+			logger.debug("Add property: " + item.getLabel() + ": " + item.getValue());
 			myProperty.add(item.getLabel()).add(item.getValue().toString());
 		}
 
@@ -173,7 +177,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			if (unchanged) {
 				for (SelectItem itemList : listProperties) {
 					String key = itemList.getLabel();
-					logger.info("Comparaison property "
+					logger.debug("Comparaison property "
 							+ key
 							+ ": "
 							+ itemList.getValue()
@@ -232,6 +236,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				}
 			}
 		} catch (Exception e) {
+			logger.warn(e,e);
 			unchanged = false;
 		}
 	}

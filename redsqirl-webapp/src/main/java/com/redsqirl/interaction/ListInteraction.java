@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 
@@ -23,6 +25,8 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 	 */
 	private static final long serialVersionUID = 4296790821079880612L;
 
+	static private Logger logger = Logger.getLogger(ListInteraction.class);
+	
 	/**
 	 * "Y" display as comboBox "N" display as radio button list
 	 */
