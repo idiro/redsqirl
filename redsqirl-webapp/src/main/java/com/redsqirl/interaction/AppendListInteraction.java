@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 
@@ -23,7 +25,9 @@ public class AppendListInteraction extends CanvasModalInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = -5239443046171155803L;
-
+	
+	static private Logger logger = Logger.getLogger(AppendListInteraction.class);
+	
 	/**
 	 * "Y" display as comboBox "N" display as check box list
 	 */

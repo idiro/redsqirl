@@ -224,17 +224,17 @@ public class MapRedTextType extends MapRedDir {
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
-
-					if (getProperty(key_delimiter) == null) {
-						String delimiter = getDefaultDelimiter(text);
-
-						logger.info("delimiter -> " + delimiter);
-
+					String delimiter = getProperty(key_delimiter);
+					if (delimiter == null) {
+						delimiter = getDefaultDelimiter(text);
 						super.addProperty(key_delimiter, delimiter);
+						logger.info("No delimiter, set it automatically to " + delimiter);
+					}else{
+						logger.info("Delimiter " + delimiter);
 					}
 
 
-					FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)), list);
+					FieldList fl = generateFieldsMap(getChar(delimiter), list);
 					if(fields == null || fields.getSize() == 0){
 						fields = fl;
 					}else{
