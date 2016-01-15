@@ -173,7 +173,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			if (unchanged) {
 				for (SelectItem itemList : listProperties) {
 					String key = itemList.getLabel();
-					logger.trace("Comparaison property "
+					logger.info("Comparaison property "
 							+ key
 							+ ": "
 							+ itemList.getValue()
@@ -198,7 +198,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				List<Tree<String>> oldFieldsList = tree
 						.getFirstChild("browse")
 						.getFirstChild("output").getChildren("field");
-				logger.debug("comparaison fields: "
+				logger.info("comparaison fields: "
 						+ oldFieldsList.size() + " , "
 						+ listFields.size());
 				if (unchanged &= oldFieldsList.size() == listFields.size()) {
@@ -207,7 +207,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					for (String nameValue : listFields) {
 						Tree<String> field = oldFieldIt.next();
 						String value[] = nameValue.split(" ");
-						logger.trace("Comparaison field: "
+						logger.info("Comparaison field: "
 								+ field.getFirstChild("name")
 								.getFirstChild().getHead()
 								+ " , "
