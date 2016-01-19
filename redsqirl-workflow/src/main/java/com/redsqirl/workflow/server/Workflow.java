@@ -1711,33 +1711,37 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						if ((new SubWorkflowInput().getName()).equals(elCur
 								.getName())) {
 							// Link to a workflow source
-							Iterator<String> itOrigInput = componentWithNamePerInputs
-									.get(elCur.getComponentId()).keySet()
-									.iterator();
-							while (itOrigInput.hasNext()) {
-								String elInput = itOrigInput.next();
-								df.addInputComponent(inputName,
-										getElement(elInput));
-								logger.info("Add input: " + inputName + " "
-										+ elInput);
-								getElement(elInput).addOutputComponent(
-										componentWithNamePerInputs.get(
-												elCur.getComponentId()).get(
-												elInput), df);
-								logger.info("Add output: "
-										+ componentWithNamePerInputs.get(
-												elCur.getComponentId()).get(
-												elInput) + " "
-										+ df.getComponentId());
-								// Add alias to replace
-								replaceAliases.put(
-										df.getAliasesPerComponentInput()
-												.get(elCur.getComponentId())
-												.getKey(), df
-												.getAliasesPerComponentInput()
-												.get(elInput).getKey());
+							try{
+								Iterator<String> itOrigInput = componentWithNamePerInputs
+										.get(elCur.getComponentId()).keySet()
+										.iterator();
+								while (itOrigInput.hasNext()) {
+									String elInput = itOrigInput.next();
+									df.addInputComponent(inputName,
+											getElement(elInput));
+									logger.info("Add input: " + inputName + " "
+											+ elInput);
+									getElement(elInput).addOutputComponent(
+											componentWithNamePerInputs.get(
+													elCur.getComponentId()).get(
+															elInput), df);
+									logger.info("Add output: "
+											+ componentWithNamePerInputs.get(
+													elCur.getComponentId()).get(
+															elInput) + " "
+															+ df.getComponentId());
+									// Add alias to replace
+									replaceAliases.put(
+											df.getAliasesPerComponentInput()
+											.get(elCur.getComponentId())
+											.getKey(), df
+											.getAliasesPerComponentInput()
+											.get(elInput).getKey());
+								}
+								df.getInputComponent().get(inputName).remove(elCur);
+							}catch(Exception e){
+								//Probably some inputs are missing from the workflow
 							}
-							df.getInputComponent().get(inputName).remove(elCur);
 						}
 					}
 				}
