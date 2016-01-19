@@ -210,6 +210,8 @@ public abstract class MapRedDir extends MapRedHdfs{
 								maxToRead - ans.size()
 								));
 					}
+					
+					logger.info("Number of line read in "+getPath()+": "+ans.size());
 				}
 			} catch (IOException e) {
 				String error = "Unexpected error: " + e.getMessage();
