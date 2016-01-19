@@ -1055,15 +1055,13 @@
 			}
 	    }
 	    
-	    function checkExpand(){
-
+	    function checkExpand(elementId){
 	    	console.log("checkExpand");
-	    	
 	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
 		    
 	    	 //<![CDATA[
-	    	if(getSelectedSAIconsCommaDelimited() == getSelectedIconsCommaDelimited()){
-	    		undoRedoExpand(getSelectedSAIconsCommaDelimited());
+	    	if(elementId){
+	    		undoRedoExpand(elementId);
 		    }else{
 		    	alert("You need select one object or select just Super Actions");
 		    	jQuery('#canvas-tabs').unblock();
@@ -1090,20 +1088,22 @@
 	   	function reinitializeCanvasScreen(refresh,backUpWf){
 	   	    //<![CDATA[
 	   		console.log("reinitializeCanvasScreen");
+	   		var wf = "";
+	   		if(backUpWf != null){
+				wf = "\n\t- "+backUpWf.replace(", ","\n\t- ");
+	   		}
 			if(refresh != null){
-				backupAndCloseAll();
-				if(backUpWf != null && confirm(msg_refresh)){
+				closeAllWorkflowTabs();
+				if(backUpWf != null && confirm(msg_refresh+wf)){
 				   	reOpenCanvas();
+				}else{
+					rerenderCanvasTab();
 				}
 			}else{ 
-				if(backUpWf != null){
-					var wf = "\n\t- "+backUpWf.replace(", ","\n\t- ");
-	    	   		//re open canvas
-	    	   		if(confirm(msg_recover_backup+wf)){
-	    	      		reOpenCanvas();
-	    	   		}
-	    		}
-				
+	    	   	//re open canvas
+	    	   	if(backUpWf != null && confirm(msg_recover_backup+wf)){
+	    	     	reOpenCanvas();
+	    	   	}
     		   	notifyUser();
 	    	   	
 			}
@@ -1774,7 +1774,7 @@
                 
                 <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas'); reOpenCanvasJS(data);" />
                 
-                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" oncomplete="jQuery('#canvas-tabs').unblock();" />
+                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" />
                     
 			</a4j:region>
 			
@@ -1857,6 +1857,12 @@
 			
 			
 			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+			
 				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" 
 					oncomplete="console.log('reinitializeCanvas'); reinitializeCanvasScreen(data[0],data[1])" />
 			</a4j:region>

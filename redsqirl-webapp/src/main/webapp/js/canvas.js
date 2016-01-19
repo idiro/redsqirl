@@ -69,7 +69,7 @@ var contextMenuCanvasAction = [
                                {"Clean the Data":function(menuItem,menu){cleanElementJS(rightClickGroup);}},
                                {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
                                {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){openSubWorkflow(rightClickGroup.elementType);}}},
-                               {"Expand": function(menuItem,menu){checkExpand();}},
+                               {"Expand": function(menuItem,menu){checkExpand(rightClickGroup.getId());}},
                                {"Refresh SuperAction": function(menuItem,menu){refreshSubWorkflowJS(rightClickGroup);}}
                                ];
 

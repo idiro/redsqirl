@@ -1266,7 +1266,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String ans = getFirstTime();
 		if(getFirstTime() == null){
 			setFirstTime(" ");
+		}else{
+			backupAndCloseAll();
 		}
+		
 		String wfName = "";
 		Iterator<String[]> it = getworkFlowInterface().getLastBackedUp().iterator();
 		while(it.hasNext()){
