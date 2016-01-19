@@ -10,8 +10,32 @@ What is a package
 
 What is in a package
 
-	A Package will contain actions that can be used on Red Sqirl once it is installed. 
-	An action will be composed of a Java class a help file and an image file.
+	A Package will contain actions that can be used on Red Sqirl once it is installed. An action will be composed of a Java class a help file and an image file. 
+
+        Red Sqirl uses maven as a build manager. In addition to the Java code,
+Red Sqirl web application needs additional files to manage correctly a package.
+In our template Red Sqirl package maven build, we gather those files in
+src/main/pck.
+
+  * actions.txt File containing the list of actions provided in this package, one
+  * action name per line.
+
+  * settings.json Lists all the settings the package requires. The settings can
+  * be organise in sub-categories.
+
+  * lang.properties Contains label and descriptions of all the settings the
+  * package needs.
+
+  * package.properties Contains the package name and the version property.
+
+  * help directory: An html file for each action. The file name should be 
+  * ${actionName}.html.
+
+  * image directory: A gif file for each action. The file name should be
+  * ${actionName}.gif
+
+  []
+
 
 Create a package
 

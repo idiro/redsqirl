@@ -9,11 +9,17 @@ Package Management
 
 * Install New packages
 
+In order to gain accessibility or functionality you can install packages.
+Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the
+Analytics Store website. Once a package is installed users may have to configure
+settings before using it. 
+
 ** Online installation
 
- If your Red Sqirl instance can reach the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, packages can be
-installed by the users or through the registered email you use to generate a Red
-Sqirl queue
+ If your Red Sqirl instance can reach the
+{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, packages can be
+installed by the users or through the registered email you use to generate the
+Red Sqirl license.
 
 *** Through the Admin View
 
@@ -24,6 +30,8 @@ Sqirl queue
  * Go in Packages > Install.
 
  * Choose the package and click install.
+
+ []
 
 *** Through the Red Sqirl main interface.
 

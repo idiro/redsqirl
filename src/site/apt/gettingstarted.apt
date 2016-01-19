@@ -51,27 +51,23 @@ avoid permission conflicts.
 
 * Install
 
-  [[01]] Download the version with tomcat or take a look in the steps 11 and 12
+  [[01]] Download the version with tomcat
 
   [[02]] Unzip the directory where you want to install it through the Tomcat user
 
-  [[03]] Set up your conf/redsqirl_sys.properties file (take a look in the table below)
-  
-  [[04]] Run the script bin/install.sh, it will ask for your Tomcat webapps port and directory if necessary. This is going to start the tomcat.
+  [[03]] Run the script bin/install.sh, it will ask for your Tomcat webapps port and directory if necessary. This is going to start the tomcat.
 
-  [[05]] Go http://localhost:<portNumber>/redsqirl and check.
+  [[04]] Go http://localhost:<portNumber>/redsqirl and check.
 
-  [[06]] Choose between On-line - if the server can connect to the analytics-store server - (step 7) or Off-line(step 10) in the combobox.
+  [[05]] Choose between On-line - if the server can connect to the analytics-store server - (step 6) or Off-line(step 7) in the combobox.
 
-  [[07]] On-line
+  [[06]] On-line
 
      [[i]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
 
-     [[ii]] In the License key page you need to input the maximum number of nodes that your Hadoop cluster contains and press the ok button. (This is going to generate your license key)
+     [[ii]] Install the recommended default package and any other package. Go to 8. 
 
-     [[iii]] Install the recommended default package. Go to 8. 
-
-  [[08]] Off-line
+  [[07]] Off-line
 
      [[i]] Sign in with your OS details. 
 
@@ -91,33 +87,11 @@ avoid permission conflicts.
 
      [[ix]] Upload the Red Sqirl Pig package (.zip) downloaded in the new page. Go to 8.
  
-  [[08]] You can then sign out from the admin page and sign in to your account.
+  [[08]] Set up the system settings from the third admin tab.
+  
+  [[09]] You can then sign out from the admin page and sign in to your account.
 
   []
-
-  You will find below an example of a property file.
-
-----------------------------------------
-namenode=hdfs\://${namenode}\:9000
-jobtracker=${namenode}\:9022
-oozie_launcher_queue=ooziequeue
-oozie_action_queue=default
-default_action_queue=default
-oozie_url=http\://${namenode}\:11000/oozie
-oozie_xmlns=uri\:oozie\:workflow\:0.2
-nutcracker_path=/user/oozie/share/lib/sqirl-nutcracker
-hive_xml=/etc/hive/hive-site.xml
-hive_default_xml=/etc/hive/hive-default.xml
-allow_user_install=true
-start_hive_range=10003
-end_hive_range=100100
-jdbc_hive_server=namenode
-pack_manager_url=http\://95.45.250.249\:8091/analytics-store
-# If your do an offline installation you need at least one admin user
-admin_user=user1\:user2
-hadoop_home=/home/hadoop
-
-
 ----------------------------------------
 
 
@@ -131,71 +105,4 @@ hadoop_home=/home/hadoop
 
   Once Red Sqirl is installed, you can find user tutorials in the User Guide,
  {{{./help/buildingworkflow.html}canvas section}}.
-
-* Extras
-
-** System properties
-
-  Below we list the system preferences available to you.
-
-*----------+--------------+----------------+
-| Properties | Description | Example  |
-*----------+--------------+----------------+
-| namenode | Apache hadoop namenode     | hdfs://namenode:9000    |
-*----------+--------------+----------------+
-| jobtracker | Apache hadoop job tracker | namenode:9001 |
-*----------+--------------+----------------+
-| oozie_url | Apache Oozie URL | http://namenode:11000/oozie |
-*----------+--------------+----------------+
-| oozie_xmlns | Apache Oozie xmlns | uri:oozie:workflow:0.2 |
-*----------+--------------+----------------+
-| oozie_launcher_queue | Queue used for map only Oozie actions that starts the process | ooziequeue |
-*----------+--------------+----------------+
-| oozie_action_queue  | Queue used for the actual processing | default |
-*----------+--------------+----------------+
-| nutcracker_path|Path on hdfs for nutcracker path|/user/oozie/share/lib/sqirl-nutcracker| |
-*----------+--------------+----------------+
-| pack_manager_url | The analytics store URL (REST server) | http\://95.45.250.249\:8091/analytics-store |
-*----------+--------------+----------------+
-| tomcat_path | Path for Tomcat installation  | /path/tomcat/ |
-*----------+--------------+----------------+
-| admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
-*----------+--------------+----------------+
-| allow_user_install | Allow users to install their own packages | true |
-*----------+--------------+----------------+
-| hadoop_home  | The HADOOP_HOME directory where the conf folder and bin folder can be found | /home/hadoop | 
-*----------+--------------+----------------+
-| jdbc_hive_server | The name of the Hive server to use | namenode |
-*----------+--------------+----------------+
-| hive_xml | Uri for XML jobs on Oozie | /path/xmlfile |
-*----------+--------------+----------------+
-| hive_default_xml | Path for where the default hive xml is stored , used for Oozie  | /foo/bar/ |
-*----------+--------------+----------------+
-| start_hive_range | Optional, needed for generating a Hive server port for every user| 10000|
-*----------+--------------+----------------+
-| end_hive_range | Optional, end of automatic range allocation (excluded)| 10100|
-*----------+--------------+----------------+
-|  | | |
-*----------+--------------+----------------+
-
-
-** User properties
-
-  Below we list the user preferences available to you.  
-
-*----------+--------------+----------------+
-| Properties | Description | Example  |
-*----------+--------------+----------------+
-| user_hive | Hive Server URL | jdbc:hive://datanode3:10000/default |
-*----------+--------------+----------------+
-| user_rsa_key | Path where to find the user RSA key (default ~/.ssh/id_rsa) | /home/my_user/.ssh/id_rsa |
-*----------+--------------+----------------+
-| backup_path | HDFS path where workflow backup are made  | default /user/\{user\}/redsqirl_backup |
-*----------+--------------+----------------+
-| number_backup | Number of workflow backup file to keep (default 25) | 50 |
-*----------+--------------+----------------+
-| number_oozie_job_directory_tokeep | Number of Oozie jobs to keep per workflow (default 20) | 50 |
-*----------+--------------+----------------+
-| hdfspath_oozie_job | HDFS path where the Oozie workflows are written | /user/\{user\}/.redsqirl/jobs  |
-*----------+--------------+----------------+
 
