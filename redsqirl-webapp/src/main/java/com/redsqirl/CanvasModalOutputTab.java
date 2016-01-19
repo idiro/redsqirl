@@ -503,20 +503,56 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 								logger.info(outputLines);
 								for (Map<String, String> line : outputLines) {
 									int i = 0;
-									Object[] rowCur = new Object[fl.getSize()];
+									Comparable[] rowCur = new Comparable[fl.getSize()];
 									Iterator<String> fieldIt = fl.getFieldNames().iterator();
 									while(fieldIt.hasNext()){
 										String field = fieldIt.next();
 										FieldType type = fl.getFieldType(field);
 										String curData = line.get(field);
-										if(FieldType.FLOAT.equals(type)){
-											rowCur[i] = Float.parseFloat(curData);
-										}else if(FieldType.DOUBLE.equals(type)){
-											rowCur[i] = Double.parseDouble(curData);
-										}else if(FieldType.INT.equals(type)){
-											rowCur[i] = Integer.parseInt(curData);
-										}else {
-											rowCur[i] = curData;
+										switch(type){
+										case FLOAT:
+											try{
+												rowCur[i] = Float.parseFloat(curData);
+											}catch(Exception e){
+												rowCur[i] = Float.NaN;
+											}
+											break;
+										case INT:
+											try{
+												rowCur[i] = Integer.parseInt(curData);
+											}catch(Exception e){
+												rowCur[i] = null;
+											}
+											break;
+										case DOUBLE:
+											try{
+												rowCur[i] = Double.parseDouble(curData);
+											}catch(Exception e){
+												rowCur[i] = Double.NaN;
+											}
+											break;
+										case LONG:
+											try{
+												rowCur[i] = Long.parseLong(curData);
+											}catch(Exception e){
+												rowCur[i] = null;
+											}
+											break;
+										case BOOLEAN:
+										case CATEGORY:
+										case CHAR:
+										case DATE:
+										case DATETIME:
+										case TIMESTAMP:
+										case STRING:
+										default:
+											if(curData == null){
+												rowCur[i] = "";
+											}else{
+												rowCur[i] = curData;
+											}
+											break;
+
 										}
 										++i;
 									}
@@ -630,7 +666,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	        }
 	        output.write("\n".getBytes());
 
-	        for (Object[] objS : getRows()) {
+	        for (Comparable[] objS : getRows()) {
 	        	for(int i = 0; i < objS.length;++i){
 	        		if(i > 0){
 	        			output.write(",".getBytes());
@@ -752,8 +788,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 * @return
 	 * @see com.redsqirl.dynamictable.UnselectableTable#getRows()
 	 */
-	public List<Object[]> getRows() {
+	public List<Comparable[]> getRows() {
 		return grid == null ? null : grid.getRows();
+	}
+	
+	public void sort(){
+		if(grid != null){
+			grid.sort();
+		}
 	}
 
 	public boolean isSourceNode() {

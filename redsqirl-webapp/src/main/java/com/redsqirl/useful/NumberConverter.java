@@ -22,7 +22,7 @@ public class NumberConverter implements Converter, Serializable {
 			return null;
 		}
 		
-		if(NumberUtils.isNumber(value.toString())){
+		if(value instanceof Float || value instanceof Double){
 			double dblValue = Double.parseDouble(value.toString());
 			if(dblValue - ((int) dblValue) > 0){
 				if(dblValue > 10E5 || dblValue - ((int) dblValue) < 10E-3){

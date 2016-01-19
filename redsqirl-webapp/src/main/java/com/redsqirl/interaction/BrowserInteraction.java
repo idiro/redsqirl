@@ -447,7 +447,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 * @return
 	 * @see com.redsqirl.CanvasModalOutputTab#getRows()
 	 */
-	public List<Object[]> getGridRows() {
+	public List<Comparable[]> getGridRows() {
 		return modalOutput != null ? modalOutput.getRows():null;
 	}
 

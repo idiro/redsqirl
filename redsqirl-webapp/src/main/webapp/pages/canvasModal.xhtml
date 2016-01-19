@@ -712,7 +712,6 @@
 		                <br/>
 		                <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
 		                
-		                <a4j:outputPanel ajaxRendered="true">
 		                    <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
 		                        var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		                        rowKeyVar="rowNb" enableContextMenu="false"
@@ -727,10 +726,14 @@
 		                        
 		                        
 		                        <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
-		                        	var="column" index="ind" id="column#{ind}" sortExpression="#{rowData[ind]}">
+		                        	var="column" index="ind" sortable="true">
 		                            
 		                            <f:facet name="header">
-		                                <h:outputText value="#{column}" />
+		                            	<a4j:commandButton value="#{column}"
+											action="#{canvasModalBean.outputTab.sort}"
+											reRender="displayTable">
+												<a4j:actionparam name="sortIdx" value="#{ind}" />
+											</a4j:commandButton>
 		                            </f:facet>
 		                            
 		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />
@@ -738,7 +741,6 @@
 		                        </rich:columns>
 		        
 		                    </rich:scrollableDataTable>
-		                </a4j:outputPanel>
 		        
 		                </div>
 		                

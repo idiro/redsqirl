@@ -13,7 +13,9 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.WordUtils;
+import org.apache.log4j.Logger;
 
+@SuppressWarnings("rawtypes")
 public class UnselectableTable implements Serializable{
 
 	/**
@@ -21,9 +23,14 @@ public class UnselectableTable implements Serializable{
 	 */
 	private static final long serialVersionUID = -7850738860592864276L;
 
+	private static Logger logger = Logger.getLogger(UnselectableTable.class);
+	
 	private List<String> columnIds;
 	private List<String> titles;
-	private List<Object[]> rows;
+	private List<Comparable[]> rows;
+	
+	private Integer indexOrdered;
+	private Integer order;
 
 
 	/**
@@ -33,7 +40,7 @@ public class UnselectableTable implements Serializable{
 	public UnselectableTable(LinkedList<String> columnIds) {
 		super();
 		this.columnIds = columnIds;
-		this.rows = new LinkedList<Object[]>();
+		this.rows = new LinkedList<Comparable[]>();
 		updateTitles();
 	}
 
@@ -47,23 +54,60 @@ public class UnselectableTable implements Serializable{
 			}
 		}
 	}
+	public void sort(){
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+		String sortIdx = params.get("sortIdx");
+		try{
+			sort(Integer.valueOf(sortIdx));
+		}catch(Exception e){}
+	}
+	
+	public void sort(final Integer index){
+		logger.info("Sort "+index);
+		
+		if(index == null || index < 0 || index >= columnIds.size()){
+			return;
+		}
+		
+		if(index.equals(indexOrdered)){
+			order*=-1;
+		}else{
+			indexOrdered = index;
+			order=1;
+		}
+		final Integer ord = order;
+		Collections.sort(rows, new Comparator<Comparable[]>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public int compare(Comparable[] o1, Comparable[]o2) {
+				if(o1[index] == null){
+					return o2[index] == null ? 0 : -ord;
+				}else if(o2[index] == null){
+					return ord;
+				}
+				
+				return ord*o1[index].compareTo(o2[index]);
+			}
+		});
+	}
 	
 	/**
 	 * @param columnIds
 	 * @param rows
 	 */
-	public UnselectableTable(LinkedList<String> columnIds, LinkedList<Object[]> rows) {
+	public UnselectableTable(LinkedList<String> columnIds, LinkedList<Comparable[]> rows) {
 		super();
 		this.columnIds = columnIds;
 		this.rows = rows;
 	}
 
 
-	public Object getValueRow(int rowNb, int columnNb){
+	public Comparable getValueRow(int rowNb, int columnNb){
 		return rows.get(rowNb)[columnNb];
 	}
 
-	public Object getValueRow(int rowNb, String column){
+	public Comparable getValueRow(int rowNb, String column){
 		return rows.get(rowNb)[columnIds.indexOf(column)];
 	}
 
@@ -87,7 +131,7 @@ public class UnselectableTable implements Serializable{
 
 	public Map<String,String> getRow(int index){
 		Map<String,String> ans = null;
-		Object[] row = rows.get(index);
+		Comparable[] row = rows.get(index);
 		if(row != null){
 			ans = new LinkedHashMap<String,String>();
 			for(int i = 0; i < columnIds.size();++i){
@@ -115,22 +159,22 @@ public class UnselectableTable implements Serializable{
 	/**
 	 * @return the rows
 	 */
-	public List<Object[]> getRows() {
+	public List<Comparable[]> getRows() {
 		return rows;
 	}
 	/**
 	 * @param rows the rows to set
 	 */
-	public void setRows(List<Object[]> rows) {
+	public void setRows(List<Comparable[]> rows) {
 		this.rows = rows;
 	}
 
 	/**
 	 * @param e
 	 * @return
-	 * @see java.util.List#add(java.lang.Object)
+	 * @see java.util.List#add(java.lang.Comparable)
 	 */
-	public boolean add(Object[] e) {
+	public boolean add(Comparable[] e) {
 		return rows.add(e);
 	}
 
@@ -139,16 +183,16 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#addAll(java.util.Collection)
 	 */
-	public boolean addAll(Collection<? extends Object[]> c) {
+	public boolean addAll(Collection<? extends Comparable[]> c) {
 		return rows.addAll(c);
 	}
 
 	/**
 	 * @param o
 	 * @return
-	 * @see java.util.List#indexOf(java.lang.Object)
+	 * @see java.util.List#indexOf(java.lang.Comparable)
 	 */
-	public int columnIdsIndexOf(Object o) {
+	public int columnIdsIndexOf(Comparable o) {
 		return columnIds.indexOf(o);
 	}
 
@@ -157,7 +201,7 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#remove(int)
 	 */
-	public Object[] remove(int index) {
+	public Comparable[] remove(int index) {
 		return rows.remove(index);
 	}
 
