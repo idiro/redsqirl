@@ -135,6 +135,20 @@ FieldList {
 		tmp.addAll(positions);
 		return tmp;
 	}
+	
+	public String toString(){
+		String ans = "{";
+		Iterator<String> it = positions.iterator();
+		while(it.hasNext()){
+			String fieldName = it.next();
+			ans+= fieldName+": "+field.get(fieldName);
+			if(it.hasNext()){
+				ans += ",";
+			}
+		}
+		ans +="}";
+		return ans;
+	}
 
 	/**
 	 * Get size of the positions

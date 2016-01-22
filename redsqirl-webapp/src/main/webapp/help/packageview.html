@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Packages</title>
+</head>
+<body>
+	<h1>Packages</h1>
+
+	<p>The package view gather all the packages installed on your Red Sqirl
+	instance.</p>
+
+	<p>Packages are groups of actions that are used to perform
+	specific processes on Red Sqirl. They generally run on the same
+	platform e.g. Pig, Hive.</p>
+
+	<h2>Scope</h2>
+
+	<p>Two scopes of package installation exists
+	<ul>
+	    <li>System: The system scope is shared with everybody.</li>
+	    <li>User: The user scope allow the installation of personal extra
+	    functionality.</li>
+	</ul>
+
+	<p>The user scope packages overwrite system ones when there is a
+	conflict. For example if Red Sqirl Pig version 1 is installed on the
+	System scope and the user 'brian' has installed version 2 on its user
+	scope. Version 1 will be used for every user but 'brian' who will use
+	version 2.</p>
+
+	<h2>Installation</h2>
+
+	<p>In order to install system packages, you need to be an administrator
+	and therefore be in the according <a class="stopLink" id="helpmain_setting" onclick="return false;" href="../help/setting.html">setting</a>. To
+	install user packages, the user package setting should be set to true.</p>
+
+	<p>If your web server can reach the Analytics Store, you can easily
+	install a new functionality. 
+	<ol>
+	    <li>Click Install either in the System scope column or User Scope
+	    column</li>
+	    <li>Sign In with your Analytics Store credentials, if you do not
+	    have an account, you can create one on the spot</li>
+	    <li>Find the package you would like to install</li>
+	    <li>Click install</li>
+	</ol>
+
+	<h2>Settings</h2>
+
+	<p>A package may comes with its own settings. You could access to them
+	through this view. Settings can also have two scopes, those scope are
+	independent from the scope of the package. Similarly, user scope
+	overwrite system scope. If you want to know more about settings please
+	refer to the <a class="stopLink" id="helpmain_setting" onclick="return false;" href="../help/setting.html">setting page</a>.</p>
+
+</body>
+</html>

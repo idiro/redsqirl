@@ -252,7 +252,9 @@ CommandAddObj.prototype.redo = function(){
     tmpCommandObj = this;
     addElementBt(this.elementType,this.groupId,this.elementId);
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
-	canvasArray[this.canvasName].polygonLayer.draw();
+	canvasArray[this.canvasName].stage.draw();
+	canvasArray[this.canvasName].background.draw();
+    canvasArray[this.canvasName].polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");
 };
 

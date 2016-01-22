@@ -231,7 +231,7 @@
     	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton" action="#{canvasBean.checkName}"
     	    value="#{messages.button_ok}" rendered="#{browserHdfsBean.showSave == 'T'}"
             oncomplete="if(#{requestScope['msnError'] == null} ){ if(! isHDFSFileExists(getPathModalFileHdfs('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPathModalFileHdfs('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}}"
-            reRender="msnError" >
+            reRender="errorTable,msnError" >
             <a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
         </a4j:commandButton>
         

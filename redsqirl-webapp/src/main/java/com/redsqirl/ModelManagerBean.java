@@ -114,6 +114,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			error = "Workflow "+wfName+" does not exist";
 			displayErrorMessage(error, "INSTALLSUBWORKFLOW");
 			return;
+		}else if( (error = swa.check()) != null){
+			displayErrorMessage(error, "INSTALLSUBWORKFLOW");
+			return;
 		}
 		boolean system = asSystem.equals("System");
 		
@@ -462,19 +465,6 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		logger.info("move before");
 		copyMove = "M";
 		copyMoveBefore();
-	}
-	
-	private void displayErrorMessage(String error, String usageRecordField){
-
-		if(error != null){
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			logger.info(error);
-			usageRecordLog().addError(usageRecordField, error);
-		}else{
-			usageRecordLog().addSuccess(usageRecordField);
-		}
 	}
 	
 	protected void copyMoveBefore() {

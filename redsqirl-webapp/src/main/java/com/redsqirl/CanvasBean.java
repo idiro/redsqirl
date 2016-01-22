@@ -193,13 +193,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		//logger.info("nameElement " + nameElement);
 		//logger.info("paramGroupID " + paramGroupID);
 		//logger.info("paramidElement " + paramIdElement);
-
+		String msg = null;
 		try {
 			DataFlow df = getDf();
 			if (df == null) {
-				MessageUseful.addErrorMessage("The workflow '" + nameWorkflow + "' has not been initialised!");
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
+				msg = "The workflow '" + nameWorkflow + "' has not been initialised!";
 			} else if (nameElement != null && paramGroupID != null) {
 				idLastElementInserted = df.addElement(nameElement);
 				if (paramIdElement != null && !paramIdElement.isEmpty()
@@ -213,22 +211,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,
 							idLastElementInserted);
 				} else {
-					MessageUseful.addErrorMessage("NULL POINTER");
-					HttpServletRequest request = (HttpServletRequest) FacesContext
-							.getCurrentInstance().getExternalContext()
-							.getRequest();
-					request.setAttribute("msnError", "msnError");
+					msg = "NULL POINTER";
 				}
 			}
 
 		} catch (Exception e) {
 			logger.info(e,e);
-			usageRecordLog().addError("ERROR ADDELEMENT", e.getMessage());
+			msg = e.getMessage();
 		}
 
-		//logger.info("finish add element");
-
-		usageRecordLog().addSuccess(nameElement, "ADDELEMENT");
+		displayErrorMessage(msg,"ADDELEMENT");
 	}
 
 	/**
@@ -246,7 +238,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String paramGroupID = params.get("paramGroupID");
-
+		String msg = null;
 		try {
 
 			DataFlow df = getDf();
@@ -255,10 +247,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		} catch (Exception e) {
 			logger.info(e,e);
-			usageRecordLog().addError("ERROR REMOVEELEMENT", e.getMessage());
+			msg = e.getMessage();
 		}
-
-		usageRecordLog().addSuccess("REMOVEELEMENT");
+		displayErrorMessage(msg,"REMOVEELEMENT");
 	}
 
 	/**
@@ -334,7 +325,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			nameElementA = getSelectedLink().split(" -> ")[0];
 			nameElementB = getSelectedLink().split(" -> ")[1];
 		}
-
+		String msg = null;
 		try {
 
 			DataFlow df = getDf();
@@ -349,13 +340,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		} catch (RemoteException e) {
 			logger.info(e,e);
-			usageRecordLog().addError("ERROR ADDLINK", e.getMessage());
+			msg = e.getMessage();
 		} catch (Exception e) {
 			logger.info(e,e);
-			usageRecordLog().addError("ERROR ADDLINK", e.getMessage());
+			msg = e.getMessage();
 		}
-
-		usageRecordLog().addSuccess("ADDLINK");
+		
+		displayErrorMessage(msg,"ADDLINK");
 
 		return ans;
 	}
@@ -453,9 +444,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 	}
@@ -492,12 +483,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 					idElementB);
 
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
-
-		usageRecordLog().addSuccess("REMOVELINK");
+		
+		displayErrorMessage(null,"REMOVELINK");
 
 	}
 	
@@ -535,16 +526,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void loadWorkFlow() {
 		String error = loadDataFlow(getPath(),generateWorkflowName(path), true, true);
-		
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR LOADWORKFLOW", error);
-		}
-		usageRecordLog().addSuccess("LOADWORKFLOW");
-		
+		displayErrorMessage(error,"LOADWORKFLOW");
 	}
 
 	/**
@@ -557,16 +539,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void loadSubWorkflow() {
 		String error = loadDataFlow(getPath(),generateWorkflowName(path), false, true);
-
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR LOADSUBWORKFLOW", error);
-		}
-
-		usageRecordLog().addSuccess("LOADSUBWORKFLOW");
+		displayErrorMessage(error,"LOADSUBWORKFLOW");
 	}
 		
 	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow) {
@@ -644,8 +617,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.info("Error loading workflow",e);
-			usageRecordLog().addError("ERROR LOADWORKFLOW", e.getMessage());
+			error = "Error loading workflow: "+e.getMessage();
+			logger.info(error,e);
 		}
 		return error;
 
@@ -676,8 +649,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			}
 		} catch (JSONException e) {
-			logger.info("Error updating positions");
-			e.printStackTrace();
+			logger.info("Error updating positions",e);
 		}
 	}
 
@@ -721,8 +693,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 			} catch (JSONException e) {
-				logger.info("Error updating positions");
-				e.printStackTrace();
+				logger.info("Error updating positions",e);
 			}
 		}
 	}
@@ -763,8 +734,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getworkFlowInterface().backupAll();
 
 		} catch (RemoteException e) {
-			logger.info("Error backing up all workflows");
-			e.printStackTrace();
+			logger.info("Error backing up all workflows",e);
 		}
 	}
 
@@ -775,25 +745,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getworkFlowInterface().backupAll();
 			closeAll();
 		} catch (RemoteException e) {
-			logger.info("Error backing up all workflows");
-			e.printStackTrace();
+			logger.info("Error backing up all workflows",e);
 		}
 	}
 	
 	public void checkName() {
 
-		logger.info("checkName");
+		logger.info("checkName: "+getPath());
 
 		String msg = null;
 		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
 		String name[] = getPath().split("/");
 		if (name != null && !checkString(regex, name[name.length - 1])) {
 			msg = getMessageResources("msg_error_save");
-			MessageUseful.addErrorMessage(msg);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
 		}
+		displayErrorMessage(msg,"SAVECHECKNAME");
 	}
 
 	/**
@@ -827,11 +793,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String name = generateWorkflowName(path);
 		if (workflowType != null && workflowType.equals("S")) {
-			if (!name.startsWith("sa_")) {
-				name = "sa_" + name;
-				if(path != null){
-					path = path.substring(0, path.lastIndexOf("/")) + "/" + name;
-				}
+			if(path != null){
+				path = path.substring(0, path.lastIndexOf("/")) + "/" + name;
 			}
 		}
 
@@ -856,6 +819,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.error("Error when renaming workflow: " + e);
 				usageRecordLog().addError("ERROR SAVE", e.getMessage());
 			}
+			
 			if (msg == null && !nameWorkflowSwp.equals(nameWorkflow)) {
 				workflowMap.put(nameWorkflowSwp, workflowMap.get(nameWorkflow));
 				workflowMap.remove(nameWorkflow);
@@ -869,13 +833,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 				nameWorkflow = nameWorkflowSwp;
 			}
 		}
-		if (msg == null) {
-			try {
+		try {
+			if (msg == null) {
 				logger.info("save workflow " + nameWorkflow + " in " + path);
 				DataFlow df = getWorkflowMap().get(nameWorkflow);
 				setDf(df);
-				df.setName(nameWorkflow);
 				msg = df.save(path);
+			}
+			
+			if(msg == null){
 				df.setPath(path);
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
 				idMap.get(nameWorkflow).clear();
@@ -885,20 +851,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 				logger.info("save msg :" + msg);
-			} catch (Exception e) {
-				logger.info("Error saving workflow");
-				e.printStackTrace();
-				usageRecordLog().addError("ERROR SAVE", e.getMessage());
 			}
+		} catch (Exception e) {
+			msg = "Error saving workflow";
+			logger.info(msg,e);
 		}
-		if (msg != null) {
-			MessageUseful.addErrorMessage(msg);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR SAVE", msg);
-		}
-
-		usageRecordLog().addSuccess("SAVE");
+		
+		displayErrorMessage(msg,"SAVE");
 	}
 
 	/**
@@ -918,7 +877,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	protected void closeWorkflow(String workflowName) {
 		logger.info("closeWorkflow:" + workflowName);
-
+		String msg = null;
 		try {
 			DataFlow dfCur = workflowMap.get(workflowName);
 			if (dfCur != null) {
@@ -934,11 +893,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.error("Fail closing " + workflowName, e);
-			usageRecordLog().addError("ERROR CLOSEWORKFLOW", e.getMessage());
+			msg = "Fail closing " + workflowName;
+			logger.error(msg, e);
 		}
-
-		usageRecordLog().addSuccess("CLOSEWORKFLOW");
+		displayErrorMessage(msg, "CLOSEWORKFLOW");
 	}
 
 	public void copy() throws RemoteException {
@@ -962,7 +920,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		wfCopyBuffer = new WFCopyBuffer(getworkFlowInterface(),	getNameWorkflow(), elements);
 
-		usageRecordLog().addSuccess("COPY");
+		displayErrorMessage(null, "COPY");
 	}
 
 	public void paste() throws RemoteException {
@@ -985,16 +943,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 					setIdsToPaste(ans.substring(1));
 					logger.info(getIdsToPaste());
 				}
-
-				usageRecordLog().addError("PASTE", error);
-
-			}else{
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-				usageRecordLog().addSuccess("PASTE");
 			}
 		}
+		
+		displayErrorMessage(error, "PASTE");
 
 	}
 
@@ -1049,14 +1001,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				error = getDf().check();
 			}
 		}
-
-		if (error != null) {
-			logger.error(error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		}
+		
+		displayErrorMessage(error, "REPLACEALL");
 	}
 
 	public void runWorkflow() throws Exception {
@@ -1094,13 +1040,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("Run elements error:" + error);
 			}
 		}
-		if (error != null) {
-			logger.error(error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR RUNWORKFLOW", error);
-		} else {
+		if (error == null){
 			final String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
 			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty() 
 					&& !savedFile.equals("null") && !savedFile.equals("undefined")) {
@@ -1128,8 +1068,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			calcWorkflowUrl();
 		}
-
-		usageRecordLog().addSuccess("RUNWORKFLOW");
+		
+		displayErrorMessage(error, "RUNWORKFLOW");
 	}
 
 	public void calcWorkflowUrl() {
@@ -1301,13 +1241,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		if(wf != null){
 			String error = wf.cleanProject();
-			if (error != null) {
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-				usageRecordLog().addError("ERROR CLEANCANVASPROJECT", error);
-			}
-			usageRecordLog().addSuccess("CLEANCANVASPROJECT");
+			displayErrorMessage(error, "CLEANCANVASPROJECT");
 		}
 
 	}
@@ -1323,8 +1257,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(id != null && wf != null){
 			wf.getElement(id).cleanDataOut();
 		}
-
-		usageRecordLog().addSuccess("CLEANELEMENT");
+		displayErrorMessage(null, "CLEANELEMENT");
 	}
 
 	public void refreshSubWorkflow() throws RemoteException {
@@ -1335,16 +1268,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idGroup");
 		setIdGroup(groupId);
 		String id = getIdMap().get(getNameWorkflow()).get(groupId);
+		String error = null;
 		if(id != null && wf != null){
 			try{
 				((SuperElement)wf.getElement(id)).readMetadataSuperElement();
 			}catch(Exception e){
-				logger.error(e.getMessage(),e);
-				usageRecordLog().addError("ERROR REFRESHSUBWORKFLOW", e.getMessage());
+				error = e.getMessage();
+				logger.error(error,e);
 			}
 		}
-
-		usageRecordLog().addSuccess("REFRESHSUBWORKFLOW");
+		displayErrorMessage(error, "REFRESHSUBWORKFLOW");
 	}
 
 	public void regeneratePathsProject() throws RemoteException {
@@ -1376,14 +1309,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.regeneratePaths(copy);
-		if (error != null) {
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("REGENERATEPATHSPROJECT", error);
-		}
-
-		usageRecordLog().addSuccess("REGENERATEPATHSPROJECT");
+		displayErrorMessage(error, "REGENERATEPATHSPROJECT");
 	}
 
 	/**
@@ -1518,8 +1444,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			} while (size > 0 && ++iter < iterMax);
 		}
 		setDf(null);
-
-		usageRecordLog().addSuccess("CLOSEALL");
+		
+		displayErrorMessage(null, "CLOSEALL");
 	}
 
 	/**
@@ -1826,6 +1752,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Set<String> getAllElementAfterForOutput(DataFlowElement dfe) {
 		logger.info("getOutputStatus");
 		Set<String> ans = new LinkedHashSet<String>();
+		String error = null;
 		try {
 			if (dfe != null && dfe.getDFEOutput() != null) {
 
@@ -1843,13 +1770,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.info("Error " + e + " - " + e.getMessage());
-			MessageUseful
-			.addErrorMessage(getMessageResources("msg_error_oops"));
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
+			error = "Error " + e + " - " + e.getMessage();
 		}
+		
+		displayErrorMessage(error, "getAllElementAfterForOutput");
+		
 		return ans;
 	}
 
@@ -1885,15 +1810,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getDf().getElement(elementId).setComment(comment);
 		}
 
-		if (error != null) {
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR CHANGEIDELEMENT", error);
-		} else {
-			getIdMap().get(getNameWorkflow()).put(groupId, elementId);
-			usageRecordLog().addSuccess("CHANGEIDELEMENT");
-		}
+		displayErrorMessage(error,"CHANGEIDELEMENT");
 
 	}
 
@@ -1948,7 +1865,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			return ans;
 
 		} catch (Exception e) {
-			logger.info("Error "+ e,e);
+			logger.warn("Error "+ e,e);
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -2353,11 +2270,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 				.getExternalContext().getRequestParameterMap();
 		String nameSubWorkflow = params.get("nameSubWorkflow");
 		String[] modelAndSW = RedSqirlModel.getModelAndSW(nameSubWorkflow);
-
-		File file = new File(new ModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
+		
+		String error = null;
+		if(workflowMap.containsKey(modelAndSW[1])){
+			error= getMessageResourcesWithParameter("msg_err_subwf_already_open",new String[]{modelAndSW[1]});
+		}else{
+			File file = new File(new ModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
 				modelAndSW[1]);
-
-		loadSubWorkFlowFromLocal(file.getAbsolutePath());
+			loadSubWorkFlowFromLocal(file.getAbsolutePath());
+		}
+		
+		displayErrorMessage(error, "OPENSUBWORKFLOW");
 	}
 
 	/**
@@ -2368,7 +2291,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void loadSubWorkFlowFromLocal(String path) {
+	protected void loadSubWorkFlowFromLocal(String path) {
 
 		logger.info("load sub workflow FromLocal " + path);
 
@@ -2429,17 +2352,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.info("Error loading workflow");
-			e.printStackTrace();
+			logger.info("Error loading workflow",e);
 		}
-
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		}
+		
+		displayErrorMessage(error, "LOADSUBWORKFLOWFROMLOCAL");
 	}
 
 	public void openAggregate() throws RemoteException {
@@ -2545,15 +2461,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		setComponentIds(componentIds);
 		logger.info("Elements: " + getComponentIds());
 
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR OPENAGGREGATE", error);
-		}
-
-		usageRecordLog().addSuccess("OPENAGGREGATE");
+		displayErrorMessage(error, "OPENAGGREGATE");
 	}
 
 	public void expand() {
@@ -2592,16 +2500,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (RemoteException e) {
-			e.printStackTrace();
 			logger.info("Error: " + e,e);
 		}
+		
+		displayErrorMessage(error, "EXPAND");
 
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		}
 
 	}
 	
@@ -2705,21 +2608,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 			} catch (RemoteException e) {
-				e.printStackTrace();
 				logger.info("Error: " + e,e);
 			}
 
 		}
-
-		if (error != null) {
-			logger.info("Error: " + error);
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR AGGREGATE", error);
-		}
-
-		usageRecordLog().addSuccess("AGGREGATE");
+		
+		displayErrorMessage(error, "AGGREGATE");
 	}
 
 	// uninstall the super action

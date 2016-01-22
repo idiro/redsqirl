@@ -47,6 +47,8 @@ public class AppendListInteraction extends CanvasModalInteraction {
 	 * List of the selected options
 	 */
 	private List<String> selectedAppendListOptions;
+
+	private boolean valid;
 	
 	public AppendListInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
@@ -116,6 +118,7 @@ public class AppendListInteraction extends CanvasModalInteraction {
 
 
 		//set options
+		List<String> posValues = new LinkedList<String>();
 		if (inter.getTree().getFirstChild("applist")
 				.getFirstChild("values") != null) {
 			List<Tree<String>> list = inter.getTree()
@@ -130,6 +133,7 @@ public class AppendListInteraction extends CanvasModalInteraction {
 					String value = tree
 							.getFirstChild().getHead();
 					
+					posValues.add(value);
 					if (comboBox.equals("sortedList") && !selectedAppendListOptions.contains(value)){
 						sortedAppendListOptions.add(value);
 					}
@@ -138,6 +142,10 @@ public class AppendListInteraction extends CanvasModalInteraction {
 					}
 				}
 			}
+		}
+		
+		if(!posValues.containsAll(selectedAppendListOptions)){
+			valid = false;
 		}
 		
 	}

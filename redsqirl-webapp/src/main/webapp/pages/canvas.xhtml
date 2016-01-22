@@ -1374,7 +1374,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();jQuery('#helpmain_aggregate').click();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 				
@@ -1637,8 +1637,8 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}"
-					reRender="errorTable"
-					oncomplete="renameTab();">
+					reRender="msnError, errorTable"
+					oncomplete="if(#{requestScope['msnError'] == null}){renameTab();}">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
 					<a4j:actionparam name="positions" />
@@ -1780,10 +1780,12 @@
 			
 			<a4j:region>
 				<a4j:status
-					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });" />
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
 			
-				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" 
-					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){loadSubWorkflowFromCanvas();}" >
+				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" reRender="msnError" data="#{canvasBean.positions}"
+					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;}" >
 					<a4j:actionparam name="nameSubWorkflow" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -2252,7 +2254,7 @@
 
 									<rich:menuItem id="wfeditorMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_editorWfcomment}"
-										oncomplete="#{rich:component('modalWfEditor')}.show()"
+										oncomplete="#{rich:component('modalWfEditor')}.show();document.getElementById('helpmain_commenteditor').click();"
 										reRender="wfEditor">
 									</rich:menuItem>
 
@@ -2295,19 +2297,19 @@
 									<rich:menuItem id="manageModelsItem" submitMode="ajax"
 										value="#{messages.label_menu_manage_models}"
 										reRender="modelsList"
-										oncomplete="#{rich:component('modalModels')}.show();"
+										oncomplete="#{rich:component('modalModels')}.show();document.getElementById('helpmain_modelview').click();"
 										action="#{modelBean.refreshModelList}">
 										<h:outputText value="Ctrl+Alt+M" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="installationMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_package}"
-										onclick="openPackageModal();">
+										onclick="openPackageModal();document.getElementById('helpmain_packageview').click();">
 										<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuItem id="settingsMenuItem" submitMode="ajax"
 										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}"
-										oncomplete="#{rich:component('modalSettings')}.show();">
+										oncomplete="#{rich:component('modalSettings')}.show();document.getElementById('helpmain_setting').click();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>
 
@@ -2807,7 +2809,7 @@
 	<a4j:region>
 		<rich:modalPanel id="modalWfEditor" width="800" height="600"
 			domElementAttachment="parent" style="overflow:auto;"
-			resizeable="true" zindex="2000">
+			resizeable="true" zindex="2000" styleClass="noMaskClass">
 
 			<f:facet name="header">Workflow Editor</f:facet>
 			<f:facet name="controls">
@@ -2830,7 +2832,7 @@
 							oncomplete="#{rich:component('modalWfEditor')}.hide()" />
 						<a4j:commandButton value="#{messages.button_save}"
 							styleClass="greenButton"
-							oncomplete="console.log('hahaha');changeWfComment();#{rich:component('modalWfEditor')}.hide();" />
+							oncomplete="changeWfComment();#{rich:component('modalWfEditor')}.hide();" />
 
 					</rich:panel>
 				</rich:panel>
@@ -2889,7 +2891,7 @@
 
 	<a4j:region>
 		<rich:modalPanel id="modalPackage" width="832" height="620"
-			style="overflow:auto;" resizeable="false">
+			style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_packages}" />
@@ -2949,7 +2951,7 @@
 
 	<a4j:region renderRegionOnly="true">
 		<rich:modalPanel id="modalSettings" width="800" height="600"
-			style="overflow:auto;" resizeable="false">
+			style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_setting_modal}" />
@@ -2988,7 +2990,7 @@
 	</a4j:region>
 	<a4j:region>
 		<rich:modalPanel id="modalModels" width="832" height="620"
-			style="overflow:auto;" resizeable="false">
+			style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_menu_manage_models}" />
@@ -3133,7 +3135,7 @@
 		
 	</a4j:region>
 	<a4j:region>
-		<rich:modalPanel id="modalAggregate" width="450" height="440" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="modalAggregate" width="450" height="440" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_menu_aggregate}" />

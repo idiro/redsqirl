@@ -312,6 +312,19 @@ public class BaseBean {
 		}
 
 	}
+	
+
+	protected void displayErrorMessage(String error, String usageRecordField){
+		if(error != null){
+			bb_logger.info(error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError(usageRecordField, error);
+		}else{
+			usageRecordLog().addSuccess(usageRecordField);
+		}
+	}
 
 	/** isAdmin
 	 * 

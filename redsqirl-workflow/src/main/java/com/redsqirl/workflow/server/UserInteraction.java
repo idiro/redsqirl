@@ -389,7 +389,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 */
 	protected String checkInput(){
 		String error = null;
-		if(display != DisplayType.input){
+		if(!DisplayType.input.equals(display)){
 			logger.warn(getName()+" is not a input.");
 		}else{
 
@@ -430,7 +430,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 */
 	protected String checkList(){
 		String error = null;
-		if(display != DisplayType.list){
+		if(!DisplayType.list.equals(display)){
 			logger.warn(getName()+" is not a list.");
 		}else{
 			logger.info("interaction : "+getName());
@@ -455,7 +455,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 */
 	protected String checkAppendList(){
 		String error = null;
-		if(display != DisplayType.appendList){
+		if(!DisplayType.appendList.equals(display)){
 			logger.warn(getName()+" is not a list.");
 		}else{
 			List<String> possibleValues = getPossibleValuesFromList();

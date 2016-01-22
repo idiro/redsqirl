@@ -4,41 +4,38 @@
 
 What is a package
 	
-	Packages are groups of actions that are used in Red Sqirl to perform specific processes on Red Sqirl. 
-	They generally run on the same platform , e.g,. Pig , Hive 
-	etc. This how Red Sqirl modularises its functionalities and manages what is available for the users.
+	Packages are groups of actions that are used to perform specific processes on Red Sqirl. 
+	They generally run on the same platform e.g. Pig, Hive.
 
 What is in a package
 
-	A Package will contain actions that can be used on Red Sqirl once it is installed. An action will be composed of a Java class a help file and an image file. 
+	A Package will contain actions that can be used on Red Sqirl once it is installed.
 
         Red Sqirl uses maven as a build manager. In addition to the Java code,
 Red Sqirl web application needs additional files to manage correctly a package.
-In our template Red Sqirl package maven build, we gather those files in
+In our template package maven build, we gather those files in
 src/main/pck.
 
-  * actions.txt File containing the list of actions provided in this package, one
-  * action name per line.
+  * actions.txt: Contains the list of actions provided in this package, one
+  action name per line.
 
-  * settings.json Lists all the settings the package requires. The settings can
-  * be organise in sub-categories.
+  * settings.json: Lists all the settings the package requires. The settings can
+  be organise in sub-categories.
 
-  * lang.properties Contains label and descriptions of all the settings the
-  * package needs.
+  * lang.properties: Contains label and descriptions of all the settings the
+  package needs.
 
-  * package.properties Contains the package name and the version property.
+  * package.properties: Contains the package name and the version property and a
+  short description.
 
-  * help directory: An html file for each action. The file name should be 
-  * ${actionName}.html.
+  * help:  is a directory with an html file describing an action.
 
-  * image directory: A gif file for each action. The file name should be
-  * ${actionName}.gif
+  * image: is a directory with a gif file for each action.
 
   []
 
 
-Create a package
-
+* The Maven pom
 
 	In order to create a package, the first step is to set up a {{{https://maven.apache.org/}maven}} project with a unique group and artifact id.
 
@@ -186,6 +183,199 @@ Create a package
 		</dependency>
 	</dependencies>
 
++--------------------------------------+
+
+* Settings
+
+   Every package can come with their own settings. They are described in a JSON
+file. The JSON file is composed of tabs and settings. You can also have
+template tabs to create several set of settings. See below an example.
+
++--------------------------------------+
+{
+  "settings": [
+    {
+      "property": "host_default",
+      "scope": "any",
+      "optional": "false",
+      "default": "test",
+      "type": "STRING"
+    }
+   ],
+    "tabs": [
+     {
+      "template_name": "host",
+      "settings": [
+			    {
+			      "property": "hostname",
+			      "scope": "user",
+			      "optional": "false",
+			      "default": "dev.local.net",
+			      "type": "STRING"
+			    },
+			    {
+			      "property": "host_user",
+			      "scope": "user",
+			      "optional": "false",
+			      "default": "igor",
+			      "type": "STRING"
+			    },
+			    {
+			      "property": "host_privateKeyFile",
+			      "scope": "user",
+			      "optional": "false",
+			      "default": "/home/igor/.ssh/id_rsa",
+			      "type": "STRING"
+			    },
+			    {
+			      "property": "default_path",
+			      "scope": "user",
+			      "optional": "false",
+			      "default": "/data/shiny-server",
+			      "type": "STRING"
+			    },
+			    {
+			      "property": "host_url",
+			      "scope": "user",
+			      "optional": "false",
+			      "default": "http://dev:3838/",
+			      "type": "STRING"
+			    }
+   			]
+   		}
+  ]
+}
++--------------------------------------+
+
+* Lang file
+
+   The lang.properties file contain the description the label for each property in
+english.
+
++--------------------------------------+
+redsqirl-shiny.host_default_label=host default
+redsqirl-shiny.host_default_desc=default host
+
+redsqirl-shiny.host.hostname_label=hostname
+redsqirl-shiny.host.hostname_desc=hostname
+
+redsqirl-shiny.host.host_user_label=host user
+redsqirl-shiny.host.host_user_desc=host user
+
+redsqirl-shiny.host.host_privateKeyFile_label=host private
+redsqirl-shiny.host.host_privateKeyFile_desc=host private
+
+redsqirl-shiny.host.default_path_label=default path
+redsqirl-shiny.host.default_path_desc=default path
+
+redsqirl-shiny.host.host_url_label=host url
+redsqirl-shiny.host.host_url_desc=host url
++--------------------------------------+
+
+* Package Properties
+
+  The package properties contains three properties
+
++--------------------------------------+
+packageName=${project.artifactId}
+version=${project.version}
+description=My package description
++--------------------------------------+
+
+* The action related files
+
+   actions.txt file looks like. The order will define the order of the
+auto-generated footer.
+
++--------------------------------------+
+shiny_bar_plot
+shiny_line_plot
+shiny_pie_plot
+shiny_build
+deploy
++--------------------------------------+
+
+   The help and image directory would contain a file for each action, in our
+example the directories would have the following files. Also the image folder
+contain an image to represent the entire package.
+
++--------------------------------------+
+deploy.html
+shiny_bar_plot.html
+shiny_build.html
+shiny_line_plot.html
+shiny_pie_plot.html
++--------------------------------------+
+
++--------------------------------------+
+deploy.gif
+redsqirl-shiny_package.gif
+shiny_bar_plot.gif
+shiny_build.gif
+shiny_line_plot.gif
+shiny_pie_plot.gif
++--------------------------------------+
+
+   A help file can contain the tags page1, page2, pageN. Those tags will be use
+by the framework so that it scrolls to the relevant part of the documentation.
+Also note that to open links within the Red Sqirl web application page you need
+to follow a specific format.
+
++--------------------------------------+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shiny Build Help</title>
+</head>
+
+<body>
+	<h1>Shiny Build</h1>
+	<h2>Description</h2>
+
+	<p>Create an application or add items to an existing application.</p>
+
+	<h3>Quick Guide</h3>
+	<p>
+	<ul>
+		<li>Input
+			<ul>
+				<li><a class="stopLink" id="helpmain_canvas"
+					onclick="return false;" href="../help/canvas.html#output_type">
+						Text or Binary Map Reduce
+						Directory </a> or HDFS Text File</li>
+			</ul>
+		</li>
+		<li>Configurations
+			<ul>
+				<li>Choose the reference field</li>
+				<li>Choose the value fields</li>
+				<li>Choose the aggregation method</li>
+			</ul>
+		</li>
+		<li>Output
+			<ul>
+				<li>Zip File On HDFS</li>
+				<li>(Optional) Remote Directory</li>
+			</ul>
+		</li>
+	</ul>
+	</p>
+
+	<h2> <a id="page1">Application details - Page 1</a> </h2>
+
+
+	<h2> <a id="page2">Plots - Page 2</a> </h2>
+
+	<h2>Red Sqirl Shiny</h2>
+
+	<p>Red Sqirl Shiny is a package that enables ploting functionality
+	through Red Sqirl. It is powered by <a target="_blank"
+	    href="http://shiny.rstudio.com/" >Shiny</a> and <a target="_blank"
+	    href="https://cran.r-project.org/web/packages/googleVis/index.html"
+	    >googleVis</a>.</p>
+
+</body>
+</html>
 +--------------------------------------+
 
 How to deploy a package

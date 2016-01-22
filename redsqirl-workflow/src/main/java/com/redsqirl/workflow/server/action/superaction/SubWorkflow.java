@@ -176,60 +176,55 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 	protected String saveXmlOnLocal(File file, Boolean privilege) throws RemoteException{
 		String error = null;
-		String pattern= ">[a-zA-Z0-9_]+>[a-zA-Z0-9_]+";
-		logger.info(name+ "  "+name.matches(pattern));
-		if(!name.matches(pattern)){
-			error = "The super action name should contain alpha-numeric, underscore and two '>' such as '>model>action'. '"+name+"'" ;
-		}else{
-			try {
-				logger.debug("Save xml: " + file.getAbsolutePath());
-				file.getParentFile().mkdirs();
-				File tmpFile = new File(file.getAbsoluteFile()+".tmp");
-				Document doc = null;
-				try{
-					doc = saveInXML();
-					addOutputNamesInXml(doc);
-					addSecurityInXml(doc,privilege);
-				}catch(IOException e){
-					error = e.getMessage();
+		
+		try {
+			logger.debug("Save xml: " + file.getAbsolutePath());
+			file.getParentFile().mkdirs();
+			File tmpFile = new File(file.getAbsoluteFile()+".tmp");
+			Document doc = null;
+			try{
+				doc = saveInXML();
+				addOutputNamesInXml(doc);
+				addSecurityInXml(doc,privilege);
+			}catch(IOException e){
+				error = e.getMessage();
+			}
+
+			if (error == null) {
+				logger.debug("write the file...");
+				// write the content into xml file
+				logger.info("Check Null text nodes...");
+				XmlUtils.checkForNullTextNodes(doc.getDocumentElement(), "");
+				TransformerFactory transformerFactory = TransformerFactory
+						.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				DOMSource source = new DOMSource(doc);
+				StreamResult result = null;
+				if(privilege != null){
+					result = new StreamResult(tmpFile);
+				}else{
+					result = new StreamResult(file);
+				}
+				logger.debug(4);
+				transformer.transform(source, result);
+				logger.debug(5);
+
+				if(privilege != null){
+					FileStream.encryptFile(tmpFile, file);
+					tmpFile.delete();
 				}
 
-				if (error == null) {
-					logger.debug("write the file...");
-					// write the content into xml file
-					logger.info("Check Null text nodes...");
-					XmlUtils.checkForNullTextNodes(doc.getDocumentElement(), "");
-					TransformerFactory transformerFactory = TransformerFactory
-							.newInstance();
-					Transformer transformer = transformerFactory.newTransformer();
-					DOMSource source = new DOMSource(doc);
-					StreamResult result = null;
-					if(privilege != null){
-						result = new StreamResult(tmpFile);
-					}else{
-						result = new StreamResult(file);
-					}
-					logger.debug(4);
-					transformer.transform(source, result);
-					logger.debug(5);
-					
-					if(privilege != null){
-						FileStream.encryptFile(tmpFile, file);
-						tmpFile.delete();
-					}
-					
-					saved = true;
-					logger.debug("file saved successfully");
-				}
-			} catch (Exception e) {
-				error = LanguageManagerWF.getText("workflow.writeXml",
-						new Object[] { e.getMessage() });
-				logger.error(error,e);
-				try {
-					logger.info("Attempt to delete " + file.getAbsolutePath());
-					file.delete();
-				} catch (Exception e1) {
-				}
+				saved = true;
+				logger.debug("file saved successfully");
+			}
+		} catch (Exception e) {
+			error = LanguageManagerWF.getText("workflow.writeXml",
+					new Object[] { e.getMessage() });
+			logger.error(error,e);
+			try {
+				logger.info("Attempt to delete " + file.getAbsolutePath());
+				file.delete();
+			} catch (Exception e1) {
 			}
 		}
 		Log.flushAllLogs();
@@ -330,10 +325,13 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		Boolean licensed = getPrivilege();
 		logger.info("privilege "+licensed);
 
-		String userName = System.getProperty("user.name");		
-		String modelName = RedSqirlModel.getModelAndSW(getName())[0];
-		if(licensed !=null && licensed){
-			error = new ModelManager().getAvailableModel(userName, modelName).isLicenseValid(System.getProperty("user.name"));
+		String userName = System.getProperty("user.name");
+		
+		if(getName() != null && getName().startsWith(">")){
+			String modelName = RedSqirlModel.getModelAndSW(getName())[0];
+			if(licensed !=null && licensed){
+				error = new ModelManager().getAvailableModel(userName, modelName).isLicenseValid(System.getProperty("user.name"));
+			}
 		}
 			
 		if(error != null){

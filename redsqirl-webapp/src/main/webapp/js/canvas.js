@@ -661,7 +661,7 @@ function dragAndDropGroup(canvasName, obj, e) {
 
                     if (newX < 5) {
                         newX = 5;
-                    } else if (newX + 80 > xCanvas) {
+                    } else if (newX + 200 > xCanvas) {
                         stage.setWidth(xCanvas + 200);
                         background.setWidth(stage.getWidth());
                         xCanvas = stage.getWidth();
@@ -669,7 +669,7 @@ function dragAndDropGroup(canvasName, obj, e) {
 
                     if (newY < 5) {
                         newY = 5;
-                    } else if (newY + 80 > yCanvas) {
+                    } else if (newY + 200 > yCanvas) {
                         stage.setHeight(yCanvas + 200);
                         background.setHeight(stage.getHeight());
                         yCanvas = stage.getHeight();
@@ -1129,7 +1129,7 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newX;
     if (pos.x < 5) {
         newX = 5;
-    } else if (pos.x + valueX > xCanvas) {
+    } else if (pos.x + valueX + 200 > xCanvas) {
         newX = pos.x;
         stage.setWidth(xCanvas + 200);
         background.setWidth(stage.getWidth());
@@ -1140,7 +1140,7 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newY;
     if (pos.y < 5) {
         newY = 5;
-    } else if (pos.y + valueY > yCanvas) {
+    } else if (pos.y + valueY + 200 > yCanvas) {
         newY = pos.y;
         stage.setHeight(yCanvas + 200);
         background.setHeight(stage.getHeight());
@@ -1173,7 +1173,7 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newX = 5;
     } else if (valueX != null && pos.x < valueX) {
         newX = valueX;
-    } else if (pos.x + 100 > xCanvas) {
+    } else if (pos.x + 200 > xCanvas) {
         newX = pos.x;
         stage.setWidth(xCanvas + 200);
         background.setWidth(stage.getWidth());
@@ -1183,7 +1183,7 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newY = 5;
     } else if (valueY != null && pos.y < valueY) {
         newY = valueY;
-    } else if (pos.y + 100 > yCanvas) {
+    } else if (pos.y + 200 > yCanvas) {
         newY = pos.y;
         stage.setHeight(yCanvas + 200);
         background.setHeight(stage.getHeight());
@@ -1205,8 +1205,6 @@ function addElements(canvasName, positions, selecteds) {
 	
     var positionsArrays = JSON.parse(positions);
     var numSides = 4;
-    var maxX = 0;
-    var maxY = 0;
     
 	//try{
 	
@@ -1239,8 +1237,6 @@ function addElements(canvasName, positions, selecteds) {
 					positionsArrays[i][6],
 					positionsArrays[i][7]
 					);
-			maxX = Math.max(maxX,positionsArrays[i][3]);
-			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 			updateLabelObj(positionsArrays[i][0], positionsArrays[i][5],false);
@@ -1248,15 +1244,6 @@ function addElements(canvasName, positions, selecteds) {
 		}
 		
 	}
-    
-    if(canvasArray[canvasName].stage.getWidth() < maxX + 100){
-       canvasArray[canvasName].stage.setWidth(maxX + 100);
-       canvasArray[canvasName].background.setWidth(maxX + 100);
-    }
-    if(canvasArray[canvasName].stage.getHeight() < maxY + 100){
-       canvasArray[canvasName].stage.setHeight(maxY + 100);
-       canvasArray[canvasName].background.setHeight(maxY + 100);
-    }
     
     /*}catch(exception){
         alert(exception);
@@ -1286,7 +1273,21 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	console.log("selecteds " + selecteds);
 	console.log("privilege " + privilege);
 	console.log("elementTypeName " + elementTypeName);
+	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
+	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
 	
+    if(canvasArray[canvasName].stage.getWidth()  < posx +  300){
+       console.log("Make X bigger: " + posx +", "+ canvasArray[canvasName].stage.getWidth());
+       canvasArray[canvasName].stage.setWidth(posx + 300);
+       canvasArray[canvasName].background.setWidth(posx + 300);
+    }
+    if(canvasArray[canvasName].stage.getHeight() < posy+ 300 ){
+       console.log("Make Y bigger: " + posy +", "+ canvasArray[canvasName].stage.getHeight());
+       canvasArray[canvasName].stage.setHeight(posy + 300);
+       canvasArray[canvasName].background.setHeight(posy + 300);
+    }
+    
+    
     //alert(idElement+": "+privilege);
     
     var polygonLayer = canvasArray[canvasName].polygonLayer;

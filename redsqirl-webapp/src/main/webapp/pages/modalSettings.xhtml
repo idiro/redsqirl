@@ -84,7 +84,7 @@
 			     				
 			     					<h:panelGrid columns="3" rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY'}">
 			     					
-			     						<a4j:commandLink action="#{settingsBean.setDefaultValue}" rendered="#{packageMngBean.canEdit}" >
+			     						<a4j:commandLink action="#{settingsBean.setDefaultValue}" rendered="#{settingsBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{settingsBean.s.properties[obj].defaultValue}"/>
 									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
@@ -121,7 +121,7 @@
 			     					
 			     					<h:panelGrid columns="3" rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}">
 								    	
-								    	<a4j:commandLink action="#{settingsBean.setDefaultValue}" >
+								    	<a4j:commandLink action="#{settingsBean.setDefaultValue}" rendered="#{settingsBean.s.properties[obj].existUserProperty}">
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{settingsBean.s.properties[obj].defaultValue}"/>
 									    	<f:param name="label" value="#{settingsBean.s.properties[obj].label}" />
@@ -165,10 +165,8 @@
 	    
 	    </div>
     
+    	<a4j:commandButton style="float:left;margin-right:5px;margin-top:10px;" value="#{messages.label_button_package_settings}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();openPackageModal();" />
 	    <div style="overflow-x:hidden;float:right;margin-right:5px;margin-top:10px;">
-		     
-		    <a4j:commandButton value="#{messages.label_button_packages_settings}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();openPackageModal();" />
-		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();" />
 		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_apply}" action="#{settingsBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />

@@ -221,6 +221,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 					error = "Workflow "+newName+" already exists";
 				}else{
 					DataFlow cur = wf.get(oldName);
+					cur.setName(newName);
 					wf.remove(oldName);
 					wf.put(newName, cur);
 				}

@@ -1,0 +1,114 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Models</title>
+</head>
+<body>
+	<h1>Models</h1>
+
+	<p>The model view gather all the models installed on your Red Sqirl
+	instance.</p>
+
+	<p>Models are data process blocks build out of Red Sqirl packages. A
+	model can produce a prediction, a report or an analyses. A model is
+	composed of SuperActions that can depend on each other.</p>
+
+	<h2>Scope</h2>
+
+	<p>Two scopes of model installation exists
+	<ul>
+	    <li>System: The system scope is shared with everybody.</li>
+	    <li>User: The user scope allow the installation of personal extra
+	    functionality.</li>
+	</ul>
+
+	<p>The user scope models overwrite system ones when there is a
+	conflict. For example if a model churn_model with a super action
+	evaluation is installed on the
+	System scope and the user 'brian' has installed version 2 on its user
+	scope that does have an evaluation super action. Brian won't be able to
+	use the evaluation</p>
+
+	<h2>Installation</h2>
+
+	<p>In order to install system models, you need to be an administrator
+	and therefore be in the according <a class="stopLink" id="helpmain_setting" onclick="return
+	    false;" href="../help/setting.html">setting</a>.</p>
+
+	<p>You can install new models either from the Analytics
+	Store or from HDFS.
+
+	<h3>Analytics Store</h3>
+	<p>You can use the Analytics Store only if your web server can reach it. 
+	<ol>
+	    <li>Click Install either in the System scope column or User Scope
+	    column</li>
+	    <li>Sign In with your Analytics Store credentials, if you do not
+	    have an account, you can create one on the spot</li>
+	    <li>Find the package you would like to install</li>
+	    <li>Click install</li>
+	</ol>
+
+	<h3>From HDFS</h3>
+
+	<p>A model is a simple zip file that should have a name
+	$name-$version.zip</p>
+	<ol>
+	    <li>Click import either in the System scope column or User Scope
+	    column</li>
+	    <li>Choose the HDFS path in which your model exist</li>
+	    <li>Click OK</li>
+	</ol>
+
+
+	<h2>Model Privileges</h2>
+
+	<p>Models and their Super Action can be protected from their editors.
+	Three range of permission exists for a model.
+	<ul>
+	    <li>public: anyone can view and modify the source</li>
+	    <li>run only: the version installed is not viewable nor
+	    editable</li>
+	    <li>licensed: as above, but force the installation to be done
+	    through the Analytics Store</li>
+	</ul>
+	run only and editable privileges can be set when you export the model to HDFS. When
+	you do so, be careful to always keep the original as the copy cannot be
+	modified.
+	</p>
+
+	<h2>Model Manipulation</h2>
+
+	<p>Models can be modified if they are public</p>
+
+	<ul>
+	    <li>Create: Create a new model by clicking the new button</li>
+	    <li>Protected: Make a model protected make it not modifiable
+	    <li>Remove: Remove a model, this action cannot be undone</li>
+	    <li>Export: Export a model to HDFS in the given folder. The file
+	    will look like $model-$version.zip</li>
+	    <li>In the edit window you can:
+	    <ul>
+	    <li>Set an image: you can give an image to your model by clicking
+	    the little pen next to it. The image has to be gif, square and of a
+	    reasonable size (between 40x40 and 75x75). When setting several time
+	    an image, browsers may have problem of caching, signing out and
+	    signing in may help</li>
+	    <li>Rename: Rename a model by clicking the little pen next to its
+	    name. For the rename to take place you should press enter</li>
+	    <li>Change Version: Change the version by clicking the little pen
+	    next to the current version. You should press enter to commit your
+	    change</li>
+	    <li>Comment: Add a short comment, so that your co-workers would
+	    understand what the model is about.</li>
+	    <li>Copy/Move: In the edit view, select the superaction you want to
+	    copy/move click on the copy or move button and choose the
+	    destination</li>
+	    <li>Set to public/private: In order to help users you can define the public
+	    interfaces. Only public interfaces can be added to the footer.</li>
+	    <li>Remove: Remove a Super Action from a model, this action cannot
+	    be undone.</li>
+	    </ul></li>
+	</ul> 
+</body>
+</html>

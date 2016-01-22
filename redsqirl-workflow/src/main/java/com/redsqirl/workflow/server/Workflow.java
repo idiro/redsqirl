@@ -434,16 +434,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			error = e.getMessage();
 		}
 		
+		if(error == null && toRun == null){
+			error = LanguageManagerWF.getText("workflow.noelement_torun");
+		}
+		
+		if (error == null && toRun.isEmpty()) {
+			error = LanguageManagerWF.getText("workflow.torun_uptodate");
+		}
+		
 		if(error == null){
 			error = check(toRun);
 		}
-		
-		logger.info("runWF error: " + error);
 
-		if (error == null && toRun.isEmpty()) {
-			error = LanguageManagerWF.getText("workflow.torun_uptodate");
-			logger.info("run toRun: " + error);
-		}
 
 		if (error == null) {
 			try {

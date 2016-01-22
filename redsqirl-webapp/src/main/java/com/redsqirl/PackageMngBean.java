@@ -87,7 +87,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
-
+		canEditPackageSettings();
+		
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
 		
@@ -102,6 +103,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void start() throws RemoteException{
 		logger.info("start PackageMngBean");
+		canEditPackageSettings();
 		extPackages = new LinkedList<PackageFromAnalyticsStore>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();

@@ -1,38 +1,10 @@
 {
   "settings": [
     {
-      "property": "tomcat_path",
+      "property": "namenode",
       "scope": "system",
       "optional": "false",
-      "default": "/home/igor/git/redsqirl/redsqirl-webapp/src/main/webapp",
-      "type": "STRING"
-    },
-    {
-      "property": "workflow_lib_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/home/igor/git/redsqirl/redsqirl-workflow/target/redsqirl-workflow-1.0.4-0.6/lib:/home/igor/git/redsqirl/redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-1.0.4-0.6/lib",
-      "type": "STRING"
-    },
-    {
-      "property": "idiro_interface_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/home/igor/git/redsqirl/redsqirl-wf-interface/target/redsqirl-wf-interface-1.0.4-0.6.jar",
-      "type": "STRING"
-    },
-    {
-      "property": "package_dir",
-      "scope": "system",
-      "optional": "false",
-      "default": "/home/igor/git/redsqirl/redsqirl-webapp/src/main/webapp/pages",
-      "type": "STRING"
-    },
-    {
-      "property": "pack_manager_url",
-      "scope": "system",
-      "optional": "false",
-      "default": "http://dev2:8091/analytics-store",
+      "default": "hdfs://namenode:9000",
       "type": "STRING"
     },
     {
@@ -41,13 +13,12 @@
       "optional": "false",
       "default": "namenode:9001",
       "type": "STRING",
-      "Validator": "com.redsqirl.mypackage.MyClass.class"
     },
     {
-      "property": "namenode",
+      "property": "tomcat_path",
       "scope": "system",
       "optional": "false",
-      "default": "hdfs://namenode:9000",
+      "default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
       "type": "STRING"
     },
     {
@@ -58,6 +29,13 @@
       "type": "STRING"
     },
     {
+      "property": "admin_user",
+      "scope": "system",
+      "optional": "false",
+      "default": "root:admin:http:redsqirl",
+      "type": "STRING"
+    },
+    {
       "property": "allow_user_install",
       "scope": "system",
       "optional": "true",
@@ -65,10 +43,31 @@
       "type": "STRING"
     },
     {
-      "property": "admin_user",
+      "property": "pack_manager_url",
       "scope": "system",
-      "optional": "true",
-      "default": "igor",
+      "optional": "false",
+      "default": "http://154.50.192.12:8091/analytics-store",
+      "type": "STRING"
+    },
+    {
+      "property": "package_dir",
+      "scope": "system",
+      "optional": "false",
+      "default": "/opt/git/redsqirl/redsqirl-webapp/src/main/webapp/pages",
+      "type": "STRING"
+    },
+    {
+      "property": "workflow_lib_path",
+      "scope": "system",
+      "optional": "false",
+      "default": "/opt/git/redsqirl/redsqirl-workflow/target/redsqirl-workflow-1.0.4-0.6/lib:/opt/git/redsqirl/redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-1.0.4-0.6/lib",
+      "type": "STRING"
+    },
+    {
+      "property": "idiro_interface_path",
+      "scope": "system",
+      "optional": "false",
+      "default": "/opt/git/redsqirl/redsqirl-wf-interface/target/redsqirl-wf-interface-1.0.4-0.6.jar",
       "type": "STRING"
     }
   ],
@@ -77,31 +76,31 @@
       "name": "oozie",
       "settings": [
         {
-          "property": "oozie_action_queue",
+          "property": "oozie_url",
           "scope": "system",
+          "optional": "false",
+          "default": "http://namenode:11000/oozie",
+          "type": "STRING"
+        },
+        {
+          "property": "oozie_action_queue",
+          "scope": "any",
           "optional": "false",
           "default": "default",
           "type": "STRING"
         },
         {
           "property": "oozie_launcher_queue",
-          "scope": "system",
+          "scope": "any",
           "optional": "false",
-          "default": "ooziequeue",
+          "default": "default",
           "type": "STRING"
         },
         {
           "property": "oozie_xmlns",
           "scope": "system",
-          "optional": "false",
+          "optional": "true",
           "default": "uri:oozie:workflow:0.2",
-          "type": "STRING"
-        },
-        {
-          "property": "oozie_url",
-          "scope": "system",
-          "optional": "false",
-          "default": "http://namenode:11000/oozie",
           "type": "STRING"
         }
       ]
