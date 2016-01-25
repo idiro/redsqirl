@@ -1799,6 +1799,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (getDf() != null) {
 			if (!elementOldId.equals(elementId)) {
 				error = getDf().changeElementId(elementOldId, elementId);
+				if(error == null){
+					getIdMap().get(getNameWorkflow()).put(groupId,elementId);
+				}
 			}
 		} else {
 			error = "The workflow '" + nameWorkflow

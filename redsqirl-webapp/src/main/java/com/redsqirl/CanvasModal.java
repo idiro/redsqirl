@@ -202,6 +202,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public String[] getOpenCanvasModal() throws RemoteException {
 		logger.info("openCanvasModal");
 		
+		String error = null;
+		
 		FacesContext context = FacesContext.getCurrentInstance();
 		canvasBean = (CanvasBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{canvasBean}",
@@ -245,10 +247,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		try {
-			dfe = getworkFlowInterface().getWorkflow(
-					canvasBean.getNameWorkflow()).getElement(
-							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
-							.get(idGroup));
+			dfe = canvasBean.getDf().getElement(canvasBean.getIdElement(idGroup));
 			//logger.info("Get element dfe");
 		} catch (RemoteException e) {
 			logger.error(e.getMessage(),e);
@@ -264,6 +263,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		if (dfe == null) {
 			logger.info("The element is null!");
+			error = getMessageResources("msg_error_oops");
 		}else{
 			elementId = getComponentId();
 			//logger.info("Element id: "+elementId);
@@ -273,15 +273,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				try {
 
 					// validate if you can open or not the dynamic form of the object
-					String error = dfe.checkIn();
+					error = dfe.checkIn();
 
 					//logger.info("error " + error);
 
-					if (error != null) {
-						MessageUseful.addErrorMessage(error);
-						request.setAttribute("msnError", "msnError");
-						usageRecordLog().addError("ERROR OPENCANVASMODAL", error);
-					} else {
+					if (error == null) {
 
 						// mount output tab
 						outputTab = new CanvasModalOutputTab(datastores,dfe);
@@ -346,10 +342,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 			
-			if(dfe.getName() != null){
-				usageRecordLog().addSuccess(dfe.getName(), "OPENCANVASMODAL");
-			}
-			
 		}
 		
 		//logger.info("listPage:"+ Integer.toString(getListPageSize()) + " getIdGroup:" + getIdGroup()+ " getCurElId:"+getCurElId()+ " getCurElComment:"+getCurElComment());
@@ -359,13 +351,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}catch(Exception e){		
 		}
 		
-		return new String[]{Boolean.toString(loadOutputTab),
+		displayErrorMessage(error, "OPENCANVASMODAL");
+		
+		String[] ans = new String[]{Boolean.toString(loadOutputTab),
 				Integer.toString(pageNb),
 				getIdGroup(),
 				getCurElId(),
 				getCurElComment(),
 				Boolean.toString(loadMainWindow)
 				};
+		
+		logger.info(ans[0]+", "+ans[1]+", "+ans[2]+", "+ans[3]+", "+ans[4]+", "+ans[5]);
+		
+		return ans;
 	}
 	
 	public void closeCanvasModal() throws RemoteException {
@@ -379,11 +377,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("changeTitle");
 		String error = null;
 		try {
-			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
-					canvasBean.getNameWorkflow()).getElement(
-							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
-							.get(idGroup));
-			if(dfe == null){
+			DataFlowElement dfe = canvasBean.getDf().getElement(
+							canvasBean.getIdElement(idGroup));
+			if(dfe != null){
 				setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " "))+": "+dfe.getComponentId());
 			}else{
 				logger.error("Element is null!");
@@ -1013,21 +1009,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public String getComponentId() throws RemoteException {
 		return dfe != null ? dfe.getComponentId() : null;
-	}
-
-	/**
-	 * @return the elementId
-	 */
-	public String getElementId() {
-		return elementId;
-	}
-
-	/**
-	 * @param elementId
-	 *            the elementId to set
-	 */
-	public void setElementId(String elementId) {
-		this.elementId = elementId;
 	}
 
 	/**

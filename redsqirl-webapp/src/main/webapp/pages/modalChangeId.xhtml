@@ -10,7 +10,7 @@
 <script>
 
 function changeCurrentElementId(){
-	execChangeIdElementCommand(canvasModalParam[5],canvasModalParam[2], canvasModalParam[3] ,'#{canvasModalBean.elementId}', canvasModalParam[4], jQuery("[id$='elementCommentID']").val());
+	execChangeIdElementCommand(canvasModalParam[5],canvasModalParam[2], canvasModalParam[3] ,jQuery("[id$='newIdElement']").val(), canvasModalParam[4], jQuery("[id$='elementCommentID']").val());
 }
 
 jQuery('[id$="elementCommentID"]').keyup(function() {
@@ -24,7 +24,12 @@ jQuery('[id$="elementCommentID"]').keyup(function() {
 </script>
 
         <a4j:region>
-            
+			<a4j:status
+				onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+				onerror="jQuery('#canvas-tabs').unblock();"
+				onsuccess="jQuery('#canvas-tabs').unblock();"
+				onstop="jQuery('#canvas-tabs').unblock();" />
+				
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
                 oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.hide();closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
@@ -39,7 +44,7 @@ jQuery('[id$="elementCommentID"]').keyup(function() {
         </a4j:region>
 
 		<h:outputText value="#{messages.obj_newid}" title="#{messages.obj_newid_tk}" />
-		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="13" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
+		<h:inputText label="Name" value="#{canvasModalBean.componentId}" size="13" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
 		<br/>
 		<h:outputText value="#{messages.obj_comment}" title="#{messages.obj_comment_tk}" />

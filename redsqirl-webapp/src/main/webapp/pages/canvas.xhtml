@@ -1737,7 +1737,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="console.log('closeChangeIdModal'); if(canvasModalParam[0] == 'true'){changeHelpAnchor(canvasModalParam[1]);setPageNb(canvasModalParam[2],canvasModalParam[1]);cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
+					oncomplete="console.log('closeChangeIdModal'); if(canvasModalParam[0] == 'true'){changeModalTitle();changeHelpAnchor(canvasModalParam[1]);setPageNb(canvasModalParam[2],canvasModalParam[1]);cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 

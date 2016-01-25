@@ -470,7 +470,6 @@ CommandChangeId.prototype.redo = function(){
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.newId,this.newComment);
     updateLabelObj(this.groupId,this.newId);
-    changeModalTitle();
     console.timeStamp("CommandChangeId.prototype.redo end");
 };
 
@@ -479,10 +478,10 @@ CommandChangeId.prototype.getName = function(){
 };
 
 function execChangeIdElementCommand(loadMainWindow , groupId, oldId, newId, oldComment, newComment){
-    console.timeStamp("execChangeIdElementCommand begin");
+    console.log("execChangeIdElementCommand begin"+loadMainWindow+", "+groupId+", "+oldId+", "+newId+", "+oldComment+", "+newComment);
+    
 	if(oldId != newId || oldComment != newComment){
 		if(oldId != newId ){
-		    changeModalTitle();
 			if(!(loadMainWindow==='true')){
 				if (!confirm(msg_confirm_changeid)) {
 					return false;
