@@ -9,13 +9,13 @@
 	<p>The model view gather all the models installed on your Red Sqirl
 	instance.</p>
 
-	<p>Models are data process blocks build out of Red Sqirl packages. A
+	<p>Models are data process blocks built out of Red Sqirl packages. A
 	model can produce a prediction, a report or an analyses. A model is
 	composed of SuperActions that can depend on each other.</p>
 
 	<h2>Scope</h2>
 
-	<p>Two scopes of model installation exists
+	<p>Two scopes of model installation exist
 	<ul>
 	    <li>System: The system scope is shared with everybody.</li>
 	    <li>User: The user scope allow the installation of personal extra
@@ -25,9 +25,9 @@
 	<p>The user scope models overwrite system ones when there is a
 	conflict. For example if a model churn_model with a super action
 	evaluation is installed on the
-	System scope and the user 'brian' has installed version 2 on its user
-	scope that does have an evaluation super action. Brian won't be able to
-	use the evaluation</p>
+	System scope and the user 'john' has installed version 2 on its user
+	scope that does not have an evaluation super action. John won't be able to
+	use the evaluation super action.</p>
 
 	<h2>Installation</h2>
 
@@ -83,7 +83,7 @@
 
 	<ul>
 	    <li>Create: Create a new model by clicking the new button</li>
-	    <li>Protected: Make a model protected make it not modifiable
+	    <li>Protected: Protect a model, make it not modifiable
 	    <li>Remove: Remove a model, this action cannot be undone</li>
 	    <li>Export: Export a model to HDFS in the given folder. The file
 	    will look like $model-$version.zip</li>
