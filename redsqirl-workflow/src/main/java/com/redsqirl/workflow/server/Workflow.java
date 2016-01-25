@@ -996,7 +996,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				doc = dBuilder.parse(tmpFile);
 				doc.getDocumentElement().normalize();
 			}catch(Exception e){
-				logger.error(e,e);
 				logger.warn("Error while decrypting file, attempting to read the file as text");
 				doc = dBuilder.parse(xmlFile);
 				doc.getDocumentElement().normalize();

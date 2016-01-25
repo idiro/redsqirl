@@ -697,9 +697,13 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		return ans;
 	}
+	
+	public boolean isAdmin(){
+		return loggedIn;
+	}
 
 	public void storeNewSettings(){
-		logger.info("storeNewSettings");
+		logger.info("storeNewSettings: "+WorkflowPrefManager.pathSysCfgPref);
 		String error = null;
 		if(isAdmin()){
 			try {
@@ -707,6 +711,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			} catch (IOException e) {
 				error = e.getMessage();
 			}
+		}else{
+			error = "You are not administrator!";
 		}
 		if(error != null){
 			MessageUseful.addErrorMessage(error);
@@ -1024,9 +1030,10 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		String scope = params.get("scope");
 
 		if(label != null && scope != null){
-			label = label.substring(label.lastIndexOf(".")+1, label.length());
+			logger.info(s.getProperties().keySet());
+			logger.info("label: "+label);
 			Setting setting = s.getProperties().get(label);
-			if(scope.equals(Setting.Scope.SYSTEM.toString())){
+			if(setting != null && scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(true);
 			}
 		}
@@ -1040,11 +1047,10 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		String scope = params.get("scope");
 
 		if(label != null && scope != null){
-			label = label.substring(label.lastIndexOf(".")+1, label.length());
 			Setting setting = s.getProperties().get(label);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(false);
-				deleteProperty(label, setting.getSysValue(), scope);
+				deleteProperty(label, setting.getSysValue());
 			}
 
 			WorkflowPrefManager.getInstance();
@@ -1056,7 +1062,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	}
 
-	public void deleteProperty(String name, String valueToDelete, String scope){
+	public void deleteProperty(String name, String valueToDelete){
 
 		StringBuffer pathToDelete = new StringBuffer();
 		for (String value : getPath()) {
@@ -1064,26 +1070,14 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 		pathToDelete.append(name);
 
-		List<String[]> deleteSettings = new ArrayList<String[]>();
 		String nameSettings = pathToDelete.toString();
-		String[] value = {nameSettings, nameSettings, nameSettings, valueToDelete};
 		logger.info("newPath " + pathToDelete.toString() +"="+ valueToDelete);
-		deleteSettings.add(value);
 
-		setSysSettings(new ArrayList<String[]>());
-		calcSettings();
-
-		for (String[] deletesettings : deleteSettings) {
-
-			if(scope.equals(Setting.Scope.SYSTEM.toString())){
-				for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
-					String[] settings = (String[]) iterator.next();
-					if(deletesettings[0].equals(settings[0])){
-						iterator.remove();
-					}
-				}
+		for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
+			String[] settings = (String[]) iterator.next();
+			if(nameSettings.equals(settings[0])){
+				iterator.remove();
 			}
-
 		}
 
 		storeNewSettings();
@@ -1095,35 +1089,24 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		String label = params.get("label");
 		String type = params.get("type");
 
-		if(label != null && type != null){
+		if(label != null && type != null && type.equals(Setting.Scope.SYSTEM.toString())){
 
-			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
-			setting.setUserValue(setting.getDefaultValue());
+			Setting setting = s.getProperties().get(label);
+			setting.setSysValue(setting.getDefaultValue());
 
 			StringBuffer newPath = new StringBuffer();
 			for (String value : getPath()) {
 				newPath.append("."+value);
 			}
 			
-			if(type.equals(Setting.Scope.SYSTEM)){
-				setSysSettings(new ArrayList<String[]>());
-				calcSettings();
-				for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
-					String nameSettings = newPath.substring(1) +"."+ settings.getKey();
-					if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
-						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
-							String[] value = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
-							getSysSettings().add(value);
-						}
-					}else if(settings.getValue().getScope().equals(Setting.Scope.ANY)){
-						if(settings.getValue().getSysValue() != null && !settings.getValue().getSysValue().isEmpty()){
-							String[] valueU = {nameSettings, nameSettings, nameSettings, settings.getValue().getSysValue()};
-							getSysSettings().add(valueU);
-						}
-					}
+			String nameSettings = newPath.toString().substring(1)+"."+label;
+			logger.info("Set Value "+nameSettings+", "+setting.getDefaultValue());
+			for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
+				String[] settings = (String[]) iterator.next();
+				if(nameSettings.equals(settings[0])){
+					settings[3] = setting.getDefaultValue();
 				}
 			}
-			
 			storeNewSettings();
 
 			WorkflowPrefManager.getInstance();

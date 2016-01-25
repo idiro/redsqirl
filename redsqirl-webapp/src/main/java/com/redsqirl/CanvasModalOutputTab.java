@@ -116,6 +116,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	public CanvasModalOutputTab(Map<String, FileSystemBean> datastores) throws RemoteException {
+		this.datastores = datastores;
+	}
 
 	/**
 	 * Set the name of the output to be the first one on the list

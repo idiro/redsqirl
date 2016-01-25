@@ -444,7 +444,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 			}catch(Exception e){
 				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
-				logger.error(error);
+				logger.error(error,e);
 			}
 		}
 		return error;

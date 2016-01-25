@@ -129,6 +129,23 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref)), "");
 	}
 	
+	
+	public String getProperty(String key) throws RemoteException{
+		
+		if(defaultsettingMenu == null){
+			readDefaultSettingMenu();
+		}
+		
+		if(settingMenu == null){
+			readSettingMenu(System.getProperty("user.name"));
+		}
+		
+		SettingMenu sm = new SettingMenu();
+		sm.getMenu().putAll(defaultsettingMenu);
+		sm.getMenu().putAll(getSettingMenu());
+		
+		return sm.getPropertyValue(key);
+	}
 
 	/**
 	 * Get the lang properties for the System

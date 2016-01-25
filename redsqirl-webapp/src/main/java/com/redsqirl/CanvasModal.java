@@ -371,7 +371,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void closeCanvasModal() throws RemoteException {
 		logger.info("closeCanvasModal");
 		loadMainWindow = false;
-		outputTab = null;
+		outputTab = new CanvasModalOutputTab(datastores);
 	}
 
 	public void changeTitle(){
@@ -383,7 +383,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					canvasBean.getNameWorkflow()).getElement(
 							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
 							.get(idGroup));
-			setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " "))+": "+dfe.getComponentId());
+			if(dfe == null){
+				setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " "))+": "+dfe.getComponentId());
+			}else{
+				logger.error("Element is null!");
+				error = getMessageResources("msg_error_oops");
+			}
 		} catch (Exception e) {
 			error = e.getMessage();
 			logger.error(e,e);
@@ -639,42 +644,48 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException
 	 */
 	protected String checkNextPage() throws RemoteException {
-		logger.info("Check page : "+getListPosition());
-		for (int i = 0; i < inters.size(); i++) {
-			CanvasModalInteraction cmInter = inters.get(i);
-			cmInter.setUnchanged();
-			boolean interactionChanged = !cmInter.isUnchanged();
-			logger.info(cmInter.getId()+": "+interactionChanged);
-			if (interactionChanged) {
-				elementToUpdate = true;
-				logger.info("write interaction in "+cmInter.getId());
-				cmInter.writeInteraction();
-			}
-		}
-		logger.info("check page...");
-		String e = getPageList().get(getListPosition()).checkPage();
-		//if(e == null && sourceNode){
-		if(sourceNode){
+		String error = null;
+		try{
+			logger.info("Check page : "+getListPosition());
 			for (int i = 0; i < inters.size(); i++) {
 				CanvasModalInteraction cmInter = inters.get(i);
-				if(cmInter.getDisplayType().toString().equals(DisplayType.browser.toString()) && !cmInter.isUnchanged()){
-					logger.info("read back browser...");
-					cmInter.readInteraction();
-					//logger.info("read back browser: "+cmInter.printTree(cmInter.getTree()));
+				cmInter.setUnchanged();
+				boolean interactionChanged = !cmInter.isUnchanged();
+				logger.info(cmInter.getId()+": "+interactionChanged);
+				if (interactionChanged) {
+					elementToUpdate = true;
+					logger.info("write interaction in "+cmInter.getId());
+					cmInter.writeInteraction();
 				}
 			}
-		}
-		if (e == null) {
-			// Update output only if it is the last page
-			// or an output already exist
-			if (getListPageSize() - 1 == getListPosition()) {
-				logger.info("updateOutputElement...");
-				e = updateOutputElement();
-				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
+			logger.info("check page...");
+			error = getPageList().get(getListPosition()).checkPage();
+			//if(e == null && sourceNode){
+			if(sourceNode){
+				for (int i = 0; i < inters.size(); i++) {
+					CanvasModalInteraction cmInter = inters.get(i);
+					if(cmInter.getDisplayType().toString().equals(DisplayType.browser.toString()) && !cmInter.isUnchanged()){
+						logger.info("read back browser...");
+						cmInter.readInteraction();
+						//logger.info("read back browser: "+cmInter.printTree(cmInter.getTree()));
+					}
+				}
 			}
+			if (error == null) {
+				// Update output only if it is the last page
+				// or an output already exist
+				if (getListPageSize() - 1 == getListPosition()) {
+					logger.info("updateOutputElement...");
+					error = updateOutputElement();
+					outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
+				}
+			}
+			logger.info("error page -> " + error);
+		}catch(Exception e){
+			logger.error(e,e);
+			error = getMessageResources("msg_error_oops");
 		}
-		logger.info("error page -> " + e);
-		return e;
+		return error;
 	}
 
 	/**

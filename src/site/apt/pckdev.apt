@@ -284,7 +284,7 @@ description=My package description
 
 * The action related files
 
-   actions.txt file looks like. The order will define the order of the
+   actions.txt file looks like below. The order will define the order of the
 auto-generated footer.
 
 +--------------------------------------+
@@ -295,9 +295,9 @@ shiny_build
 deploy
 +--------------------------------------+
 
-   The help and image directory would contain a file for each action, in our
-example the directories would have the following files. Also the image folder
-contain an image to represent the entire package.
+   The help and image directory would contain a file for each action. Also the image folder
+contain an image to represent the entire package. In our
+example the directories would have the following files.
 
 +--------------------------------------+
 deploy.html
@@ -316,10 +316,10 @@ shiny_line_plot.gif
 shiny_pie_plot.gif
 +--------------------------------------+
 
-   A help file can contain the tags page1, page2, pageN. Those tags will be use
-by the framework so that it scrolls to the relevant part of the documentation.
-Also note that to open links within the Red Sqirl web application page you need
-to follow a specific format.
+   A help file can contain the tags page1, page2, ..., pageN. Those tags will be
+used by the framework so that it scrolls to the relevant part of the
+documentation.  Also note that to open links within the Red Sqirl web
+application page you need to follow a specific format.
 
 +--------------------------------------+
 <!DOCTYPE html>
@@ -418,6 +418,7 @@ How to install a package
 
  [[6]] Click install
 
+
 * Manually
 
  [[1]] Log in to the {{{http://95.45.250.249:8091/analytics-store}Analytics Store}}
@@ -432,18 +433,11 @@ How to install a package
 
  [[6]] Download the zip file
 
- [[7]] As the installer user execute the script  
+ [[7]] Download the license file (button on the bottom left of the module table)
 
-+--------------------------------------+
-bin/add_package_system.sh ${zip_file}
-+--------------------------------------+
+ [[7]] Connect Off-line with your user (have to be admin)
 
- or
+ [[8]] Update the license file (licenseKey.properties)
 
-+--------------------------------------+
-bin/add_package_user.sh ${user_name} ${zip_file}
-+--------------------------------------+
+ [[9]] Upload the new package (zip file)
 
- [[8]] Download the licence key file (button on the bottom left of the module table) 
-
- [[9]] Copy the licence key file after download in conf/licenseKey.properties    

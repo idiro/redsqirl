@@ -621,49 +621,4 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 	}
 
-	public boolean checkNumberCluster(int clusterSizeDeclared) throws RemoteException{
-
-		int clusterSizeReal = NameNodeVar.getNbSlaves();
-		logger.info("clusterSizeReal " + clusterSizeReal + " clusterSizeDeclared " + clusterSizeDeclared);
-		logger.info(clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0);
-		boolean size = clusterSizeDeclared >= clusterSizeReal;
-		if(clusterSizeReal == 0){
-
-			try{
-
-				String command =  WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home)+"/bin/yarn node -list -all | grep RUNNING | wc -l";
-				logger.info("command "+command);
-				Process proc = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", command});
-
-
-				// Read the output
-				BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-				String line = "";
-				while((line = reader.readLine()) != null) {
-					logger.info(line + "\n");
-					clusterSizeReal = Integer.parseInt(line);
-				}
-				proc.waitFor();   
-
-				if(clusterSizeReal != 0){
-					size = clusterSizeDeclared >= clusterSizeReal;
-				}else{
-					size = false;
-				}
-
-				logger.info("clusterSizeReal " + clusterSizeReal + " clusterSizeDeclared " + clusterSizeDeclared);
-
-			} catch (IOException e) {
-				size = false;
-				logger.error("Failed to check the size of cluster ",e);
-			} catch (InterruptedException e) {
-				size = false;
-				logger.error("Failed to check the size of cluster ",e);
-			}
-
-		}
-
-		return size;
-	}	
-
 }

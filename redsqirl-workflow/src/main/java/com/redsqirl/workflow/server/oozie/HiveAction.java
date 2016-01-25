@@ -48,14 +48,14 @@ public class HiveAction extends OozieActionAbs{
 		defaultParam(
 				oozieXmlDoc, 
 				hive,
-				WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.getProperty(
 				WorkflowPrefManager.sys_hive_xml));
 		
 		Element confName = oozieXmlDoc.createElement("name");
 		confName.appendChild(oozieXmlDoc.createTextNode("oozie.hive.defaults"));
 		Element confValue = oozieXmlDoc.createElement("value");
 		confValue.appendChild(oozieXmlDoc.createTextNode(
-				WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.getProperty(
 						WorkflowPrefManager.sys_hive_default_xml)));
 		
 		Element property = oozieXmlDoc.createElement("property");

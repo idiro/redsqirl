@@ -60,7 +60,7 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 		Element java = oozieXmlDoc.createElement("java");
 
 		defaultParam(oozieXmlDoc, java);
-		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_nutcracker_path);
+		String path = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_nutcracker_path);
 		
 		logger.info("createOozieElement path " + path);
 		

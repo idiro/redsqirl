@@ -350,7 +350,6 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		String scope = params.get("scope");
 
 		if(label != null && scope != null){
-			label = label.substring(label.lastIndexOf(".")+1, label.length());
 			Setting setting = s.getProperties().get(label);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(true);
@@ -368,7 +367,6 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		String scope = params.get("scope");
 
 		if(label != null && scope != null){
-			label = label.substring(label.lastIndexOf(".")+1, label.length());
 			Setting setting = s.getProperties().get(label);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(false);
@@ -394,36 +392,24 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 		pathToDelete.append(name);
 
-		List<String[]> deleteSettings = new ArrayList<String[]>();
 		String nameSettings = pathToDelete.toString();
-		String[] value = {nameSettings, nameSettings, nameSettings, valueToDelete};
 		logger.info("newPath " + pathToDelete.toString() +"="+ valueToDelete);
-		deleteSettings.add(value);
 
-		setSysSettings(new ArrayList<String[]>());
-		setUserSettings(new ArrayList<String[]>());
-		calcSettings();
 
-		for (String[] deletesettings : deleteSettings) {
-
-			if(scope.equals(Setting.Scope.SYSTEM.toString())){
-				for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
-					String[] settings = (String[]) iterator.next();
-					if(deletesettings[0].equals(settings[0])){
-						iterator.remove();
-					}
+		if(scope.equals(Setting.Scope.SYSTEM.toString())){
+			for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
+				String[] settings = (String[]) iterator.next();
+				if(nameSettings.equals(settings[0])){
+					iterator.remove();
 				}
 			}
-
-			if(scope.equals(Setting.Scope.USER.toString())){
-				for (Iterator<String[]> iterator = getUserSettings().iterator(); iterator.hasNext();) {
-					String[] settings = (String[]) iterator.next();
-					if(deletesettings[0].equals(settings[0])){
-						iterator.remove();
-					}
+		}else{
+			for (Iterator<String[]> iterator = getUserSettings().iterator(); iterator.hasNext();) {
+				String[] settings = (String[]) iterator.next();
+				if(nameSettings.equals(settings[0])){
+					iterator.remove();
 				}
 			}
-
 		}
 
 		storeNewSettings();
@@ -437,7 +423,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 		if(label != null && type != null){
 
-			Setting setting = s.getProperties().get(label.substring(label.lastIndexOf(".")+1, label.length()));
+			Setting setting = s.getProperties().get(label);
 			setting.setUserValue(setting.getDefaultValue());
 
 			StringBuffer newPath = new StringBuffer();

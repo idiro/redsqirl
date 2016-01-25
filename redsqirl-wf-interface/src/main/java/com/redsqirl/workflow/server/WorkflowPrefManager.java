@@ -991,6 +991,10 @@ public class WorkflowPrefManager extends BlockManager {
 	public static Properties getUserProperties(String user) {
 		return props.getUserProperties(user);
 	}
+	
+	public static String getProperty(String key) throws RemoteException {
+		return props.getProperty(key);
+	}
 
 	/**
 	 * @param key
@@ -1048,26 +1052,6 @@ public class WorkflowPrefManager extends BlockManager {
 			logger.warn(e,e);
 		}
 		return null;
-	}
-
-	/**
-	 * Return user property default to system.
-	 * @param key
-	 * @return
-	 */
-	public static String getProperty(String key){
-		String sysProp = null;
-		try{
-			sysProp = props.getSysProperty(key);
-		}catch(Exception e){
-			logger.warn(e,e);
-		}
-		try{
-			return props.getUserProperty(key,sysProp);
-		}catch(Exception e){
-			logger.warn(e,e);
-		}
-		return sysProp;
 	}
 
 	/**

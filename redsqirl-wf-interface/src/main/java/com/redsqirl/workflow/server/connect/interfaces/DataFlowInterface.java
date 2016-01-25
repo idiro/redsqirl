@@ -115,14 +115,6 @@ public interface DataFlowInterface extends Remote{
 	 */
 	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException;
 	
-	
-	/**
-	 * Check if the size of the cluster is lower than what is set in license key
-	 * @param numberCluster The number of nodes declared at the installation
-	 * @throws RemoteException
-	 */
-	public boolean checkNumberCluster(int numberCluster) throws RemoteException;
-	
 	/**
 	 * Get the last files that have been cbacked up in bunch (with a backupAll)
 	 * @return

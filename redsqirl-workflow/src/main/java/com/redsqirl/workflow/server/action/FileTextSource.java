@@ -203,7 +203,7 @@ public class FileTextSource extends AbstractSource {
 		logger.info("Write queries in file: " + files[0].getAbsolutePath());
 		String path = getDFEOutput().get(out_name).getPath();
 		String noHeaderPath = getDFEOutput().get(no_header_out_name).getPath();
-		String hadoopBin = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
+		String hadoopBin = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_hadoop_home);
 		if(hadoopBin == null){
 			hadoopBin = "";
 		}else if(! hadoopBin.isEmpty()){

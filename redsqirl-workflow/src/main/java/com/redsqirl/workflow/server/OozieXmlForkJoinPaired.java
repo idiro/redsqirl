@@ -145,7 +145,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			rootElement.setAttributeNode(attrName);
 
 			Attr attrXmlns = doc.createAttribute("xmlns");
-			attrXmlns.setValue(OozieManager.getInstance().xmlns);
+			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
 			rootElement.setAttributeNode(attrXmlns);
 
 			String startNode = "start";

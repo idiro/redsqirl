@@ -15,13 +15,6 @@
       "type": "STRING",
     },
     {
-      "property": "tomcat_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
-      "type": "STRING"
-    },
-    {
       "property": "hadoop_home",
       "scope": "system",
       "optional": "false",
@@ -47,6 +40,13 @@
       "scope": "system",
       "optional": "false",
       "default": "http://154.50.192.12:8091/analytics-store",
+      "type": "STRING"
+    },
+    {
+      "property": "tomcat_path",
+      "scope": "system",
+      "optional": "false",
+      "default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
       "type": "STRING"
     },
     {

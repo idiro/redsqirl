@@ -526,7 +526,9 @@
 		<h2>Super Actions</h2>
 
 		<p>Super Actions are actions that compose of other actions which
-			users can create. To create a super action the user must create a sub
+			users can create. Super Actions are organised into
+			<a class="stopLink" id="helpmain_modelview" 
+			    onclick="return false;" href="../help/modelview.html">models</a>. To create a super action the user must create a sub
 			workflow which can be done by clicking in the menu and selecting new
 			-> sub workflow. Once the subworkflow the user can drag as many
 			SuperAction Input actions as needed to the sub workflow to perform
@@ -543,38 +545,32 @@
 			case. As long as the inputs and outputs are given appropriate names
 			all actions are valid. When configuring the superaction input of a
 			sub workflow, the user has to name the fields of the input. The only
-			requirment for an output is giving it a name. When sub workflow is
-			finished and installed as superaction you will find that the link
-			between the action and the source in the name of the input in the
-			superaction the same goes for the output </p>
-
-		<ul>
-			<li>Install - Install the current subworkflow to the local
-				filesystem to make it available as a SuperAction</li>
-			<li>Uninstall - Uninstall workflows from the localfile system</li>
-			<li>Import from HDFS - Import a subworkflow (.srs) from HDFS and
-				install it</li>
-			<li>Export to HDFS - Exports the current subworkflow to HDFS</li>
-		</ul>
+			requirment for an output is giving it a name. When a sub workflow is
+			finished and installed, the Super Action will required
+			the input and produce the output declared. </p>
 		</p>
 		
 		<h3>SuperAction Generation</h3>
 
 		<p>SuperAction can be generated from workflows. To generate a
-			SuperAction from a workflow you select the actions on the workflow
-			and click the aggregate button in the canvas control buttons above
-			the canvas or in edit -> aggregate. When the user selects
-			aggregate they will be shown a pop up that will be used to configure
-			that SuperAction. The configuraion will ask what the names of the
-			inputs and the name of the outputs should be</p>
+		SuperAction from a workflow you select the actions on the
+		workflow and click the <a class="stopLink"
+		    id="helpmain_aggregate" onclick="return false;"
+		    href="../help/aggregate.html">aggregate</a> button in the
+		canvas control buttons above the canvas or in edit -> aggregate.
+		When the user selects aggregate they will be shown a pop up that
+		will be used to configure that SuperAction. The configuraion
+		will ask what the names of the inputs and the name of the
+		outputs should be.</p>
 			
 			
 			
-		<h2>Expand</h2>
-		<p>Expand a SuperAction can be generated from workflows. To expand a
-			SuperAction from a workflow you select the super actions on the workflow
-			and click the expand button in edit -> expand. When the user selects
-			super actions the super action will be expand to the select canvas</p>
+		<h3>Expand</h3> 
+			
+		<p>Expand a SuperAction can be generated from workflows,
+		expanding means copying the logic of the Super Action into the
+		current workflow. To expand a SuperAction from a workflow you
+		should go into the options menu when you hover the Super Action.</p>
 			
 			
 		<h2>Action Context Menu</h2>	

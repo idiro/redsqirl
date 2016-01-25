@@ -198,7 +198,7 @@ public class ConvertFileText extends DataflowAction {
 		String pathOutput = this.getDFEOutput().get(ConvertFileText.key_output).getPath();
 		
 
-		String hadoopBin = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
+		String hadoopBin = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_hadoop_home);
 		if(hadoopBin == null){
 			hadoopBin = "";
 		}else if(! hadoopBin.isEmpty()){

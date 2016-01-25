@@ -67,8 +67,6 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	private static OozieManager instance = null;
 	/** Oozie Client */
 	private OozieClient oc = null;
-	/** XMLNS scheme */
-	public final String xmlns;
 	/** Namenode property key */
 	public static final String prop_namenode = "namenode",
 			/** JobTracker link property key */
@@ -95,10 +93,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 */
 	private OozieManager() throws FileNotFoundException, IOException {
 		super();
-		Properties prop = WorkflowPrefManager.getSysProperties();
-		oc = new OozieClient(prop.getProperty(WorkflowPrefManager.sys_oozie));
-		xmlns = prop.getProperty(WorkflowPrefManager.sys_oozie_xmlns);
-
+		oc = new OozieClient(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie));
 	}
 
 	/**
