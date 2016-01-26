@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,16 +33,19 @@ public class UsageRecordWriter implements Serializable {
 
 	private String licenseKey;
 	private String user;
+	private String userMd5;
 
 	public UsageRecordWriter(String licenseKey ,String user) {
 		super();
 		this.licenseKey = licenseKey;
 		this.user = user;
+		resetUserMd5();
 	}
-
+	
 	public UsageRecordWriter(String user) {
 		super();
 		this.user = user;
+		resetUserMd5();
 	}
 
 	public UsageRecordWriter() {
@@ -50,6 +56,22 @@ public class UsageRecordWriter implements Serializable {
 		SUCCESS,
 		WARNING,
 		ERROR
+	}
+
+	protected void resetUserMd5(){
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] digest = md.digest(user.getBytes("UTF-8"));
+			StringBuffer sb = new StringBuffer();
+			for (byte b : digest) {
+				sb.append(String.format("%02x", b & 0xff));
+			}
+			userMd5 = sb.toString();
+		} catch (Exception e) {
+			userMd5 = "UNKNOWN";
+			logger.warn(e,e);
+		}
 	}
 
 	public File getPreviousFile(){
@@ -139,21 +161,23 @@ public class UsageRecordWriter implements Serializable {
 	}
 
 	private void write(String actionType, Status status, String description,String message) throws IOException{
-		String date = new Date().toString();
-		File tmpFile = getCurrentFile();
-		if(tmpFile.exists()){
+		if(!"FALSE".equalsIgnoreCase(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.core_settings_data_usage))){
+			String date = new Date().toString();
+			File tmpFile = getCurrentFile();
+			if(tmpFile.exists()){
 
-			try {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(tmpFile, true)));
-				out.println(date+"|"+licenseKey+"|"+user+"|"+actionType+"|"+status.toString()+"|"+description+"|"+message);
-				out.close();
-			} catch (IOException e) {
-				logger.error(e,e);
+				try {
+					PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(tmpFile, true)));
+					out.println(date+"|"+licenseKey+"|"+userMd5+"|"+actionType+"|"+status.toString()+"|"+description+"|"+message);
+					out.close();
+				} catch (IOException e) {
+					logger.error(e,e);
+				}
+
+			}else{
+				logger.error("file not found");
+
 			}
-
-		}else{
-			logger.error("file not found");
-
 		}
 
 	}
@@ -213,6 +237,7 @@ public class UsageRecordWriter implements Serializable {
 
 	public void setUser(String user) {
 		this.user = user;
+		resetUserMd5();
 	}
 
 }

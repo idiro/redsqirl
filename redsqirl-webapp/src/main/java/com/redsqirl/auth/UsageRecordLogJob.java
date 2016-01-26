@@ -23,6 +23,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
+
 public class UsageRecordLogJob implements Job {
 
 	private static Logger logger = Logger.getLogger(UsageRecordLogJob.class);
@@ -41,8 +43,9 @@ public class UsageRecordLogJob implements Job {
 			zip(fileName, fileZipName);
 
 			//fileName.delete();
-			
-			executeUpload();
+			if(!"FALSE".equalsIgnoreCase(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.core_settings_data_usage))){
+				executeUpload();
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();

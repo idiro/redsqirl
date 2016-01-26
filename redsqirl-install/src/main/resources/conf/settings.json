@@ -36,6 +36,13 @@
       "type": "STRING"
     },
     {
+      "property": "data_usage",
+      "scope": "system",
+      "optional": "true",
+      "default": "true",
+      "type": "BOOLEAN"
+    },
+    {
       "property": "pack_manager_url",
       "scope": "system",
       "optional": "false",

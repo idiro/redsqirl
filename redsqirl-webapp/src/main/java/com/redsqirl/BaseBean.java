@@ -340,13 +340,11 @@ public class BaseBean {
 			
 			FacesContext context = FacesContext.getCurrentInstance();
 			
-			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-			String user = (String) session.getAttribute("username");
-			
-			if(user == null){
+			String user = null;
+			try{
 				UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 				user = userInfoBean.getUserName();
-			}
+			}catch(Exception e){}
 			
 			if(user == null){
 				AnalyticsStoreLoginBean analyticsStoreLoginBean = (AnalyticsStoreLoginBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreLoginBean}", AnalyticsStoreLoginBean.class);

@@ -136,11 +136,8 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 			
 			if(!Setting.Scope.USER.equals(setting.getScope())){
 
-				if(setting.getSysPropetyValue() != null && !setting.getSysPropetyValue().isEmpty()){
-					setting.setSysValue(setting.getSysPropetyValue());
-				}
-
 				if(setting.getSysPropetyValue() != null){
+					setting.setSysValue(setting.getSysPropetyValue());
 					setting.setExistSysProperty(true);
 				}else{
 					setting.setExistSysProperty(false);
@@ -150,11 +147,8 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 			
 			if(!Setting.Scope.SYSTEM.equals(setting.getScope())){
 
-				if(setting.getUserPropetyValue() != null && !setting.getUserPropetyValue().isEmpty()){
-					setting.setUserValue(setting.getUserPropetyValue());
-				}
-
 				if(setting.getUserPropetyValue() != null){
+					setting.setUserValue(setting.getUserPropetyValue());
 					setting.setExistUserProperty(true);
 				}else{
 					setting.setExistUserProperty(false);

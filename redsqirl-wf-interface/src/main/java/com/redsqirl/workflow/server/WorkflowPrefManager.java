@@ -206,6 +206,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String core_settings = "core",
 			core_settings_oozie = core_settings+".oozie",
 			core_settings_hive = core_settings+".hive",
+			core_settings_data_usage = core_settings+".data_usage",
 
 			/** Default oozie launcher queue for hadoop */
 			sys_oozie_launcher_queue = core_settings_oozie+".oozie_launcher_queue",

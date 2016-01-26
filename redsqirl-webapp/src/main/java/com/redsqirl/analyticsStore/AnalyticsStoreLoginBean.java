@@ -653,7 +653,19 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 	}
 	
 	public boolean isAdmin(){
-		return loggedIn;
+		boolean admin = loggedIn;
+		if(!admin){
+			String[] admins = WorkflowPrefManager.getSysAdminUser();
+			if(admins != null && admins.length != 0){
+				for(String cur: admins){
+					admin = admin || cur.equals(email);
+				}
+			}else{
+				admin = true;
+			}
+		}
+		
+		return admin;
 	}
 
 	public void storeNewSettings(){
@@ -842,15 +854,13 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
 			listSetting.add(settings.getKey());
 			Setting setting = settings.getValue();
-			if(!settings.getValue().getScope().equals(Setting.Scope.USER)){
-
-				if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
-					setting.setSysValue(setting.getSysPropetyValue());
-				}
+			if(!setting.getScope().equals(Setting.Scope.USER)){
 
 				if(setting.getSysPropetyValue() != null){
+					setting.setSysValue(setting.getSysPropetyValue());
 					setting.setExistSysProperty(true);
 				}else{
+					setting.setSysValue(null);
 					setting.setExistSysProperty(false);
 				}
 
