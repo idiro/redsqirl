@@ -1726,8 +1726,8 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					data="#{canvasModalBean.openCanvasModal}"
-					oncomplete="canvasModalParam = data;console.log('openChangeIdModal'); if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
-					reRender="msnError, errorTable, newIdElement">
+					oncomplete="canvasModalParam = data;console.log('openChangeIdModal'); if( #{requestScope['msnError'] == null}){setNewIdElement(data[3]);setCommentElement(data[4]);#{rich:component('modalChangeId')}.show();}"
+					reRender="msnError, errorTable" >
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
 					<a4j:actionparam name="paramLoadMainWindow" />

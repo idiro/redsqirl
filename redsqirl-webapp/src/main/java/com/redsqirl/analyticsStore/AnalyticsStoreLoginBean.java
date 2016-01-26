@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -36,11 +36,9 @@ import org.json.JSONObject;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
-import ch.ethz.ssh2.Connection;
-
 import com.google.common.io.Files;
 import com.idiro.ProjectID;
-import com.redsqirl.BaseBean;
+import com.redsqirl.SettingsBeanAbs;
 import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -51,8 +49,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import ch.ethz.ssh2.Connection;
 
-public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
+
+public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializable {
 
 	private static final long serialVersionUID = 7765876811740798583L;
 
@@ -86,14 +86,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private String pathFileModule;
 
-	private List<String[]> sysSettings = null;
-
-	private String nameSettings;
-
-	private String titleSettings;
-
-	private String valueSettings;
-
 	private String[] unSysPackage;
 
 	private List<SelectItem> systemPackages;
@@ -105,13 +97,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	private String mac;
 
 	private String showNoLicense;
-	
-	private Map<String, SettingMenu> curMap;
-	private List<String> path;
-	private SettingMenu s;
-	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
-	private List<String> listSetting = new ArrayList<String>();
-	private String pathPosition;
 	
 	@PostConstruct
 	public void init() {
@@ -666,37 +651,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 		return name.replace(".rs", "").replace(".srs", "").replace("sa_", "");
 	}
-
-	public void calcSettings(){
-		logger.info("calcSettings");
-		WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
-		Properties sysProp = wpm.getSysProperties();
-		Properties sysLangProp = WorkflowPrefManager.getLangProperties();
-		setSysSettings(getList(sysProp,sysLangProp));
-	}
-
-	private List<String[]> getList(Properties value, Properties lang){
-		List<String[]> ans = new LinkedList<String[]>();
-		Iterator<Object> keyIt = value.keySet().iterator();
-		while(keyIt.hasNext()){
-			String key = keyIt.next().toString();
-			String[] newP = new String[4];
-			newP[0] = key;
-			newP[1] = lang.getProperty(key+"_label",WordUtils.capitalizeFully(key.replace("_", " ")));
-			newP[2] = lang.getProperty(key+"_desc",newP[1]);
-			newP[3] = value.getProperty(key);
-			//logger.info("value "+value.getProperty(key));
-			ans.add(newP);
-		}
-		Collections.sort(ans, new Comparator<String[]>() {
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				return o1[1].compareTo(o2[1]);
-			}
-		});
-
-		return ans;
-	}
 	
 	public boolean isAdmin(){
 		return loggedIn;
@@ -704,33 +658,12 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void storeNewSettings(){
 		logger.info("storeNewSettings: "+WorkflowPrefManager.pathSysCfgPref);
+		
 		String error = null;
 		if(isAdmin()){
-			try {
-				WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
-			} catch (IOException e) {
-				error = e.getMessage();
-			}
-		}else{
-			error = "You are not administrator!";
+			error = storeSysSettings();
 		}
-		if(error != null){
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		}
-		calcSettings();
-	}
-
-	private Properties getProps(List<String[]> l){
-		Properties prop = new Properties();
-		Iterator<String[]> it = l.iterator();
-		while(it.hasNext()){
-			String[] cur = it.next();
-			//logger.info("Put: "+cur[0]+","+cur[3]);
-			prop.put(cur[0], cur[3]);
-		}
-		return prop;
+		displayErrorMessage(error, "ADMINNEWSETTINGS");
 	}
 
 	public void calcSystemPackages() {
@@ -840,7 +773,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	}
 
 	public String setting(){
-		calcSettings();
 		setAdm(true);
 		return "settings";
 	}
@@ -910,7 +842,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
 			listSetting.add(settings.getKey());
 			Setting setting = settings.getValue();
-			if(settings.getValue().getScope().equals(Setting.Scope.SYSTEM)){
+			if(!settings.getValue().getScope().equals(Setting.Scope.USER)){
 
 				if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
 					setting.setSysValue(setting.getSysPropetyValue());
@@ -920,56 +852,12 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 					setting.setExistSysProperty(true);
 				}else{
 					setting.setExistSysProperty(false);
-				}
-
-			}else if(settings.getValue().getScope().equals(Setting.Scope.USER)){
-
-				if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
-					setting.setUserValue(setting.getUserPropetyValue());
-				}
-
-				if(setting.getUserPropetyValue() != null){
-					setting.setExistUserProperty(true);
-				}else{
-					setting.setExistUserProperty(false);
-				}
-
-			}else{
-				if(setting.getSysValue() == null || setting.getSysValue().isEmpty()){
-					setting.setSysValue(setting.getSysPropetyValue());
-				}
-				if(setting.getUserValue() == null || setting.getUserValue().isEmpty()){
-					setting.setUserValue(setting.getUserPropetyValue());
-				}
-
-				if(setting.getSysPropetyValue() != null){
-					setting.setExistSysProperty(true);
-				}else{
-					setting.setExistSysProperty(false);
-				}
-
-				if(setting.getUserPropetyValue() != null){
-					setting.setExistUserProperty(true);
-				}else{
-					setting.setExistUserProperty(false);
 				}
 
 			}
 
 		}
 
-	}
-
-	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
-		SettingMenu cur = null;
-		Iterator<String> itPath = path.iterator();
-		if(itPath.hasNext()){
-			cur = curMap.get(itPath.next());
-		}
-		while(itPath.hasNext()){
-			cur = cur.getMenu().get(itPath.next());
-		}
-		return cur;
 	}
 
 	public void navigationPackageSettings() throws RemoteException{
@@ -988,137 +876,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		mountPath(name);
 	}
-
-	public String saveSettings() throws RemoteException{
-
-		StringBuffer newPath = new StringBuffer();
-		for (String value : getPath()) {
-			newPath.append("."+value);
-		}
-
-		setSysSettings(new ArrayList<String[]>());
-		calcSettings();
-
-		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
-			String nameSettings = newPath.substring(1) +"."+ setting.getKey();
-			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM)){
-				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
-					String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
-					getSysSettings().add(value);
-				}
-			}else{
-				if(setting.getValue().getSysValue() != null && !setting.getValue().getSysValue().isEmpty()){
-					String[] valueS = {nameSettings, nameSettings, nameSettings, setting.getValue().getSysValue()};
-					getSysSettings().add(valueS);
-				}
-			}
-		}
-
-		storeNewSettings();
-
-		return "success";
-	}
-
-	public void applySettings() throws RemoteException{
-		saveSettings();
-	}
-
-	public void addPropertyValue() throws RemoteException{
-
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String label = params.get("label");
-		String scope = params.get("scope");
-
-		if(label != null && scope != null){
-			logger.info(s.getProperties().keySet());
-			logger.info("label: "+label);
-			Setting setting = s.getProperties().get(label);
-			if(setting != null && scope.equals(Setting.Scope.SYSTEM.toString())){
-				setting.setExistSysProperty(true);
-			}
-		}
-
-	}
-
-	public void deletePropertyValue() throws RemoteException{
-
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String label = params.get("label");
-		String scope = params.get("scope");
-
-		if(label != null && scope != null){
-			Setting setting = s.getProperties().get(label);
-			if(scope.equals(Setting.Scope.SYSTEM.toString())){
-				setting.setExistSysProperty(false);
-				deleteProperty(label, setting.getSysValue());
-			}
-
-			WorkflowPrefManager.getInstance();
-			WorkflowPrefManager.getProps().readDefaultSettingMenu();
-			curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
-
-			mountPath(getPathPosition());
-		}
-
-	}
-
-	public void deleteProperty(String name, String valueToDelete){
-
-		StringBuffer pathToDelete = new StringBuffer();
-		for (String value : getPath()) {
-			pathToDelete.append(value+".");
-		}
-		pathToDelete.append(name);
-
-		String nameSettings = pathToDelete.toString();
-		logger.info("newPath " + pathToDelete.toString() +"="+ valueToDelete);
-
-		for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
-			String[] settings = (String[]) iterator.next();
-			if(nameSettings.equals(settings[0])){
-				iterator.remove();
-			}
-		}
-
-		storeNewSettings();
-	}
-
-	public void setDefaultValue() throws RemoteException{
-
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String label = params.get("label");
-		String type = params.get("type");
-
-		if(label != null && type != null && type.equals(Setting.Scope.SYSTEM.toString())){
-
-			Setting setting = s.getProperties().get(label);
-			setting.setSysValue(setting.getDefaultValue());
-
-			StringBuffer newPath = new StringBuffer();
-			for (String value : getPath()) {
-				newPath.append("."+value);
-			}
-			
-			String nameSettings = newPath.toString().substring(1)+"."+label;
-			logger.info("Set Value "+nameSettings+", "+setting.getDefaultValue());
-			for (Iterator<String[]> iterator = getSysSettings().iterator(); iterator.hasNext();) {
-				String[] settings = (String[]) iterator.next();
-				if(nameSettings.equals(settings[0])){
-					settings[3] = setting.getDefaultValue();
-				}
-			}
-			storeNewSettings();
-
-			WorkflowPrefManager.getInstance();
-			WorkflowPrefManager.getProps().readDefaultSettingMenu();
-			curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
-						
-			mountPath(getPathPosition());
-
-		}
-
-	}
-	
 	
 
 	// Getters & Setters
@@ -1221,38 +978,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void setPathFileModule(String pathFileModule) {
 		this.pathFileModule = pathFileModule;
-	}
-
-	public List<String[]> getSysSettings() {
-		return sysSettings;
-	}
-
-	public void setSysSettings(List<String[]> sysSettings) {
-		this.sysSettings = sysSettings;
-	}
-
-	public String getNameSettings() {
-		return nameSettings;
-	}
-
-	public void setNameSettings(String nameSettings) {
-		this.nameSettings = nameSettings;
-	}
-
-	public String getTitleSettings() {
-		return titleSettings;
-	}
-
-	public void setTitleSettings(String titleSettings) {
-		this.titleSettings = titleSettings;
-	}
-
-	public String getValueSettings() {
-		return valueSettings;
-	}
-
-	public void setValueSettings(String valueSettings) {
-		this.valueSettings = valueSettings;
 	}
 
 	public String[] getUnSysPackage() {

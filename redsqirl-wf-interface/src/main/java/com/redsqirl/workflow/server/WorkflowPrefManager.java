@@ -401,6 +401,8 @@ public class WorkflowPrefManager extends BlockManager {
 			
 			File userTmp = new File(getPathTmpFolder(userName));
 			userTmp.mkdirs();
+			userTmp.setWritable(true,false);
+			userTmp.setReadable(true,false);
 			
 		}
 		createSysHome();
