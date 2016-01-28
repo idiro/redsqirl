@@ -418,8 +418,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				error = "Unexpected program error while checking this action.";
 			}
 		} catch (Exception e) {
-			
 		}
+		
 		return error;
 	}
 	
@@ -471,8 +471,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if (error != null && error.length() > 1) {
 			setErrorMsg(error);
 		}else{
-			updateOutputElement();
-			outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
+			//Done in checkNextPage if it is the last
+			if (getListPageSize() - 1 != getListPosition()) {
+				updateOutputElement();
+				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
+			}
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
 			setErrorMsg("");

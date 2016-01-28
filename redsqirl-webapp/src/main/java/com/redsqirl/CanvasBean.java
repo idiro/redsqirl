@@ -284,24 +284,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		//logger.info("posX " + posX + " posY " + posY);
 
 		if (getIdMap().get(workflowName) != null) {
+			String componentId = getIdMap().get(workflowName).get(paramGroupID); 
 
-			//logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
-
-			if (getIdMap().get(workflowName).get(paramGroupID) != null) {
+			if (componentId != null) {
 				try {
-					DataFlow df = getDf();
+					DataFlow df = getworkFlowInterface().getWorkflow(workflowName);
 					if (df != null) {
-						if (df.getElement(getIdMap().get(workflowName).get(
-								paramGroupID)) != null) {
-							df.getElement(
-									getIdMap().get(workflowName).get(
-											paramGroupID)).setPosition(
+						if (df.getElement(componentId) != null) {
+							df.getElement(componentId).setPosition(
 													Double.valueOf(posX).intValue(),
 													Double.valueOf(posY).intValue());
 						}
-
-						//logger.info(workflowName + " - " + getIdMap().get(workflowName).get(paramGroupID) + " - " + Double.valueOf(posX).intValue() + " - "	+ Double.valueOf(posY).intValue());
-
 					}
 				} catch (RemoteException e) {
 					logger.info("updatePosition error " + e, e);
@@ -680,7 +673,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						Object objc = positionsArray.get(groupId);
 
 						JSONArray elementArray = new JSONArray(objc.toString());
-						logger.info("Update :" + workflowId + " " + groupId
+						logger.info("Update: " + workflowId + " " + groupId
 								+ " " + elementArray.get(0).toString() + " "
 								+ elementArray.get(1).toString());
 
@@ -1533,14 +1526,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 					inverseIdMap.put(e.getValue(), e.getKey());
 				}
 
-				int i = 0;
+				int i = -1;
 				Iterator<String> elSels = dfCur.getComponentIds().iterator();
 				boolean checkStatus = getOozie().jobExists(getDf());
 				while (elSels.hasNext()) {
 					String curId = elSels.next();
 					if (elements.containsKey(curId)) {
 						DataFlowElement dfe = dfCur.getElement(curId);
-						result[i++] = getOutputStatus(dfe, elements.get(curId),checkStatus,inverseIdMap);
+						result[++i] = getOutputStatus(dfe, elements.get(curId),checkStatus,inverseIdMap);
 					}
 				}
 
@@ -1600,6 +1593,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			try {
 				errorOut = dfe.checkEntry();
+				if(errorOut == null){
+					errorOut = dfe.updateOut();
+				}
 			} catch (Exception e) {
 				logger.error(e, e);
 				errorOut = "Unexpected program error while checking this action.";
@@ -1854,14 +1850,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			Set<String> els = getAllElementAfterForOutput(dfe);
 			Object[][] ans = new Object[els.size()][];
-			int i = 0;
+			boolean end = false;
+			int i = -1;
 			Map<String, String> gIds = getReverseIdMap();
 			Iterator<String> allCompIt = getDf().getComponentIds().iterator();
 			boolean checkStatus = getOozie().jobExists(getDf());
-			while (allCompIt.hasNext()) {
+			while (allCompIt.hasNext() && !end) {
 				String compCur = allCompIt.next();
 				if (els.contains(compCur)) {
-					ans[i++] = getOutputStatus(getDf().getElement(compCur),	gIds.get(compCur), checkStatus,inverseIdMap);
+					ans[++i] = getOutputStatus(getDf().getElement(compCur),	gIds.get(compCur), checkStatus,inverseIdMap);
+					end = !Boolean.valueOf(ans[i][5].toString());
 				}
 			}
 
@@ -2517,22 +2515,63 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 	
 	public String[] getAggregationDetails(){
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String subWf = params.get("subWf");
+		String inputSubWf = params.get("inputSubWf");
+		String outputSubWf = params.get("outputSubWf");
+		String inputNameSubWorkflow = null;
+		String inputNameModel = null;
+		String inputComment = null;
+		Map<String,String> inputs = new LinkedHashMap<String,String>();
+		Map<String,String> outputs = new LinkedHashMap<String,String>();
+		try {
+			JSONObject subWfJson = new JSONObject(subWf);
+			inputNameSubWorkflow = subWfJson.get("swName").toString();
+			inputNameModel =  subWfJson.get("aggNameModel").toString();
+			inputComment =  subWfJson.get("aggComment").toString();
+			
+			JSONObject inputJSON = new JSONObject(inputSubWf);
+			Iterator inputIt = inputJSON.keys();
+			while(inputIt.hasNext()){
+				String inputKey = (String) inputIt.next();
+				inputs.put(inputKey, inputJSON.getString(inputKey).toString());
+			}
+			
+			JSONObject outputJSON = new JSONObject(outputSubWf);
+			Iterator outputIt = outputJSON.keys();
+			while(outputIt.hasNext()){
+				String outputKey = (String) outputIt.next();
+				outputs.put(outputKey, outputJSON.getString(outputKey).toString());
+			}
+			
+			aggregate(inputNameSubWorkflow,inputNameModel,inputComment,inputs,outputs);
+		} catch (JSONException e) {
+			logger.info("Error updating positions",e);
+		}
+		
 		return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
 	}
 
-	public void aggregate() {
+	private void aggregate(
+			String subWfName,
+			String modelName,
+			String subWfComment,
+			Map<String, String > inputReNames,
+			Map<String, String> outputReNames
+			) {
 		logger.info("aggregate ");
 
 		String error = null;
 		//logger.info("name sub workflow " + getInputNameSubWorkflow());
 		String pattern= "[a-zA-Z][A-Za-z0-9_\\-]*";
-		if(!getInputNameSubWorkflow().matches(pattern)){
+		if(!subWfName.matches(pattern)){
 			//check regex
 			error = getMessageResources("msg_error_agg_subworkflow_name");
-		}else if(!getInputNameModel().matches(pattern)){
+		}else if(!modelName.matches(pattern)){
 			error = getMessageResources("msg_error_agg_model_name");
 		}
-		String fullName = ">"+getInputNameModel()+">"+getInputNameSubWorkflow();
+		String fullName = ">"+modelName+">"+subWfName;
 
 		if(error == null){
 			try {
@@ -2543,15 +2582,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 				Map<String,DFEOutput> outputsForHelp = new HashMap<String,DFEOutput>();
 
 				for (String[] vet : getInputNamesList()) {
-					logger.info("openAggregate ansIn: " + vet[0] + " " + vet[1] + " " + vet[2]);
-					inputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-					inputsForHelp.put(vet[0], getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
+					logger.info("openAggregate ansIn: " + inputReNames.get(vet[1]) + " " + vet[1] + " " + vet[2]);
+					inputs.put(inputReNames.get(vet[1]), new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+					inputsForHelp.put(inputReNames.get(vet[1]), getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
 
 				for (String[] vet : getOutputNamesList()) {
-					logger.info("openAggregate ansOut: " + vet[0] + " " + vet[1] + " " + vet[2]);
-					outputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-					outputsForHelp.put(vet[0], getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
+					logger.info("openAggregate ansOut: " + outputReNames.get(vet[1]) + " " + vet[1] + " " + vet[2]);
+					outputs.put(outputReNames.get(vet[1]), new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+					outputsForHelp.put(outputReNames.get(vet[1]), getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
 
 				//check inputname and outputname do not exist on workflow
@@ -2578,9 +2617,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 					try{
 						SubDataFlow sw = getDf().createSA(getComponentIds(), 
 								fullName,
-								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
+								WorkflowHelpUtils.generateHelp(subWfName, subWfComment ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						error = modelMan.installSA(new ModelManager().getUserModel(userName, getInputNameModel()), sw,null);
+						error = modelMan.installSA(new ModelManager().getUserModel(userName, modelName), sw,null);
 					}catch(Exception e){
 						logger.error(e,e);
 						error = e.getMessage();
@@ -2589,7 +2628,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if(error == null){
 
 						logger.info("getComponentIds: " + getComponentIds());
-						logger.info("getInputNameSubWorkflow: " + getInputNameSubWorkflow());
+						logger.info("getInputNameSubWorkflow: " + subWfName);
 						logger.info("inputs: " + inputs);
 						logger.info("outputs: " + outputs);
 
@@ -2599,8 +2638,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 						if(error != null){
 							modelMan.uninstallSA(
-									new ModelManager().getUserModel(userName, getInputNameModel()),
-									getInputNameSubWorkflow()
+									new ModelManager().getUserModel(userName, modelName),
+									subWfName
 									);
 						}else{
 							logger.info("Elements: " + getDf().getComponentIds());

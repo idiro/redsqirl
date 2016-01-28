@@ -99,14 +99,19 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 						new Object[] { rowNb, field });
 			} else {
 				try {
-					if (!getDictionary().check(getDictionary().getType(FieldType.valueOf(type)), 
-							getDictionary().getReturnType(op, fields))) {
+					String typeRetuned = getDictionary()
+							.getReturnType(op,fields);
+					if (!getDictionary().check(type, 
+							typeRetuned)) {
 						msg = SqlLanguageManager.getText(
-								"sql.join_fields_interaction.typeinvalid",
-								new Object[] { rowNb, field });
+								"sql.select_fields_interaction.checkreturntype",
+								new Object[] {rowNb,
+										field, typeRetuned,
+										type });
 					}
 				} catch (Exception e) {
-					msg = e.getMessage();
+					msg = SqlLanguageManager
+							.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 				}
 			}
 		}
@@ -177,7 +182,7 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 						"sql.expressionnull");
 			}
 		} catch (Exception e) {
-			error = SqlLanguageManager.getText("sql.expressionexception");
+			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
 			logger.error(error, e);
 		}
 		return error;

@@ -60,8 +60,9 @@ public abstract class SqlUnionConditions extends TableInteraction {
 
 		List<Map<String, String>> lRow = getValues();
 		Iterator<Map<String, String>> rows = lRow.iterator();
-
+		int rowNb = 0;
 		while (rows.hasNext() && msg == null) {
+			++rowNb;
 			Map<String, String> row = rows.next();
 			try {
 
@@ -75,7 +76,8 @@ public abstract class SqlUnionConditions extends TableInteraction {
 							new String[] { row.get(table_relation_title) });
 				}
 			} catch (Exception e) {
-				msg = e.getMessage();
+				msg = SqlLanguageManager
+						.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 			}
 		}
 

@@ -105,22 +105,25 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 				Set<String> fieldsTitle = new LinkedHashSet<String>();
 				rows = listRow.iterator();
+				int rowNb = 0;
 				while (rows.hasNext() && msg == null) {
+					++rowNb;
 					//
 					Map<String, String> row = rows.next();
 					try {
+						String typeRetuned = getDictionary()
+								.getReturnType(row.get(table_op_title),hu.getInFields());
+						String type = row.get(table_type_title); 
+						String fieldName = row.get(table_feat_title);
 						if (!getDictionary().check(
-								row.get(table_type_title),
-								getDictionary().getReturnType(
-										row.get(table_op_title),
-										hu.getInFields()))) {
-							msg = SqlLanguageManager
-									.getText(
-											"sql.union_fields_interaction.checkreturntype",
-											new String[] { row
-													.get(table_feat_title) });
+								type,
+								typeRetuned)) {
+							msg = SqlLanguageManager.getText(
+									"sql.select_fields_interaction.checkreturntype",
+									new Object[] {rowNb,
+											fieldName, typeRetuned,
+											type });
 						} else {
-							String fieldName = row.get(table_feat_title);
 							logger.info("is it contained in map : "	+ fieldName);
 							if (!mapFeatType.containsField(fieldName)) {
 								msg = SqlLanguageManager.getText("sql.union_fields_interaction.checkfeatimplemented");
@@ -136,7 +139,9 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 							}
 						}
 					} catch (Exception e) {
-						msg = e.getMessage();
+						msg = SqlLanguageManager
+								.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
+						logger.error(msg,e);
 					}
 				}
 
@@ -166,10 +171,11 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 		try {
 			if (getDictionary().getReturnType(expression,
 					hu.getInFields()) == null) {
-				error = "Expression does not have a return type";
+				error = SqlLanguageManager.getText(
+						"sql.expressionnull");
 			}
 		} catch (Exception e) {
-			error = "Error trying to get expression return type";
+			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
 			logger.error(error, e);
 		}
 		return error;

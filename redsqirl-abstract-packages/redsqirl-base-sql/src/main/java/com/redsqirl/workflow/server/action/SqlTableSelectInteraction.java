@@ -133,7 +133,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 								+ " to fields type list");
 					} catch (Exception e) {
 						msg = SqlLanguageManager
-								.getText("sql.expressionexception");
+								.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 						logger.error(msg,e);
 					}
 				}
@@ -260,7 +260,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 				error = SqlLanguageManager.getText("sql.expressionnull");
 			}
 		} catch (Exception e) {
-			error = SqlLanguageManager.getText("sql.expressionexception");
+			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
 			logger.error(error, e);
 		}
 		return error;

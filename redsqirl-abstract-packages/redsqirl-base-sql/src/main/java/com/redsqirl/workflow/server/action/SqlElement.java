@@ -178,6 +178,8 @@ public abstract class SqlElement extends DataflowAction {
 
 	public abstract Map<String,DFEOutput> getJoinAliases() throws RemoteException;
 	
+	
+	
 
 	public List<String> getTypes(){
 		List<String> types = new ArrayList<String>(FieldType.values().length);

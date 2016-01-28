@@ -3,22 +3,85 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	id="contentModalAggregate">
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
+<script>
+	function getAggregateValues(){
+		var aggValues = {};
+		aggValues["swName"] = jQuery("[id$='aggNameSW']").val();
+		aggValues["aggNameModel"] = jQuery("[id$='aggNameModel']").val();
+		aggValues["aggComment"] = jQuery("[id$='aggSWComment']").val();
+		return JSON.stringify(aggValues);
+	}
+	
+	function getAggregateInputs(){
+		var inputs = {};
+		jQuery("[id$='aggNameInputs']").children("tbody").children("tr").each(
+				function() {
+					inputs[jQuery(this).find("span").attr("title")] = jQuery(this).find("input").val();
+		});
+		return JSON.stringify(inputs);
+	}
+	
+	function getAggregateOutputs(){	
+		var outputs = {};
+		jQuery("[id$='aggNameOutputs']").children("tbody").children("tr").each(
+				function() {
+					outputs[jQuery(this).find("span").attr("title")] = jQuery(this).find("input").val();
+		});
+		return JSON.stringify(outputs);
+	}
+</script>
 
  	<div id="domMessageDivModalAggregate" style="display: none;">
         <img src="../image/icons/waiting.gif" />
     </div>
 
+	<a4j:region>
+		<a4j:jsFunction name="openModalAggregate"
+			action="#{canvasBean.openAggregate}"
+			reRender="errorTable, msnError, contentModalAggregate"
+			oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();jQuery('#helpmain_aggregate').click();}">
+			<a4j:actionparam name="selectedIcons" />
+		</a4j:jsFunction>
+	</a4j:region>
+	<a4j:region>
+		<a4j:jsFunction name="cloneBeforeAggregate"
+			action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+			oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate(getAggregateValues(),getAggregateInputs(),getAggregateOutputs());">
+			<a4j:actionparam name="allpositions" />
+		</a4j:jsFunction>
+	<a4j:region>
+	</a4j:region>
+		<a4j:jsFunction name="aggregate"
+			data="#{canvasBean.aggregationDetails}"
+			reRender="errorTable, msnError"
+			oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();">
+			<a4j:actionparam name="subWf" />
+			<a4j:actionparam name="inputSubWf" />
+			<a4j:actionparam name="outputSubWf" />
+		</a4j:jsFunction>
+	</a4j:region>
+	<a4j:region>
+		<a4j:jsFunction name="undoAggregate"
+			action="#{canvasBean.undoAggregate}"
+			oncomplete="refreshRelativeHelp();">
+			<a4j:actionparam name="nameModel" />
+			<a4j:actionparam name="nameSA" />
+		</a4j:jsFunction>
+	</a4j:region>
+
 	<h:outputText value="#{messages.name_sub_workflow}" title="#{messages.name_sub_workflow}" />
-	<h:inputText value="#{canvasBean.inputNameSubWorkflow}" />
+	<h:inputText id="aggNameSW" value="#{canvasBean.inputNameSubWorkflow}"/>
+	
 	<h:outputText value="#{messages.name_model}" title="#{messages.name_model}" />
-	<h:inputText value="#{canvasBean.inputNameModel}" />
+	<h:inputText id="aggNameModel" value="#{canvasBean.inputNameModel}" />
 	<br/>
 	<h:outputText value="#{messages.name_inpuputlist}" title="#{messages.name_inpuputlist}" />
 	
-	<rich:dataTable value="#{canvasBean.inputNamesList}" var="item" rowKeyVar="indexTable"
+	<rich:dataTable id="aggNameInputs" value="#{canvasBean.inputNamesList}" var="item" rowKeyVar="indexTable"
             width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
             enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
             rowClasses="even-row, odd-row">
@@ -41,7 +104,7 @@
 	
 	<h:outputText value="#{messages.name_outputlist}" title="#{messages.name_outputlist}" />
 	
-	<rich:dataTable value="#{canvasBean.outputNamesList}" var="item" rowKeyVar="indexTable"
+	<rich:dataTable  id="aggNameOutputs" value="#{canvasBean.outputNamesList}" var="item" rowKeyVar="indexTable"
             width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
             enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
             rowClasses="even-row, odd-row">
@@ -57,8 +120,8 @@
     </rich:dataTable>
     
     <h:outputText value="#{messages.sa_description}" title="#{messages.sa_description}" />
-    <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{canvasBean.inputAreaSubWorkflow}" 
-    	style="resize:none;border:1pxsolid;width:98%;" id="command" />
+    <h:inputTextarea id="aggSWComment" maxlength="100" cols="90" rows="10" value="#{canvasBean.inputAreaSubWorkflow}" 
+    	style="resize:none;border:1pxsolid;width:98%;" />
 	
 	<h:panelGrid columns="2" style="border:none; float:right;">
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAggregate')}.hide()" />

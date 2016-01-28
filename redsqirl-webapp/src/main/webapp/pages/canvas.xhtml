@@ -499,7 +499,7 @@
 		    function reOpenCanvasJS(status){
 			//<![CDATA[
 				console.log("reOpenCanvasJS");
-				closeAllWorkflowTabs();
+				jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') });
 				for (var i = 0; i < status.length; i++) {
 					console.log("load: "+status[i][1]);
 					unblockRunningWorkflowJS();
@@ -512,6 +512,7 @@
 					
 				}
 				rerenderCanvasTab();
+				jQuery('#mainPanelDiv').unblock()
 			    //]]>
 			}
 
@@ -1051,7 +1052,7 @@
 	    	if(getSelectedIconsCommaDelimited() != ""){
 	    		openModalAggregate(getSelectedIconsCommaDelimited());
 		    }else{
-		    	alert("You need select one object");
+		    	alert("You need select at least one object.");
 			}
 	    }
 	    
@@ -1090,7 +1091,7 @@
 	   		console.log("reinitializeCanvasScreen");
 	   		var wf = "";
 	   		if(backUpWf != null){
-				wf = "\n\t- "+backUpWf.replace(", ","\n\t- ");
+				wf = "\n\t- "+backUpWf.replace(/, /g,"\n\t- ");
 	   		}
 			if(refresh != null){
 				closeAllWorkflowTabs();
@@ -1343,6 +1344,10 @@
 				<img src="../image/icons/waiting.gif" />
 			</div>
 			
+			<div id="domMessageAllCanvas" style="display: none;">
+				<img src="../image/icons/waiting.gif" />
+			</div>
+			
 			<a4j:region>
 				<a4j:jsFunction name="updateCanvasNameStar" reRender="canvasNameStar" />
 			</a4j:region>
@@ -1369,27 +1374,6 @@
 				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" 
 					oncomplete="console.log('expand'); if(#{requestScope['msnError'] == null}){refreshCanvas();}jQuery.unblockUI();" >
 					<a4j:actionparam name="selectedIcons" />
-				</a4j:jsFunction>
-			</a4j:region>
-			
-			<a4j:region>
-				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();jQuery('#helpmain_aggregate').click();}" >
-					<a4j:actionparam name="selectedIcons" />
-				</a4j:jsFunction>
-				
-				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate();">
-					<a4j:actionparam name="allpositions" />
-				</a4j:jsFunction>
-				
-				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.aggregationDetails}" reRender="errorTable, msnError"
-					oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();" >
-				</a4j:jsFunction>
-					
-				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" oncomplete="refreshRelativeHelp();" >
-					<a4j:actionparam name="nameModel" />
-					<a4j:actionparam name="nameSA" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1771,13 +1755,19 @@
                 <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
 					oncomplete="console.log('rebuildCanvas'); addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5],true);"
 					reRender="tabFlowchart,errorTable,msnError" />
-                
-                <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas'); reOpenCanvasJS(data);" />
-                
-                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" />
                     
 			</a4j:region>
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') });"
+					onerror="jQuery('#mainPanelDiv').unblock();"
+					onsuccess="jQuery('#mainPanelDiv').unblock();"
+					onstop="jQuery('#mainPanelDiv').unblock();" />
 			
+                <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas');closeAllWorkflowTabs();reOpenCanvasJS(data);" />
+                
+                <a4j:jsFunction name="rerenderCanvasTab" reRender="tabFlowchart,errorTable,msnError" />
+			</a4j:region>
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -1863,7 +1853,7 @@
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 					onerror="jQuery('#canvas-tabs').unblock();"
 					onsuccess="jQuery('#canvas-tabs').unblock();"
-					onstop="jQuery('#canvas-tabs').unblock();" />
+					onstop="jQuery('#canvas-tabs').unblock();"  />
 			
 				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" 
 					oncomplete="console.log('reinitializeCanvas'); reinitializeCanvasScreen(data[0],data[1])" />
@@ -3145,9 +3135,7 @@
 					onclick="#{rich:component('modalAggregate')}.hide()" />
 			</f:facet>
 			<h:form>
-				<h:panelGroup>
-					<a4j:include viewId="/pages/modalAggregate.xhtml" ajaxRendered="true" />
-				</h:panelGroup>
+					<a4j:include viewId="/pages/modalAggregate.xhtml" ajaxRendered="false" />
 			</h:form>
 
 		</rich:modalPanel>

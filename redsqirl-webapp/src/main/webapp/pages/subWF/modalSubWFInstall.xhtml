@@ -18,6 +18,15 @@
 				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFInstall') });"
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
+			
+			<a4j:region renderRegionOnly="true">
+				<a4j:jsFunction name="savePositionsAndSWInstall" 
+				action="#{canvasBean.updateAllPosition}"
+				oncomplete="intallSW();">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+			</a4j:region>
+			
 			<a4j:jsFunction name="intallSW"
 				reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 				action="#{modelBean.installCurrentSubWorkflow}"
@@ -68,7 +77,7 @@
 					reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 					action="#{modelBean.checkExistenceCurrentSubWorkflow}"
 					data="#{modelBean.exists}"
-					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists, Do you want to overwrite the existing one?')){saveAllPositions(getAllIconPositions());intallSW();}else{#{rich:component('modalSubWfInstall')}.hide();}" />
+					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists, Do you want to overwrite the existing one?')){savePositionsAndSWInstall(getAllIconPositions());}else{#{rich:component('modalSubWfInstall')}.hide();}" />
 			</h:panelGrid>
 
 				</h:form>

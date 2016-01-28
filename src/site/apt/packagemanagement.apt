@@ -12,7 +12,7 @@ Package Management
   In order to gain accessibility or functionality you can install packages.
 Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the
 Analytics Store website. Once a package is installed users may have to configure
-settings before using it. 
+settings, sign out and back in before using it. 
 
 ** Online installation
 

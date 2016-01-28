@@ -82,7 +82,7 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 			msg = SqlLanguageManager
 					.getText("sql.join_relationship_interaction.checkrownb");
 		} else {
-			Set<String> featType = new LinkedHashSet<String>();
+			String commonType = null;
 			FieldList inFeats = hj.getInFields();
 			logger.debug(inFeats.getFieldNames());
 			Iterator<Map<String, String>> rows = lRow.iterator();
@@ -102,17 +102,18 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 										"sql.join_relationship_interaction.checkexpressionnull",
 										new Object[] { rowNb });
 					} else {
-						featType.add(type);
+						if(rowNb == 1){
+							commonType = type;
+						}else if (!commonType.equals(type)) {
+							msg = SqlLanguageManager
+									.getText("sql.join_relationship_interaction.checksametype",new Object[]{rowNb,commonType,type});
+						}
 					}
 
 				} catch (Exception e) {
-					msg = e.getMessage();
+					msg = SqlLanguageManager
+							.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 				}
-			}
-
-			if (msg == null && featType.size() != 1) {
-				msg = SqlLanguageManager
-						.getText("sql.join_relationship_interaction.checksametype");
 			}
 		}
 
@@ -187,7 +188,7 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 				error = SqlLanguageManager.getText("sql.expressionnull");
 			}
 		} catch (Exception e) {
-			error = SqlLanguageManager.getText("sql.expressionexception");
+			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
 			logger.error(error, e);
 		}
 		return error;
