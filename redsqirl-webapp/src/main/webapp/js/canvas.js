@@ -50,6 +50,8 @@ var tmpCommandObj;
 var stageArrayTab = [];
 var mouseIn = false;
 var canvasModalParam;
+var timestampLastElementClicked;
+var lastElementClicked
 
 var menu_createLink = "Create Link";
 var menu_rename = "Rename Object...";
@@ -193,37 +195,37 @@ function configureCanvas(canvasName, reset, workflowType){
     });
     
     canvasArray[canvasName].arrow.on('mouseenter', function(e) {
-    	
-    	mouseIn = true;
-    	
-        var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
-        help.css("top",(e.pageY-10)+"px" );
-        help.css("left",(e.pageX-10)+"px" );
-        
-        setTimeout(function(){
-        	if(mouseIn){
-        		jQuery("body").append(help);
-                help.fadeIn("slow");
-                
-                var previewPosition = help.position().top + help.height();
-                var windowHeight = jQuery(window).height();
-                if (previewPosition > windowHeight) {
-                    help.css("overflow", "auto");
-                    help.css("height", windowHeight-help.position().top-20);
-                }
-                
-        	}
-        },200);
-        
-        help.mouseleave(function() {
-            jQuery(this).remove();
-        });
-        
-        help.click(function() {
-            jQuery(this).remove();
-        });
-        
+    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    		mouseIn = true;
+
+    		var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
+    		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
+    		help.css("top",(e.pageY-10)+"px" );
+    		help.css("left",(e.pageX-10)+"px" );
+
+    		setTimeout(function(){
+    			if(mouseIn){
+    				jQuery("body").append(help);
+    				help.fadeIn("slow");
+
+    				var previewPosition = help.position().top + help.height();
+    				var windowHeight = jQuery(window).height();
+    				if (previewPosition > windowHeight) {
+    					help.css("overflow", "auto");
+    					help.css("height", windowHeight-help.position().top-20);
+    				}
+
+    			}
+    		},200);
+
+    		help.mouseleave(function() {
+    			jQuery(this).remove();
+    		});
+
+    		help.click(function() {
+    			jQuery(this).remove();
+    		});
+    	}
     });
 
     jQuery("#"+canvasContainer).click(
@@ -557,10 +559,15 @@ function rectSelectAllObj(canvasName, e) {
                     //polygonLayer.draw();
                     canvasArray[canvasName].select = true;
                 } else {
-                    if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup) {
-                        value.getChildren()[2].setStroke(value.getChildren()[1].originaColor);
-                        value.getChildren()[2].selected = false;
-                        //polygonLayer.draw();
+                    if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup
+                    		&& canvasArray[canvasName].rectSelect){
+                    	if(canvasArray[canvasName].rectSelect.getWidth() > 10 
+                    			&& canvasArray[canvasName].rectSelect.getHeight() > 10) {
+                    		value.getChildren()[2].selected = false;
+                    		value.getChildren()[0].setFill("white");
+                    		value.getChildren()[1].setFill("white");
+                    		//polygonLayer.draw();
+                    	}
                     }
                 }
             });
@@ -569,21 +576,23 @@ function rectSelectAllObj(canvasName, e) {
     return canvasArray[canvasName].select;
 }
 
-function deselectOnClick(canvasName, obj, e) {
+function toggleSelectOnClick(canvasName, obj, e) {
     // <![CDATA[
     
-	//console.log("deselectOnClick");
+	//console.log("toggleSelectOnClick");
 	
     var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
     var stage = canvasArray[canvasName].stage;
 
-    if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup) {
+    if (!e.ctrlKey) {
         jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
             //value.setStroke('white');
-            value.getParent().getChildren()[0].setFill("white");
-            value.getParent().getChildren()[1].setFill("white");
-            value.selected = false;
+        	if(value.getParent().getId() != obj.getParent().getId()){
+        		value.getParent().getChildren()[0].setFill("white");
+        		value.getParent().getChildren()[1].setFill("white");
+        		value.selected = false;
+        	}
         });
 
         jQuery.each(layer.getChildren(), function(index, value) {
@@ -592,17 +601,18 @@ function deselectOnClick(canvasName, obj, e) {
                 value.selected = false;
             }
         });
-        layer.draw();
     }
 
-    canvasArray[canvasName].dragDropGroup = false;
-
-    obj.getParent().getChildren()[0].setFill("#FFDB99");
-    obj.getParent().getChildren()[1].setFill("#FFDB99");
-    
     //obj.setStroke("red");
-    obj.selected = true;
-
+    obj.selected = !obj.selected;
+    if(obj.selected){
+    	obj.getParent().getChildren()[0].setFill("#FFDB99");
+        obj.getParent().getChildren()[1].setFill("#FFDB99");
+    }else{
+    	obj.getParent().getChildren()[0].setFill("white");
+        obj.getParent().getChildren()[1].setFill("white");
+    }
+    getSelectedIcons();
     stage.draw();
 
     // ]]>
@@ -616,8 +626,6 @@ function dragAndDropGroup(canvasName, obj, e) {
     var polygonLayer = canvasArray[canvasName].polygonLayer;
     var stage = canvasArray[canvasName].stage;
     var background = canvasArray[canvasName].background;
-    
-    canvasArray[canvasName].dragDropGroup = true;
 
     var xCanvas = stage.getWidth();
     var yCanvas = stage.getHeight();
@@ -632,55 +640,53 @@ function dragAndDropGroup(canvasName, obj, e) {
     if (mousePos !== undefined) {
         differenceX = mousePos.x - positionX;
         differenceY = mousePos.y - positionY;
+        //console.log("Main obj: "+group.getId()); 
+        jQuery.each(polygonLayer.get('.group1'), function(index, value) {
+        	if (value.getChildren()[2] !== undefined && value.getChildren()[2].selected == true) {
+
+        		
+        		if (group.getX() != positionX) {
+        			//console.log("Manual move: "+value.getId());
+        			newX = value.getX() + differenceX;
+        		} else{
+        			newX = group.getX();
+        		}
+
+        		if (group.getY() != positionY) {
+        			newY = value.getY() + differenceY;
+        		} else{
+        			newY = group.getY();
+        		}
+
+        		if (mousePos.x < 60) {
+        			newX = value.getX();
+        		}
+        		if (mousePos.y < 60) {
+        			newY = value.getY();
+        		}
+
+
+        		if (newX < 5) {
+        			newX = 5;
+        		} else if (newX + 200 > xCanvas) {
+        			stage.setWidth(xCanvas + 200);
+        			background.setWidth(stage.getWidth());
+        			xCanvas = stage.getWidth();
+        		}
+
+        		if (newY < 5) {
+        			newY = 5;
+        		} else if (newY + 200 > yCanvas) {
+        			stage.setHeight(yCanvas + 200);
+        			background.setHeight(stage.getHeight());
+        			yCanvas = stage.getHeight();
+        		}
+
+        		value.setPosition(newX, newY);
+        		changePositionArrow(canvasName, value);
+        	}
+        });
     }
-
-    jQuery.each(polygonLayer.get('.group1'), function(index, value) {
-        if (value.getId() != group.getId()) {
-            if (value.getChildren()[2] !== undefined && value.getChildren()[2].selected == true) {
-                if (mousePos !== undefined) {
-
-                    if (group.getX() != positionX) {
-                        newX = value.getX() + differenceX;
-                    } else{
-                        newX = group.getX();
-                    }
-
-                    if (group.getY() != positionY) {
-                        newY = value.getY() + differenceY;
-                    } else{
-                        newY = group.getY();
-                    }
-
-                    if (mousePos.x < 60) {
-                        newX = value.getX();
-                    }
-                    if (mousePos.y < 60) {
-                        newY = value.getY();
-                    }
-
-
-                    if (newX < 5) {
-                        newX = 5;
-                    } else if (newX + 200 > xCanvas) {
-                        stage.setWidth(xCanvas + 200);
-                        background.setWidth(stage.getWidth());
-                        xCanvas = stage.getWidth();
-                    }
-
-                    if (newY < 5) {
-                        newY = 5;
-                    } else if (newY + 200 > yCanvas) {
-                        stage.setHeight(yCanvas + 200);
-                        background.setHeight(stage.getHeight());
-                        yCanvas = stage.getHeight();
-                    }
-
-                    value.setPosition(newX, newY);
-                    changePositionArrow(canvasName, value);
-                }
-            }
-        }
-    });
 
     if (group.getX() != positionX) {
         canvasArray[canvasName].positionX = positionX + differenceX;
@@ -738,6 +744,7 @@ function getSelectedIcons(){
         //alert(index+" "+value.selected);
         if(value.getParent().getId() !== undefined && value.selected){
             ans[++i] = value.getParent();
+            //console.log("selected: "+value.getParent().getId());
         }
     });
     return ans;
@@ -1383,11 +1390,13 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     var stage = canvasArray[selectedCanvas].stage;
     
     arc1.on('mouseover', function(e) {
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputType(this.getStroke()) +'</div>');
-        help.css("top",(e.pageY)+"px" );
-        help.css("left",(e.pageX)+"px" );
-        jQuery("body").append(help);
-        help.fadeIn("slow");
+    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputType(this.getStroke()) +'</div>');
+    		help.css("top",(e.pageY)+"px" );
+    		help.css("left",(e.pageX)+"px" );
+    		jQuery("body").append(help);
+    		help.fadeIn("slow");
+    	}
     });
     
     arc1.on('mouseout', function(e) {
@@ -1395,15 +1404,17 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     });
     
     arc2.on('mouseover', function(e) {
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelRunning(this.getStroke()) +'</div>');
-        help.css("top",(e.pageY)+"px" );
-        if(this.getStroke() == '#008000'){
-            help.css("left",(e.pageX)-140+"px" );
-        }else{
-            help.css("left",(e.pageX)-190+"px" );
-        }
-        jQuery("body").append(help);
-        help.fadeIn("slow");
+    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelRunning(this.getStroke()) +'</div>');
+    		help.css("top",(e.pageY)+"px" );
+    		if(this.getStroke() == '#008000'){
+    			help.css("left",(e.pageX)-140+"px" );
+    		}else{
+    			help.css("left",(e.pageX)-190+"px" );
+    		}
+    		jQuery("body").append(help);
+    		help.fadeIn("slow");
+    	}
     });
     
     arc2.on('mouseout', function(e) {
@@ -1411,11 +1422,13 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     });
     
     arc3.on('mouseover', function(e) {
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputExistence(this.getStroke()) +'</div>');
-        help.css("top",(e.pageY)+"px" );
-        help.css("left",(e.pageX)+"px" );
-        jQuery("body").append(help);
-        help.fadeIn("slow");
+    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputExistence(this.getStroke()) +'</div>');
+    		help.css("top",(e.pageY)+"px" );
+    		help.css("left",(e.pageX)+"px" );
+    		jQuery("body").append(help);
+    		help.fadeIn("slow");
+    	}
     });
     
     arc3.on('mouseout', function(e) {
@@ -1529,12 +1542,8 @@ function ready(canvasName) {
 
         configureCircle(canvasName, circle1);
 
-        polygon1.on('click', function(e) {
-            deselectOnClick(canvasName, this, e);
-        });
-
         polygon1.on('mousedown', function(e) {
-            deselectOnClick(canvasName, this, e);
+            toggleSelectOnClick(canvasName, this, e);
         });
 
     });
@@ -1672,11 +1681,13 @@ function mountObj(canvasName) {
                 });
                 
                 polygonTabFake.on('mouseover',function(e) {
-                    var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
-                    help.css("top",(e.pageY)+"px" );
-                    help.css("left",(e.pageX)+"px" );
-               		jQuery("body").append(help);
-                    help.fadeIn("slow");
+                	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+                		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
+                		help.css("top",(e.pageY)+"px" );
+                		help.css("left",(e.pageX)+"px" );
+                		jQuery("body").append(help);
+                		help.fadeIn("slow");
+                	}
                 });
                 
                 polygonTabFake.on('mouseout', function(e) {
@@ -2088,28 +2099,33 @@ function configureGroupListeners(canvasName, group) {
         canvasArray[canvasName].positionY = this.getY() + 50;
     });
     
-    group.on('dragstart', function(e) {
-        canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
-        deselectOnClick(canvasName, group.getChildren()[2], e);
-    });
-    
     group.on('dragmove', function(e) {
-        if(canvasArray[canvasName].savePositions == null){
+    	//Always have the element dragged selected....
+    	this.getChildren()[2].selected = true;
+    	this.getChildren()[0].setFill("#FFDB99");
+        this.getChildren()[1].setFill("#FFDB99");
+        
+        //Init positions
+        if(!canvasArray[canvasName].savePositions){
             canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
         }
+        //Remove annoying stuff for moving objects and prevent their apparition
+        canvasArray[canvasName].dragDropGroup = true;
         canvasArray[canvasName].rectSelect.destroy();
-        dragAndDropGroup(canvasName, this, e);
-        group.getChildren()[2].off('click');
         jQuery(".tooltipCanvas").remove();
+        dragAndDropGroup(canvasName, this, e);
+        //group.getChildren()[2].off('click');
     });
 
     group.on('dragend', function(e) {
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
+        console.log()
         canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
         jQuery(".tooltipCanvas").remove();
         canvasArray[canvasName].savePositions = null;
+        canvasArray[canvasName].dragDropGroup = false;
     });
     
     group.on('click', function(e) {
@@ -2118,7 +2134,6 @@ function configureGroupListeners(canvasName, group) {
         
         jQuery(".tooltipCanvas").remove();
         if(e.button != 2){
-          deselectOnClick(canvasName, group.getChildren()[2], e);
         
           group.getChildren()[2].on('click', function(e) {
             polygonOnClick(this, e, canvasName);
@@ -2201,7 +2216,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     });
     
     group1.on('click',function() {
-    	
+    	//Display Help
     	if (this.elementType) {
     		var auxId = this.elementType;
             if(auxId.indexOf('>') === 0){
@@ -2210,8 +2225,15 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
             	helpId = auxId;
             }
     	}
-    	
         jQuery("#help_"+helpId).click();
+        
+        //Open Canvas if needed
+        if(Date.now() - timestampLastElementClicked < 300 && this.getId() == lastElementClicked){
+            openCanvasModalJS(this);
+        }else{
+        	timestampLastElementClicked = Date.now();
+            lastElementClicked = this.getId();
+        }
     });
     
 //    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
@@ -2262,10 +2284,6 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon, select
 
     configureGroupListeners(canvasName, group);
 
-    group.on('dblclick', function(e) {
-        openCanvasModalJS(this);
-    });
-
 }
 
 function setPageNb(groupId, pageNb){
@@ -2282,8 +2300,7 @@ function setPageNb(groupId, pageNb){
 function openCanvasModalJS(group, selectedTab){
 	
 	//console.log("openCanvasModalJS");
-	
-	console.log(group.getId(), group.pageNb);
+	//console.log(group.getId(), group.pageNb);
 
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
@@ -2391,8 +2408,8 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         offsetY = 25;
     }
     
-    console.log("offsetX " + offsetX);
-    console.log("offsetY " + offsetY);
+    //console.log("offsetX " + offsetX);
+    //console.log("offsetY " + offsetY);
     
     var polygonTab = new Kinetic.RegularPolygon({
         x : 40,
@@ -2435,51 +2452,53 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
 
     polygon.on('mousedown', function(e) {
-        deselectOnClick(selectedCanvas, this, e);
+        toggleSelectOnClick(selectedCanvas, this, e);
     });
     
     var stage = canvasArray[canvasName].stage;
     
     polygon.on('mouseenter', function(e) {
     	
-    	mouseIn = true;
-        
-        if(this.getParent().getId() != curToolTip){
-            jQuery(".tooltipCanvas").remove();
-            var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
-            var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
-            var top = this.getParent().getPosition().y-scrollTop+160;
-            var left = this.getParent().getPosition().x-scrollLeft+80;
-            var optionButton = '<button style="float:left" onclick="buttonFuction(\''+this.getParent().getId()+'\',\''+top+'\',\''+left+'\' );" >Options</button>';
-            curToolTip = this.getParent().getId();
-            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+this.getParent().tooltipObj+'</div>');
-            help.css("top",top+"px" );
-            help.css("left",left+"px" );
-            
-            setTimeout(function(){
-            	if(mouseIn){
-            		jQuery("body").append(help);
-                    help.fadeIn("slow");
-                    
-                    var previewPosition = help.position().top + help.height();
-                    var windowHeight = jQuery(window).height();
-                    if (previewPosition > windowHeight) {
-                        help.css("overflow", "auto");
-                        help.css("height", windowHeight-help.position().top-20);
-                    }
-                    
-            	}
-            },400);
-            
-            help.mouseleave(function() {
-                jQuery(this).remove();
-                curToolTip = null;
-            });
-            
-            help.click(function() {
-                jQuery(this).remove();
-                curToolTip = null;
-            });
+    	//Not if objects are dragged
+        if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+        	mouseIn = true;
+        	if(this.getParent().getId() != curToolTip){
+        		jQuery(".tooltipCanvas").remove();
+        		var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
+        		var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
+        		var top = this.getParent().getPosition().y-scrollTop+160;
+        		var left = this.getParent().getPosition().x-scrollLeft+80;
+        		var optionButton = '<button style="float:left" onclick="buttonFuction(\''+this.getParent().getId()+'\',\''+top+'\',\''+left+'\' );" >Options</button>';
+        		curToolTip = this.getParent().getId();
+        		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+this.getParent().tooltipObj+'</div>');
+        		help.css("top",top+"px" );
+        		help.css("left",left+"px" );
+
+        		setTimeout(function(){
+        			if(mouseIn){
+        				jQuery("body").append(help);
+        				help.fadeIn("slow");
+
+        				var previewPosition = help.position().top + help.height();
+        				var windowHeight = jQuery(window).height();
+        				if (previewPosition > windowHeight) {
+        					help.css("overflow", "auto");
+        					help.css("height", windowHeight-help.position().top-20);
+        				}
+
+        			}
+        		},400);
+
+        		help.mouseleave(function() {
+        			jQuery(this).remove();
+        			curToolTip = null;
+        		});
+
+        		help.click(function() {
+        			jQuery(this).remove();
+        			curToolTip = null;
+        		});
+        	}
         }
     });
     
@@ -2536,8 +2555,6 @@ function findGroup(groupId){
 function polygonOnClick(obj,e, canvasName){
 	
 	//console.log("polygonOnClick");
-	
-	deselectOnClick(selectedCanvas, obj, e);
 	
 	var arrow = canvasArray[canvasName].arrow;
 
@@ -2762,7 +2779,7 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
 }
 
 function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink, cnt){
-    console.log("updateActionOutputStatusUntilItDoesntFail");
+    //console.log("updateActionOutputStatusUntilItDoesntFail");
     setTimeout(function(){
         try{
            updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);

@@ -215,9 +215,9 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	public void resetImage() {
 		File defaultImg = new File(getDefaultImage());
 		File img = getTomcatImage();
-		if(!defaultImg.getAbsolutePath().equals(img)){
+		if(!defaultImg.getAbsolutePath().equals(img.getAbsolutePath())){
 			img.delete();
-		}	
+		}
 	}
 
 	@Override
