@@ -8,8 +8,8 @@
 	<hadoop.version>1.0.4</hadoop.version>
 	<!-- hadoop-client for 2.X -->
 	<hadoop.artifactId>hadoop-core</hadoop.artifactId>
-	<idiro-hadoop.version>${hadoop.version}-0.2-SNAPSHOT</idiro-hadoop.version>
-	<idiro-base.version>0.1</idiro-base.version>
+	<idiro-hadoop.version>${hadoop.version}-0.3</idiro-hadoop.version>
+	<idiro-base.version>0.3</idiro-base.version>
 	<idiro-tm.version>0.1</idiro-tm.version>
 	<oozie.version>3.1.3</oozie.version>
 
