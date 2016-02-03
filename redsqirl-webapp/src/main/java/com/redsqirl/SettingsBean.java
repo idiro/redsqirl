@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,26 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		return error;
 	}
 
+
+	public void storeNewSettingsLang(Map<String,String[]> langSettings){
+		try {
+			Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
+
+			Iterator<String> langKey = langSettings.keySet().iterator();
+			while(langKey.hasNext()){
+				String cur = langKey.next();
+				String[] msg = langSettings.get(cur);
+				langProp.put(cur+"_desc",msg[0]);
+				langProp.put(cur+"_label",msg[1]);
+			}
+
+			WorkflowPrefManager.getProps().storeLangProperties(langProp);
+
+		} catch (IOException e) {
+			logger.error("Error " + e,e);
+		}
+	}
+
 	public void defaultSettings() {
 		logger.info("defaultSettings");
 
@@ -110,12 +131,29 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		}else{
 			path.add(name);
 		}
+		
+		refreshPath();
+	}
+	
+	public void refreshPath() throws RemoteException{
 
 		s = mountPackageSettings(path);
+
+		if(s.isTemplate()){
+			setTemplate("Y");
+		}else{
+			setTemplate("N");
+		}
 
 		listSubMenu = new ArrayList<SettingsControl>();
 		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
+
+			if(s.isTemplate()){
+				sc.setTemplate("Y");
+			}else{
+				sc.setTemplate("N");
+			}
 
 			String n = null;
 			if(settingsMenu.getKey().contains(".")){
@@ -162,20 +200,110 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 
 	}
 	
-
-	public void navigationPackageSettings() throws RemoteException{
-
-		saveSettings();
-
+	public void readCurMap() throws RemoteException{
 		getPrefs().readDefaultSettingMenu();
 		curMap = getPrefs().getDefaultSettingMenu();
+	}
+	
+
+	public void addNewTemplate() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
+		String error = null;
 
-		setPathPosition(name);
+		StringBuffer newPath = new StringBuffer();
+		for (String value : getPath()) {
+			newPath.append(value+".");
+		}
+		newPath.append(name);
+		String path = newPath.toString();
+		
+		
+		Map<String,Setting> templateSetting = new LinkedHashMap<String,Setting>();
+		Map<String,String[]> langMsg = new LinkedHashMap<String,String[]>();
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM) ){
+				if(!isAdmin()){
+					error = "You are not allowed to create a template for this item, you required to be administrator.";
+				}else{
+					templateSetting.put(setting.getKey(), new Setting(setting.getValue()));
+					templateSetting.get(setting.getKey()).setSysValue(setting.getValue().getDefaultValue());
+				}
+			}else{
+				templateSetting.put(setting.getKey(), new Setting(setting.getValue()));
+				templateSetting.get(setting.getKey()).setUserValue(setting.getValue().getDefaultValue());
+			}
+			String[] msg = {setting.getValue().getDescription(),setting.getValue().getLabel()};
+			langMsg.put(path+"."+setting.getKey(),msg);
+		}
+		
+		if(error == null){
+			try{
+				if(!templateSetting.isEmpty() && isAdmin()){
+					Properties sysProp = WorkflowPrefManager.getSysProperties();
+					sysProp = updateProperty(sysProp,path,templateSetting, Setting.Scope.SYSTEM);
+					WorkflowPrefManager.storeSysProperties(sysProp);
+				}
+				if(!templateSetting.isEmpty()){
+					Properties userProp = getPrefs().getUserProperties();
+					userProp = updateProperty(userProp,path,templateSetting, Setting.Scope.USER);
+					getPrefs().storeUserProperties(userProp);
+				}
+				storeNewSettingsLang(langMsg);
+			}catch(Exception e){
+				logger.error(e,e);
+				error = "Fail to write settings";
+			}
+			readCurMap();
+			refreshPath();
+		}
+		
+		displayErrorMessage("ADDTEMPLATE", error);
 
-		mountPath(name);
+	}
+
+	public void removeTemplate() throws RemoteException{
+		String error = null;
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		StringBuffer pathToDelete = new StringBuffer();
+		for (String value : getPath()) {
+			pathToDelete.append(value+".");
+		}
+		pathToDelete.append(name);
+		String path = pathToDelete.toString();
+		Properties sysProp = WorkflowPrefManager.getSysProperties();
+		Properties userProp = getPrefs().getUserProperties();
+		
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			String key = path +"."+setting.getKey();
+			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM) ){
+				if(!isAdmin()){
+					error = "You are not allowed to create a template for this item, you required to be administrator.";
+				}
+			}
+			sysProp.remove(key);
+			userProp.remove(key);
+		}
+		
+		if(error == null){
+			try{
+				if(isAdmin()){
+					WorkflowPrefManager.storeSysProperties(sysProp);
+				}
+				getPrefs().storeUserProperties(userProp);
+				readCurMap();
+				refreshPath();
+			}catch(Exception e){
+				logger.error(e,e);
+				error = e.getMessage();
+			}
+		}
+		
+		displayErrorMessage("REMOVETEMPLATE", error);
+		
 	}
 	
 	private void canEditPackageSettings() throws RemoteException{

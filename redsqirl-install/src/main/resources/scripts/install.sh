@@ -1,5 +1,25 @@
 #!/bin/bash
 
+function check_permission_ancestor(){                                           
+    _file=$1                                                                     
+    _regex="drwxr.xr.x"                                                          
+    #No enter if it is root directory                                            
+    if [[ -n "$_file" && ${#_file} != 1 ]]; then                                 
+	_parentdir=`dirname $_file`                                              
+	_command=""                                                              
+	_basenamef=`basename $_file`                                             
+	_perm=`ls -al $_parentdir | grep " ${_basenamef}$"`     
+	#echo $_file":" $_perm                                                   
+	#if the user is owned by current user                                    
+	#Change permission if needed                                         
+	if ! [[ $_perm =~ $_regex ]]; then                                   
+	    echo "File $_file: $_perm"
+	fi                                                                   
+	#Check parent directory                                              
+	check_permission_ancestor $_parentdir                               
+    fi                                                                           
+} 
+
 #Script that deploy the war file into tomcat
 #Set up dynamic properties
 SCRIPT_LOCATION=${BASH_SOURCE[0]}
@@ -12,6 +32,22 @@ DONOTCONFIRM="FALSE"
 TOMCAT_PORT=8080
 
 source ${CONF_FILE} 2> /dev/null
+
+#Check permissions subdirectories to access lib folder
+file_perm=`check_permission_ancestor $(dirname ${SCRIPT_PATH})/lib `
+if [ -n "$file_perm" ]; then
+    echo "Every OS user should be able to read Red Sqirl home folder."
+    echo "Suspcious permissions have been detected in the parent directory."
+    echo -e "$file_perm"
+    CONT=""
+    echo "Do you want to continue anyway? [y/N]"
+    read CONT
+    if [[ "${CONT}" != 'y' && "${CONT}" != 'Y' ]]; then
+	echo Exit from the script
+	exit;
+    fi
+fi
+
 if [ -z "${TOMCAT_PATH}" ]; then
     if [[ -d ${DEFAULT_TOMCAT} ]]; then
 	TOMCAT_PATH_CUR=${DEFAULT_TOMCAT}
@@ -74,7 +110,7 @@ fi
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
 chmod 500 ${TOMCAT_PATH_CUR}/../bin
 chmod 700 ${TOMCAT_PATH_CUR}/../bin/*.sh
-sed -i "s#<Connector port=\"8080\"#<Connector port=\"$TOMCAT_PORT\"#g" ${TOMCAT_PATH_CUR}/../conf/server.xml
+sed -i "s#<Connector port=\"....\" protocol=\"HTTP#<Connector port=\"$TOMCAT_PORT\" protocol=\"HTTP#g" ${TOMCAT_PATH_CUR}/../conf/server.xml
 
 property_line="path_sys_home=`dirname ${SCRIPT_PATH}`"
 tomcat_conf_dir=`dirname ${TOMCAT_PATH_CUR}`/conf

@@ -228,28 +228,31 @@ public class Decrypter extends KeyCipher {
 			
 			Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
 			while (networks.hasMoreElements()) {
-				NetworkInterface network = networks.nextElement();
-				mac = network.getHardwareAddress();
-				if(mac != null){
-					
-					StringBuilder sbMac = new StringBuilder();
-					for (int i = 0; i < mac.length; ++i) {
-						sbMac.append(String.format("%02X", mac[i]));
+				try{
+					NetworkInterface network = networks.nextElement();
+					mac = network.getHardwareAddress();
+					if(mac != null){
+
+						StringBuilder sbMac = new StringBuilder();
+						for (int i = 0; i < mac.length; ++i) {
+							sbMac.append(String.format("%02X", mac[i]));
+						}
+
+						//logger.info("Mac " + sbMac.toString());
+
+						logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
+
+						if(macTocheck.equalsIgnoreCase(sbMac.substring(sbMac.length() - 8))){
+							return true;
+						}
 					}
-					
-					//logger.info("Mac " + sbMac.toString());
-					
-					logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
-					
-					if(macTocheck.equalsIgnoreCase(sbMac.substring(sbMac.length() - 8))){
-						return true;
-					}
+				} catch (SocketException e) {
+					logger.warn(e,e);
 				}
-				
 			}
 
-		} catch (SocketException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error(e,e);
 		}
 		
 		return false;

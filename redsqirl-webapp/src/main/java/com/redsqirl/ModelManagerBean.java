@@ -832,15 +832,6 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}
 		return result;
 	}
-
-	private UserInfoBean getUserInfoBean() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		return userInfoBean;
-	}
 	
 
 	public String getName() {

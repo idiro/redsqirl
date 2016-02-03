@@ -48,6 +48,22 @@ public class Setting implements Serializable{
 	protected boolean existSysProperty;
 	
 	
+	public Setting(Setting setting){
+		super();
+		this.scope= setting.scope;
+		this.propertyName = setting.propertyName;
+		this.description = setting.description;
+		this.label = setting.label;
+		this.defaultValue = setting.defaultValue;
+		this.type = setting.type;
+		this.checker = setting.checker;
+		this.value = setting.value;
+		this.userValue = setting.userValue;
+		this.sysValue = setting.sysValue;
+		this.existUserProperty = setting.existUserProperty;
+		this.existSysProperty = setting.existSysProperty;
+	}
+	
 	public Setting(Scope scope, String defaultValue) {
 		super();
 		this.scope = scope;

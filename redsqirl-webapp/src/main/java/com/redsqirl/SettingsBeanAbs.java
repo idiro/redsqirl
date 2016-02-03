@@ -28,11 +28,13 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	protected List<String> listSetting = new ArrayList<String>();
 	protected String pathPosition;
 	protected List<String> path;
+	protected String template;
+
 
 	protected Properties updateProperty(Properties props, String path, Map<String,Setting> currentSettings, Setting.Scope scope){
 		Properties ans = new Properties();
 		ans.putAll(props);
-		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+		for (Entry<String, Setting> settings : currentSettings.entrySet()) {
 			String nameSettings = path +"."+ settings.getKey();
 			Setting settingCur = settings.getValue(); 
 			if(settingCur.getScope().equals(scope) || 
@@ -82,6 +84,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	
 	public abstract void storeNewSettings();
 	
+	public abstract void readCurMap() throws RemoteException;
 
 	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
 		SettingMenu cur = null;
@@ -93,6 +96,21 @@ public abstract class SettingsBeanAbs extends BaseBean {
 			cur = cur.getMenu().get(itPath.next());
 		}
 		return cur;
+	}
+	
+
+	public void navigationPackageSettings() throws RemoteException{
+
+		saveSettings();
+
+		readCurMap();
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		setPathPosition(name);
+
+		mountPath(name);
 	}
 	
 	
@@ -210,6 +228,15 @@ public abstract class SettingsBeanAbs extends BaseBean {
 
 	public void setPathPosition(String pathPosition) {
 		this.pathPosition = pathPosition;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 }

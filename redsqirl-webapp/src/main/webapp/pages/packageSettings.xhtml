@@ -7,12 +7,25 @@
     xmlns:rich="http://richfaces.org/rich"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:ui="http://java.sun.com/jsf/facelets">
-    
+  
+<script>
+	function getNewTemplateNameValue(){
+		return jQuery("[id$='newtemplatename']").val();
+	}
+</script>
 <a4j:loadBundle basename="MessagesResources" var="messages" />
     
 	<h:form>
-	    
-	    <div class="editPackageSettings" >
+
+		<a4j:region>
+		<a4j:jsFunction name="addNewTemplateNameAndClose"
+			action="#{packageMngBean.addNewTemplate}"
+			reRender="listSubMenuSettings"
+			oncomplete="#{rich:component('addNewTemplate')}.hide();">
+			<f:param name="name"/>
+		</a4j:jsFunction>
+		</a4j:region>
+		<div class="editPackageSettings" >
 		    
 	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
 		    	<ui:repeat value="#{packageMngBean.path}" var="item">
@@ -32,9 +45,10 @@
 		    
 			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:2px;position:absolute;top:100px;height:70%;overflow:auto;width:165px;" >
 			    
-			    	<a4j:commandLink title="#{messages.label_add_template}" action="#{packageMngBean.openAddNewTemplate}" oncomplete="#{rich:component('addNewTemplate')}.show();" rendered="#{packageMngBean.template == 'Y'}" >
+			    	<a4j:commandLink title="#{messages.label_add_template}" 
+			    		oncomplete="#{rich:component('addNewTemplate')}.show();" 
+			    		rendered="#{packageMngBean.template == 'Y'}" >
 				    	<img src="../image/icons/button-plus-small.gif" />
-				    	<f:param name="name" value="#{packageMngBean.pathPosition}" />
 				    </a4j:commandLink>
 				    
 				    <br/>
@@ -46,7 +60,7 @@
 				     		<f:param name="name" value="#{sc.name}" />
 				     	</a4j:commandButton>
 				     	
-				     	<a4j:commandLink title="#{messages.label_remove_template}" action="#{packageMngBean.removeNewTemplate}" rendered="#{sc.template == 'Y'}" >
+				     	<a4j:commandLink title="#{messages.label_remove_template}" action="#{packageMngBean.removeTemplate}" rendered="#{sc.template == 'Y'}" >
 					    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.button_remove}"/>
 					    	<f:param name="name" value="#{sc.name}" />
 					    </a4j:commandLink>
@@ -58,12 +72,14 @@
 				    </ui:repeat>
 			    </h:panelGroup>
 		     
-		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:170px;" rendered="#{not empty packageMngBean.listSetting}" >
+		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:170px;"  >
 			     	<table>
 			     		
 			     		<tr>
 		     				<td colspan="2">
-		     					<h:outputText value="#{packageMngBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
+		     				
+		     					<h:outputText rendered="#{packageMngBean.template != 'Y'}" value="#{packageMngBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
+		     					<h:outputText rendered="#{packageMngBean.template == 'Y'}" value="#{messages.label_template} #{packageMngBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
 		     				</td>
 		     			</tr>
 			     		<tr>
@@ -74,7 +90,7 @@
 			     		
 				     	<ui:repeat value="#{packageMngBean.listSetting}" var="obj">
 				     	
-					     	<tr>
+				     		<tr>
 				     			<td colspan="2">
 				     				<h:outputText value="#{packageMngBean.s.properties[obj].label}" style="font-size:15px;padding-left:200px;" /><br/><br/>
 				     			</td>
@@ -84,35 +100,35 @@
 			     				<td style="width:350px;">
 			     					
 			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;vertical-align:-6px;" title="#{messages.label_system}" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{packageMngBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border: 1px solid;" 
-			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existSysProperty }" 
-			     						title="#{packageMngBean.s.properties[obj].description}" 
+			     					<h:inputText title="#{packageMngBean.s.properties[obj].description}" value="#{packageMngBean.s.properties[obj].sysValue}" 
+			     						style="background-color:#FF3333;border: 1px solid;" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existSysProperty &amp;&amp; packageMngBean.template != 'Y' }" 
 			     						disabled="#{!packageMngBean.canEdit}" />
 			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
-			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; !packageMngBean.s.properties[obj].existSysProperty }" />
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!packageMngBean.s.properties[obj].existSysProperty or packageMngBean.template == 'Y') }" />
 			     					<br/>
 			     					<br/>
+			     				
+			     					<h:panelGrid columns="3" rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.template != 'Y'}">
 			     					
-			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY'}">
-			     					
-				     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.canEdit}" >
+			     						<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
-									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
+									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}"/>
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="type" value="SYSTEM" />
 									    </a4j:commandLink>
-			     					
+	 			     					
 	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingSettings" 
 	 			     						rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].propertyName}" />
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
 									    </a4j:commandLink>
 									    
 									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingSettings" 
 									    	rendered="#{!packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].propertyName}" />
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
 									    </a4j:commandLink>
 								   
@@ -122,38 +138,43 @@
 			     				<td>
 			     				
 			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;vertical-align:-6px;" title="#{messages.label_user}" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border: 1px solid;" 
-			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty }" 
+			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty  &amp;&amp; packageMngBean.template != 'Y'}" 
 			     						title="#{packageMngBean.s.properties[obj].description}" />
 			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
-			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; !packageMngBean.s.properties[obj].existUserProperty }" />
+			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!packageMngBean.s.properties[obj].existUserProperty or  packageMngBean.template == 'Y') }" />
 			     					<br/>
 			     					<br/>
 			     					
-			     					<h:panelGrid columns="3" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}">
-			     					
-	 			     					<a4j:commandLink action="#{packageMngBean.setDefaultValue}" >
+			     					<h:panelGrid columns="3" rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY')  &amp;&amp; packageMngBean.template != 'Y'}">
+								    	
+								    	<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.s.properties[obj].existUserProperty}">
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
-									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}" />
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].label}" />
+									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}"/>
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="type" value="USER" />
 									    </a4j:commandLink>
-	 			     					
-	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" rendered="#{packageMngBean.s.properties[obj].existUserProperty}" >
+								    	
+	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingSettings" 
+	 			     						rendered="#{packageMngBean.s.properties[obj].existUserProperty}" >
 									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].propertyName}" />
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="USER" />
 									    </a4j:commandLink>
 									    
-									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" rendered="#{!packageMngBean.s.properties[obj].existUserProperty}" >
+									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingSettings" 
+									    	rendered="#{!packageMngBean.s.properties[obj].existUserProperty}" >
 									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
-									    	<f:param name="label" value="#{packageMngBean.s.properties[obj].propertyName}" />
+									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="USER" />
 									    </a4j:commandLink>
+									    
+									    <br/>
 								    
 								    </h:panelGrid>
 			     				
 			     				</td>
+			     				
 			     			</tr>
 			     			
 			     			<tr>
@@ -194,17 +215,15 @@
 		
 			<h:panelGrid>
 				<h:outputText value="#{messages.label_addNewTemplate_name}" />
-				<h:inputText value="#{packageMngBean.nameNewTemplate}" />
+				<h:inputText id="newtemplatename" value="" onkeypress="return enableEnterKey(event, 'newTemplateNameBtn');" />
 			</h:panelGrid>
 					
 			<br/><br/>
 			
 			<center>
 				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('addNewTemplate')}.hide();" styleClass="greenButton" />
-				<a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.addNewTemplate}" reRender="pathSetting, listSubMenuSettings, listSettingSettings"
-					oncomplete="#{rich:component('addNewTemplate')}.hide();" styleClass="greenButton" >
-					<f:param name="name" value="#{packageMngBean.packageSelected}" />
-				</a4j:commandButton>
+				<a4j:commandButton value="#{messages.button_ok}" id="newTemplateNameBtn"
+					oncomplete="addNewTemplateNameAndClose(getNewTemplateNameValue());" styleClass="greenButton" />
 			</center>
 			
 		</h:form>

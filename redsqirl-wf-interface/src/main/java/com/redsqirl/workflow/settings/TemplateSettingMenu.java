@@ -5,9 +5,12 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 public class TemplateSettingMenu extends SettingMenu{
+	
+	private static Logger logger = Logger.getLogger(TemplateSettingMenu.class);
 	
 	public TemplateSettingMenu() {
 		super();
@@ -47,6 +50,7 @@ public class TemplateSettingMenu extends SettingMenu{
 		Set<String> ans = new LinkedHashSet<String>();
 		String toSearch = path+".";
 		Iterator<Object> it = prop.keySet().iterator();
+		//logger.info("Search in properties "+toSearch);
 		while(it.hasNext()){
 			String cur = (String) it.next();
 			if(cur.startsWith(toSearch)){
@@ -54,6 +58,7 @@ public class TemplateSettingMenu extends SettingMenu{
 				ans.add(strArr[0]);
 			}
 		}
+		//logger.info("Ans: "+ans);
 		return ans;
 	}
 }

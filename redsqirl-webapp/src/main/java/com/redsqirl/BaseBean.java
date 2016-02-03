@@ -114,6 +114,15 @@ public class BaseBean {
 		return list;        
 	}
 
+	protected UserInfoBean getUserInfoBean() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+
+		return userInfoBean;
+	}
+	
 	/** getworkFlowInterface
 	 * 
 	 * Methods to retrieve the object DataFlowInterface from context

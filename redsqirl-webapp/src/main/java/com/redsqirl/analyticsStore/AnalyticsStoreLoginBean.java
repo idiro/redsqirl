@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -599,21 +600,35 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 		try {
 
-			NetworkInterface network = NetworkInterface.getByName("eth0");
+			byte[] mac = null;
 
-			byte[] mac = network.getHardwareAddress();
-
-			logger.info("Current MAC address : ");
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < mac.length; i++) {
-				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));		
+			Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+			while (networks.hasMoreElements()) {
+				try{
+					NetworkInterface network = networks.nextElement();
+					mac = network.getHardwareAddress();
+					if(mac != null){
+						break;
+					}
+				} catch (SocketException e){
+					logger.error(e,e);
+				}
 			}
-			logger.info(sb.toString());
 
-			return sb.toString();
+			if(mac != null){
+				logger.info("Current MAC address : ");
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < mac.length; i++) {
+					sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));		
+				}
+				logger.info(sb.toString());
 
-		} catch (SocketException e){
+				return sb.toString();
+			}else{
+				logger.warn("Mac address not found!");
+			}
+
+		}catch (Exception e){
 			logger.error(e,e);
 		}
 
@@ -870,21 +885,12 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 	}
 
-	public void navigationPackageSettings() throws RemoteException{
-
-		saveSettings();
-
+	
+	public void readCurMap() throws RemoteException{
 		WorkflowPrefManager.getInstance();
 		WorkflowPrefManager.getProps().readDefaultSettingMenu();
 		
 		curMap = WorkflowPrefManager.getProps().getDefaultSettingMenu();
-
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String name = params.get("name");
-
-		setPathPosition(name);
-
-		mountPath(name);
 	}
 	
 

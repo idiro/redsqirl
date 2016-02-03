@@ -5,38 +5,40 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
 public abstract class KeyCipher {
 
+	private static Logger logger = Logger.getLogger(KeyCipher.class);
 	protected static String cipher = "FDx3KruzJlYRy2VLeqd0f6j4hknwUBbH1tSMmgAQoW8ZXCpGT7NO5sv9ciPaEI";
 	private String macString = "";
 
 	public String getMACAddress() {
+		macString = null;
+		try{
+			byte[] mac = null;
+			Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+			while (networks.hasMoreElements()) {
+				try{
+					NetworkInterface network = networks.nextElement();
+					mac = network.getHardwareAddress();
+					if(mac != null){
+						break;
+					}
+				} catch (SocketException e){
+					logger.error(e,e);
+				}
+			}
 
+			StringBuilder sbMac = new StringBuilder();
+			for (int i = 0; i < mac.length; ++i) {
+				sbMac.append(String.format("%02X", mac[i]));
+			}
+			macString = sbMac.toString();
 
-		byte[] mac = null;
-		try {
-			
-			/*Enumeration<NetworkInterface> networks = NetworkInterface
-					.getNetworkInterfaces();
-			while (networks.hasMoreElements() && mac == null) {
-				NetworkInterface network = networks.nextElement();
-				mac = network.getHardwareAddress();
-			}*/
-			
-			
-			NetworkInterface network = NetworkInterface.getByName("eth0");
-			mac = network.getHardwareAddress();
-			
-
-		} catch (SocketException e) {
-			e.printStackTrace();
+		}catch (Exception e){
+			logger.error(e,e);
 		}
-
-		StringBuilder sbMac = new StringBuilder();
-		for (int i = 0; i < mac.length; ++i) {
-			sbMac.append(String.format("%02X", mac[i]));
-		}
-		macString = sbMac.toString();
 
 		return macString;
 	}
