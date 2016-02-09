@@ -231,7 +231,7 @@ public abstract class AbstractDictionary {
 	 */
 	private void loadFunctionsFile(File f) {
 
-		logger.info("loadFunctionsFile");
+		logger.debug("loadFunctionsFile");
 
 		functionsMap = new HashMap<String, String[][]>();
 
@@ -239,7 +239,7 @@ public abstract class AbstractDictionary {
 		try {
 			br = new BufferedReader(new FileReader(f));
 			String line = br.readLine();
-			logger.info("loadFunctionsFile");
+			logger.debug("loadFunctionsFile");
 			while (line != null) {
 				System.out.println(line);
 				if (line.startsWith("#")) {
@@ -250,7 +250,7 @@ public abstract class AbstractDictionary {
 							&& !line.startsWith("#")) {
 						if (!line.trim().isEmpty()) {
 							String[] function = line.split(";",-1);
-							// logger.info(line);
+							// logger.debug(line);
 							functions.add(function);
 						}
 					}
@@ -265,7 +265,7 @@ public abstract class AbstractDictionary {
 					line = br.readLine();
 				}
 			}
-			logger.info("finishedLoadingFunctions");
+			logger.debug("finishedLoadingFunctions");
 		} catch (Exception e) {
 			logger.error("Error loading functions file: " + e);
 			e.printStackTrace();
@@ -402,27 +402,27 @@ public abstract class AbstractDictionary {
 		Iterator<String> keys = functions.keySet().iterator();
 		List<String> values;
 		Iterator<String> valsIt;
-		// logger.info("building help");
+		// logger.debug("building help");
 
 		if (functions.containsKey(function)) {
 			values = functions.get(function);
-			// logger.info(function+" "+values.get(0));
+			// logger.debug(function+" "+values.get(0));
 			template = template.concat("<p><b>" + values.get(0) + "</b></p>");
 		}
 		if (functions.containsKey(short_desc)) {
 			values = functions.get(short_desc);
-			// logger.info("short desc");
-			// logger.info(values.get(0));
+			// logger.debug("short desc");
+			// logger.debug(values.get(0));
 			template = template.concat("<p><i>" + values.get(0) + "</i></p>");
 		}
 		if (functions.containsKey(param)) {
 			values = functions.get(param);
 			valsIt = values.iterator();
 			template = template.concat("<ul>");
-			// logger.info("params");
+			// logger.debug("params");
 			while (valsIt.hasNext()) {
 				String val = valsIt.next();
-				// logger.info(val);
+				// logger.debug(val);
 				template = template.concat("<li>" + val + "</li>");
 			}
 			template = template.concat("</ul>");

@@ -376,7 +376,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
 			String id = cur.getNodeName();
-			waLogger.info(componentId + ": loads " + id + "...");
+			waLogger.debug(componentId + ": loads " + id + "...");
 			try {
 				DFEInteraction intCur = getInteraction(id);
 				if (intCur != null) {
@@ -390,7 +390,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 
 		if (error != null) {
-			waLogger.info(error);
+			waLogger.debug(error);
 		}
 		return error;
 	}
@@ -411,7 +411,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
-				waLogger.info("action name to write xml: " + interCur.getId());
+				waLogger.debug("action name to write xml: " + interCur.getId());
 				Element inter = doc.createElement(interCur.getId());
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
@@ -426,7 +426,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					new Object[] { e.getMessage() });
 		}
 
-		waLogger.info("writeValuesXml error: " + error);
+		waLogger.debug("writeValuesXml error: " + error);
 
 		if (error != null) {
 			waLogger.error(error);
@@ -441,7 +441,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
-				waLogger.info("replace "+oldStr+" by "+newStr+" in "+ interCur.getName());
+				waLogger.debug("replace "+oldStr+" by "+newStr+" in "+ interCur.getName());
 				interCur.replaceInTree(oldStr, newStr,regex);
 			}
 		} catch (Exception e) {
@@ -840,7 +840,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			found = it.next().getInteraction(id);
 		}
 		if (found == null) {
-			waLogger.info("Interaction '" + id + "' not found");
+			waLogger.debug("Interaction '" + id + "' not found");
 		}
 		return found;
 	}
@@ -1064,31 +1064,31 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			File localDirectoryToWrite, String pathFromOozieDir,
 			String fileNameWithoutExtension) throws RemoteException {
 
-		waLogger.info("writeProcess");
+		waLogger.debug("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
 
-		waLogger.info("writeProcess extensionslength " + extensions.length);
+		waLogger.debug("writeProcess extensionslength " + extensions.length);
 
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
 			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension + extensions[i];
 			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension	+ extensions[i]);
 			
-			waLogger.info("writeProcess fileNames  " + fileNames[i].toString());
-			waLogger.info("writeProcess files  " + files[i].toString());
+			waLogger.debug("writeProcess fileNames  " + fileNames[i].toString());
+			waLogger.debug("writeProcess files  " + files[i].toString());
 		}
 
-		waLogger.info("writeProcess 1");
+		waLogger.debug("writeProcess 1");
 
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
 
-		waLogger.info("writeProcess 2");
+		waLogger.debug("writeProcess 2");
 
 		writeOozieActionFiles(files);
 
-		waLogger.info("writeProcess 3");
+		waLogger.debug("writeProcess 3");
 	}
 
 	@Override

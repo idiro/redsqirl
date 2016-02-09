@@ -442,7 +442,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	public String run(List<String> dataFlowElement) throws RemoteException {
 
-		logger.info("runWF ");
+		logger.debug("runWF ");
 
 		String error = null;
 		List<DataFlowElement> toRun = null;
@@ -470,10 +470,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			try {
 				setOozieJobId(OozieManager.getInstance().run(this, toRun));
 				nbOozieRunningActions = toRun.size();
-				logger.info("OozieJobId: " + oozieJobId);
+				logger.debug("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
 				error = "Unexpected error: " + e.getMessage();
-				logger.info("setOozieJobId error: " + error, e);
+				logger.debug("setOozieJobId error: " + error, e);
 			}
 		}
 		
@@ -482,7 +482,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		if (error != null) {
-			logger.info(error);
+			logger.debug(error);
 		}
 
 		return error;
@@ -491,7 +491,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	/**
 	 * Clean the Projects outputs
 	 * 
-	 * @return Error messge
+	 * @return Error message
 	 * @throws RemoteException
 	 */
 	public String cleanProject() throws RemoteException {
@@ -510,6 +510,53 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			err = null;
 		}
 		return err;
+	}
+	
+	/**
+	 * Clean the Selected Actions
+	 * 
+	 * @return Error message
+	 * @throws RemoteException
+	 */
+	public String cleanSelectedAction(List<String> ids) throws RemoteException {
+		String err = "";
+		Iterator<DataFlowElement> it = element.iterator();
+		while (it.hasNext()) {
+			DataFlowElement cur = it.next();
+			
+			if(ids.contains(cur.getComponentId())){
+				
+				String curErr = cur.cleanDataOut();
+				if (curErr != null) {
+					err = err
+							+ LanguageManagerWF.getText("workflow.cleanProject",
+									new Object[] { cur.getComponentId(), curErr });
+				}
+				
+			}
+			
+		}
+		if (err.isEmpty()) {
+			err = null;
+		}
+		return err;
+	}
+	
+	/**
+	 * setOutputType
+	 * 
+	 * @throws RemoteException
+	 */
+	public void setOutputType(List<String> ids,SavingState newValue) throws RemoteException {
+		Iterator<DataFlowElement> it = getEls(ids).iterator();
+		while (it.hasNext()) {
+			DataFlowElement cur = it.next();
+			for (Entry<String, DFEOutput> e : cur.getDFEOutput().entrySet()) {
+				if(!SavingState.RECORDED.equals(e.getValue().getSavingState())){
+					e.getValue().setSavingState(newValue);
+				}
+			}
+		}
 	}
 
 	/**
@@ -580,7 +627,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (error == null) {
 				logger.debug("write the file...");
 				// write the content into xml file
-				logger.info("Check Null text nodes...");
+				logger.debug("Check Null text nodes...");
 				XmlUtils.checkForNullTextNodes(doc.getDocumentElement(), "");
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
@@ -607,7 +654,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { e.getMessage() });
 			logger.error(error, e);
 			try {
-				logger.info("Attempt to delete " + file.getAbsolutePath());
+				logger.debug("Attempt to delete " + file.getAbsolutePath());
 				file.delete();
 			} catch (Exception e1) {
 			}
@@ -635,7 +682,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (jobIdContent == null) {
 				jobIdContent = "";
 			}
-			logger.info("Job Id: " + jobIdContent);
+			logger.debug("Job Id: " + jobIdContent);
 			jobId.appendChild(doc.createTextNode(jobIdContent));
 
 			rootElement.appendChild(jobId);
@@ -647,7 +694,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (oozieActionNbContent == null) {
 				oozieActionNbContent = "";
 			}
-			logger.info("Number of Oozie running actions: "
+			logger.debug("Number of Oozie running actions: "
 					+ oozieActionNbContent);
 			oozieRunningAction.appendChild(doc
 					.createTextNode(oozieActionNbContent));
@@ -826,7 +873,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				return arg0.getName().matches(".*[0-9]{14}(.rs|.srs)$");
 			}
 		});
-		logger.info("Backup directory: " + fsA.length + " files, " + nbBackup
+		logger.debug("Backup directory: " + fsA.length + " files, " + nbBackup
 				+ " to keep, " + Math.max(0, fsA.length - nbBackup)
 				+ " to remove");
 		if (fsA.length > nbBackup) {
@@ -860,7 +907,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * Close the workflow and clean temporary data
 	 */
 	public void close() throws RemoteException {
-		logger.info("auto clean " + getName());
+		logger.debug("auto clean " + getName());
 		try {
 			// Remove the temporary data that cannot be reused
 			if (!isSaved() && !isrunning()) {
@@ -910,7 +957,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.delete(new Path(path), false);
 			}
-			logger.info("Clean up back up");
+			logger.debug("Clean up back up");
 			cleanUpBackup();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -941,7 +988,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.delete(new Path(path), false);
 			}
-			logger.info("Clean up back up");
+			logger.debug("Clean up back up");
 			cleanUpBackup();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -979,8 +1026,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (!fs.isFile(new Path(filePath))) {
 				return "'" + filePath + "' is not a file.";
 			}
-			logger.info("filePath  " + filePath);
-			logger.info("tempPath  " + tempPath);
+			logger.debug("filePath  " + filePath);
+			logger.debug("tempPath  " + tempPath);
 
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
@@ -1430,7 +1477,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String subworkflowName, String subworkflowComment,
 			Map<String, Entry<String, String>> inputs,
 			Map<String, Entry<String, String>> outputs) throws Exception {
-		logger.info("To aggregate: " + componentIds);
+		logger.debug("To aggregate: " + componentIds);
 		int posIncr = 150;
 		String error = null;
 		// Create subworkflow object
@@ -1451,7 +1498,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				while (idIt.hasNext()) {
 					String cur = idIt.next();
 					if (!componentIds.contains(cur)) {
-						logger.info("To remove: " + cur);
+						logger.debug("To remove: " + cur);
 						copy.removeElement(cur);
 					}else{
 						getElement(cur).cleanDataOut();
@@ -1467,7 +1514,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Iterator<String> idIt = componentIds.iterator();
 			while (idIt.hasNext()) {
 				String cur = idIt.next();
-				logger.info("To copy: " + cur);
+				logger.debug("To copy: " + cur);
 				sw.addElement(copy.getElement(cur));
 				DataFlowElement newEl = sw.getElement(cur);
 				newEl.setPosition(newEl.getX() + posIncr, newEl.getY());
@@ -1500,7 +1547,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								.getFirstChild("output")
 								.add(constraint.getBrowserName());
 
-						logger.info("Update Data Type");
+						logger.debug("Update Data Type");
 
 						// Update Data SubType
 						input.update(input
@@ -1509,7 +1556,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								.getInteraction(Source.key_datasubtype))
 								.setValue(constraint.getTypeName());
 
-						logger.info("Update Data SubType");
+						logger.debug("Update Data SubType");
 
 						// Update header
 						input.update(input
@@ -1524,7 +1571,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 						input.updateOut();
 
-						logger.info("Update Out");
+						logger.debug("Update Out");
 
 						Iterator<DataFlowElement> toLinkIt = this
 								.getElement(inputs.get(inputName).getKey())
@@ -1576,7 +1623,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 				}
 
-				logger.info("Create Action");
+				logger.debug("Create Action");
 
 				// Create Action outputs
 				entries = outputs.keySet().iterator();
@@ -1598,7 +1645,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 				}
 
-				logger.info("createSA " + error);
+				logger.debug("createSA " + error);
 
 			} catch (Exception e) {
 				error = "Fail to create an input or output super action";
@@ -1643,14 +1690,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		// List inputs and outputs element
-		logger.info("List inputs and outputs element");
+		logger.debug("List inputs and outputs element");
 		DataFlowElement elementToExpand = copy.getElement(superActionId); 
 		Map<String, Map<String, String>> componentWithNamePerInputs = new LinkedHashMap<String, Map<String, String>>();
 		Iterator<DataFlowElement> it = elementToExpand
 				.getAllInputComponent().iterator();
 		while (it.hasNext()) {
 			DataFlowElement curEl = it.next();
-			logger.info(curEl.getComponentId());
+			logger.debug(curEl.getComponentId());
 			Map<String, Map<String, String>> cur = curEl
 					.getInputNamePerOutput();
 			boolean found = false;
@@ -1672,11 +1719,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		Map<String, Map<String, String>> componentWithNamePerOutputs = copy
 				.getElement(superActionId).getInputNamePerOutput();
-		logger.info(componentWithNamePerOutputs);
+		logger.debug(componentWithNamePerOutputs);
 		Map<String, String> replaceAliases = new LinkedHashMap<String, String>();
 
 		// Remove element SuperAction
-		logger.info("Remove Super Action: " + superActionId);
+		logger.debug("Remove Super Action: " + superActionId);
 		try {
 			removeElement(superActionId);
 		} catch (Exception e) {
@@ -1699,10 +1746,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		pos_y /= sw.getComponentIds().size(); 
 		
 		// Change Name?
-		logger.info("Change SubWorkflow ids and link");
+		logger.debug("Change SubWorkflow ids and link");
 		for (String id : sw.getComponentIds()) {
 			DataFlowElement df = sw.getElement(id);
-			logger.info(id);
+			logger.debug(id);
 			if (!(new SubWorkflowInput().getName()).equals(df.getName())
 					&& !(new SubWorkflowOutput().getName())
 							.equals(df.getName())) {
@@ -1713,18 +1760,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					String newId = generateNewId();
 					replaceInternalActions.put(df.getComponentId(), newId);
 					df.setComponentId(newId);
-					logger.info("Id exist, new id: " + newId);
+					logger.debug("Id exist, new id: " + newId);
 				}
 
 				// If the element is link to input or output link it to the
 				// workflow output/input
-				logger.info("link input");
+				logger.debug("link input");
 				Iterator<String> itIn = df.getInputComponent().keySet()
 						.iterator();
 				while (itIn.hasNext()) {
 					// Iterate through all the input components
 					String inputName = itIn.next();
-					logger.info("input name: " + inputName);
+					logger.debug("input name: " + inputName);
 					List<DataFlowElement> lInCur = new LinkedList<DataFlowElement>();
 					lInCur.addAll(df.getInputComponent().get(inputName));
 					Iterator<DataFlowElement> itInCur = lInCur.iterator();
@@ -1741,13 +1788,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 									String elInput = itOrigInput.next();
 									df.addInputComponent(inputName,
 											getElement(elInput));
-									logger.info("Add input: " + inputName + " "
+									logger.debug("Add input: " + inputName + " "
 											+ elInput);
 									getElement(elInput).addOutputComponent(
 											componentWithNamePerInputs.get(
 													elCur.getComponentId()).get(
 															elInput), df);
-									logger.info("Add output: "
+									logger.debug("Add output: "
 											+ componentWithNamePerInputs.get(
 													elCur.getComponentId()).get(
 															elInput) + " "
@@ -1769,11 +1816,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 				Iterator<String> itOut = df.getOutputComponent().keySet()
 						.iterator();
-				logger.info("link output");
+				logger.debug("link output");
 				while (itOut.hasNext()) {
 					// Iterate through all the input components
 					String outputName = itOut.next();
-					logger.info("output name: " + outputName);
+					logger.debug("output name: " + outputName);
 					List<DataFlowElement> lOutCur = new LinkedList<DataFlowElement>();
 					lOutCur.addAll(df.getOutputComponent().get(outputName));
 					Iterator<DataFlowElement> itOutCur = lOutCur.iterator();
@@ -1782,18 +1829,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						if ((new SubWorkflowOutput().getName()).equals(elCur
 								.getName())) {
 							// Create new output link
-							logger.info("Create the new output link");
+							logger.debug("Create the new output link");
 							try {
 								Iterator<String> itOrigOutput = componentWithNamePerOutputs
 										.get(elCur.getComponentId()).keySet()
 										.iterator();
 								while (itOrigOutput.hasNext()) {
 									String elOutput = itOrigOutput.next();
-									logger.info("Add output: " + outputName
+									logger.debug("Add output: " + outputName
 											+ " " + elOutput);
 									df.addOutputComponent(outputName,
 											getElement(elOutput));
-									logger.info("Add input: "
+									logger.debug("Add input: "
 											+ componentWithNamePerOutputs.get(
 													elCur.getComponentId())
 													.get(elOutput) + " "
@@ -1823,7 +1870,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 
 				// Replace in the interactions id changes we have seen so far...
-				logger.info("Replace inside the interaction "+df.getComponentId()+": "+replaceInternalActions.toString());
+				logger.debug("Replace inside the interaction "+df.getComponentId()+": "+replaceInternalActions.toString());
 				Iterator<String> itReplace = replaceInternalActions.keySet()
 						.iterator();
 				while (itReplace.hasNext()) {
@@ -1837,7 +1884,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		// Replace the superaction aliases
-		logger.info("Replace the superaction aliases: "+replaceAliases.toString());
+		logger.debug("Replace the superaction aliases: "+replaceAliases.toString());
 		Iterator<String> itReplaceAliases = replaceAliases.keySet().iterator();
 		while (itReplaceAliases.hasNext()) {
 			String key = itReplaceAliases.next();
@@ -1865,7 +1912,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		// Remove elements that are in the SuperAction
-		logger.info("Elements before aggregating: " + getComponentIds());
+		logger.debug("Elements before aggregating: " + getComponentIds());
 		try {
 			Iterator<String> itToDel = componentIds.iterator();
 			while (itToDel.hasNext()) {
@@ -2025,7 +2072,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public void replaceInAllElements(List<String> componentIds, String oldStr,
 			String newStr, boolean regex) throws RemoteException {
-		logger.info("replace " + oldStr + " by " + newStr + " in "
+		logger.debug("replace " + oldStr + " by " + newStr + " in "
 				+ componentIds);
 		if (componentIds != null) {
 			Iterator<String> it = componentIds.iterator();
@@ -2299,10 +2346,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
 
-		logger.info("componentIdOut " + componentIdOut);
-		logger.info("componentIdIn " + componentIdIn);
-		logger.info("in " + in.getName());
-		logger.info("out" + out.getName());
+		logger.debug("componentIdOut " + componentIdOut);
+		logger.debug("componentIdIn " + componentIdIn);
+		logger.debug("in " + in.getName());
+		logger.debug("out" + out.getName());
 
 		if (out == null || in == null) {
 			error = LanguageManagerWF
@@ -2322,7 +2369,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							inName, out.getName());
 		}
 
-		logger.info("check " + error);
+		logger.debug("check " + error);
 
 		if (error != null) {
 			return false;

@@ -1692,7 +1692,7 @@
 
 				<a4j:jsFunction name="openModal"
 					data="#{canvasModalBean.openCanvasModal}"
-					oncomplete="canvasModalParam = data;console.log('openModal'); if(#{requestScope['msnError'] == null} &amp;&amp; data[0] == 'true'){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
+					oncomplete="canvasModalParam = data;console.log('openModal'); if(#{requestScope['msnError'] == null} &amp;&amp; data[0] == 'true'){cloneCommandUpdateElementBuffer = data[6];createOptionTitles();#{rich:component('canvasModalPanel')}.show();checkPageError();reLoadDisplayTable();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage,tableInteraction">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1946,6 +1946,7 @@
 					<a4j:actionparam name="oldStr" />
 					<a4j:actionparam name="newStr" />
 					<a4j:actionparam name="changeLabel" />
+					<a4j:actionparam name="regex" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildElementsFromClone"
@@ -1986,7 +1987,7 @@
 
 				<a4j:jsFunction name="replaceJS"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="console.log('replaceJS'); tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel );">
+					oncomplete="console.log('replaceJS'); tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel, tmpCommandObj.regex );">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -2085,6 +2086,21 @@
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser"
 					action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
 
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:jsFunction name="cleanCanvasProjectJS" action="#{canvasBean.cleanCanvasProject}" oncomplete="updateAllArcsStatus();" >
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="setOutputToBuffered" action="#{canvasBean.setOutputToBuffered}" oncomplete="updateAllArcsStatus();" >
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+				<a4j:jsFunction name="setOutputToTemporary" action="#{canvasBean.setOutputToTemporary}" oncomplete="updateAllArcsStatus();" >
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
@@ -2201,6 +2217,17 @@
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
+									<rich:menuGroup value="#{messages.label_output_state}" >
+										<rich:menuItem id="setBufferMenuItem" submitMode="ajax"
+											value="#{messages.label_output_buffer}"
+											onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){setOutputToBuffered(sels);}else{alert('#{messages.msg_err_no_action_selected}')}">
+										</rich:menuItem>
+										<rich:menuItem id="setTemporaryMenuItem" submitMode="ajax"
+											value="#{messages.label_output_temporary}"
+											onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){setOutputToTemporary(sels);}else{alert('#{messages.msg_err_no_action_selected}')}">
+										</rich:menuItem>
+									</rich:menuGroup>
+									<rich:menuSeparator />
 									<rich:menuItem submitMode="none"
 										value="#{messages.label_menu_delete}"
 										onclick="deleteSelected(getSelectedByName());">
@@ -2252,8 +2279,7 @@
 
 									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_clean_project}"
-										action="#{canvasBean.cleanCanvasProject}"
-										oncomplete="updateAllArcsStatus();"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ cleanCanvasProjectJS(sels); }else{alert('#{messages.msg_err_no_action_selected}')}"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+L" class="menuItemHotKey" />
 									</rich:menuItem>
@@ -2832,7 +2858,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalReplaceAll" width="425" height="220"
+		<rich:modalPanel id="modalReplaceAll" width="425" height="250"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header">Replace All</f:facet>
@@ -2860,6 +2886,13 @@
 					<f:selectItem itemValue="true" />
 				</h:selectBooleanCheckbox>
 				<br />
+				<br />
+				<h:outputText value="#{messages.label_regular_expression}" /><br />
+				<h:selectBooleanCheckbox
+					value="#{canvasBean.rpModal.regularExpression}">
+					<f:selectItem itemValue="true" />
+				</h:selectBooleanCheckbox>
+				<br />
 
 				<rich:panel style="border:none; float:right;">
 
@@ -2869,10 +2902,9 @@
 					<a4j:commandButton value="#{messages.button_ok}"
 						onclick="#{rich:component('modalReplaceAll')}.hide();"
 						styleClass="greenButton"
-						oncomplete="replaceAll(getSelectedByName(),getSelectedIconsCommaDelimited(),'#{canvasBean.rpModal.string}','#{canvasBean.rpModal.replace}','#{canvasBean.rpModal.replaceActionNames}');" />
+						oncomplete="replaceAll(getSelectedByName(),getSelectedIconsCommaDelimited(),'#{canvasBean.rpModal.string}','#{canvasBean.rpModal.replace}','#{canvasBean.rpModal.replaceActionNames}','#{canvasBean.rpModal.regularExpression}');" />
 
 				</rich:panel>
-
 
 			</h:form>
 

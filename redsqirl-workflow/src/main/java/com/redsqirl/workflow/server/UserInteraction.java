@@ -270,9 +270,9 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public final void replaceInTree(String oldName, String newName, boolean regex) throws RemoteException{
 		if(!isReplaceDisable()){
-			logger.info("replace "+oldName+" by "+newName);
+			logger.debug("replace "+oldName+" by "+newName);
 			replaceOutputInTree(oldName, newName, regex);
-			logger.info(getTree().toString());
+			logger.debug(getTree().toString());
 		}
 	}
 
@@ -427,11 +427,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					regex = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 				}
 				if(regex != null){
-					logger.info("regex " + regex);
+					logger.debug("regex " + regex);
 					if(value == null){
 						error = LanguageManagerWF.getText("UserInteraction.valueMatch", new String[]{regex});
 					}else if(!value.matches(regex)){
-						logger.info("value " + value);
+						logger.debug("value " + value);
 						error = LanguageManagerWF.getText("UserInteraction.valueIncorrectMatch", new String[]{value,regex});
 					}
 				}
@@ -452,12 +452,12 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		if(!DisplayType.list.equals(display)){
 			logger.warn(getName()+" is not a list.");
 		}else{
-			logger.info("interaction : "+getName());
+			logger.debug("interaction : "+getName());
 			List<String> possibleValues = getPossibleValuesFromList();
-			logger.info(possibleValues);
+			logger.debug(possibleValues);
 			try{
 				String value = getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-				logger.info(value);
+				logger.debug(value);
 				if(!possibleValues.contains(value)){
 					error = LanguageManagerWF.getText("UserInteraction.invalidvalue",new Object[]{value});
 				}

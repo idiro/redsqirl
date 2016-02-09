@@ -142,7 +142,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void init() {
 
-		logger.info("init");
+		logger.debug("init canvas");
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication()
@@ -175,7 +175,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			calcWorkflowUrl();
 			modelMan = new ModelManager();
-			
+
 			userName = getUserInfoBean().getUserName();
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -311,8 +311,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if (df != null) {
 						if (df.getElement(componentId) != null) {
 							df.getElement(componentId).setPosition(
-													Double.valueOf(posX).intValue(),
-													Double.valueOf(posY).intValue());
+									Double.valueOf(posX).intValue(),
+									Double.valueOf(posY).intValue());
 						}
 					}
 				} catch (RemoteException e) {
@@ -357,7 +357,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info(e,e);
 			msg = e.getMessage();
 		}
-		
+
 		displayErrorMessage(msg,"ADDLINK");
 
 		return ans;
@@ -499,11 +499,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			logger.warn(e,e);
 		}
-		
+
 		displayErrorMessage(null,"REMOVELINK");
 
 	}
-	
+
 	public void loadBackup() {
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("path");
 		logger.info("loadBackup " + path);
@@ -522,7 +522,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void load() {
 		load(getPath(),generateWorkflowName(getPath()),true);
 	}
-	
+
 	private void load(String path,String newWfName,boolean setWorkflow){
 		logger.info("load " + path);
 		loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow);
@@ -553,7 +553,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String error = loadDataFlow(getPath(),generateWorkflowName(path), false, true);
 		displayErrorMessage(error,"LOADSUBWORKFLOW");
 	}
-		
+
 	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow) {
 
 		logger.info("loadWorkFlow " + path);
@@ -589,10 +589,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("read " + path);
 				error = df.read(path);
 			}
-			
+
 			if (error == null) {
 				logger.info("set current worflow to " + newWfName);
-				
+
 				if(setWorkflow){
 					setNameWorkflow(newWfName);
 					setDf(df);
@@ -709,13 +709,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void loadBackup(String path) {
 		logger.info("loadBackup " + path);
 		setPath(path);
 		load();
 	}
-	
+
 	public String[][] getBuildLoadMapCanvasToOpen() throws Exception {
 		logger.info("getBuildLoadMapCanvasToOpen");
 		try {
@@ -730,12 +730,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 				result[i] =  getPositions(getworkFlowInterface().getWorkflow(cur[0]),cur[0], "undefined");
 				++i;
 			}
-			
+
 			return result;
 		} catch (RemoteException e) {
 			logger.warn(e,e);
 		}
-		
+
 		return null;
 	}
 
@@ -760,7 +760,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("Error backing up all workflows",e);
 		}
 	}
-	
+
 	public void checkName() {
 
 		logger.info("checkName: "+getPath());
@@ -831,7 +831,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.error("Error when renaming workflow: " + e);
 				usageRecordLog().addError("ERROR SAVE", e.getMessage());
 			}
-			
+
 			if (msg == null && !nameWorkflowSwp.equals(nameWorkflow)) {
 				workflowMap.put(nameWorkflowSwp, workflowMap.get(nameWorkflow));
 				workflowMap.remove(nameWorkflow);
@@ -852,7 +852,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				setDf(df);
 				msg = df.save(path);
 			}
-			
+
 			if(msg == null){
 				df.setPath(path);
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
@@ -868,7 +868,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			msg = "Error saving workflow";
 			logger.info(msg,e);
 		}
-		
+
 		displayErrorMessage(msg,"SAVE");
 	}
 
@@ -957,7 +957,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
+
 		displayErrorMessage(error, "PASTE");
 
 	}
@@ -967,22 +967,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		List<String> elements = new LinkedList<String>();
 		String error = null;
-		String select = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("select");
-		String string = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("oldStr");
-		String replaceString = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("newStr");
-		boolean replaceActionNames = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap()
-				.get("changeLabel").equalsIgnoreCase("true");
+		
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+		String string = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("oldStr");
+		String replaceString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("newStr");
+		boolean replaceActionNames = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("changeLabel").equalsIgnoreCase("true");
+		boolean regex = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("regex").equalsIgnoreCase("true");
 
-		logger.info("Replace all " + string + " by " + replaceString + " in "
-				+ select);
+		logger.info("Replace all " + string + " by " + replaceString + " in " + select);
 
 		if (string == null || string.isEmpty() || string.equals("undefined")) {
 			error = "String missing";
 		}
+		
 		if (replaceString == null || replaceString.equals("undefined")) {
 			replaceString = "";
 		}
@@ -997,7 +994,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			if (error == null) {
-				getDf().replaceInAllElements(elements, string, replaceString,false);
+				getDf().replaceInAllElements(elements, string, replaceString, regex);
 				Iterator<String> it = elements.iterator();
 				for (String groupId : groupIds) {
 					String cur = idMap.get(getNameWorkflow()).get(groupId);
@@ -1013,7 +1010,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				error = getDf().check();
 			}
 		}
-		
+
 		displayErrorMessage(error, "REPLACEALL");
 	}
 
@@ -1080,7 +1077,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			calcWorkflowUrl();
 		}
-		
+
 		displayErrorMessage(error, "RUNWORKFLOW");
 	}
 
@@ -1221,7 +1218,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}else{
 			backupAndCloseAll();
 		}
-		
+
 		String wfName = "";
 		Iterator<String[]> it = getworkFlowInterface().getLastBackedUp().iterator();
 		while(it.hasNext()){
@@ -1236,9 +1233,73 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return new String[]{ans, wfName};
 
 	}
+	
+	/**
+	 * setOutputToBuffered
+	 * 
+	 * Methods to change the output from all selection action to Buffer 
+	 * 
+	 * @author Igor.Souza
+	 * @throws RemoteException
+	 */
+	public void setOutputToBuffered() throws RemoteException {
+
+		logger.info("setOutputToBuffer");
+		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
+
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+
+		List<String> elements = null;
+		if(select != null && !select.isEmpty()){
+			elements = new LinkedList<String>();
+			String[] groupIds = select.split(",");
+			for (String groupId : groupIds) {
+				String id = getIdMap().get(getNameWorkflow()).get(groupId);
+				elements.add(id);
+			}
+		}
+
+		if(elements != null && wf != null){
+			wf.setOutputType(elements, SavingState.BUFFERED);
+			displayErrorMessage(null, "SETOUTPUTTOBUFFER");
+		}
+
+	}
+	
+	/**
+	 * setOutputToTemporary
+	 * 
+	 * Methods to change the output from all selection action to Temporary 
+	 * 
+	 * @author Igor.Souza
+	 * @throws RemoteException
+	 */
+	public void setOutputToTemporary() throws RemoteException {
+
+		logger.info("setOutputToTemporary");
+		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
+
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+
+		List<String> elements = null;
+		if(select != null && !select.isEmpty()){
+			elements = new LinkedList<String>();
+			String[] groupIds = select.split(",");
+			for (String groupId : groupIds) {
+				String id = getIdMap().get(getNameWorkflow()).get(groupId);
+				elements.add(id);
+			}
+		}
+
+		if(elements != null && wf != null){
+			wf.setOutputType(elements, SavingState.TEMPORARY);
+			displayErrorMessage(null, "SETOUTPUTTOTEMPORARY");
+		}
+
+	}
 
 	/**
-	 * openCanvas
+	 * cleanCanvasProject
 	 * 
 	 * Methods to clean the outputs from all canvas
 	 * 
@@ -1249,10 +1310,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void cleanCanvasProject() throws RemoteException {
 
 		logger.info("cleanCanvasProject");
-
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
-		if(wf != null){
-			String error = wf.cleanProject();
+
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+
+		List<String> elements = null;
+		if(select != null && !select.isEmpty()){
+			elements = new LinkedList<String>();
+			String[] groupIds = select.split(",");
+			for (String groupId : groupIds) {
+				String id = getIdMap().get(getNameWorkflow()).get(groupId);
+				elements.add(id);
+			}
+		}
+
+		if(elements != null && wf != null){
+			String error = wf.cleanSelectedAction(elements);
 			displayErrorMessage(error, "CLEANCANVASPROJECT");
 		}
 
@@ -1350,7 +1423,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public String[] getChangeWfComment() throws RemoteException{
 		return new String[]{getSavedWfComment(),getCommentWf()};
 	}
@@ -1370,7 +1443,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			setPath(path);
 			reload = true;
 		}*/
-		
+
 		String name;
 		int index = path.lastIndexOf("/");
 		if (index + 1 < path.length()) {
@@ -1378,11 +1451,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} else {
 			name = path;
 		}
-		
-	/*	if(reload && name.replace(".rs", "").replace(".srs", "").matches("canvas-[0-9]+-[0-9]+")){
+
+		/*	if(reload && name.replace(".rs", "").replace(".srs", "").matches("canvas-[0-9]+-[0-9]+")){
 			name = name.substring(0, name.lastIndexOf("-"));
 		}*/
-		
+
 		return name.replace(".rs", "").replace(".srs", "");
 	}
 
@@ -1456,7 +1529,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			} while (size > 0 && ++iter < iterMax);
 		}
 		setDf(null);
-		
+
 		displayErrorMessage(null, "CLOSEALL");
 	}
 
@@ -1478,7 +1551,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public Map<String, String> getReverseIdMap() {
 		return getReverseIdMap(getNameWorkflow());
 	}
-	
+
 	public Map<String, String> getReverseIdMap(String wfName) {
 
 		logger.info("getReverseIdMap");
@@ -1586,12 +1659,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 			tooltip.append("<center><span style='font-size:15px;'>"
 					+ tooltipName
 					+ ": " + dfe.getComponentId() + "</span></center><br/>");
-			
-			
-			
+
+
+
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
-			
+
 			String module = "";
 			if(dfe.getName() != null && dfe.getName().startsWith(">")){
 				module += RedSqirlModel.getModelAndSW(dfe.getName())[0];
@@ -1602,8 +1675,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if(!module.isEmpty()){
 				tooltip.append("Module: " + module + "<br/>");
 			}
-			
-			
+
+
 
 			String comment = dfe.getComment();
 			if (comment != null && !comment.isEmpty()) {
@@ -1787,9 +1860,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			error = "Error " + e + " - " + e.getMessage();
 		}
-		
+
 		displayErrorMessage(error, "getAllElementAfterForOutput");
-		
+
 		return ans;
 	}
 
@@ -1971,7 +2044,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String typeName = null;
 		StringBuffer tooltip = new StringBuffer();
 		String label = "";
-		
+
 		try{
 			if (getDf() != null) {
 				DataFlowElement df = getDf().getElement(
@@ -2079,10 +2152,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
 		logger.info("getPositions " + selecteds);
-		
+
 		return getPositions(getDf(), getNameWorkflow(), selecteds);
 	}
-		
+
 	public String[] getPositions(DataFlow df, String workflowName, String selecteds) throws Exception {
 
 		try {
@@ -2116,13 +2189,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 					.put(new Object[] {
 							elements.get(compId),
 							elementName.startsWith(">") ? elementName.substring(elementName.lastIndexOf(">")+1): elementName,
-							LocalFileSystem.relativize(
-									getCurrentPage(), e.getImage()),
-									e.getX(), 
-									e.getY(),
-									compId ,
-									privilege,
-									elementName
+									LocalFileSystem.relativize(
+											getCurrentPage(), e.getImage()),
+											e.getX(), 
+											e.getY(),
+											compId ,
+											privilege,
+											elementName
 					});
 
 				}
@@ -2201,6 +2274,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			session.setAttribute("listError", listError);
 		}
 
+	}
+	
+	public String cloneWorkflowGetId() throws Exception {
+		cloneWorkflow();
+		return getCloneWFId();
 	}
 
 	public void cloneWorkflow() throws Exception {
@@ -2295,16 +2373,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 				.getExternalContext().getRequestParameterMap();
 		String nameSubWorkflow = params.get("nameSubWorkflow");
 		String[] modelAndSW = RedSqirlModel.getModelAndSW(nameSubWorkflow);
-		
+
 		String error = null;
 		if(workflowMap.containsKey(modelAndSW[1])){
 			error= getMessageResourcesWithParameter("msg_err_subwf_already_open",new String[]{modelAndSW[1]});
 		}else{
 			File file = new File(new ModelManager().getAvailableModel(getUserInfoBean().getUserName(), modelAndSW[0]).getFile(), 
-				modelAndSW[1]);
+					modelAndSW[1]);
 			loadSubWorkFlowFromLocal(file.getAbsolutePath());
 		}
-		
+
 		displayErrorMessage(error, "OPENSUBWORKFLOW");
 	}
 
@@ -2379,7 +2457,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			logger.info("Error loading workflow",e);
 		}
-		
+
 		displayErrorMessage(error, "LOADSUBWORKFLOWFROMLOCAL");
 	}
 
@@ -2468,7 +2546,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(inputNameModel == null || !inputNameModel.matches("[A-Za-z][A-Za-z0-9_\\-]*")){
 			setInputNameModel("default");
 		}
-		
+
 		setInputNamesList(new ArrayList<String[]>());
 		for (String name : ansIn.keySet()) {
 			logger.info("openAggregate ansIn: " + name + " " + ansIn.get(name));
@@ -2527,14 +2605,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (RemoteException e) {
 			logger.info("Error: " + e,e);
 		}
-		
+
 		displayErrorMessage(error, "EXPAND");
 
 
 	}
-	
+
 	public String[] getAggregationDetails(){
-		
+
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String subWf = params.get("subWf");
 		String inputSubWf = params.get("inputSubWf");
@@ -2549,26 +2627,26 @@ public class CanvasBean extends BaseBean implements Serializable {
 			inputNameSubWorkflow = subWfJson.get("swName").toString();
 			inputNameModel =  subWfJson.get("aggNameModel").toString();
 			inputComment =  subWfJson.get("aggComment").toString();
-			
+
 			JSONObject inputJSON = new JSONObject(inputSubWf);
 			Iterator inputIt = inputJSON.keys();
 			while(inputIt.hasNext()){
 				String inputKey = (String) inputIt.next();
 				inputs.put(inputKey, inputJSON.getString(inputKey).toString());
 			}
-			
+
 			JSONObject outputJSON = new JSONObject(outputSubWf);
 			Iterator outputIt = outputJSON.keys();
 			while(outputIt.hasNext()){
 				String outputKey = (String) outputIt.next();
 				outputs.put(outputKey, outputJSON.getString(outputKey).toString());
 			}
-			
+
 			aggregate(inputNameSubWorkflow,inputNameModel,inputComment,inputs,outputs);
 		} catch (JSONException e) {
 			logger.info("Error updating positions",e);
 		}
-		
+
 		return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
 	}
 
@@ -2678,7 +2756,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		}
-		
+
 		displayErrorMessage(error, "AGGREGATE");
 	}
 

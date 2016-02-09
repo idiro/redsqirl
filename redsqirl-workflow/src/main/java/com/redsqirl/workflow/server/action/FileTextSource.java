@@ -72,7 +72,7 @@ public class FileTextSource extends AbstractSource {
 		addSubTypePage();
 		addSourcePage();
 		
-		logger.info("PigFileTextSource - addSourcePage ");
+		logger.debug("PigFileTextSource - addSourcePage ");
 		
 		browser.setTextTip(LanguageManagerWF.getText("pig.test_source_browser_interaction.header_help"));
 		
@@ -90,7 +90,7 @@ public class FileTextSource extends AbstractSource {
 	 */
 	public void updateDataSubType(Tree<String> treeDatasubtype)
 			throws RemoteException {
-		logger.info("updating data subtype");
+		logger.debug("updating data subtype");
 
 		List<String> posValuesSubType = new LinkedList<String>();
 		posValuesSubType.add(new MapRedTextFileType().getTypeName());
@@ -219,7 +219,7 @@ public class FileTextSource extends AbstractSource {
 	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.info("Write queries in file: " + files[0].getAbsolutePath());
+		logger.debug("Write queries in file: " + files[0].getAbsolutePath());
 		String path = getDFEOutput().get(out_name).getPath();
 		String noHeaderPath = getDFEOutput().get(no_header_out_name).getPath();
 		String hadoopBin = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_hadoop_home);

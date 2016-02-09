@@ -309,7 +309,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 */
 	public String run(DataFlow df, List<DataFlowElement> list) throws Exception {
 
-		logger.info("run");
+		logger.debug("run");
 
 		String jobId = null;
 		String error = null;
@@ -337,9 +337,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			OozieXmlCreator xmlCreator = null;
 			xmlCreator = new OozieXmlForkJoinPaired();
 
-			logger.info("run df " + df);
-			logger.info("run list " + list);
-			logger.info("run parentDir " + parentDir);
+			logger.debug("run df " + df);
+			logger.debug("run list " + list);
+			logger.debug("run parentDir " + parentDir);
 
 			error = xmlCreator.createXml(df, list, parentDir);
 
@@ -382,7 +382,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		if (error == null) {
 			// create a workflow job configuration and set the workflow application path
 			String wfPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode) + hdfsWfPath;
-			logger.info("Workflow path: " + wfPath);
+			logger.debug("Workflow path: " + wfPath);
 			Properties conf = addProperties(oc.createConfiguration(), defaultMap(hdfsWfPath));
 
 			try {

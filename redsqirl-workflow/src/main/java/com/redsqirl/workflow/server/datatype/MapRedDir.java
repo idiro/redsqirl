@@ -223,14 +223,14 @@ public abstract class MapRedDir extends MapRedHdfs{
 					while(fileIt.hasNext() && ans.size() < maxToRead){
 						Map.Entry<FileStatus,Long> cur = fileIt.next();
 						FileStatus file = cur.getKey();
-						logger.info("Number of line already read: "+ans.size());
+						logger.debug("Number of line already read: "+ans.size());
 						ans.addAll(hdfsInt.select(file.getPath().toString(),
 								",",
 								maxToRead - ans.size()
 								));
 					}
 					
-					logger.info("Number of line read in "+getPath()+": "+ans.size());
+					logger.debug("Number of line read in "+getPath()+": "+ans.size());
 				}
 			} catch (IOException e) {
 				String error = "Unexpected error: " + e.getMessage();

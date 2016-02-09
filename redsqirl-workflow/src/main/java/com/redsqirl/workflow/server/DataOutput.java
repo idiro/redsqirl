@@ -331,7 +331,7 @@ DFEOutput {
 			String newPath = generatePathStr(
 					System.getProperty("user.name"),
 					component, outputName);
-			statLogger.info("New path for "+component+"("+getPath()+"): "+newPath);
+			statLogger.debug("New path for "+component+"("+getPath()+"): "+newPath);
 			if(copy == null){
 				setPath(newPath);
 			}else if (copy) {

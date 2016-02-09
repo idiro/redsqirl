@@ -72,8 +72,8 @@ public class BrowserInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void update(String newType, String newSubtype) throws RemoteException {
-		logger.info("type : " + newType);
-		logger.info("subtype : " + newSubtype);
+		logger.debug("type : " + newType);
+		logger.debug("subtype : " + newSubtype);
 		
 		Tree<String> treeDataset = getTree();
 

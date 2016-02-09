@@ -121,7 +121,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	private static Map<String,DataStore> getAllClassDataStore() {
 
 		//Get the browser name used in DataOutput
-		logger.info("Get the output class...");
+		logger.debug("Get the output class...");
 		Set<String> browsersFromDataOut = new HashSet<String>();
 		Set<String> browserClasses = new HashSet<String>();
 		File outputClassFile = new File(WorkflowPrefManager.getPathOutputClasses());
@@ -165,7 +165,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			String className = dataoutputClassNameIt.next();
 			try {
 				DataOutput outNew = (DataOutput) Class.forName(className).newInstance();
-				logger.info(outNew.getTypeName());
+				logger.debug(outNew.getTypeName());
 				browsersFromDataOut.add(outNew.getBrowserName());
 				browserClasses.add(outNew.getBrowser().getClass().getCanonicalName());
 			} catch (Exception e) {
@@ -174,14 +174,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 
 		//Return a map containing only the one used in DataOutput
-		logger.info("Get the store class...");
+		logger.debug("Get the store class...");
 		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
 		Iterator<String> datastoreClassName = browserClasses.iterator();
 		while (datastoreClassName.hasNext()) {
 			String className = datastoreClassName.next();
 			try {
 				DataStore outNew = (DataStore) Class.forName(className).newInstance();
-				logger.info(outNew.getBrowserName());
+				logger.debug(outNew.getBrowserName());
 				if(browsersFromDataOut.contains(outNew.getBrowserName())){
 					ans.put(outNew.getBrowserName(),outNew);
 				}
@@ -341,7 +341,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 							String newName = null;
 							while(newName == null){
 								newName = to.generateNewId();
-								logger.info("new name: "+newName+" in "+ to.getComponentIds()+ " for "+cloneFrom.getComponentIds());
+								logger.debug("new name: "+newName+" in "+ to.getComponentIds()+ " for "+cloneFrom.getComponentIds());
 								if(cloneFrom.getElement(newName) != null){
 									newName = null;
 								}
@@ -507,14 +507,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Backup all workflows that are open
 	 */
 	public void backupAll() throws RemoteException{
-		logger.info ("backupAllWorkflowsToOpen ");
+		logger.debug ("backupAllWorkflowsToOpen ");
 
 		Map<String, String> mapCanvasToOpen = new LinkedHashMap<String, String>();
 
 		Iterator<String> itWorkflow = wf.keySet().iterator();
 		while(itWorkflow.hasNext()){
 			String workflowNameCur = itWorkflow.next();
-			logger.info("backup "+workflowNameCur);
+			logger.debug("backup "+workflowNameCur);
 			try {
 				if(!wf.get(workflowNameCur).getElement().isEmpty()){
 					wf.get(workflowNameCur).setName(workflowNameCur);
@@ -536,12 +536,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	}
 
 	protected String saveMapCanvasToOpen(Map<String, String> mapCanvasToOpen) throws RemoteException {
-		logger.info ("saveMapCanvasToOpen ");
+		logger.debug ("saveMapCanvasToOpen ");
 		
 		String error = null;
 		
 		File path = new File(WorkflowPrefManager.getPathuserpref()+"/.loadCanvas.txt");
-		logger.info ("saveMapCanvasToOpen path " + path);
+		logger.debug ("saveMapCanvasToOpen path " + path);
 		
 		try {
 			

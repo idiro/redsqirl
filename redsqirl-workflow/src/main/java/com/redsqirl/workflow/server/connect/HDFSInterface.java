@@ -267,7 +267,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public void savePathList(String repo, List<String> paths) throws RemoteException {
 
-		logger.info("savePathList ");
+		logger.debug("savePathList ");
 
 		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"hdfs_history_"+repo+".txt");
 		String newLine = System.getProperty("line.separator");
@@ -286,7 +286,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public Map<String, String> readPathList(String repo) throws RemoteException {
 
-		logger.info("readPathList ");
+		logger.debug("readPathList ");
 
 		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name"))+"/hdfs_history_"+repo+".txt");
 		LinkedHashMap<String, String> mapHistory = new LinkedHashMap<String, String>();
@@ -300,8 +300,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				}
 				String alias = line.substring(line.lastIndexOf("/"));
 				mapHistory.put(line, alias);
-				logger.info("path " + line);
-				logger.info("alias " + alias);
+				logger.debug("path " + line);
+				logger.debug("alias " + alias);
 			}
 			br.close();
 		} catch (IOException e) {
@@ -656,10 +656,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				maxToRead *= fields.getSize();
 				int i = 0;
 				String toWrite = "";
-				logger.info("delim : " + delimiter);
+				logger.debug("delim : " + delimiter);
 				while (reader.readLine(line) != 0 && lineNb < maxToRead) {
 					reader.readLine(line);
-					logger.info("line : " + line);
+					logger.debug("line : " + line);
 					++lineNb;
 
 					FieldType type = fields.getFieldType(fields
@@ -757,7 +757,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		try{
 			logger.debug(1.5);
 			if (stat == null) {
-				logger.info("File status not available for " + path);
+				logger.debug("File status not available for " + path);
 				return null;
 			} else {
 				if (stat.isDir()) {
@@ -886,9 +886,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			throws RemoteException {
 		Path p = new Path(path);
 		String error = null;
-		logger.info(path);
-		logger.info(key);
-		logger.info(newValue);
+		logger.debug(path);
+		logger.debug(key);
+		logger.debug(newValue);
 		if (key.equals(key_permission)) {
 			error = changePermission(p, newValue, false);
 		} else if (key.equals(key_owner)) {
@@ -1079,7 +1079,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					}
 				}
 				if (error == null) {
-					logger.info("1 ----- path " + path.getName()
+					logger.debug("1 ----- path " + path.getName()
 							+ " new perms " + permission);
 					fs.setPermission(path, new FsPermission(permission));
 				}
@@ -1114,23 +1114,23 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			boolean recursive) {
 		String error = null;
 		try {
-			logger.info("1 " + path.getName());
+			logger.debug("1 " + path.getName());
 			FileSystem fs = NameNodeVar.getFS();
 			FileStatus stat = fs.getFileStatus(path);
 			if (stat.getOwner().equals(System.getProperty("user.name"))) {
 				FileStatus[] child = fs.listStatus(path);
 				if (recursive) {
-					logger.info("children : " + child.length);
+					logger.debug("children : " + child.length);
 					for (int i = 0; i < child.length && error == null; ++i) {
 						error = changePermission(fs, child[i].getPath(),
 								permission, recursive);
 					}
 				}
 				if (error == null) {
-					logger.info("set permissions  : " + path.toString() + " , "
+					logger.debug("set permissions  : " + path.toString() + " , "
 							+ new FsPermission(permission).toString());
 					fs.setPermission(path, new FsPermission(permission));
-					logger.info(getProperties(path.getName()));
+					logger.debug(getProperties(path.getName()));
 				}
 			} else {
 				error = LanguageManagerWF.getText(
@@ -1147,7 +1147,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					new Object[] { path });
 		}
 		if (error != null) {
-			logger.info(error);
+			logger.debug(error);
 		}
 		return error;
 	}
@@ -1220,7 +1220,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			copyInHDFS(channel, rfile, lfile, remoteDS);
 			channel.disconnect();
 		}catch (Exception e) {
-			logger.info("error", e);
+			logger.debug("error", e);
 
 			error = LanguageManagerWF.getText("unexpectedexception",
 					new Object[] { e.getMessage() });
@@ -1258,19 +1258,19 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			} else if ( !fs.isDirectory(new Path(lfile)) ) //already exists as a file
 				error = lfile + ": Not a directory";
 
-			logger.info("create the directory " + lfile);
+			logger.debug("create the directory " + lfile);
 
 			Map<String,Map<String,String>> files = remoteServer.getChildrenProperties(rfile);
-			logger.info(files);
+			logger.debug(files);
 
 			for (String path : files.keySet()) {
 				Map<String,String> props = files.get(path);
 
-				logger.info(props.get("type") + " " + path);
+				logger.debug(props.get("type") + " " + path);
 
 				String fileName = path.replaceFirst(rfile, "");
 				//String fileName = path.substring(path.lastIndexOf("/"));
-				logger.info("fileName " + fileName);
+				logger.debug("fileName " + fileName);
 
 				copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
 

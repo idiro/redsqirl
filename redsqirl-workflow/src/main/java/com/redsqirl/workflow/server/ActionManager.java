@@ -252,7 +252,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			Set<String> superActions = getSuperActions();
 
 			for (String key : nameWithClass.keySet()) {
-				logger.info("nameWithClass " + nameWithClass.get(key) + " key " + key);
+				logger.debug("nameWithClass " + nameWithClass.get(key) + " key " + key);
 			}
 
 			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
@@ -262,7 +262,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 					String action = it.next();
 					try {
 						if (action != null && !action.isEmpty()) {
-							logger.info("action '"	+ action + "'");
+							logger.debug("action '"	+ action + "'");
 							if (nameWithClass.get(action) != null || superActions.contains(action)) {
 								DataFlowElement dfe = createElementFromClassName(nameWithClass, action);
 								String[] parameters = new String[3];
@@ -271,7 +271,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 								parameters = setPrivilegeOfClass(dfe, action, parameters);
 								new_list.add(parameters);
 							} else {
-								logger.info("unknown workflow action '"	+ action + "'");
+								logger.debug("unknown workflow action '"	+ action + "'");
 							}
 						}
 					} catch (Exception e) {
@@ -402,7 +402,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			String[] parameters) throws RemoteException {
 		if (dfe instanceof SuperElement) {
 			Boolean priv = ((SuperElement) dfe).getPrivilege();
-			logger.info(dfe.getName() + " " + name + " '" + priv + "");
+			logger.debug(dfe.getName() + " " + name + " '" + priv + "");
 			if (priv == null) {
 				parameters[2] = null;
 			} else if(new ModelManager().getAvailableModel(
@@ -483,7 +483,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			return menuWA;
 		}
 		
-		logger.info("Load menu " + curPath.getPath());
+		logger.debug("Load menu " + curPath.getPath());
 		Map<String, List<String[]>> ans = new LinkedHashMap<String, List<String[]>>();
 		Iterator<String> menuWAit = menuWA.keySet().iterator();
 		while (menuWAit.hasNext()) {
@@ -529,7 +529,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			return absoluteHelp;
 		}
 		
-		logger.info("Load help " + curPath.getPath());
+		logger.debug("Load help " + curPath.getPath());
 		Map<String, Map<String, String[]>> ans = new LinkedHashMap<String, Map<String, String[]>>();
 		Iterator<String> helpit = absoluteHelp.keySet().iterator();
 		while (helpit.hasNext()) {
@@ -626,36 +626,36 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	 */
 	public Map<String, String> getAllWANameWithClassName() throws RemoteException {
 
-		logger.info("get all the Workflow actions");
+		logger.debug("get all the Workflow actions");
 
 		if (flowElement.isEmpty()) {
 
 			List<String> l = getDataflowActionClasses();
-			logger.info("getDataflowActionClasses size " + l.size());
+			logger.debug("getDataflowActionClasses size " + l.size());
 			
 			for (int i = 0; i < l.size(); i++) {
 				String className = l.get(i);
 
-				logger.info("getAllWANameWithClassName " + i + " " + className);
+				logger.debug("getAllWANameWithClassName " + i + " " + className);
 
 				try {
 					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
 					if (!(wa instanceof SuperAction)) {
 						flowElement.put(wa.getName(), className);
 					}else{
-						logger.info("superAction " + className);
+						logger.debug("superAction " + className);
 					}
 				} catch (Exception e) {
-					logger.info("error " + className);
+					logger.debug("error " + className);
 					logger.error("Error instanciating class : " + className);
 					logger.debug(e);
 				}
 			}
 
-			logger.info("WorkflowAction found : " + flowElement.toString());
+			logger.debug("WorkflowAction found : " + flowElement.toString());
 		}
 		
-		logger.info("flowElement size " +flowElement.size());
+		logger.debug("flowElement size " +flowElement.size());
 		
 		return flowElement;
 	}

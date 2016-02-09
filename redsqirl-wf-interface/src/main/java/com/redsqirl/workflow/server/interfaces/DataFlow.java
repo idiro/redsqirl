@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.redsqirl.workflow.server.enumeration.SavingState;
+
 /**
  * Data Flow interface.
  * 
@@ -480,6 +482,10 @@ public interface DataFlow extends Remote, Cloneable{
 	public void setPath(String path) throws RemoteException;
 
 	Set<String> getSADependencies() throws RemoteException;
+
+	public String cleanSelectedAction(List<String> ids) throws RemoteException;
+
+	public void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
 
 	
 }

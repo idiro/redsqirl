@@ -378,7 +378,7 @@ public class HiveType extends DataOutput{
 				generateFieldsMap(path);
 			}
 		}
-		logger.info("path : "+ getPath());
+		logger.debug("path : "+ getPath());
 	}
 	/**
 	 * Get Colour for links

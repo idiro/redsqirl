@@ -86,7 +86,13 @@ public class ServerMain {
 			// Loads in the log settings.
 			BasicConfigurator.configure();
 			try{
-				Logger.getRootLogger().setLevel(Level.INFO);
+				
+				if(WorkflowPrefManager.getSysProperty("core.workflow_lib_path") != null){
+					Logger.getRootLogger().setLevel(Level.DEBUG);
+				}else{
+					Logger.getRootLogger().setLevel(Level.INFO);
+				}
+				
 				Logger.getRootLogger().addAppender(
 						new FileAppender(new PatternLayout("[%d{MMM dd HH:mm:ss}] %-5p (%F:%L) - %m%n"),
 								WorkflowPrefManager.getPathuserpref()+"/redsqirl-workflow.log")
@@ -97,11 +103,11 @@ public class ServerMain {
 			logger = Logger.getLogger(ServerMain.class);
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));
 			NameNodeVar.setJobTracker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_jobtracker));
-			logger.info("sys_namenode Path: " + NameNodeVar.get());
+			logger.debug("sys_namenode Path: " + NameNodeVar.get());
 
 			try {
 				
-				logger.info("start server main");
+				logger.debug("start server main");
 
 				String nameWorkflow = System.getProperty("user.name")+"@wfm";
 				String nameHive = System.getProperty("user.name")+"@hive";
@@ -114,10 +120,10 @@ public class ServerMain {
 
 				try{
 					registry = LocateRegistry.createRegistry(port);
-					logger.info(" ---------------- create registry");
+					logger.debug(" ---------------- create registry");
 				} catch (Exception e){
 					registry = LocateRegistry.getRegistry(port);
-					logger.info(" ---------------- Got registry");
+					logger.debug(" ---------------- Got registry");
 				}
 
 				int i =0;
@@ -131,63 +137,63 @@ public class ServerMain {
 					} catch (Exception e) {
 						++i;
 						Thread.sleep(1000);
-						logger.info("Sleep " + i);
+						logger.debug("Sleep " + i);
 					}
 				}
 
-				logger.info("nameWorkflow: "+nameWorkflow);
+				logger.debug("nameWorkflow: "+nameWorkflow);
 
 				registry.rebind(
 						nameHive,
 						(DataStore) new HiveInterface()
 						);
 
-				logger.info("nameHive: "+nameHive);
+				logger.debug("nameHive: "+nameHive);
 
 				registry.rebind(
 						nameOozie,
 						(JobManager) OozieManager.getInstance()
 						);
 
-				logger.info("nameOozie: "+nameOozie);
+				logger.debug("nameOozie: "+nameOozie);
 
 				registry.rebind(
 						nameSshArray,
 						(SSHDataStoreArray) SSHInterfaceArray.getInstance()
 						);
 
-				logger.info("nameSshArray: "+nameSshArray);
+				logger.debug("nameSshArray: "+nameSshArray);
 
 				registry.rebind(
 						nameHDFS,
 						(DataStore) new HDFSInterface()
 						);
 
-				logger.info("nameHDFS: "+nameHDFS);
+				logger.debug("nameHDFS: "+nameHDFS);
 				
 				registry.rebind(
 						nameHDFSBrowser,
 						(DataStore) new HDFSInterface()
 						);
 
-				logger.info("nameHDFSBrowser: "+nameHDFSBrowser);
+				logger.debug("nameHDFSBrowser: "+nameHDFSBrowser);
 
 				registry.rebind(
 						namePrefs,
 						(PropertiesManager) WorkflowPrefManager.getProps()
 						);
 				
-				logger.info("namePrefs: "+namePrefs);
+				logger.debug("namePrefs: "+namePrefs);
 				
 
-				logger.info("nameHDFS: "+nameSuperActionManager);
+				logger.debug("nameHDFS: "+nameSuperActionManager);
 				
 				registry.rebind(
 						nameSuperActionManager,
 						(ModelManagerInt) new ModelManager()
 						);
 				
-				logger.info("end server main");
+				logger.debug("end server main");
 				
 			} catch (IOException e) {
 				logger.error(e.getMessage(),e);
@@ -209,17 +215,17 @@ public class ServerMain {
 		try {
 			threads = registry.list();
 			for (String thread : threads) {
-				logger.info("unbinding : " + thread);
+				logger.debug("unbinding : " + thread);
 				registry.unbind(thread);
 			}
 		} catch (AccessException e) {
-			logger.info("Access Exception : "+e.getMessage());
+			logger.debug("Access Exception : "+e.getMessage());
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			logger.info("Remote Exception : "+e.getMessage());
+			logger.debug("Remote Exception : "+e.getMessage());
 			e.printStackTrace();
 		} catch (NotBoundException e) {
-			logger.info("NotBound Exception : "+e.getMessage());
+			logger.debug("NotBound Exception : "+e.getMessage());
 			e.printStackTrace();
 		}
 		System.exit(0);

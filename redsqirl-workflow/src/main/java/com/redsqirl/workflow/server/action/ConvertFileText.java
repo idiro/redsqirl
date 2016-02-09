@@ -80,10 +80,10 @@ public class ConvertFileText extends DataflowAction {
 		/* page1 = addPage(LanguageManagerWF.getText("convert_plain_text_page1.title"),
 				LanguageManagerWF.getText("convert_plain_text_page1.legend"), 1);
 				*/
-		logger.info("created page");
+		logger.debug("created page");
 
-		logger.info("added interactions");
-		logger.info("constructor ok");
+		logger.debug("added interactions");
+		logger.debug("constructor ok");
 	}
 	/**
 	 * Get the name of the action
@@ -211,7 +211,7 @@ public class ConvertFileText extends DataflowAction {
 	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.info("Write queries in file: " + files[0].getAbsolutePath());
+		logger.debug("Write queries in file: " + files[0].getAbsolutePath());
 		
 		String path = this.getDFEInput().get(ConvertFileText.key_input).get(0).getPath();
 		String pathOutput = this.getDFEOutput().get(ConvertFileText.key_output).getPath();

@@ -207,9 +207,9 @@ public abstract class AbstractSource extends DataflowAction {
 
 				// Get the subtype
 				String subtype = dataSubtype.getValue();
-				logger.info("output type : " + subtype);
+				logger.debug("output type : " + subtype);
 
-				logger.info("Getting CheckDirectory output type ");
+				logger.debug("Getting CheckDirectory output type ");
 				DFEOutput outNew = DataOutput.getOutput(subtype);
 
 				// Set the instance as output if necessary
@@ -217,7 +217,7 @@ public abstract class AbstractSource extends DataflowAction {
 					if (output.get(out_name) == null
 							|| !output.get(out_name).getTypeName()
 									.equalsIgnoreCase(subtype)) {
-						logger.info("output set");
+						logger.debug("output set");
 						output.put(out_name, (DFEOutput) outNew);
 						// Set the Output as RECORDED ALWAYS
 						output.get(out_name).setSavingState(
@@ -261,7 +261,7 @@ public abstract class AbstractSource extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
-				logger.info("check page 3 " + page.getTitle());
+				logger.debug("check page 3 " + page.getTitle());
 				String error = null;
 				DataOutput out = null;
 
@@ -270,7 +270,7 @@ public abstract class AbstractSource extends DataflowAction {
 				} catch (Exception e) {
 					error = LanguageManagerWF.getText("source.outputchecknull");
 				}
-				logger.info("got type");
+				logger.debug("got type");
 				try {
 					if(logger.isDebugEnabled()){
 						logger.debug("tree is : "
@@ -284,7 +284,7 @@ public abstract class AbstractSource extends DataflowAction {
 							Iterator<Tree<String>> itProp = getInteraction(key_dataset).getTree().getFirstChild("browse")
 								.getFirstChild("output").getFirstChild("property").getSubTreeList().iterator();
 
-							logger.info("property list size : "	+ getInteraction(key_dataset).getTree().getFirstChild("browse")
+							logger.debug("property list size : "	+ getInteraction(key_dataset).getTree().getFirstChild("browse")
 									.getFirstChild("output").getFirstChild("property").getSubTreeList().size());
 
 							while (itProp.hasNext()) {
@@ -292,12 +292,12 @@ public abstract class AbstractSource extends DataflowAction {
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
 
-								logger.info("out addProperty " + name + " "	+ value);
+								logger.debug("out addProperty " + name + " "	+ value);
 
 								props.put(name, value);
 							}
 						} catch (Exception e) {
-							logger.info("No properties");
+							logger.debug("No properties");
 						}
 					}
 
@@ -338,7 +338,7 @@ public abstract class AbstractSource extends DataflowAction {
 									} catch (Exception e) {
 										error = "The type " + type
 												+ " does not exist";
-										logger.info(error);
+										logger.debug(error);
 									}
 
 								}
@@ -393,7 +393,7 @@ public abstract class AbstractSource extends DataflowAction {
 							ok = false;
 						}
 						if (!ok) {
-							logger.info("The output need to be changed in source "
+							logger.debug("The output need to be changed in source "
 									+ componentId);
 							try {
 								out.setPath(null);
@@ -410,10 +410,10 @@ public abstract class AbstractSource extends DataflowAction {
 
 							// Update the field list only if it looks good
 							out.setFields(outF);
-							logger.info(out.getFields().getFieldNames());
-							logger.info("Setpath : " + path);
+							logger.debug(out.getFields().getFieldNames());
+							logger.debug("Setpath : " + path);
 							out.setPath(path);
-							logger.info(out.getFields().getFieldNames());
+							logger.debug(out.getFields().getFieldNames());
 						}
 						
 						boolean updatable = false;
@@ -448,7 +448,7 @@ public abstract class AbstractSource extends DataflowAction {
 										.getText("source.pathnotexist");
 							} else{
 								String msg = out.isPathValid();
-								logger.info("isPathExists " + msg);
+								logger.debug("isPathExists " + msg);
 								if (msg != null) {
 									error = LanguageManagerWF.getText(
 											"source.pathinvalid",
@@ -469,7 +469,7 @@ public abstract class AbstractSource extends DataflowAction {
 							new Object[] { e.getMessage() });
 				}
 
-				logger.info("checkpage3 " + error);
+				logger.debug("checkpage3 " + error);
 
 				return error;
 			}
@@ -499,9 +499,9 @@ public abstract class AbstractSource extends DataflowAction {
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
-		logger.info("updateinteraction Source ");
+		logger.debug("updateinteraction Source ");
 		String interId = interaction.getId();
-		logger.info("interaction : " + interId);
+		logger.debug("interaction : " + interId);
 		if (interId.equals(key_datatype)) {
 			updateDataType(interaction.getTree());
 		} else if (interId.equals(key_datasubtype)) {
@@ -523,9 +523,9 @@ public abstract class AbstractSource extends DataflowAction {
 	 */
 	public void updateDataSubType(Tree<String> treeDatasubtype)
 			throws RemoteException {
-		logger.info("updating data subtype");
+		logger.debug("updating data subtype");
 		String type = dataType.getValue();
-		logger.info("data type : " + type);
+		logger.debug("data type : " + type);
 		if (type != null) {
 			String setValue = null;
 			List<String> posValues = new LinkedList<String>();
@@ -539,8 +539,8 @@ public abstract class AbstractSource extends DataflowAction {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				logger.info("class : " + wa.getClass().getCanonicalName());
-				logger.info("wa type : " + wa.getTypeName());
+				logger.debug("class : " + wa.getClass().getCanonicalName());
+				logger.debug("wa type : " + wa.getTypeName());
 				if (wa.getBrowserName() != null
 						&& wa.getBrowserName().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
@@ -554,7 +554,7 @@ public abstract class AbstractSource extends DataflowAction {
 				}
 			}
 			logger.debug("set possibilities...");
-			logger.info(" is " + posValues.toString());
+			logger.debug(" is " + posValues.toString());
 			dataSubtype.setPossibleValues(posValues);
 			if (setValue != null) {
 				logger.debug("set value...");

@@ -74,14 +74,14 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
 		
-		logger.info("createOozieElement SqirlNutcrackerAction ");
+		logger.debug("createOozieElement SqirlNutcrackerAction ");
 
 		Element java = oozieXmlDoc.createElement("java");
 
 		defaultParam(oozieXmlDoc, java);
 		String path = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_nutcracker_path);
 		
-		logger.info("createOozieElement path " + path);
+		logger.debug("createOozieElement path " + path);
 		
 		try {
 			FileSystem fs = NameNodeVar.getFS();
@@ -132,12 +132,12 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 
 				action.appendChild(java);
 			}else{
-				logger.info("createOozieElement isDirectory false ");
+				logger.debug("createOozieElement isDirectory false ");
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("createOozieElement error " + e);
+			logger.debug("createOozieElement error " + e);
 		}
 
 	}
