@@ -110,7 +110,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 		String patternStr = Pattern.quote(delimiter);
 		List<String> selectLine = selectLine(maxToRead);
 		if(selectLine == null){
-			logger.info("No data in "+getPath());
+			logger.debug("No data in "+getPath());
 		}else{
 			Iterator<String> it = selectLine.iterator();
 			while(it.hasNext()){
@@ -158,7 +158,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 			
 			List<String> list = this.selectLine(2000);
 
-			logger.info("setPath() " + path);
+			logger.debug("setPath() " + path);
 			if (list != null) {
 
 				FieldList fl = generateFieldsMap(delimiter, list);

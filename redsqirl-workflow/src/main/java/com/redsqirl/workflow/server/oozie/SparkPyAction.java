@@ -58,7 +58,7 @@ public class SparkPyAction extends ShellAction{
 		}
 		
 		public boolean writeLauncherScriptFile(File[] files,Iterable<DFEOutput> outputs) throws RemoteException {
-			logger.info("Write launcher query in: " + files[0].getAbsolutePath());
+			logger.debug("Write launcher query in: " + files[0].getAbsolutePath());
 			String sparkHome = WorkflowPrefManager.getProperty(sys_spark_home);
 
 			if(sparkHome == null){

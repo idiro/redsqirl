@@ -179,7 +179,7 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	@Override
 	public void setFields(FieldList fl) {
-		logger.info("setFields :");
+		logger.debug("setFields :");
 		super.setFields(fl);
 	}
 
@@ -237,7 +237,7 @@ public class MapRedTextType extends MapRedDir {
 
 			super.setPath(path);
 
-			logger.info("setPath() " + path);
+			logger.debug("setPath() " + path);
 			List<String> list = this.selectLine(2000);
 			if (list != null) {
 
@@ -247,9 +247,9 @@ public class MapRedTextType extends MapRedDir {
 					if (delimiter == null) {
 						delimiter = getDefaultDelimiter(text);
 						super.addProperty(key_delimiter, delimiter);
-						logger.info("No delimiter, set it automatically to " + delimiter);
+						logger.debug("No delimiter, set it automatically to " + delimiter);
 					}else{
-						logger.info("Delimiter " + delimiter);
+						logger.debug("Delimiter " + delimiter);
 					}
 
 
@@ -257,11 +257,11 @@ public class MapRedTextType extends MapRedDir {
 					if(fields == null || fields.getSize() == 0){
 						fields = fl;
 					}else{
-						logger.info(fields.getFieldNames());
-						logger.info(fl.getFieldNames());
+						logger.debug(fields.getFieldNames());
+						logger.debug(fl.getFieldNames());
 						String error = checkCompatibility(fl,fields);
 						if(error != null){
-							logger.info(error);
+							logger.debug(error);
 							fields = fl;
 							throw new RemoteException(error);
 						}

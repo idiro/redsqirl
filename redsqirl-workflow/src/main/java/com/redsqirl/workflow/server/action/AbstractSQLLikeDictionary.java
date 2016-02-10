@@ -143,7 +143,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		logger.debug("aggreg and feats ok");
 
 		expr = expr.trim();
-		logger.info("expression : " + expr);
+		logger.debug("expression : " + expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -772,7 +772,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
 		if (!ok) {
 			String error = "Error in expression: '" + expr + "'";
-			logger.info(error);
+			logger.debug(error);
 		}
 		logger.debug("operation ok : " + ok);
 		return ok;

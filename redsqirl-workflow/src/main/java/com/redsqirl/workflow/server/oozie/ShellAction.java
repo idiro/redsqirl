@@ -116,7 +116,7 @@ public class ShellAction extends OozieActionAbs {
 	
 	public String getShellContent(String oneCommandToExecute){
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
-		logger.info("Command to execute "+oneCommandToExecute);
+		logger.debug("Command to execute "+oneCommandToExecute);
 		toWrite += "USER_NAME=$1"+ System.getProperty("line.separator");
 		
 		if(extraFile){

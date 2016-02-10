@@ -341,12 +341,13 @@ function paste(canvasName,selecteds){
 /********************************************************************/
 /********************************************************************/
 /********************* CommandReplaceAll ****************************/
-function CommandReplaceAll(selecteds, oldStr, newStr, changeLabel) {
+function CommandReplaceAll(selecteds, oldStr, newStr, changeLabel, regex) {
 	Command.call(this);
 	this.selecteds = selecteds;
 	this.oldStr = oldStr;
 	this.newStr = newStr;
 	this.changeLabel = changeLabel;
+	this.regex = regex;
 	this.cloneId = "";
 };
 
@@ -375,8 +376,8 @@ CommandReplaceAll.prototype.clean = function(){
 	removeCloneWorkflow(this.cloneId);
 };
 
-function replaceAll(canvasName,selecteds, oldStr, newStr, changeLabel){
-	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(selecteds, oldStr, newStr, changeLabel));
+function replaceAll(canvasName,selecteds, oldStr, newStr, changeLabel, regex){
+	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(selecteds, oldStr, newStr, changeLabel, regex));
 }
 
 /********************************************************************/

@@ -123,7 +123,7 @@ public class HiveTypePartition extends HiveType{
 	 */
 	@Override
 	public String isPathValid() throws RemoteException {
-		logger.info("hive partition is path valid");
+		logger.debug("hive partition is path valid");
 		String error=super.isPathValid();
 		if(getPath() == null){
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");

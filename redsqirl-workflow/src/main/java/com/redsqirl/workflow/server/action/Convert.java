@@ -186,7 +186,7 @@ public class Convert extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public void updateOutput() throws RemoteException {
-		logger.info("Initialise convert");
+		logger.debug("Initialise convert");
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		FieldList new_fields = new OrderedFieldList();
 
@@ -222,7 +222,7 @@ public class Convert extends DataflowAction {
 	 */
 	@Override
 	public String updateOut() throws RemoteException {
-		logger.info("Initialize update out");
+		logger.debug("Initialize update out");
 		String error = null;
 		if (output.get(key_output) == null) {
 			error = LanguageManagerWF.getText("convert.output_null");

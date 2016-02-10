@@ -165,7 +165,7 @@ public class MapRedModelType extends MapRedDir {
 
 			super.setPath(path);
 
-			logger.info("setPath() " + path);
+			logger.debug("setPath() " + path);
 
 			List<String> list = this.selectLine(2000);
 

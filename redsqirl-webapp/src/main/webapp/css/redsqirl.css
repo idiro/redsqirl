@@ -1568,7 +1568,6 @@ select {
 	background:white;
 	padding-top:20px;
 	border-radius:10px;
-	overflow:auto;
 }
 
 .packageSettingsTab{

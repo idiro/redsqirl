@@ -161,7 +161,7 @@ DFELinkProperty {
 		while (it.hasNext() && !ok) {
 			Class<?> cur = it.next();
 			while (cur != null && !ok) {
-				logger.info("Check if " + cur + " equals " + out.getClass());
+				logger.debug("Check if " + cur + " equals " + out.getClass());
 				if (cur.equals(out.getClass())) {
 					ok = true;
 				}
@@ -184,7 +184,7 @@ DFELinkProperty {
 		if(!check(out)){
 			if(getFieldListAccepted() != null){
 				
-				logger.info("componentId " + componentId);
+				logger.debug("componentId " + componentId);
 				
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible_with_features",

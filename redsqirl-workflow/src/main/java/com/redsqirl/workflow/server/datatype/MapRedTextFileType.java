@@ -245,7 +245,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	@Override
 	public void setFields(FieldList fl) {
-		logger.info("setFields :");
+		logger.debug("setFields :");
 		super.setFields(fl);
 	}
 
@@ -307,7 +307,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 
 			super.setPath(path);
 
-			logger.info("setPath() " + path);
+			logger.debug("setPath() " + path);
 			List<String> list = selectLine(2000);
 			if (list != null) {
 
@@ -317,7 +317,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 					if (getProperty(key_delimiter) == null) {
 						String delimiter = getDefaultDelimiter(text);
 
-						logger.info("delimiter -> " + delimiter);
+						logger.debug("delimiter -> " + delimiter);
 
 						super.addProperty(key_delimiter, delimiter);
 					}
@@ -327,11 +327,11 @@ public class MapRedTextFileType extends MapRedHdfs {
 				if(fields == null || fields.getSize() == 0){
 					fields = fl;
 				}else{
-					logger.info(fields.getFieldNames());
-					logger.info(fl.getFieldNames());
+					logger.debug(fields.getFieldNames());
+					logger.debug(fl.getFieldNames());
 					String error = checkCompatibility(fl,fields);
 					if(error != null){
-						logger.info(error);
+						logger.debug(error);
 						fields = fl;
 						throw new RemoteException(error);
 					}
@@ -464,7 +464,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	protected FieldList generateFieldsMap(String delimiter,List<String> lines) throws RemoteException {
 
-		logger.info("generateFieldsMap --");
+		logger.debug("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {

@@ -28,7 +28,10 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 public class SessionListener implements HttpSessionListener{
 
@@ -36,6 +39,9 @@ public class SessionListener implements HttpSessionListener{
 
 	@Override
 	public void sessionCreated(HttpSessionEvent arg0) {
+		if(WorkflowPrefManager.getSysProperty("core.workflow_lib_path") != null){
+			Logger.getRootLogger().setLevel(Level.INFO);
+		}
 	}
 
 	@Override
@@ -48,7 +54,7 @@ public class SessionListener implements HttpSessionListener{
 
 		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
 		usageRecordLog(userName, sessionUsageRecordWriter).addSuccess("SESSIONTIMEOUT");
-		
+
 		try{
 			ServerProcess th = (ServerProcess) session.getAttribute("serverThread");
 			if (th != null){

@@ -141,7 +141,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			boolean ignoreBuffered) throws RemoteException {
 		
 
-		logger.info("createXml");
+		logger.debug("createXml");
 		String filename = "workflow.xml";
 		String error = null;
 
@@ -173,16 +173,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 
 			if (error == null) {
-				logger.info("Create workflow.xml...");
+				logger.debug("Create workflow.xml...");
 				
 				elements.clear();
 				outEdges.clear();
 
-				logger.info("Create the scripts...");
+				logger.debug("Create the scripts...");
 
 				createOozieJob(doc, errorNodeName, okEndNodeName, scripts, list, ignoreBuffered);
 
-				logger.info("Order the actions and build the dependency tree...");
+				logger.debug("Order the actions and build the dependency tree...");
 
 				Iterator<String> keys = outEdges.keySet().iterator();
 				Set<String> outNodes = new LinkedHashSet<String>();
@@ -199,9 +199,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				od.initWithOutGraph(outEdges);
 				if(!od.transform()){
 					error = "Fail to fork the graph";
-					logger.info(outEdges.toString());
+					logger.debug(outEdges.toString());
 				}else{
-					logger.info("Create the xml action objects...");
+					logger.debug("Create the xml action objects...");
 					outEdges = od.getGraphOut();
 					// logger.debug(outEdges.toString());
 					Iterator<String> it = outEdges.keySet().iterator();
@@ -233,8 +233,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							if (out.size() != 1) {
 								error = LanguageManagerWF
 										.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
-								logger.info("createXml join " + error);
-								logger.info(outEdges.toString());
+								logger.debug("createXml join " + error);
+								logger.debug(outEdges.toString());
 							} else {
 								createJoinNode(doc, rootElement, cur, out
 										.iterator().next());
@@ -245,8 +245,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							if (out.size() != 1) {
 								error = LanguageManagerWF
 										.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
-								logger.info("createXml else fork " + error);
-								logger.info(outEdges.toString());
+								logger.debug("createXml else fork " + error);
+								logger.debug(outEdges.toString());
 							} else {
 								Element element = elements.get(cur);
 								createOKNode(doc, element, out.iterator().next());
@@ -258,7 +258,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}
 			}
 
-			logger.info("Write the workflow.xml file in local filesystem...");
+			logger.debug("Write the workflow.xml file in local filesystem...");
 
 			if (error == null) {
 				logger.debug("Finish up the xml generation...");
@@ -318,16 +318,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			boolean ignoreBuffered)
 			throws RemoteException {
 
-		logger.info("createDelete");
+		logger.debug("createDelete");
 
 		List<String> deleteList = new ArrayList<String>(list.size());
 		// Do action
 		Iterator<DataFlowElement> it = list.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
-			logger.info("Delete action " + cur.getName() + " " + cur.getComponentId());
+			logger.debug("Delete action " + cur.getName() + " " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
-				logger.info("Have to delete it...");
+				logger.debug("Have to delete it...");
 				Iterator<String> itS = cur.getDFEOutput().keySet().iterator();
 				Map<String, DFEOutput> mapO = new HashMap<String, DFEOutput>(cur.getDFEOutput().size());
 				while (itS.hasNext()) {
@@ -394,22 +394,22 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			String endElement, File directoryToWrite, List<DataFlowElement> list, boolean ignoreBuffered)
 			throws RemoteException {
 
-		logger.info("createOozieJob");
+		logger.debug("createOozieJob");
 
 		// Get delete list
 		List<String> deleteList = createDelete(doc, error, endElement, directoryToWrite, list, ignoreBuffered);
 
-		logger.info("createDelete OK");
+		logger.debug("createDelete OK");
 		
 		// Do action
 		Iterator<DataFlowElement> it = list.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
-			logger.info("Create action " + cur.getName() + " " + cur.getComponentId());
+			logger.debug("Create action " + cur.getName() + " " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
-				logger.info("Oozie action is not null");
+				logger.debug("Oozie action is not null");
 				String attrNameStr = getNameAction(cur);
-				logger.info("attrNameStr " + attrNameStr);
+				logger.debug("attrNameStr " + attrNameStr);
 				// Implement the action
 				Element action = doc.createElement("action");
 				Attr attrName = doc.createAttribute("name");
@@ -418,10 +418,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				action.setAttributeNode(attrName);
 
 				// Create action node
-				logger.info("write process...");
+				logger.debug("write process...");
 				cur.writeProcess(doc, action, directoryToWrite, directoryToWrite.getName(), getNameAction(cur));
 
-				logger.info("Plug with delete of previous actions...");
+				logger.debug("Plug with delete of previous actions...");
 
 				// Get What is after
 				Set<String> out = new HashSet<String>(cur.getAllInputComponent().size()	+ cur.getAllOutputComponent().size());

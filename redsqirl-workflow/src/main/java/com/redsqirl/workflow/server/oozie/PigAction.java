@@ -65,12 +65,12 @@ public class PigAction extends OozieActionAbs {
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
 		
-		logger.info("createOozieElement ");
+		logger.debug("createOozieElement ");
 		
 		Element pig = oozieXmlDoc.createElement("pig");
 		defaultParam(oozieXmlDoc, pig);
 		
-		logger.info("createOozieElement 1");
+		logger.debug("createOozieElement 1");
 		
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
@@ -84,11 +84,11 @@ public class PigAction extends OozieActionAbs {
 				pig.appendChild(argument);
 			}
 		}
-		logger.info("createOozieElement 2");
+		logger.debug("createOozieElement 2");
 		
 		action.appendChild(pig);
 		
-		logger.info("createOozieElement 3");
+		logger.debug("createOozieElement 3");
 		
 	}
 	

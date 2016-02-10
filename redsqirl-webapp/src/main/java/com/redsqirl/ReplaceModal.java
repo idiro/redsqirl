@@ -31,6 +31,7 @@ public class ReplaceModal implements Serializable{
 	private String string;
 	private String replace;
 	private boolean replaceActionNames;
+	private String regularExpression;
 	
 	/**
 	 * @return the string
@@ -68,4 +69,13 @@ public class ReplaceModal implements Serializable{
 	public void setReplaceActionNames(boolean replaceActionNames) {
 		this.replaceActionNames = replaceActionNames;
 	}
+	
+	public String getRegularExpression() {
+		return regularExpression;
+	}
+	
+	public void setRegularExpression(String regularExpression) {
+		this.regularExpression = regularExpression;
+	}
+	
 }

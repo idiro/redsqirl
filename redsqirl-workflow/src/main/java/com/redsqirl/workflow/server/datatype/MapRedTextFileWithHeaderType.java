@@ -152,7 +152,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	@Override
 	protected FieldList generateFieldsMap(String delimiter, List<String> lines ) throws RemoteException {
 
-		logger.info("generateFieldsMap --");
+		logger.debug("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {

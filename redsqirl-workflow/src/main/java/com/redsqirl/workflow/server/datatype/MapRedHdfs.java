@@ -126,7 +126,7 @@ public abstract class MapRedHdfs extends DataOutput{
 		String error = null;
 		boolean ok = true;
 		int i = 1;
-		logger.info("FROM: " + from.getSize() + "  TO: " + to.getSize());
+		logger.debug("FROM: " + from.getSize() + "  TO: " + to.getSize());
 		if(from.getSize() != to.getSize()){
 			error = LanguageManagerWF.getText(
 					"mapredtexttype.msg_error_number_fields");
@@ -135,7 +135,7 @@ public abstract class MapRedHdfs extends DataOutput{
 		while (flIt.hasNext() && ok) {
 			String nf = flIt.next();
 			String of = fieldIt.next();
-			logger.info("types field " + i + ": "
+			logger.debug("types field " + i + ": "
 					+ from.getFieldType(nf) + " , "
 					+ to.getFieldType(of));
 			ok &= canCast(from.getFieldType(nf),
@@ -171,11 +171,11 @@ public abstract class MapRedHdfs extends DataOutput{
 
 	@Override
 	public boolean isPathExists() throws RemoteException {
-		logger.info("isPathExists ");
+		logger.debug("isPathExists ");
 		
 		boolean ok = false;
 		if (getPath() != null) {
-			logger.info("checking if path exists: " + getPath().toString());
+			logger.debug("checking if path exists: " + getPath().toString());
 			FileSystem fs = null;
 			try {
 				fs = NameNodeVar.getFS();
@@ -185,7 +185,7 @@ public abstract class MapRedHdfs extends DataOutput{
 			}
 		}
 		
-		logger.info("isPathExists end ");
+		logger.debug("isPathExists end ");
 		
 		return ok;
 	}
@@ -280,7 +280,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	 */
 	protected FieldList generateFieldsMap(String delimiter, List<String> lines) throws RemoteException {
 
-		logger.info("generateFieldsMap --");
+		logger.debug("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {
@@ -409,21 +409,21 @@ public abstract class MapRedHdfs extends DataOutput{
 					//Get the higher type
 					typeAns = typeCur;
 				}else{
-					logger.info("Have to reset the type");
+					logger.debug("Have to reset the type");
 					//Not the good type
 					if(typeCur.equals(FieldType.CHAR) && typeAns.equals(FieldType.INT)){
-						logger.info("Test integer");
+						logger.debug("Test integer");
 						try {
 							Integer.valueOf(fieldValue);
 						} catch (Exception e) {
 							typeAns = FieldType.STRING;
 						}
 					}else if(typeAns.equals(FieldType.CHAR) && typeCur.equals(FieldType.INT)){
-						logger.info("Set to int and start again");
+						logger.debug("Set to int and start again");
 						typeAns = FieldType.INT;
 						restart = true;
 					}else{
-						logger.info("Set to string");
+						logger.debug("Set to string");
 						typeAns = FieldType.STRING;
 					}
 				}
@@ -435,7 +435,7 @@ public abstract class MapRedHdfs extends DataOutput{
 		}
 		if(typeAns.equals(FieldType.STRING)){
 			int nbValues = exValue.size();
-			logger.info(nbValues+" / "+numberOfValues);
+			logger.debug(nbValues+" / "+numberOfValues);
 			if(numberOfValues > 0 && nbValues < 101 && nbValues * 100 /numberOfValues < 5){
 				typeAns = FieldType.CATEGORY;
 			}

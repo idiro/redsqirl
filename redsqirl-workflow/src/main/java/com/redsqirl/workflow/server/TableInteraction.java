@@ -708,7 +708,7 @@ public class TableInteraction extends UserInteraction {
 					Tree<String> lColRow = lColRowIt.next();
 					try{
 						String content = lColRow.getFirstChild().getHead();
-						logger.info("replace "+oldName+" by "+newName+" in "+content);
+						logger.debug("replace "+oldName+" by "+newName+" in "+content);
 						if(regex){
 							lColRow.getFirstChild().setHead(
 									content.replaceAll(oldName, newName));

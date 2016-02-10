@@ -365,9 +365,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		
 		//logger.info("listPage:"+ Integer.toString(getListPageSize()) + " getIdGroup:" + getIdGroup()+ " getCurElId:"+getCurElId()+ " getCurElComment:"+getCurElComment());
 		boolean loadOutputTab = false;
+		String cloneWFId = null;
 		try{
 			loadOutputTab = loadMainWindow && ((canvasBean.getWorkflowType().equals("W") && (getOutputTab().getShowOutputForm() != null && getOutputTab().getShowOutputForm().equals("Y")) || getListPageSize() > 0));
-		}catch(Exception e){		
+			cloneWFId = canvasBean.cloneWorkflowGetId();
+		}catch(Exception e){
 		}
 		
 		displayErrorMessage(error, "OPENCANVASMODAL");
@@ -377,10 +379,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				getIdGroup(),
 				getCurElId(),
 				getCurElComment(),
-				Boolean.toString(loadMainWindow)
+				Boolean.toString(loadMainWindow),
+				cloneWFId
 				};
 		
-		logger.info(ans[0]+", "+ans[1]+", "+ans[2]+", "+ans[3]+", "+ans[4]+", "+ans[5]);
+		logger.info(ans[0]+", "+ans[1]+", "+ans[2]+", "+ans[3]+", "+ans[4]+", "+ans[5]+", "+ans[6]);
 		
 		return ans;
 	}
