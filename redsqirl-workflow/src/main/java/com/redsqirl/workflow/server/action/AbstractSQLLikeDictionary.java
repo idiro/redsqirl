@@ -90,6 +90,29 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 						new String[] { "%", "NUMBER,NUMBER...", "NUMBER" } });
 	}
 
+	public String[][] concat(String[][] array1,String[][] array2){
+		if(array1 == null || array1.length == 0){
+			return array2;
+		}
+		if(array2 == null || array2.length == 0){
+			return array1;
+		}
+		
+		String[][] ans = new String[array1.length+array2.length][];
+		for(int i = 0; i < array1.length;++i){
+			ans[i] = array1[i];
+		}
+		for(int i = 0; i < array2.length;++i){
+			ans[array1.length+i] = array2[i];
+		}
+		return ans;
+	}
+	
+	protected void addToFunctionsMap(String list,String[][] newOptions){
+		functionsMap.put(list, 
+				concat(functionsMap.get(list),newOptions));
+	}
+	
 	/**
 	 * Get the return type of a pig based expression
 	 * 
@@ -256,6 +279,143 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		logger.debug("type returning: " + type);
 		return type;
 
+	}
+	
+	/**
+	 * Run a cast operation on an expression
+	 * 
+	 * @param expr
+	 * @param fields
+	 * @param fieldAggreg
+	 * @return type
+	 * @throws Exception
+	 */
+	protected String runCaseWhen(String expr, FieldList fields,
+			Set<String> fieldAggreg) throws Exception {
+		logger.debug("Conditional operation: " + expr);
+		String type = null;
+
+		if (expr.startsWith("CASE") && expr.endsWith("END")) {
+			
+			String arg = expr.substring(4,expr.lastIndexOf("END")).trim();
+			
+			logger.debug(arg);
+			String[] expressions = getCaseArguments(arg);
+			if(expressions == null){
+				return null;
+			}
+			
+			for (int i = 0; i < expressions.length; ++i) {
+				String expression = expressions[i].trim();
+				if (!expression.isEmpty()) {
+					logger.debug(expression);
+					String argType = null;
+					
+					int indexOfThen = expression.indexOf(" THEN ");
+					int indexOfCase = expression.indexOf(" CASE ");
+					if(expression.startsWith("CASE ")){
+						argType = expression;
+					}else if( indexOfThen == -1 && i != expressions.length-1){
+						return null;
+					}else if(indexOfThen == -1 || (indexOfCase != -1 && indexOfCase < indexOfThen)){
+						argType = expression;
+					}else{
+						String condition = expression.substring(0,indexOfThen);
+						argType = expression.substring(indexOfThen+6);
+						logger.debug(condition);
+						logger.debug(argType);
+						if (!check("BOOLEAN", getReturnType(condition, fields))) {
+							String error = "Expression '"+condition+" should return boolean";
+							logger.debug(error);
+							throw new Exception(error);
+						}
+					}
+
+					String t = getReturnType(argType, fields);
+					if(t == null){
+						throw new Exception(argType+" expression unrecognized");
+					}
+					if (type == null) {
+						type = t;
+					} else if(check(type, t)){
+					} else if(check(t, type)){
+						type = t;
+					}else if (!t.equals(type)) {
+						String error = "Expression '"+expr+"' all sub-expressions should return the same type";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+				}
+			}
+
+		}
+		return type;
+	}
+
+	public static String[] getCaseArguments(String arguments) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		List<String> ansL = new LinkedList<String>();
+		String[] ans = null;
+		boolean last = false;
+		if(!arguments.trim().startsWith("WHEN ")){
+			return null;
+		}
+		arguments = arguments.substring(5);
+		while (index < arguments.length()) {
+			if(arguments.startsWith(" WHEN ",index)){
+				if(count == 0){
+					if(last){
+						ansL = null;
+						break;
+					}
+					ansL.add(cleanUp);
+					cleanUp="";
+					index+=6;
+					continue;
+				}else{
+					cleanUp+=" WHEN";
+					index+=5;
+				}
+			}else if(arguments.startsWith(" ELSE ",index)){
+				if(count == 0){
+					last = true;
+					ansL.add(cleanUp);
+					cleanUp="";
+					index+=6;
+					continue;
+				}else{
+					cleanUp+=" ELSE";
+					index+=5;
+				}
+			}else if (arguments.startsWith("CASE ",index)) {
+				++count;
+				index+=4;
+				cleanUp+="CASE";
+			}else if (arguments.startsWith(" END",index)) {
+				--count;
+				if(count < 0){
+					ansL = null;
+					break;
+				}
+				index+=3;
+				cleanUp+=" EN";
+			}
+			cleanUp += arguments.charAt(index);
+			++index;
+		}
+		
+		if(count != 0){
+			return null;
+		}
+		if(ansL != null){
+			ansL.add(cleanUp);
+			logger.debug(ansL);
+			ans = ansL.toArray(new String[ansL.size()]);
+		}
+		
+		return ans;
 	}
 
 	protected abstract boolean isCastOperation(String expr);
@@ -516,8 +676,12 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @throws Exception
 	 */
 	protected String runMethod(String expr, FieldList fields, boolean isAggregMethod) throws Exception {
-		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
+		return runMethod(expr, fields, isAggregMethod, methodsFound);
+	}
+
+	protected String runMethod(String expr, FieldList fields, boolean isAggregMethod,List<String[]> methodsFound) throws Exception {
+		String type = null;
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1, expr.lastIndexOf(")"));
 			logger.debug("argument " + arg);

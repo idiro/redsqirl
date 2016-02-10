@@ -163,28 +163,40 @@ public class EditorFromTree implements Serializable{
 				// Add the content
 				for (Tree<String> tree2 : tree.getSubTreeList()) {
 
-					String nameFunction = tree2.getFirstChild("name")
-							.getFirstChild() != null ? tree2
-							.getFirstChild("name").getFirstChild().getHead()
-							: "";
-					String inputFunction = tree2.getFirstChild("input")
-							.getFirstChild() != null ? tree2
-							.getFirstChild("input").getFirstChild().getHead()
-							: "";
-					String returnFunction = tree2.getFirstChild("return")
-							.getFirstChild() != null ? tree2
-							.getFirstChild("return").getFirstChild().getHead()
-							: "";
-					String helpFunction = tree2.getFirstChild("help")
-							.getFirstChild() != null ? tree2
-							.getFirstChild("help").getFirstChild().getHead()
-							: "";
+					String nameFunction = "";
+					try{
+						nameFunction = tree2.getFirstChild("name")
+						.getFirstChild() != null ? tree2
+								.getFirstChild("name").getFirstChild().getHead()
+								: "";
+					}catch(Exception e){}
+					String inputFunction = "";
+					try{
+						inputFunction = tree2.getFirstChild("input")
+								.getFirstChild() != null ? tree2
+										.getFirstChild("input").getFirstChild().getHead()
+										: "";
+					}catch(Exception e){}
+					String returnFunction = "";
+					try{
+						returnFunction = tree2.getFirstChild("return")
+								.getFirstChild() != null ? tree2
+										.getFirstChild("return").getFirstChild().getHead()
+										: "";
+					}catch(Exception e){}
+					String helpFunction = "";
+					try{
+						helpFunction = tree2.getFirstChild("help")
+								.getFirstChild() != null ? tree2
+										.getFirstChild("help").getFirstChild().getHead()
+										: "";
 
-					helpFunction = helpFunction.replaceAll("'", "\\\\\\'");
-							
-					cur.get(menuName).add(
-							new String[] { nameFunction, inputFunction,
-									returnFunction, helpFunction });
+						helpFunction = helpFunction.replaceAll("'", "\\\\\\'");
+
+						cur.get(menuName).add(
+									new String[] { nameFunction, inputFunction,
+											returnFunction, helpFunction });
+					}catch(Exception e){}
 				}
 			}
 

@@ -41,17 +41,6 @@ public interface SqlDictionary {
 	public String getReturnType(String expr, FieldList fields,
 			Set<String> nonAggregFeats) throws Exception;
 
-
-	public FieldType getFieldType(String sqlType);
-
-	/**
-	 * Get the type from a FieldType
-	 * 
-	 * @param feat
-	 * @return type
-	 */
-	public String getType(FieldType feat);
-
 	/**
 	 * Get a return type of an expression with an empty set of aggregation
 	 * fields

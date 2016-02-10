@@ -41,7 +41,7 @@ public abstract class SqlUnionConditions extends TableInteraction {
 	/**
 	 * Union where the interaction is held
 	 */
-	private SqlElement hu;
+	protected SqlElement hu;
 	/** Relation title key */
 	public static final String table_relation_title = SqlLanguageManager
 			.getTextWithoutSpace("sql.union_cond_interaction.relation_column"),
