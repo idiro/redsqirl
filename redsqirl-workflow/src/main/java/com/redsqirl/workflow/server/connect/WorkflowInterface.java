@@ -518,9 +518,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			try {
 				if(!wf.get(workflowNameCur).getElement().isEmpty()){
 					wf.get(workflowNameCur).setName(workflowNameCur);
-					wf.get(workflowNameCur).backup();
+					wf.get(workflowNameCur).setPath(wf.get(workflowNameCur).backup());
 
 					if(wf.get(workflowNameCur).getPath() != null){
+						
+						logger.debug("backup path check " + wf.get(workflowNameCur).getPath());
+						
 						mapCanvasToOpen.put(workflowNameCur, wf.get(workflowNameCur).getPath());
 					}else{
 						String path = wf.get(workflowNameCur).backupAllWorkflowsBeforeClose();

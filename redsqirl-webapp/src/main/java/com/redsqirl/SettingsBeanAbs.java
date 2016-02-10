@@ -133,10 +133,8 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	}
 	
 	
-	public String saveSettings() throws RemoteException{
+	public void saveSettings() throws RemoteException{
 		storeNewSettings();
-
-		return "success";
 	}
 
 	public void applySettings() throws RemoteException{

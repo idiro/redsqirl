@@ -171,6 +171,11 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	public String getBackupName(String path) throws RemoteException{
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
+		
+		if(getName() != null && getName().matches("-\\d{14}$")){
+			setName(getName().substring(0, getName().length()-15));
+		}
+		
 		if (getName() != null && !getName().isEmpty()) {
 			path += "/" + getName() + "-" + dateFormat.format(date) + ".srs";
 		} else {

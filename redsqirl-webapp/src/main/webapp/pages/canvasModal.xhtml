@@ -138,10 +138,9 @@
     </a4j:region>
      
     <a4j:region>
-        <a4j:jsFunction name="closeCanvasModal" 
-                action="#{canvasModalBean.closeCanvasModal}" />
+        <a4j:jsFunction name="closeCanvasModal" action="#{canvasModalBean.closeCanvasModal}" />
         <a4j:jsFunction name="closeDynamicForm" 
-                oncomplete="closeCanvasModal();#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus(canvasModalParam[2]);cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer);if(canvasModalParam[5] == 'true'){updateOutputStatus(canvasModalParam[2]);}}jQuery.unblockUI();" />
+                oncomplete="closeCanvasModal();#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus(canvasModalParam[2]);cloneAfterUpdateElement();}else{if(canvasModalParam[5] == 'true'){updateOutputStatus(canvasModalParam[2]);}}jQuery.unblockUI();" />
     </a4j:region>
     
     <a4j:region>
