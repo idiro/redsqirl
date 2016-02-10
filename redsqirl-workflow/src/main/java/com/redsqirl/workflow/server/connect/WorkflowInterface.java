@@ -608,6 +608,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			for(File clone:clones){
 				LocalFileSystem.delete(clone);
 			}
+			Iterator<DataStore> it = datastores.values().iterator();
+			while(it.hasNext()){
+				it.next().close();
+			}
 		} catch (IOException e) {
 			logger.error("Failed to remove Clones Folder ",e);
 		}

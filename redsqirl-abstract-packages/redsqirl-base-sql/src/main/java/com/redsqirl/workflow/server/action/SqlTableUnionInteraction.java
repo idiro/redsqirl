@@ -148,12 +148,11 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 								msg = SqlLanguageManager.getText("sql.union_fields_interaction.checkfeatimplemented");
 							} else {
 								fieldsTitle.add(fieldName);
-								if (!getDictionary().getFieldType(
-										row.get(table_type_title))
+								if (!type
 										.equals(mapFeatType
-												.getFieldType(fieldName))) {
+												.getFieldType(fieldName).toString())) {
 									msg = SqlLanguageManager
-											.getText("sql.union_fields_interaction.checktype");
+											.getText("sql.union_fields_interaction.checktype", new Object[]{rowNb});
 								}
 							}
 						}
@@ -240,8 +239,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 					curMap.put(table_table_title, alias);
 					curMap.put(table_op_title, alias + "." + field);
 					curMap.put(table_feat_title, field);
-					curMap.put(table_type_title,
-							getDictionary().getType(fieldType));
+					curMap.put(table_type_title,fieldType.toString());
 
 					copyRows.add(curMap);
 				}
@@ -293,7 +291,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 			Map<String, String> rowCur = rowIt.next();
 			String name = rowCur.get(table_feat_title);
 			String type = rowCur.get(table_type_title);
-			new_fields.addField(name, getDictionary().getFieldType(type));
+			new_fields.addField(name, FieldType.valueOf(type));
 		}
 		return new_fields;
 	}
