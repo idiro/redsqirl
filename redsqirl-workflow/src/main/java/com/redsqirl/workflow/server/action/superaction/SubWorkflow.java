@@ -440,7 +440,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			doc = dBuilder.parse(tmpFile);
 			doc.getDocumentElement().normalize();
 		}catch(Exception e){
-			logger.warn(e,e);
 			logger.warn("Error while decrypting file, attempting to read the file as text");
 			doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
