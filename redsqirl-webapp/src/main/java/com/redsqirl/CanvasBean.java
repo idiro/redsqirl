@@ -228,7 +228,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 				if (idLastElementInserted != null) {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,	idLastElementInserted);
-					df.getElement(idLastElementInserted).regeneratePaths(false, true);
+					if(nameElement.startsWith(">")){
+						df.getElement(idLastElementInserted).regeneratePaths(false, false);
+					}
 				} else {
 					msg = "NULL POINTER";
 				}
@@ -967,7 +969,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		List<String> elements = new LinkedList<String>();
 		String error = null;
-		
+
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 		String string = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("oldStr");
 		String replaceString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("newStr");
@@ -979,7 +981,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (string == null || string.isEmpty() || string.equals("undefined")) {
 			error = "String missing";
 		}
-		
+
 		if (replaceString == null || replaceString.equals("undefined")) {
 			replaceString = "";
 		}
@@ -1233,7 +1235,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return new String[]{ans, wfName};
 
 	}
-	
+
 	/**
 	 * setOutputToBuffered
 	 * 
@@ -1265,7 +1267,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	/**
 	 * setOutputToTemporary
 	 * 
@@ -1357,7 +1359,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(id != null && wf != null){
 			try{
 				((SuperElement)wf.getElement(id)).readMetadataSuperElement();
-				wf.getElement(id).regeneratePaths(false, true);
+				wf.getElement(id).regeneratePaths(false, false);
 			}catch(Exception e){
 				error = e.getMessage();
 				logger.error(error,e);
@@ -1873,8 +1875,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String error = null;
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
 		String elementId = params.get("elementId");
 		String comment = params.get("comment");
@@ -1890,11 +1891,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 				error = getDf().changeElementId(elementOldId, elementId);
 				if(error == null){
 					getIdMap().get(getNameWorkflow()).put(groupId,elementId);
-					getDf().getElement(elementId).regeneratePaths(false, true);
-					
-					FacesContext context = FacesContext.getCurrentInstance();
-					CanvasModal canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
-					canvasModalBean.getOutputTab().mountOutputForm(true);
+
+					if(getDf().getElement(elementId).getName().startsWith(">")){
+						getDf().getElement(elementId).regeneratePaths(false, false);
+						FacesContext context = FacesContext.getCurrentInstance();
+						CanvasModal canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
+						canvasModalBean.getOutputTab().mountOutputForm(true);
+					}
+
 				}
 			}
 		} else {
@@ -1908,7 +1912,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		displayErrorMessage(error,"CHANGEIDELEMENT");
-
 	}
 
 	/**
@@ -2281,7 +2284,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	public String cloneWorkflowGetId() throws Exception {
 		cloneWorkflow();
 		return getCloneWFId();
