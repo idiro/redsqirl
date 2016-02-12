@@ -70,6 +70,10 @@
 	<div style="padding:0px;">
 	
 	    <a4j:region>
+	    	
+	    	<a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+        		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
+	    
 	       <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
 			reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserPropLabel, browserPropValue, browserPath" 
 			oncomplete="jQuery('#canvasModalDiv').unblock();reLoadTabs();" />

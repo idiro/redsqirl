@@ -114,8 +114,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public String showGridDataOutput = "Y";
 	
-	private String selectedOutPut;
-	
 	/**
 	 * Constructor. The constructor will automatically load the first name as
 	 * current name used.
@@ -416,8 +414,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			setMaxRows(null);
 		}
 		
-		if(getSelectedOutPut() != null && selectedComboBox != null){
-			outputN = getSelectedOutPut();
+		if(getNameOutput() != null && selectedComboBox != null){
+			outputN = getNameOutput();
 		}
 
 		if (outputN != null && !outputN.equalsIgnoreCase("undefined") && !outputN.isEmpty()) {
@@ -426,7 +424,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				logger.info("display out: " + nameOutput);
 				updateDFEOutputTable();
 
-				setSelectedOutPut(outputN);
 			}
 			
 		}else {
@@ -437,7 +434,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					logger.info("display out: " + nameOutput);
 					updateDFEOutputTable();
 
-					setSelectedOutPut(outputN);
 				}
 			}else{
 				logger.info("display out null ");
@@ -878,14 +874,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setShowGridDataOutput(String showGridDataOutput) {
 		this.showGridDataOutput = showGridDataOutput;
-	}
-
-	public String getSelectedOutPut() {
-		return selectedOutPut;
-	}
-
-	public void setSelectedOutPut(String selectedOutPut) {
-		this.selectedOutPut = selectedOutPut;
 	}
 
 }
