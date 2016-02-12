@@ -388,10 +388,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 		return ans;
 	}
 	
-	public void closeCanvasModal() throws RemoteException {
+	public void closeCanvasModal() throws Exception {
 		logger.info("closeCanvasModal");
 		loadMainWindow = false;
 		outputTab = new CanvasModalOutputTab(datastores);
+		
+		if(!elementToUpdate){
+			canvasBean.removeCloneWorkflow();
+		}
+		
 	}
 
 	public void changeTitle(){

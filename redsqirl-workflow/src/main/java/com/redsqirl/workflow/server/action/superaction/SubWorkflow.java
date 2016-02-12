@@ -171,6 +171,11 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	public String getBackupName(String path) throws RemoteException{
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
+		
+		if(getName() != null && getName().matches("-\\d{14}$")){
+			setName(getName().substring(0, getName().length()-15));
+		}
+		
 		if (getName() != null && !getName().isEmpty()) {
 			path += "/" + getName() + "-" + dateFormat.format(date) + ".srs";
 		} else {
@@ -435,7 +440,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			doc = dBuilder.parse(tmpFile);
 			doc.getDocumentElement().normalize();
 		}catch(Exception e){
-			logger.warn(e,e);
 			logger.warn("Error while decrypting file, attempting to read the file as text");
 			doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();

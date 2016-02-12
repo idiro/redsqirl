@@ -227,8 +227,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 				if (idLastElementInserted != null) {
-					getIdMap().get(getNameWorkflow()).put(paramGroupID,
-							idLastElementInserted);
+					getIdMap().get(getNameWorkflow()).put(paramGroupID,	idLastElementInserted);
+					df.getElement(idLastElementInserted).regeneratePaths(false, true);
 				} else {
 					msg = "NULL POINTER";
 				}
@@ -1357,6 +1357,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(id != null && wf != null){
 			try{
 				((SuperElement)wf.getElement(id)).readMetadataSuperElement();
+				wf.getElement(id).regeneratePaths(false, true);
 			}catch(Exception e){
 				error = e.getMessage();
 				logger.error(error,e);
@@ -1889,6 +1890,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 				error = getDf().changeElementId(elementOldId, elementId);
 				if(error == null){
 					getIdMap().get(getNameWorkflow()).put(groupId,elementId);
+					getDf().getElement(elementId).regeneratePaths(false, true);
+					
+					FacesContext context = FacesContext.getCurrentInstance();
+					CanvasModal canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
+					canvasModalBean.getOutputTab().mountOutputForm(true);
 				}
 			}
 		} else {

@@ -461,6 +461,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					getDFEOutput().get(curOutStr).setSavingState(SavingState.TEMPORARY);
 					copyCur = null;
 				}
+				
+				waLogger.debug("regeneratePaths");
+				waLogger.debug("1 " + copyCur);
+				waLogger.debug("2 " + System.getProperty("user.name"));
+				waLogger.debug("3 " + getComponentId());
+				waLogger.debug("4 " + curOutStr);
+				
 				getDFEOutput().get(curOutStr).regeneratePath(
 						copyCur, 
 						System.getProperty("user.name"), 

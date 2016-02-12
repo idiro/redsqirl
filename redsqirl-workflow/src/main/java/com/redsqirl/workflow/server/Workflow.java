@@ -921,6 +921,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String getBackupName(String path) throws RemoteException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
+		
+		if(getName() != null && getName().matches("-\\d{14}$")){
+			setName(getName().substring(0, getName().length()-15));
+		}
+		
 		if (getName() != null && !getName().isEmpty()) {
 			path += "/" + getName() + "-" + dateFormat.format(date) + ".rs";
 		} else {
@@ -945,12 +950,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 * @throws RemoteException
 	 */
-	public void backup() throws RemoteException {
+	public String backup() throws RemoteException {
 		String path = getBackupName(createBackupDir());
 		boolean save_swp = isSaved();
+		logger.debug("back up path " + path);
 		String error = save(path);
 		saved = save_swp;
-
 		try {
 			if (error != null) {
 				logger.warn("Fail to back up: " + error);
@@ -964,6 +969,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn("Failed cleaning up backup directory");
 		}
 
+		return path;
 	}
 	
 	public String backupAllWorkflowsBeforeClose() throws RemoteException {

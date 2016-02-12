@@ -124,8 +124,9 @@ public interface DataFlow extends Remote, Cloneable{
 
 	/**
 	 * Do an automatic backup of the workflow.
+	 * @return 
 	 */
-	public void backup() throws RemoteException;
+	public String backup() throws RemoteException;
 
 	/**
 	 * Return true if the dataflow has been loaded or has been saved.
