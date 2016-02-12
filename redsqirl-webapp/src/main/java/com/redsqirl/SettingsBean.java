@@ -93,7 +93,7 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 	}
 
 
-	public void storeNewSettingsLang(Map<String,String[]> langSettings){
+	protected void storeNewSettingsLang(Map<String,String[]> langSettings){
 		try {
 			Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
 

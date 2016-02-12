@@ -421,21 +421,24 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		}
 
 		if (outputN != null && !outputN.equalsIgnoreCase("undefined") && !outputN.isEmpty()) {
-			setNameOutput(outputN);
-			logger.info("display out: " + nameOutput);
-			updateDFEOutputTable();
-			
-			setSelectedOutPut(outputN);
+			if(!getNameOutput().equals(outputN)){
+				setNameOutput(outputN);
+				logger.info("display out: " + nameOutput);
+				updateDFEOutputTable();
+
+				setSelectedOutPut(outputN);
+			}
 			
 		}else {
 			if(outputFormList != null && !outputFormList.isEmpty()){
 				outputN = outputFormList.get(0).getName();
-				setNameOutput(outputN);
-				logger.info("display out: " + nameOutput);
-				updateDFEOutputTable();
-				
-				setSelectedOutPut(outputN);
-				
+				if(!getNameOutput().equals(outputN)){
+					setNameOutput(outputN);
+					logger.info("display out: " + nameOutput);
+					updateDFEOutputTable();
+
+					setSelectedOutPut(outputN);
+				}
 			}else{
 				logger.info("display out null ");
 			}

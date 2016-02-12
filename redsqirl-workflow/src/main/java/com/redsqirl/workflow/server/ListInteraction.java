@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
+import com.redsqirl.workflow.server.interfaces.DFEInteraction;
+import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -150,6 +152,22 @@ public class ListInteraction extends UserInteraction {
 			}
 		}
 		return ans;
+	}
+	
+	public void setNonEmptyChecker() throws RemoteException{
+		setChecker(new DFEInteractionChecker() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4743871962800977873L;
+
+			@Override
+			public String check(DFEInteraction interaction) throws RemoteException {
+				return ((ListInteraction)interaction).getValue() != null?null: 
+						LanguageManagerWF.getText("AppendListInteraction.empty");
+			}
+		});
 	}
 	
 	/**
