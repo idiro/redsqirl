@@ -176,10 +176,11 @@ function searchJS(){
 						styleClass="message" infoClass="messageok" errorClass="messageerro"
 						warnClass="messagealert" showDetail="true" showSummary="false"
 						ajaxRendered="false" />
-					<a4j:commandButton styleClass="greenButton"
-						value="#{messages.button_ok}"
+					<a4j:commandButton styleClass="greenButton"	value="#{messages.label_install_new_package}"
 						onclick="#{rich:component('msnSuccess')}.hide(); searchJS();"
 						style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
+					<a4j:commandButton action="#{analyticsStoreLoginBean.setting}" styleClass="greenButton" value="#{messages.label_setting_modal}" 
+						onclick="#{rich:component('msnSuccess')}.hide();" style="bottom:14%;position:relative;" />
 				</div>
 			</rich:modalPanel>
 		
