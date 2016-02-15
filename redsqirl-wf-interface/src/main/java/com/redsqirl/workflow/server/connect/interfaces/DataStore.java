@@ -325,7 +325,7 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	Map<String, Map<String, String>> getChildrenProperties()
-			throws RemoteException;
+			throws RemoteException,Exception;
 
 	/**
 	 * Get the children properties of the given path.
@@ -334,7 +334,7 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	Map<String, Map<String, String>> getChildrenProperties(String path)
-			throws RemoteException;
+			throws RemoteException,Exception;
 	
 	/**
 	 * Change one property of the current element

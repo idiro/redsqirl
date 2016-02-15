@@ -79,8 +79,8 @@
 			oncomplete="jQuery('#canvasModalDiv').unblock();reLoadTabs();" />
 	    </a4j:region>
 	
-		<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
-			oncomplete="mountComboboxExtensionsFilesystem();" />
+		<a4j:jsFunction name="changePathModalOutput" reRender="errorTable, msnError" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
+			oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" />
 		
 		<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" />
@@ -88,22 +88,22 @@
 				maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 			
 			<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
-				reRender="dataOutputBrowser" oncomplete="mountComboboxExtensionsFilesystem();" >
+				reRender="dataOutputBrowser, errorTable, msnError" oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
 				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
 			</a4j:commandLink>
 		
 			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}" 
-				reRender="pathDataOutputBrowser,dataOutputBrowser" oncomplete="mountComboboxExtensionsFilesystem();" >
+				reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError" oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
 				<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton" />
 			</a4j:commandLink>
 			
-			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}" oncomplete="mountComboboxExtensionsFilesystem();" 
-				reRender="pathDataOutputBrowser,dataOutputBrowser" >
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}" oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" 
+				reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError" >
 				<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton" />
 			</a4j:commandLink>
 			
-			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" oncomplete="mountComboboxExtensionsFilesystem();" 
-				reRender="pathDataOutputBrowser,dataOutputBrowser">
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" 
+				reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError">
 				<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
 			</a4j:commandLink>
 		</div>
@@ -124,8 +124,8 @@
 									<h:outputText value="#{messages.path_history}" />
 								</f:facet>
 								<a4j:commandLink value="#{obj.alias}" title="#{obj.name}" action="#{canvasModalBean.outputTab.fileSystem.selectFileHistory}"
-									reRender="pathDataOutputBrowser,dataOutputBrowser, comboboxExtensionsFilesystem" 
-									oncomplete="mountComboboxExtensionsFilesystem();" >
+									reRender="pathDataOutputBrowser,dataOutputBrowser, comboboxExtensionsFilesystem, errorTable, msnError" 
+									oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
 									<f:param name="nameFile" value="#{obj.name}" />
 								</a4j:commandLink>
 							</rich:column>
@@ -173,8 +173,8 @@
 								    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
 								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
 								    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
-									reRender="pathDataOutputBrowser,dataOutputBrowser,comboboxExtensionsFilesystem" 
-									oncomplete="mountComboboxExtensionsFilesystem();" >
+									reRender="pathDataOutputBrowser,dataOutputBrowser,comboboxExtensionsFilesystem, errorTable, msnError" 
+									oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
 									<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
 								</a4j:commandLink>
 							</rich:column>

@@ -171,6 +171,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void updateTable() throws RemoteException{
 		String oldPath = getPath();
+		String error = null;
 		setPath(getDataStore().getPath());
 		
 		String regex = null;
@@ -181,46 +182,55 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		}
 		
 		//Fill rows
-		if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
-			 (getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
-			Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
-			if(mapSSH != null){
-				setAllProps(new LinkedList<Map<String,String>>());
-				getTableGrid().getRows().clear();
-				for (String path : mapSSH.keySet()) {
-					String[] aux = path.split("/");
-					String childName = aux[aux.length - 1];
-					Map<String, String> allProperties = new LinkedHashMap<String, String>();
-					allProperties.put("name", childName);
-					allProperties.putAll(mapSSH.get(path));
-					getTableGrid().add(allProperties);
-					getAllProps().add(allProperties);
+		try{
+			if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
+					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
+				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+				if(mapSSH != null){
+					setAllProps(new LinkedList<Map<String,String>>());
+					getTableGrid().getRows().clear();
+					for (String path : mapSSH.keySet()) {
+						String[] aux = path.split("/");
+						String childName = aux[aux.length - 1];
+						Map<String, String> allProperties = new LinkedHashMap<String, String>();
+						allProperties.put("name", childName);
+						allProperties.putAll(mapSSH.get(path));
+						getTableGrid().add(allProperties);
+						getAllProps().add(allProperties);
+					}
 				}
 			}
+
+			if(getAllProps() != null){
+				for(int i=0;i < getAllProps().size();++i){
+					String childName = getAllProps().get(i).get("name");
+					getTableGrid().getRows().get(i).setSelected(false);
+					getTableGrid().getRows().get(i).setDisableSelect(false);
+					try{
+						if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
+							getTableGrid().getRows().get(i).setDisableSelect(false);
+						}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
+							getTableGrid().getRows().get(i).setDisableSelect(false);
+						}else{
+							if(regex != null){
+								getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+							}else{
+								getTableGrid().getRows().get(i).setDisableSelect(true);
+							}
+						}
+					}catch(Exception e){
+						//No Directory Types
+					}
+				}
+			}
+		}catch(Exception e){
+			error = e.getMessage();
 		}
 		
-		if(getAllProps() != null){
-			for(int i=0;i < getAllProps().size();++i){
-				String childName = getAllProps().get(i).get("name");
-				getTableGrid().getRows().get(i).setSelected(false);
-				getTableGrid().getRows().get(i).setDisableSelect(false);
-				try{
-					if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
-						getTableGrid().getRows().get(i).setDisableSelect(false);
-					}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
-						getTableGrid().getRows().get(i).setDisableSelect(false);
-					}else{
-						if(regex != null){
-							getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
-						}else{
-							getTableGrid().getRows().get(i).setDisableSelect(true);
-						}
-					}
-				}catch(Exception e){
-					//No Directory Types
-				}
-			}
+		if(error != null){
+			setPath(oldPath);
 		}
+		displayErrorMessage(error, "UPDATETABLE");
 	}
 
 
@@ -378,7 +388,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void verifyIfIsFile(String name) throws RemoteException {
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
-		file = getDataStore().getChildrenProperties() == null;
+		try{
+			file = getDataStore().getChildrenProperties() == null;
+		}catch(Exception e){
+			file = true;
+		}
 		logger.info("verifying is "+name + " a file "+file);
 		getDataStore().goPrevious();
 	}
