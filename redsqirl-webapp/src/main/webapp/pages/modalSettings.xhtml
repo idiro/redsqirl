@@ -84,7 +84,7 @@
 			     				
 			     					<h:panelGrid columns="3" rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY'}">
 			     					
-			     						<a4j:commandLink action="#{settingsBean.setDefaultValue}" rendered="#{settingsBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+			     						<a4j:commandLink action="#{settingsBean.setDefaultValue}" rendered="#{settingsBean.s.properties[obj].existSysProperty and settingsBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{settingsBean.s.properties[obj].defaultValue}"/>
 									    	<f:param name="key" value="#{obj}" />
@@ -92,14 +92,14 @@
 									    </a4j:commandLink>
 	 			     					
 	 			     					<a4j:commandLink action="#{settingsBean.deletePropertyValue}" reRender="listSettingSettings" 
-	 			     						rendered="#{settingsBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+	 			     						rendered="#{settingsBean.s.properties[obj].existSysProperty and settingsBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
 									    </a4j:commandLink>
 									    
 									    <a4j:commandLink action="#{settingsBean.addPropertyValue}" reRender="listSettingSettings" 
-									    	rendered="#{!settingsBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+									    	rendered="#{!settingsBean.s.properties[obj].existSysProperty and settingsBean.canEdit}" >
 									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
