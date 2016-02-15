@@ -32,7 +32,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.EditorInteraction;
-import com.redsqirl.workflow.server.enumeration.FieldType;
 
 public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
