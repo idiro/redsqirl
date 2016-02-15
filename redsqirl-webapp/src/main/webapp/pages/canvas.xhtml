@@ -1492,7 +1492,7 @@
 				<a4j:jsFunction name="openWorkflowElementUrl"
 					action="#{canvasBean.calcWorkflowElementUrl}"
 					data="#{canvasBean.workflowElementUrl}"
-					oncomplete="console.log('openWorkflowElementUrl'); window.open(data,'_blank')" reRender="errorTable">
+					oncomplete="console.log('openWorkflowElementUrl'); var redirectWindow = window.open(data,'_blank');redirectWindow.location;" reRender="errorTable">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
