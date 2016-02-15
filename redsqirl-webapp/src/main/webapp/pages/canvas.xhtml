@@ -2213,7 +2213,7 @@
 									<rich:menuSeparator />
 									<rich:menuItem id="replaceMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_replace}"
-										onclick="showReplaceAllModal();">
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){showReplaceAllModal();}else{alert('#{messages.msg_err_no_action_selected}')}" >
 										<h:outputText value="Ctrl+H" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"

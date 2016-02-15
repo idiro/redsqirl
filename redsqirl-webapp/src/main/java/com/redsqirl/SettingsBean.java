@@ -127,10 +127,11 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 			setPathPosition(WorkflowPrefManager.core_settings);
 			mountPath(WorkflowPrefManager.core_settings);
 
+			canEditPackageSettings();
+			
 		} catch (RemoteException e) {
 			logger.error(e,e);
 		}
-
 	}
 
 	public void mountPath(String name) throws RemoteException{

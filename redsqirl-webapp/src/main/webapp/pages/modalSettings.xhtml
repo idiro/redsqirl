@@ -76,7 +76,7 @@
 			     					<h:inputText title="#{settingsBean.s.properties[obj].description}" value="#{settingsBean.s.properties[obj].sysValue}" 
 			     						style="background-color:#FF3333;border: 1px solid;" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty }" 
-			     						disabled="#{!packageMngBean.canEdit}" />
+			     						disabled="#{!settingsBean.canEdit}" />
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; !settingsBean.s.properties[obj].existSysProperty }" />
 			     					<br/>
