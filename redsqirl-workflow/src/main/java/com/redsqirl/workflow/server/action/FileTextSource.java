@@ -78,6 +78,11 @@ public class FileTextSource extends AbstractSource {
 		
 		MapRedTextFileType type = new MapRedTextFileType();
 		dataType.setValue(type.getBrowserName());
+
+		List<String> posValuesSubType = new LinkedList<String>();
+		posValuesSubType.add(type.getTypeName());
+		dataSubtype.setPossibleValues(posValuesSubType);
+		dataSubtype.setValue(type.getTypeName());
 		
 		checkSubType();
 	}
