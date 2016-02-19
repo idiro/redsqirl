@@ -161,6 +161,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * Update the element when closing.
 	 */
 	private boolean elementToUpdate = false;
+	protected boolean cleanEl = false;
 
 	/**
 	 * List of the current interaction displayed
@@ -243,6 +244,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		// Don't update the element if you it close immediately
 		elementToUpdate = false;
+		cleanEl = false;
 
 		// Get the image
 		pathImage = FacesContext.getCurrentInstance().getExternalContext()
@@ -434,9 +436,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String error = null;
 		try {
 			
-			if (elementToUpdate) {
+			if (elementToUpdate && !cleanEl) {
 				logger.info("Remove element data");
 				dfe.cleanThisAndAllElementAfter();
+				cleanEl = true;
 			}
 			try{
 				error = dfe.updateOut();

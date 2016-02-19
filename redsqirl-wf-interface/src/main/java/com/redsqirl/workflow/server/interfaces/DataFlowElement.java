@@ -43,7 +43,7 @@ public interface DataFlowElement extends Remote{
 	 * @return the action name
 	 * @throws RemoteException
 	 */
-	public String getName() throws RemoteException;
+	String getName() throws RemoteException;
 
 
 	/**
@@ -51,14 +51,14 @@ public interface DataFlowElement extends Remote{
 	 * @return The comment
 	 * @throws RemoteException
 	 */
-	public String getComment() throws RemoteException;
+	String getComment() throws RemoteException;
 	
 	/**
 	 * Set a action comment
 	 * @param comment
 	 * @throws RemoteException
 	 */
-	public void setComment(String comment) throws RemoteException;
+	void setComment(String comment) throws RemoteException;
 	
 	//Normal Methods
 	
@@ -67,35 +67,35 @@ public interface DataFlowElement extends Remote{
 	 * @return Oozie Action
 	 * @throws RemoteException
 	 */
-	public OozieAction getOozieAction() throws RemoteException;
+	OozieAction getOozieAction() throws RemoteException;
 
 	/**
 	 * Get the input names and properties accepted for each
 	 * @return Input names and properties for each action
 	 * @throws RemoteException
 	 */
-	public Map<String, DFELinkProperty> getInput() throws RemoteException;
+	Map<String, DFELinkProperty> getInput() throws RemoteException;
 
 	/**
 	 * Calculates for each output what will be the result (field names and types)
 	 * @return output for action
 	 * @throws RemoteException
 	 */
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException;
+	Map<String, DFEOutput> getDFEOutput() throws RemoteException;
 
 	/**
 	 * Update all the interactions of one page.
 	 * @param pageNb page number to update
 	 * @throws RemoteException
 	 */
-	public void update(int pageNb) throws RemoteException;
+	void update(int pageNb) throws RemoteException;
 	
 	/**
 	 * Static methods, get the html help file
 	 * @return help file
 	 * @throws RemoteException
 	 */
-	public String getHelp() throws RemoteException;
+	String getHelp() throws RemoteException;
 	
 	
 	/**
@@ -112,14 +112,14 @@ public interface DataFlowElement extends Remote{
 	 * @param copy  null only set the path, true to copy, false to move
 	 * @param force true will set all the Output to be TEMPORARY
 	 */
-	public String regeneratePaths(Boolean copy,boolean force) throws RemoteException;
+	String regeneratePaths(Boolean copy,boolean force) throws RemoteException;
 	
 	/**
 	 * Static methods, get the image of the icon
 	 * @return icon file
 	 * @throws RemoteException
 	 */
-	public String getImage() throws RemoteException;
+	String getImage() throws RemoteException;
 	
 	/**
 	 * Check if the inputs are correct or not for this action.
@@ -127,7 +127,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String checkIn() throws RemoteException;
+	String checkIn() throws RemoteException;
 	
 	/**
 	 * Check if the entries (input AND output) are correct or not for this action.
@@ -135,7 +135,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String checkEntry() throws RemoteException;
+	String checkEntry() throws RemoteException;
 
 
 	/**
@@ -143,14 +143,14 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String checkInit() throws RemoteException;
+	String checkInit() throws RemoteException;
 
 	/**
 	 * Check if the data input exist or not.
 	 * @return DataFlowElement from which the output does not exist
 	 * @throws RemoteException
 	 */
-	public List<DataFlowElement> getInputElementToBeCalculated() throws RemoteException;
+	List<DataFlowElement> getInputElementToBeCalculated() throws RemoteException;
 	
 	/**
 	 * Reads values for an action
@@ -158,7 +158,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String readValuesXml(Node n) throws RemoteException;
+	String readValuesXml(Node n) throws RemoteException;
 
 	/**
 	 * Writes values for this action.
@@ -167,14 +167,14 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String writeValuesXml(Document doc, Node parent) throws RemoteException;
+	String writeValuesXml(Document doc, Node parent) throws RemoteException;
 	
 	/**
 	 * Get the data inputed in the node
 	 * @return a map with the data sorted by data name
 	 * @throws RemoteException
 	 */
-	public Map<String, List<DFEOutput>> getDFEInput() throws RemoteException;
+	Map<String, List<DFEOutput>> getDFEInput() throws RemoteException;
 
 	/**
 	 * Get the DFEOutput needed per component id
@@ -182,28 +182,28 @@ public interface DataFlowElement extends Remote{
 	 * @return a map with the data sorted by component id
 	 * @throws RemoteException
 	 */
-	public Map<String, List<DFEOutput>> getDependencies() throws RemoteException;
+	Map<String, List<DFEOutput>> getDependencies() throws RemoteException;
 	
 	/**
 	 * Get a suggested alias to use in the interactions for each output order by input.
 	 * @return Map of suggested aliases
 	 * @throws RemoteException
 	 */
-	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException;
+	Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException;
 	
 	/**
 	 * Get the aliases per input component ids
 	 * @return The aliases per input component ids
 	 * @throws RemoteException
 	 */
-	public Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
+	Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
 			throws RemoteException;
 	/**
 	 * Get a suggested alias to use in the interactions for each output.
 	 * @return Map of aliases 
 	 * @throws RemoteException
 	 */
-	public Map<String,DFEOutput> getAliases()  throws RemoteException;
+	Map<String,DFEOutput> getAliases()  throws RemoteException;
 	
 	/**
 	 * Get the interaction corresponding to a name
@@ -211,14 +211,14 @@ public interface DataFlowElement extends Remote{
 	 * @return Interaction associated with name
 	 * @throws RemoteException
 	 */
-	public DFEInteraction getInteraction(String name) throws RemoteException;
+	DFEInteraction getInteraction(String name) throws RemoteException;
 
 	/**
 	 * Get all the interactions of the action
 	 * @return List of Interactions
 	 * @throws RemoteException
 	 */
-	public List<DFEInteraction> getInteractions() throws RemoteException;
+	List<DFEInteraction> getInteractions() throws RemoteException;
 
 	/**
 	 * Add an input component
@@ -227,7 +227,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String addInputComponent(String inputName, DataFlowElement wa) throws RemoteException;
+	String addInputComponent(String inputName, DataFlowElement wa) throws RemoteException;
 
 	/**
 	 * Remove an input component
@@ -236,7 +236,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String removeInputComponent(String inputName, DataFlowElement wa) throws RemoteException;
+	String removeInputComponent(String inputName, DataFlowElement wa) throws RemoteException;
 
 	/**
 	 * Add an output component
@@ -245,7 +245,7 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String addOutputComponent(String outputName, DataFlowElement wa) throws RemoteException;
+	String addOutputComponent(String outputName, DataFlowElement wa) throws RemoteException;
 
 	/**
 	 * Remove an output component
@@ -254,20 +254,20 @@ public interface DataFlowElement extends Remote{
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	public String removeOutputComponent(String outputName, DataFlowElement wa) throws RemoteException;
+	String removeOutputComponent(String outputName, DataFlowElement wa) throws RemoteException;
 
 	/**
 	 * For each output of this object gives the input ids and the input name related to this object.
 	 * @return The input name per output
 	 * @throws RemoteException
 	 */
-	public Map<String,Map<String,String>> getInputNamePerOutput() throws RemoteException;
+	Map<String,Map<String,String>> getInputNamePerOutput() throws RemoteException;
 	/**
 	 * Get a List of pages
 	 * @return the pageList
 	 * @throws RemoteException
 	 */
-	public List<DFEPage> getPageList() throws RemoteException;
+	List<DFEPage> getPageList() throws RemoteException;
 	
 
 	/**
@@ -275,28 +275,28 @@ public interface DataFlowElement extends Remote{
 	 * @return the componentId
 	 * @throws RemoteException
 	 */
-	public String getComponentId() throws RemoteException;
+	String getComponentId() throws RemoteException;
 
 	/**
 	 * Set the component ID of an element
 	 * @param componentId the componentId to set
 	 * @throws RemoteException
 	 */
-	public void setComponentId(String componentId) throws RemoteException;
+	void setComponentId(String componentId) throws RemoteException;
 
 	/**
 	 * Get the X position
 	 * @return the X position
 	 * @throws RemoteException
 	 */
-	public int getX() throws RemoteException;
+	int getX() throws RemoteException;
 
 	/**
 	 * Get the Y position
 	 * @return the Y position
 	 * @throws RemoteException
 	 */
-	public int getY() throws RemoteException;
+	int getY() throws RemoteException;
 
 	/**
 	 * Set position of Element
@@ -304,30 +304,30 @@ public interface DataFlowElement extends Remote{
 	 * @param y new position of Y
 	 * @throws RemoteException
 	 */
-	public void setPosition(int x, int y) throws RemoteException;
+	void setPosition(int x, int y) throws RemoteException;
 
 	/**
 	 * @return the inputComponent
 	 */
-	public Map<String, List<DataFlowElement>>  getInputComponent() throws RemoteException;
+	Map<String, List<DataFlowElement>>  getInputComponent() throws RemoteException;
 
 	/**
 	 * @return the outputComponent
 	 */
-	public Map<String, List<DataFlowElement>> getOutputComponent() throws RemoteException;
+	Map<String, List<DataFlowElement>> getOutputComponent() throws RemoteException;
 
 	/**
 	 * Get all input components
 	 * @return List of Input components
 	 * @throws RemoteException
 	 */
-	public List<DataFlowElement> getAllInputComponent() throws RemoteException;
+	List<DataFlowElement> getAllInputComponent() throws RemoteException;
 	/**
 	 *  Get all output components
 	 * @return get a List of all output components
 	 * @throws RemoteException
 	 */
-	public List<DataFlowElement> getAllOutputComponent() throws RemoteException; 
+	List<DataFlowElement> getAllOutputComponent() throws RemoteException; 
 
 
 	/**
@@ -347,20 +347,24 @@ public interface DataFlowElement extends Remote{
 	 * @return Error message
 	 * @throws RemoteException
 	 */
-	public String updateOut() throws RemoteException;
+	String updateOut() throws RemoteException;
+	
+	String getRunningStatus() throws RemoteException;
+	
+	void setRunningStatus(String runningStatus) throws RemoteException;
 	
 	/**
 	 * Clean all the outputs of the element
 	 * @return error message 
 	 * @throws RemoteException
 	 */
-	public String cleanDataOut() throws RemoteException;
+	String cleanDataOut() throws RemoteException;
 
 	/**
 	 * Clean all output of this element and every element after it.
 	 * @throws RemoteException
 	 */
-	public void cleanThisAndAllElementAfter() throws RemoteException;
+	void cleanThisAndAllElementAfter() throws RemoteException;
 
 
 }

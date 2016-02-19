@@ -147,4 +147,11 @@ public interface DataFlowInterface extends Remote{
 
 	SubDataFlow getNewSubWorkflow() throws RemoteException;
 	
+	void removeAllTmpInType(String type) throws RemoteException;
+	
+	void removeAllTmpInBrowser(String browserName) throws RemoteException;
+	
+	void removeAllTmp() throws RemoteException;
+	
+	Map<String,Set<String>> getTypesPerDataStore() throws RemoteException;
 }

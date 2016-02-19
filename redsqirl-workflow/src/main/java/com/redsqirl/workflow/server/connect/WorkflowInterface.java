@@ -25,28 +25,25 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
@@ -57,6 +54,8 @@ import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -101,6 +100,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Map of datastores
 	 */
 	private Map<String,DataStore> datastores;
+	
+	private Map<String,Set<String>> typesPerDataStore;
 
 	protected Map<String, String> mapCanvasToOpen;
 	
@@ -111,19 +112,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	private WorkflowInterface() throws RemoteException{
 		super();
 		datastores = WorkflowInterface.getAllClassDataStore();
+		typesPerDataStore = WorkflowInterface.getAllTypesPerDataStore();
 	}
-
-	/**
-	 * Get a List of output classes for data to be held in
-	 * 
-	 * @return List output classes
-	 */
-	private static Map<String,DataStore> getAllClassDataStore() {
-
-		//Get the browser name used in DataOutput
-		logger.debug("Get the output class...");
-		Set<String> browsersFromDataOut = new HashSet<String>();
-		Set<String> browserClasses = new HashSet<String>();
+	
+	private static List<String> getDataOutputClassName(){
 		File outputClassFile = new File(WorkflowPrefManager.getPathOutputClasses());
 		List<String> dataoutputClassName = new LinkedList<String>();
 		if(outputClassFile.exists()){
@@ -159,6 +151,43 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			}
 
 		}
+		return dataoutputClassName;
+	}
+
+	private static Map<String,Set<String>> getAllTypesPerDataStore(){
+		 Map<String,Set<String>> ans = new LinkedHashMap<String,Set<String>>();
+		 List<String> dataoutputClassName = getDataOutputClassName();
+
+		 Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
+		 while(dataoutputClassNameIt.hasNext()){
+			 String className = dataoutputClassNameIt.next();
+			 try {
+				 DataOutput outNew = (DataOutput) Class.forName(className).newInstance();
+				 String browserName = outNew.getBrowserName();
+				 String typeName = outNew.getTypeName(); 
+				 if(!ans.containsKey(browserName)){
+					 ans.put(browserName, new LinkedHashSet<String>());
+				 }
+				 ans.get(browserName).add(typeName);
+			 } catch (Exception e) {
+				 logger.error(e,e);
+			 }
+		 }
+		 return ans;
+	}
+	
+	/**
+	 * Get a List of output classes for data to be held in
+	 * 
+	 * @return List output classes
+	 */
+	private static Map<String,DataStore> getAllClassDataStore() {
+
+		//Get the browser name used in DataOutput
+		logger.debug("Get the output class...");
+		Set<String> browsersFromDataOut = new HashSet<String>();
+		Set<String> browserClasses = new HashSet<String>();
+		List<String> dataoutputClassName = getDataOutputClassName();
 
 		Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
 		while(dataoutputClassNameIt.hasNext()){
@@ -645,6 +674,60 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			wf.put(wfName,(Workflow)readCloneFile(id));
 		}
 
+	}
+	
+	public void removeAllTmpInType(String type) throws RemoteException{
+		removeAllTmp(null,type);
+	}
+	
+	public void removeAllTmpInBrowser(String browserName) throws RemoteException{
+		removeAllTmp(browserName,null);
+	}
+	
+	public void removeAllTmp() throws RemoteException{
+		removeAllTmp(null,null);
+	}
+	
+	protected void removeAllTmp(String browserName, String typeName) throws RemoteException{
+		List<String> dataoutputClassName = getDataOutputClassName();
+		Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
+		while(dataoutputClassNameIt.hasNext()){
+			String className = dataoutputClassNameIt.next();
+			try {
+				DataOutput outNew = (DataOutput) Class.forName(className).newInstance();
+				logger.debug(outNew.getTypeName());
+				if( (browserName == null || browserName.equals(outNew.getBrowserName())) &&
+					(typeName == null || typeName.equals(outNew.getTypeName())) ){
+					outNew.removeAllDataUnderGeneratePath();
+				}
+			} catch (Exception e) {
+				logger.error(e,e);
+			}
+		}
+		removeCacheFromType(browserName,typeName);
+	}
+	
+	protected void removeCacheFromType(String browserName,String typeName) throws RemoteException{
+		Iterator<DataFlow> it = wf.values().iterator();
+		while(it.hasNext()){
+			DataFlow curWf = it.next();
+			Iterator<DataFlowElement> itDfe = curWf.getElement().iterator();
+			while(itDfe.hasNext()){
+				Iterator<DFEOutput> itOut = itDfe.next().getDFEOutput().values().iterator();
+				while(itOut.hasNext()){
+					DFEOutput curOut = itOut.next();
+					if(!SavingState.RECORDED.equals(curOut.getSavingState()) &&
+							(browserName == null || browserName.equals(curOut.getBrowserName())) &&
+							(typeName == null || typeName.equals(curOut.getTypeName())) ){
+						curOut.clearCache();
+					}
+				}
+			}
+		}
+	}
+
+	public Map<String,Set<String>> getTypesPerDataStore() {
+		return this.typesPerDataStore;
 	}
 
 }

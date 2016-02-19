@@ -577,8 +577,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 						newL.add(compId);
 						newL.add(dataName);
 						if(!SavingState.RECORDED.equals(cur.getSavingState())){
-							cur.generatePath(userName,
-									compId,
+							cur.generatePath(compId,
 									dataName);
 						}
 						tmpOutput.put(newL, cur);

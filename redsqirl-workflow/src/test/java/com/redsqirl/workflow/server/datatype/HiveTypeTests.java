@@ -94,13 +94,13 @@ public class HiveTypeTests {
 			logger.info("set path...");
 			ht.setPath(new_path1);
 
-			assertTrue("Exists " + new_path1, ht.isPathExists());
+			assertTrue("Exists " + new_path1, ht.isPathExist());
 
 			assertTrue("1) Valid " + new_path1, ht.isPathValid() == null);
 
 			assertTrue("Remove " + new_path1, ht.remove() == null);
 
-			assertFalse("Exists " + new_path1, ht.isPathExists());
+			assertFalse("Exists " + new_path1, ht.isPathExist());
 
 			String partitions = hInt.getTypesPartitons(path1_part);
 			logger.info("Partitions : " + partitions);
@@ -138,13 +138,13 @@ public class HiveTypeTests {
 			logger.info("set path...");
 			ht.setPath(new_path1);
 
-			assertTrue("Exists " + new_path1, ht.isPathExists());
+			assertTrue("Exists " + new_path1, ht.isPathExist());
 
 			assertTrue("1) Valid " + new_path1, ht.isPathValid() != null);
 
 			assertTrue("Remove " + new_path1, ht.remove() == null);
 
-			assertFalse("Not Exists Anymore" + new_path1, ht.isPathExists());
+			assertFalse("Not Exists Anymore" + new_path1, ht.isPathExist());
 
 			assertTrue("2) Valid " + new_path1, ht.isPathValid() != null);
 

@@ -61,7 +61,6 @@ public class SuperActionTests {
 		assertTrue("Fail to link source with superaction: "+error, error == null);
 
 		sa.getDFEOutput().get("convertion").generatePath(
-				System.getProperty("user.name"), 
 				sa.getComponentId(), 
 				"convertion");
 		

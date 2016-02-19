@@ -87,6 +87,8 @@ public interface DataFlow extends Remote, Cloneable{
 	 */
 	public boolean isrunning() throws RemoteException;
 
+	public String getRunningStatus(String componentId) throws RemoteException;
+	
 	/**
 	 * Remove temporary and buffered data for the entire project.
 	 * 

@@ -662,7 +662,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	    		return "";
 	    	}
 	    	DFEOutput dfeOut = dfe.getDFEOutput().get(nameOutput);
-	    	if(grid == null || getRows() == null || getRows().isEmpty() || dfeOut == null || !dfeOut.isPathExists()){
+	    	if(grid == null || getRows() == null || getRows().isEmpty() || dfeOut == null || !dfeOut.isPathExist()){
 	    		return "";
 	    	}
 

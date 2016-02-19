@@ -1368,37 +1368,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "REFRESHSUBWORKFLOW");
 	}
 
-	public void regeneratePathsProject() throws RemoteException {
-		logger.info("regenerate paths project");
-		regeneratePathsProject(null);
-	}
-
-	public void regeneratePathsProjectCopy() throws RemoteException {
-		logger.info("regenerate paths project copy");
-		regeneratePathsProject(true);
-	}
-
-	public void regeneratePathsProjectMove() throws RemoteException {
-		logger.info("regenerate paths project move");
-		regeneratePathsProject(false);
-	}
-
-	/**
-	 * 
-	 * Methods to regenerate paths of the current workflow
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 * @throws RemoteException
-	 */
-	public void regeneratePathsProject(Boolean copy) throws RemoteException {
-
-		logger.info("regeneratePathsProject");
-
-		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
-		String error = wf.regeneratePaths(copy);
-		displayErrorMessage(error, "REGENERATEPATHSPROJECT");
-	}
 
 	/**
 	 * initial
@@ -1703,12 +1672,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			boolean pathExists = false;
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-
+				boolean curPathExist = e.getValue().isPathExist();
 				String stateCur = e.getValue().getSavingState().toString();
 
 				logger.info("path: " + e.getValue().getPath());
 
-				pathExists |= e.getValue().isPathExists();
+				pathExists |= curPathExist;
 				if (stateCur != null) {
 					if (outputType == null) {
 						outputType = stateCur;
@@ -1738,7 +1707,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						+ "<br/>");
 
 				if("W".equals(workflowType)){
-					if (e.getValue().isPathExists()) {
+					if (curPathExist) {
 						tooltip.append("Output Path: <span style='color:#008B8B'>"
 								+ e.getValue().getPath() + "</span><br/>");
 					} else {
@@ -1812,7 +1781,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			if(checkRuningstatus){
 				try {
-					runningStatus = getOozie().getElementStatus(getDf(), dfe);
+					runningStatus =getDf().getRunningStatus(dfe.getComponentId());
 				} catch (Exception e1) {
 					logger.info("Error getting the status: " + e1.getMessage(), e1);
 				}
@@ -1891,13 +1860,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 				error = getDf().changeElementId(elementOldId, elementId);
 				if(error == null){
 					getIdMap().get(getNameWorkflow()).put(groupId,elementId);
-
-					if(getDf().getElement(elementId).getName().startsWith(">")){
+					try{
 						getDf().getElement(elementId).regeneratePaths(false, false);
 						FacesContext context = FacesContext.getCurrentInstance();
 						CanvasModal canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
 						canvasModalBean.getOutputTab().mountOutputForm(true);
-					}
+					}catch(Exception e){}
 
 				}
 			}
@@ -2005,7 +1973,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					logger.warn(msg);
 					MessageUseful.addErrorMessage(msg);
 				} else {
-					String status = getOozie().getElementStatus(getDf(), cur);
+					String status = getDf().getRunningStatus(e.getValue());
 
 					logger.info(e.getKey() + " - " + status);
 
@@ -2017,7 +1985,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 							logger.info("path: " + e2.getValue().getPath());
 
-							pathExists |= e2.getValue().isPathExists();
+							pathExists |= e2.getValue().isPathExist();
 
 						}
 						if (!cur.getDFEOutput().isEmpty()) {
@@ -2781,8 +2749,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			modelMan.uninstallSA(new ModelManager().getUserModel(userName, nameModel), nameSA);
 		}
 	}
+	
+	public void cleanTmp() throws RemoteException{
+		logger.debug("clean tmp");
 
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String browserName = params.get("browserName");
+		getworkFlowInterface().removeAllTmpInBrowser(browserName.equals("undefined") || browserName.equalsIgnoreCase("all")?null : browserName );
+	}
 
+	public List<String> getBrowsers() throws RemoteException{
+		return new ArrayList<String>(getworkFlowInterface().getBrowsersName());
+	}
 
 	public DataFlow getDf() {
 		return df;

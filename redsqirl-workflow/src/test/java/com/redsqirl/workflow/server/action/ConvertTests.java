@@ -69,7 +69,6 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 		logger.debug("Features "+conv.getDFEOutput().get(Convert.key_output).getFields());
 		
 		conv.getDFEOutput().get(Convert.key_output).generatePath(
-				System.getProperty("user.name"), 
 				conv.getComponentId(), 
 				Convert.key_output);
 		

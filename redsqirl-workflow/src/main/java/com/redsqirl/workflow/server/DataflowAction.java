@@ -105,6 +105,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
 
+	private String runningStatus;
+
 	//private static Logger logger = Logger.getLogger(.class);
 
 	/**
@@ -469,8 +471,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				waLogger.debug("4 " + curOutStr);
 				
 				getDFEOutput().get(curOutStr).regeneratePath(
-						copyCur, 
-						System.getProperty("user.name"), 
+						copyCur,
 						getComponentId(), 
 						curOutStr);
 			}
@@ -504,6 +505,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			waLogger.error("The page number " + pageNb + " does not exist");
 		}
 		Log.flushAllLogs();
+	}
+	
+	@Override
+	public String getRunningStatus(){
+		return runningStatus;
+	}
+	
+	@Override
+	public void setRunningStatus(String runningStatus){
+		this.runningStatus = runningStatus;
 	}
 
 	/**

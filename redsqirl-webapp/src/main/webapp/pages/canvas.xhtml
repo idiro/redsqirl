@@ -5,7 +5,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
@@ -123,9 +123,6 @@
 				}
 			  
 			  nameTabs[0] = "canvas-1";
-
-	    	  configureTabsRemote();
-	    	  configureFooter();
 
 	    	  jQuery("[id$='openCanvasScreenHdfs']").click();
 	    	  jQuery("[id$='openCanvasScreenHive']").click();
@@ -1108,7 +1105,8 @@
     		   	notifyUser();
 	    	   	
 			}
-	    	configureFooter();
+	    	
+			reRenderFooter();
 	    	//]]>
 		}
 	   	
@@ -1507,21 +1505,6 @@
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
 					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);"
-					reRender="errorTable" />
-				
-				<a4j:jsFunction name="regeneratePathsProject"
-					action="#{canvasBean.regeneratePathsProject}"
-					oncomplete="console.log('regeneratePathsProject');updateAllArcsStatus();"
-					reRender="errorTable" />
-				
-				<a4j:jsFunction name="regeneratePathsProjectMove"
-					action="#{canvasBean.regeneratePathsProjectMove}"
-					oncomplete="console.log('regeneratePathsProjectMove');updateAllArcsStatus();"
-					reRender="errorTable" />
-				
-				<a4j:jsFunction name="regeneratePathsProjectCopy"
-					action="#{canvasBean.regeneratePathsProjectCopy}"
-					oncomplete="console.log('regeneratePathsProjectCopy');updateAllArcsStatus();"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -2222,6 +2205,12 @@
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
+									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_clean_project}"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ cleanCanvasProjectJS(sels); }else{alert('#{messages.msg_err_no_action_selected}')}"
+										disabled="#{canvasBean.workflowType == 'S'}">
+										<h:outputText value="Ctrl+L" class="menuItemHotKey" />
+									</rich:menuItem>
 									<rich:menuGroup value="#{messages.label_output_state}" >
 										<rich:menuItem id="setBufferMenuItem" submitMode="ajax"
 											value="#{messages.label_output_buffer}"
@@ -2280,31 +2269,6 @@
 										reRender="wfEditor">
 									</rich:menuItem>
 
-									<rich:menuSeparator />
-
-									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
-										value="#{messages.label_menu_clean_project}"
-										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ cleanCanvasProjectJS(sels); }else{alert('#{messages.msg_err_no_action_selected}')}"
-										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+L" class="menuItemHotKey" />
-									</rich:menuItem>
-
-									<rich:menuGroup value="#{messages.label_menu_generate}"
-										disabled="#{canvasBean.workflowType == 'S'}">
-										<rich:menuItem submitMode="ajax"
-											value="#{messages.label_menu_regenerate_project}"
-											onclick="regeneratePathsProject()" />
-
-										<rich:menuItem submitMode="ajax"
-											value="#{messages.label_menu_regeneratemove_project}"
-											onclick="regeneratePathsProjectMove()" />
-
-										<rich:menuItem submitMode="ajax"
-											value="#{messages.label_menu_regeneratecopy_project}"
-											onclick="regeneratePathsProjectCopy()" />
-
-									</rich:menuGroup>
-
 								</rich:dropDownMenu>
 
 								<rich:dropDownMenu itemClass="canvasMenu">
@@ -2344,6 +2308,27 @@
 										<f:param name="subWorkflowName"
 											value="#{canvasBean.nameWorkflow}" />
 									</rich:menuItem>
+									
+									<rich:menuSeparator />
+									
+									<rich:menuGroup value="#{messages.label_remove_from_stores}" >
+										<rich:menuItem id="remove_from_all_stores" submitMode="ajax"
+											value="#{messages.label_all_store}"
+											action="#{canvasBean.cleanTmp}"
+											oncomplete="updateAllArcsStatus();">
+											<f:param name="browserName"
+											value="all" />
+										</rich:menuItem>
+										<rich:menuSeparator />
+										<c:forEach items="#{canvasBean.browsers}" var="curBrowserName" >
+										<rich:menuItem submitMode="ajax"
+											value="#{curBrowserName}"
+											action="#{canvasBean.cleanTmp}"
+											oncomplete="updateAllArcsStatus();">
+											<f:param name="browserName" value="#{curBrowserName}" />
+										</rich:menuItem>
+										</c:forEach>
+									</rich:menuGroup>
 
 									<rich:menuSeparator />
 

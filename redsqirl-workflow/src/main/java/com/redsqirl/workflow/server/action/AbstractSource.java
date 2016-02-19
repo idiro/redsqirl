@@ -443,7 +443,7 @@ public abstract class AbstractSource extends DataflowAction {
 					// Check path
 					if (error == null) {
 						try {
-							if (!out.isPathExists()) {
+							if (!out.isPathExist()) {
 								error = LanguageManagerWF
 										.getText("source.pathnotexist");
 							} else{

@@ -450,8 +450,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					}
 				}
 			}catch(OozieClientException e){
-				logger.error(e,e);
-				throw new Exception(e.getMessage());
+				logger.warn(e,e);
+				status = "UNKNOWN";
 			}
 		}
 		return status;

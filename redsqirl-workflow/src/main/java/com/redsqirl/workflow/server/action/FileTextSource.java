@@ -133,9 +133,8 @@ public class FileTextSource extends AbstractSource {
 		
 		if (out != null && dataSubtype.getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
 			if(output.get(no_header_out_name) == null){
-				String user = System.getProperty("user.name");
 				output.put(no_header_out_name, new MapRedTextFileType());
-				output.get(no_header_out_name).generatePath(user, this.componentId, no_header_out_name);
+				output.get(no_header_out_name).generatePath(this.componentId, no_header_out_name);
 			}
 			output.get(no_header_out_name).setFields(out.getFields());
 			output.get(no_header_out_name).addProperty(MapRedTextFileType.key_delimiter, 

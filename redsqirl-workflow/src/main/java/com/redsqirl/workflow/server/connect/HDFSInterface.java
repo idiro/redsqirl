@@ -844,7 +844,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				FileStatus[] fsA = fs.listStatus(pathHdfs);
 
 				for (int i = 0; i < fsA.length; ++i) {
-					String path = fsA[i].getPath().toString();
+					String path = pathStr +"/"+fsA[i].getPath().getName();
 					ans.put(path, getProperties(path,fsA[i]));
 				}
 			} else {

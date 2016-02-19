@@ -229,7 +229,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	public String checkSaveTabs() {
 
 		String error = null;
-		String regex = "[a-zA-Z]([a-zA-Z0-9\\.\\-_]*[a-zA-Z0-9])*";
+		String regex = "[a-zA-Z]([a-zA-Z0-9\\.\\-_ ]*[a-zA-Z0-9])*";
 
 		//The field Name can not be blank
 		for (SelectableRow selectableRow : tableGrid.getRows()) {

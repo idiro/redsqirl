@@ -170,8 +170,8 @@ public abstract class MapRedHdfs extends DataOutput{
 
 
 	@Override
-	public boolean isPathExists() throws RemoteException {
-		logger.debug("isPathExists ");
+	public boolean exists() throws RemoteException {
+		logger.debug("exists ");
 		
 		boolean ok = false;
 		if (getPath() != null) {
@@ -185,7 +185,7 @@ public abstract class MapRedHdfs extends DataOutput{
 			}
 		}
 		
-		logger.debug("isPathExists end ");
+		logger.debug("exists end ");
 		
 		return ok;
 	}
@@ -198,7 +198,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	 */
 	@Override
 	public void moveTo(String newPath) throws RemoteException {
-		if (isPathExists()) {
+		if (isPathExist()) {
 			hdfsInt.move(getPath(), newPath);
 		}
 		setPath(newPath);
@@ -213,7 +213,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	 */
 	@Override
 	public void copyTo(String newPath) throws RemoteException {
-		if (isPathExists()) {
+		if (isPathExist()) {
 			hdfsInt.copy(getPath(), newPath);
 		}
 		setPath(newPath);
@@ -226,7 +226,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	 * @throws RemoteException
 	 */
 	@Override
-	public String remove() throws RemoteException {
+	public String rm() throws RemoteException {
 		return hdfsInt.delete(getPath());
 	}
 

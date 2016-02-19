@@ -359,15 +359,17 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 		while(packIt.hasNext()){
 			String packName = packIt.next();
 			RedSqirlPackage pck = pm.getAvailablePackage(user, packName);
+			String packFooterName = WordUtils.capitalizeFully(packName.replace("redsqirl-", "")
+					.replace("_", " ").replace("-", " "));
 			List<String> packActions = pck.getAction();
-			if(!footer.containsKey(packName)){
-				footer.put(packName,new ArrayList<String>(packActions.size()));
+			if(!footer.containsKey(packFooterName)){
+				footer.put(packFooterName,new ArrayList<String>(packActions.size()));
 			}
 			Iterator<String> actIt = packActions.iterator();
 			while(actIt.hasNext()){
 				String cur = actIt.next();
-				if(!footer.get(packName).contains(cur)){
-					footer.get(packName).add(cur);
+				if(!footer.get(packFooterName).contains(cur)){
+					footer.get(packFooterName).add(cur);
 				}
 			}
 		}

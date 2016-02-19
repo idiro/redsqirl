@@ -129,7 +129,7 @@ public class HiveTypePartition extends HiveType{
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
 		}
 		if(error == null){
-			if (isPathExists()) {
+			if (isPathExist()) {
 				return hInt.isPathValid(getPath(), fields,
 						true);
 			} else {
