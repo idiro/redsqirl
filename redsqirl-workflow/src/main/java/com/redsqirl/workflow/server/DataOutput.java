@@ -342,7 +342,7 @@ DFEOutput {
 			cachValidTimeStamp = 0;
 		}
 		
-		if( (SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachExistTimeStamp)) || cachExist == null){
+		if( (SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachExistTimeStamp)) || cachExistTimeStamp == 0){
 			cachExist = exists();
 			cachExistTimeStamp = System.currentTimeMillis();
 			oldPath = getPath();
