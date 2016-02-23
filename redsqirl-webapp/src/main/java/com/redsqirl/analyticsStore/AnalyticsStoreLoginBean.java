@@ -32,15 +32,12 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -49,7 +46,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +59,8 @@ import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
-import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingInt;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -869,7 +866,7 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 		s = mountPackageSettings(path);
 
 		listSubMenu = new ArrayList<SettingsControl>();
-		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
+		for (Entry<String, SettingMenuInt> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
 
 			String n = null;
@@ -885,9 +882,9 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 		listSetting = new ArrayList<String>();
 
-		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+		for (Entry<String, SettingInt> settings : s.getProperties().entrySet()) {
 			listSetting.add(settings.getKey());
-			Setting setting = settings.getValue();
+			SettingInt setting = settings.getValue();
 			if(!setting.getScope().equals(Setting.Scope.USER)){
 
 				if(setting.getSysPropetyValue() != null){
@@ -1061,54 +1058,6 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 	public void setMac(String mac) {
 		this.mac = mac;
-	}
-
-	public Map<String, SettingMenu> getCurMap() {
-		return curMap;
-	}
-
-	public void setCurMap(Map<String, SettingMenu> curMap) {
-		this.curMap = curMap;
-	}
-
-	public List<String> getPath() {
-		return path;
-	}
-
-	public void setPath(List<String> path) {
-		this.path = path;
-	}
-
-	public SettingMenu getS() {
-		return s;
-	}
-
-	public void setS(SettingMenu s) {
-		this.s = s;
-	}
-
-	public List<SettingsControl> getListSubMenu() {
-		return listSubMenu;
-	}
-
-	public void setListSubMenu(List<SettingsControl> listSubMenu) {
-		this.listSubMenu = listSubMenu;
-	}
-
-	public List<String> getListSetting() {
-		return listSetting;
-	}
-
-	public void setListSetting(List<String> listSetting) {
-		this.listSetting = listSetting;
-	}
-
-	public String getPathPosition() {
-		return pathPosition;
-	}
-
-	public void setPathPosition(String pathPosition) {
-		this.pathPosition = pathPosition;
 	}
 
 }

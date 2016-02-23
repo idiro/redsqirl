@@ -20,7 +20,8 @@
 package com.redsqirl.workflow.settings;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,22 +33,35 @@ import org.json.JSONObject;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
-public class SettingMenu implements Serializable{
+public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 
-	protected Map<String,Setting> properties = new LinkedHashMap<String,Setting>();
-	protected Map<String,SettingMenu> menu = new LinkedHashMap<String,SettingMenu>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6920670457769740742L;
+	
+	protected Map<String,SettingInt> properties = new LinkedHashMap<String,SettingInt>();
+	protected Map<String,SettingMenuInt> menu = new LinkedHashMap<String,SettingMenuInt>();
 	private static Logger logger = Logger.getLogger(SettingMenu.class);
 	protected Setting.Scope scopeMenu;
 	
-	public SettingMenu(){
+	public SettingMenu() throws RemoteException{
+		super();
+	}
+
+	public SettingMenu(Map<String, SettingMenuInt> menu) throws RemoteException{
+		super();
+		this.menu = menu;
 	}
 	
-	public SettingMenu(String path,JSONObject json){
+	public SettingMenu(String path,JSONObject json) throws RemoteException{
+		super();
 		read(path,json);
 	}
 	
 	protected SettingMenu(JSONObject json, String path, 
-			Properties sysProperties, Properties userProperties, Properties langProperties){
+			Properties sysProperties, Properties userProperties, Properties langProperties) throws RemoteException{
+		super();
 		read(json, path,sysProperties, userProperties, langProperties);
 	}
 	
@@ -105,20 +119,20 @@ public class SettingMenu implements Serializable{
 			logger.error("error "+ e,e);
 		}
 	}
-	public void deleteAllProperties(){
+	public void deleteAllProperties() throws RemoteException{
 		deleteProperties(true,true);
 	}
 	
-	public void deleteAllUserProperties(){
+	public void deleteAllUserProperties() throws RemoteException{
 		deleteProperties(true,false);
 	}
 	
-	public void deleteAllSysProperties(){
+	public void deleteAllSysProperties() throws RemoteException{
 		deleteProperties(false,true);
 	}
 	
-	public void deleteProperties(boolean user, boolean sys){
-		Iterator<Setting> it = properties.values().iterator();
+	public void deleteProperties(boolean user, boolean sys) throws RemoteException{
+		Iterator<SettingInt> it = properties.values().iterator();
 		Properties sysProp = null;
 		Properties userProp = null;
 		if(user){
@@ -257,12 +271,24 @@ public class SettingMenu implements Serializable{
 		return ans;
 	}
 
-	public Map<String, Setting> getProperties() {
+	public Map<String, SettingInt> getProperties() {
 		return properties;
 	}
+	
+	public String getUserValue(String key) throws RemoteException{
+		return properties.get(key).getUserPropetyValue();
+	}
+	
+	public String getSysValue(String key) throws RemoteException{
+		return properties.get(key).getSysPropetyValue();
+	}
 
-	public Map<String, SettingMenu> getMenu() {
+	public Map<String, SettingMenuInt> getMenu() {
 		return menu;
+	}
+	
+	public SettingMenuInt goTo(String subMenu){
+		return getMenu().get(subMenu);
 	}
 
 	public Setting.Scope getScopeMenu() {

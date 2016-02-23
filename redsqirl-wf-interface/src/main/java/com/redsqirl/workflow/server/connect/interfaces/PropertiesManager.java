@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 
 public interface PropertiesManager extends Remote {
 	
@@ -51,9 +52,9 @@ public interface PropertiesManager extends Remote {
 
 	String getUserProperty(String key, String defaultValue) throws RemoteException;
 	
-	Map<String, SettingMenu> getSettingMenu() throws RemoteException;
+	SettingMenuInt getSettingMenu() throws RemoteException;
 	
-	Map<String, SettingMenu> getDefaultSettingMenu() throws RemoteException;
+	SettingMenuInt getDefaultSettingMenu() throws RemoteException;
 	
 	String getPluginSetting(String name) throws RemoteException;
 	

@@ -20,15 +20,15 @@
 package com.redsqirl.workflow.settings;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Iterator;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
-public class Setting implements Serializable{
+public class Setting extends UnicastRemoteObject implements SettingInt{
 
 	/**
 	 * 
@@ -38,19 +38,6 @@ public class Setting implements Serializable{
 	
 	public interface Checker{
 		boolean valid();
-	}
-	
-	public enum Scope{
-		SYSTEM,
-		USER,
-		ANY
-	}
-	
-	public enum Type{
-		BOOLEAN,
-		INT,
-		FLOAT,
-		STRING
 	}
 	
 	protected Scope scope;
@@ -67,23 +54,22 @@ public class Setting implements Serializable{
 	protected boolean existSysProperty;
 	
 	
-	public Setting(Setting setting){
+	public Setting(SettingInt settingInt) throws RemoteException{
 		super();
-		this.scope= setting.scope;
-		this.propertyName = setting.propertyName;
-		this.description = setting.description;
-		this.label = setting.label;
-		this.defaultValue = setting.defaultValue;
-		this.type = setting.type;
-		this.checker = setting.checker;
-		this.value = setting.value;
-		this.userValue = setting.userValue;
-		this.sysValue = setting.sysValue;
-		this.existUserProperty = setting.existUserProperty;
-		this.existSysProperty = setting.existSysProperty;
+		this.scope= settingInt.getScope();
+		this.propertyName = settingInt.getPropertyName();
+		this.description = settingInt.getDescription();
+		this.label = settingInt.getLabel();
+		this.defaultValue = settingInt.getDefaultValue();
+		this.type = settingInt.getType();
+		this.value = settingInt.getValue();
+		this.userValue = settingInt.getUserValue();
+		this.sysValue = settingInt.getSysValue();
+		this.existUserProperty = settingInt.getUserValue()!= null;
+		this.existSysProperty = settingInt.getSysValue()!= null;
 	}
 	
-	public Setting(Scope scope, String defaultValue) {
+	public Setting(Scope scope, String defaultValue) throws RemoteException {
 		super();
 		this.scope = scope;
 		this.defaultValue = defaultValue;
@@ -91,7 +77,7 @@ public class Setting implements Serializable{
 	}
 
 	public Setting(Scope scope, String defaultValue,
-			Type type) {
+			Type type) throws RemoteException {
 		super();
 		this.scope = scope;
 		this.defaultValue = defaultValue;
@@ -99,7 +85,7 @@ public class Setting implements Serializable{
 	}
 
 	public Setting(Scope scope, String defaultValue,
-			Type type, Checker checker) {
+			Type type, Checker checker) throws RemoteException {
 		super();
 		this.scope = scope;
 		this.defaultValue = defaultValue;

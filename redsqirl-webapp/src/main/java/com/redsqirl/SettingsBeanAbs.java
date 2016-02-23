@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 
@@ -35,14 +35,16 @@ import org.apache.log4j.Logger;
 import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
+import com.redsqirl.workflow.settings.SettingInt;
 import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 
 public abstract class SettingsBeanAbs extends BaseBean {
 	
 
 	private static Logger logger = Logger.getLogger(SettingsBeanAbs.class);
-	protected Map<String, SettingMenu> curMap;
-	protected SettingMenu s;
+	protected SettingMenuInt curMap;
+	protected SettingMenuInt s;
 	protected List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
 	protected List<String> listSetting = new ArrayList<String>();
 	protected String pathPosition;
@@ -50,12 +52,12 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	protected String template;
 
 
-	protected Properties updateProperty(Properties props, String path, Map<String,Setting> currentSettings, Setting.Scope scope){
+	protected Properties updateProperty(Properties props, String path, Map<String, SettingInt> templateSetting, Setting.Scope scope) throws RemoteException{
 		Properties ans = new Properties();
 		ans.putAll(props);
-		for (Entry<String, Setting> settings : currentSettings.entrySet()) {
+		for (Entry<String, SettingInt> settings : templateSetting.entrySet()) {
 			String nameSettings = path +"."+ settings.getKey();
-			Setting settingCur = settings.getValue(); 
+			SettingInt settingCur = settings.getValue(); 
 			if(settingCur.getScope().equals(scope) || 
 					settingCur.getScope().equals(Setting.Scope.ANY) ){
 				if(Setting.Scope.USER.equals(scope)){
@@ -105,14 +107,11 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	
 	public abstract void readCurMap() throws RemoteException;
 
-	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
-		SettingMenu cur = null;
+	public SettingMenuInt mountPackageSettings(List<String> path) throws RemoteException{
+		SettingMenuInt cur = curMap;
 		Iterator<String> itPath = path.iterator();
-		if(itPath.hasNext()){
-			cur = curMap.get(itPath.next());
-		}
 		while(itPath.hasNext()){
-			cur = cur.getMenu().get(itPath.next());
+			cur = cur.goTo(itPath.next());
 		}
 		return cur;
 	}
@@ -149,7 +148,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		String scope = params.get("scope");
 
 		if(key != null && scope != null){
-			Setting setting = s.getProperties().get(key);
+			SettingInt setting = s.getProperties().get(key);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(true);
 			}else if(scope.equals(Setting.Scope.USER.toString())){
@@ -166,7 +165,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		String scope = params.get("scope");
 
 		if(key != null && scope != null){
-			Setting setting = s.getProperties().get(key);
+			SettingInt setting = s.getProperties().get(key);
 			if(scope.equals(Setting.Scope.SYSTEM.toString())){
 				setting.setExistSysProperty(false);
 				setting.setSysValue(null);
@@ -186,7 +185,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 
 		if(key != null && type != null){
 
-			Setting setting = s.getProperties().get(key);
+			SettingInt setting = s.getProperties().get(key);
 			if(type.equals(Setting.Scope.USER.toString())){
 				setting.setUserValue(setting.getDefaultValue());
 			}else if(type.equals(Setting.Scope.SYSTEM.toString())){
@@ -199,11 +198,11 @@ public abstract class SettingsBeanAbs extends BaseBean {
 
 	
 	
-	public Map<String, SettingMenu> getCurMap() {
+	public SettingMenuInt getCurMap() {
 		return curMap;
 	}
 
-	public void setCurMap(Map<String, SettingMenu> curMap) {
+	public void setCurMap(SettingMenuInt curMap) {
 		this.curMap = curMap;
 	}
 
@@ -215,11 +214,11 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		this.path = path;
 	}
 
-	public SettingMenu getS() {
+	public SettingMenuInt getS() {
 		return s;
 	}
 
-	public void setS(SettingMenu s) {
+	public void setS(SettingMenuInt s) {
 		this.s = s;
 	}
 

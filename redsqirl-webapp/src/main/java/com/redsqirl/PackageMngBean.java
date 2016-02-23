@@ -33,12 +33,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -51,11 +48,9 @@ import org.json.JSONObject;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
-import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.settings.Setting;
-import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
@@ -128,15 +123,16 @@ public class PackageMngBean extends SettingsBean implements Serializable{
 		setUserPackages(calcPackage(pckManager.getUserPackageNames(user), user));
 	}
 
-	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages, String user){
+	private List<RedSqirlModule> calcPackage(Iterable<String> pckPackages, String user) throws RemoteException{
+		logger.info("calcPackage");
 		Iterator<String> it = pckPackages.iterator();
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pckStr = it.next();
 
 			RedSqirlModule rdm = new RedSqirlModule();
-			if(curMap != null && curMap.get(pckStr) != null){
-				SettingMenu settingMenu = curMap.get(pckStr);
+			if(curMap != null && curMap.getMenu().get(pckStr) != null){
+				SettingMenuInt settingMenu = curMap.goTo(pckStr);
 				if(settingMenu != null 
 						&& (settingMenu.getMenu() != null && settingMenu.getMenu().isEmpty())
 						&& (settingMenu.getProperties() != null && settingMenu.getProperties().isEmpty()) ){
@@ -464,54 +460,6 @@ public class PackageMngBean extends SettingsBean implements Serializable{
 
 	public void setSystemPackages(List<RedSqirlModule> systemPackages) {
 		this.systemPackages = systemPackages;
-	}
-
-	public List<SettingsControl> getListSubMenu() {
-		return listSubMenu;
-	}
-
-	public void setListSubMenu(List<SettingsControl> listSubMenu) {
-		this.listSubMenu = listSubMenu;
-	}
-
-	public List<String> getListSetting() {
-		return listSetting;
-	}
-
-	public void setListSetting(List<String> listSetting) {
-		this.listSetting = listSetting;
-	}
-
-	public List<String> getPath() {
-		return path;
-	}
-
-	public void setPath(List<String> path) {
-		this.path = path;
-	}
-
-	public String getPathPosition() {
-		return pathPosition;
-	}
-
-	public void setPathPosition(String pathPosition) {
-		this.pathPosition = pathPosition;
-	}
-
-	public Map<String, SettingMenu> getCurMap() {
-		return curMap;
-	}
-
-	public void setCurMap(Map<String, SettingMenu> curMap) {
-		this.curMap = curMap;
-	}
-
-	public SettingMenu getS() {
-		return s;
-	}
-
-	public void setS(SettingMenu s) {
-		this.s = s;
 	}
 
 }
