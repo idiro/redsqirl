@@ -158,10 +158,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		logger.debug("hive interface init : " + isInit);
 		if (url == null) {
 			url = WorkflowPrefManager
-					.getUserProperty(WorkflowPrefManager.user_hive);
+					.getUserProperty("hive_jdbc_url");
 			if(url == null || url.isEmpty()){
 				error = LanguageManagerWF.getText("hiveinterface.nosettings",
-						new Object[] { WorkflowPrefManager.user_hive });
+						new Object[] { "hive_jdbc_url" });
 			}
 		}
 		try {

@@ -110,7 +110,7 @@ public class ServerMain {
 				logger.debug("start server main");
 
 				String nameWorkflow = System.getProperty("user.name")+"@wfm";
-				String nameHive = System.getProperty("user.name")+"@hive";
+				//String nameHive = System.getProperty("user.name")+"@hive";
 				String nameSshArray = System.getProperty("user.name")+"@ssharray";
 				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
@@ -142,14 +142,16 @@ public class ServerMain {
 				}
 
 				logger.debug("nameWorkflow: "+nameWorkflow);
-
+				
+				/*
 				registry.rebind(
 						nameHive,
 						(DataStore) new HiveInterface()
 						);
 
 				logger.debug("nameHive: "+nameHive);
-
+				*/
+				
 				registry.rebind(
 						nameOozie,
 						(JobManager) OozieManager.getInstance()

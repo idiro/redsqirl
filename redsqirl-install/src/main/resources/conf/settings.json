@@ -111,32 +111,7 @@
           "type": "STRING"
         }
       ]
-    },
-    {
-      "name": "hive",
-      "settings": [
-        {
-          "property": "jdbc_hive_server",
-          "scope": "system",
-          "optional": "true",
-          "default": "namenode",
-          "type": "STRING"
-        },
-        {
-          "property": "hive_xml",
-          "scope": "system",
-          "optional": "true",
-          "default": "/etc/hive/hive-site.xml",
-          "type": "STRING"
-        },
-        {
-          "property": "hive_default_xml",
-          "scope": "system",
-          "optional": "true",
-          "default": "/etc/hive/hive-default.xml",
-          "type": "STRING"
-        }
-      ]
     }
+
   ]
 }

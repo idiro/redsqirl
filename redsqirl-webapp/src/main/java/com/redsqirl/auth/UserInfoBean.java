@@ -407,7 +407,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		fCtx.getExternalContext().getSessionMap().remove("#{canvasBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{hdfsBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{browserHdfsBean}");
-		fCtx.getExternalContext().getSessionMap().remove("#{hiveBean}");
+		//fCtx.getExternalContext().getSessionMap().remove("#{hiveBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{sshBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{canvasModalBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{configureTabsBean}");
@@ -518,7 +518,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		List<String> beans = new ArrayList<String>();
 		beans.add("wfm");
 		beans.add("ssharray");
-		beans.add("hive");
+		//beans.add("hive");
 		beans.add("oozie");
 		beans.add("hdfs");
 		beans.add("prefs");

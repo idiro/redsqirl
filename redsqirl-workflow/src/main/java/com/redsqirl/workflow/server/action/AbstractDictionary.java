@@ -310,6 +310,7 @@ public abstract class AbstractDictionary {
 	private void saveFile(File file) {
 		BufferedWriter bw = null;
 		try {
+			file.getParentFile().mkdirs();
 			file.createNewFile();
 
 			bw = new BufferedWriter(new FileWriter(file));

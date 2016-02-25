@@ -64,15 +64,19 @@ public class HiveAction extends OozieActionAbs{
 		attrXmlns.setValue("uri:oozie:hive-action:0.2");
 		hive.setAttributeNode(attrXmlns);
 		
+		/*
 		defaultParam(
 				oozieXmlDoc, 
 				hive,
 				WorkflowPrefManager.getProperty(
 				WorkflowPrefManager.sys_hive_xml));
+		*/
 		
+		/*
 		Element confName = oozieXmlDoc.createElement("name");
 		confName.appendChild(oozieXmlDoc.createTextNode("oozie.hive.defaults"));
 		Element confValue = oozieXmlDoc.createElement("value");
+		
 		confValue.appendChild(oozieXmlDoc.createTextNode(
 				WorkflowPrefManager.getProperty(
 						WorkflowPrefManager.sys_hive_default_xml)));
@@ -83,7 +87,7 @@ public class HiveAction extends OozieActionAbs{
 
 		Element configuration = (Element) hive.getElementsByTagName("configuration").item(0);
 		configuration.appendChild(property);
-		
+		*/
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
 		hive.appendChild(script);
