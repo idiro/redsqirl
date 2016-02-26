@@ -62,9 +62,9 @@ support@redsqirl.com
 	<zip.ex-adv-5>${basedir}/redsqirl-examples/advanced/step5</zip.ex-adv-5>
 	<ex-adv-5.zipname>advanced-step5</ex-adv-5.zipname>
 
-	<webapp.help>${basedir}/redsqirl-webapp/src/main/webapp/help</webapp.help>
-	<webapp.helpimg>${basedir}/redsqirl-webapp/src/main/webapp/helpimages</webapp.helpimg>
-	<userguide>../../../../../target/site/help</userguide>
+	<webapp.help>${basedir}/src/site/help</webapp.help>
+	<webapp.helpimg>${basedir}/src/site/helpimages</webapp.helpimg>
+	<userguide>${basedir}/target/site/help</userguide>
 	<userguideimg>${basedir}/target/site/helpimages</userguideimg>
     </properties>
 
@@ -133,6 +133,20 @@ support@redsqirl.com
 	    </extension>
 	</extensions>
 	<plugins>
+
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-site-plugin</artifactId>
+              <version>3.2</version>
+              <dependencies>
+                <dependency>
+                  <groupId>org.apache.maven.doxia</groupId>
+                  <artifactId>doxia-module-markdown</artifactId>
+                  <version>1.7</version>
+                </dependency>
+              </dependencies>
+            </plugin>
+
 	    <plugin>
 		<artifactId>maven-project-info-reports-plugin</artifactId>
 		<version>2.3</version>
@@ -166,6 +180,49 @@ support@redsqirl.com
 		<artifactId>maven-resources-plugin</artifactId>
 		<version>2.7</version>
 		<executions>
+
+		   
+
+		<execution>
+			<id>copy-resources-index</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${basedir}/target/site</outputDirectory>
+				<overwrite>true</overwrite>
+			    <resources>
+				<resource>
+				    <directory>${basedir}/src/site/website</directory>
+					<includes>
+	          				<include>index.html</include>
+						<include>vid.webm</include>
+						<include>vid.mp4</include>
+					</includes>
+				</resource>
+			    </resources>              
+			</configuration>            
+		    </execution>
+
+
+		   <execution>
+			<id>copy-resources-help</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${basedir}/target/site/help</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${basedir}/src/site/help</directory>
+				    <filtering>true</filtering>
+				</resource>
+			    </resources>              
+			</configuration>            
+		    </execution>
+
 		    <execution>
 			<id>copy-resources-file</id>
 			<phase>site</phase>
@@ -174,7 +231,7 @@ support@redsqirl.com
 			</goals>
 			<configuration>
 			    <outputDirectory>${basedir}/target/site/files</outputDirectory>
-			    <resources>          
+			    <resources>
 				<resource>
 				    <directory>${basedir}/src/site/files</directory>
 				    <filtering>true</filtering>
@@ -210,11 +267,11 @@ support@redsqirl.com
 			<replacement>
 			    <token>return false</token>
 			    <value>return true</value>
-			</replacement>         
+			</replacement>
 			<replacement>
 			    <token>&lt;head&gt;</token>
 			    <value>&lt;head&gt;&lt;link rel="stylesheet" type="text/css" href="../css/redsqirl.css"&gt;</value>
-			</replacement>         
+			</replacement>
 		    </replacements>
 		    <regex>false</regex>
 		</configuration>

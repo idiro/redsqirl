@@ -224,7 +224,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		redSqirlInstallations.setUserName("");
 
 		//FIXME change the number version
-		redSqirlInstallations.setModule("redsqirl-base-pig");
+		redSqirlInstallations.setModule("redsqirl-pig");
 		redSqirlInstallations.setModuleVersion("0.2");
 
 		String error = null;
