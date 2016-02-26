@@ -723,18 +723,15 @@
 		                		<rich:column style="border-bottom:0px;border-right:0px;" width="25px">
                                     <h:outputText value="#{rowNb+1}" />
                                 </rich:column>
-
-		                        
 		                        
 		                        <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
 		                        	var="column" index="ind" sortable="true">
 		                            
 		                            <f:facet name="header">
-		                            	<a4j:commandButton value="#{column}"
-											action="#{canvasModalBean.outputTab.sort}"
-											reRender="displayTable">
-												<a4j:actionparam name="sortIdx" value="#{ind}" />
-											</a4j:commandButton>
+		                            	<a4j:commandButton value="#{column}" action="#{canvasModalBean.outputTab.sort}" reRender="displayTable"
+		                            		onclick="disableAllButton();" oncomplete="enableAllButton();" >
+											<a4j:actionparam name="sortIdx" value="#{ind}" />
+										</a4j:commandButton>
 		                            </f:facet>
 		                            
 		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />

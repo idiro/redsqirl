@@ -1,0 +1,151 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Pig PlainText Source</title>
+</head>
+<body>
+    <h1>Pig Plain Text Source</h1>
+    
+    <h2>Description</h2>
+    <p>Pig Plain Text Source is an action that defines a Map/Reduce text source.</p>
+    <h3>Quick Guide</h3>
+    <p>
+    <ul>
+	<li>Browser        
+	    <ul>
+		<li>Path - Path to the Text MapReduce directory</li>
+		<li>Header - Set header and delimiter</li>
+		<li>Table Preview - Preview the table</li>
+	    </ul>
+	</li>
+	<li>Output
+	<ul>
+	    <li>
+	    <a class="stopLink" id="helpmain_canvas" 
+		onclick="return false;" 
+		href="../help/canvas.html#output_type">
+		Plain Text Map Reduce File
+	    </a>
+	    </li>
+	</ul>
+	</li>
+    </ul>
+    </p>
+
+    <h2><a id="page1">Choose path - Page 1</a></h2>
+
+    <h3> Path </h3>
+
+    Choose the data set path.
+    <h3>Options</h3>
+
+    <ul>
+	<li>You can change the header of a file a header can be a list of
+	feature name or a list of feature name with type. For example, if I have
+	a data set that contains three fields. I could defined the header to be
+	"field1, field2, field3" or "field1 DATE, field2 STRING, field3 INT".
+	</li>
+	<li>You can change the delimiter. The delimiter can be a normal
+	character (",","|",";") or an ASCII character in which case (#1,
+	#44)</li>
+	<li>You can define the header on the first line of the text file. 
+	If the file contains a header you have to change the property 'header'
+	to 'true'.</li>
+    </ul>
+
+    <h2>Red Sqirl Pig</h2>
+    <p>
+    Red Sqirl Pig is a package that contains actions that interface with <a
+	target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+    Pig actions.
+
+    The pig actions available from the package are
+    <ul>
+	<li> Pig Aggregator 
+	</li>
+	<li>
+	Pig Anonymise
+	</li>
+	<li>
+	Pig Binary Source
+	</li>
+	<li>
+	Pig Join
+	</li>
+	<li>
+	Pig Sample
+	</li>
+	<li>
+	Pig Select
+	</li>
+	<li>
+	Pig Text Source
+	</li>
+	<li>
+	Pig Transpose
+	</li>
+	<li>
+	Pig Unanonymise
+	</li>
+	<li>
+	Pig Union 
+	</li>
+	<li>
+	Pig Value Binning
+	</li>
+	<li>
+	Pig Volume Binning
+	</li>
+    </ul>
+
+    </p>
+
+    <h3>Redsqirl Pig Data set</h3>
+
+    <p>The last page of every pig action will have two interactions
+    that set the output format of the pig action. These interactions are
+    to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+    the other is to set the output type of the file to be either TEXT MAP
+    REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
+    </p>
+
+    <h3>Auditing</h3>
+
+    <p> After each Pig action it is possible to audit the result in order to
+    have a better idea of the data set and help make decisions on what to
+    do next. For example you may want to do an audit before using a binning
+    node in order to have an idea of your value range. Also result of the
+    audit may create auto-generated options.
+    </p>
+
+    <h3>Apache Pig</h3>
+
+    <p>Apache Pig is a platform for analyzing large data sets, which
+    consists of a high-level language for expressing data analysis
+    programs, coupled with infrastructure for evaluating these programs.
+    The salient property of Pig programs is that their structure is
+    amenable to substantial parallelization, which in turns enables them
+    to handle very large data sets. At the present time, Pig's
+    infrastructure layer consists of a compiler that produces sequences
+    of Map-Reduce programs, for which large-scale parallel
+    implementations already exist (e.g., the Hadoop subproject). Pig's
+    language layer currently consists of a textual language called Pig
+    Latin, which has the following key properties:
+    <ul>
+	<li>Ease of programming. It is trivial to achieve parallel
+	execution of simple, "embarrassingly parallel" data analysis tasks.
+	Complex tasks comprised of multiple interrelated data
+	transformations are explicitly encoded as data flow sequences,
+	making them easy to write, understand, and maintain.</li>
+	<li>Optimization opportunities. The way in which tasks are
+	encoded permits the system to optimize their execution
+	automatically, allowing the user to focus on semantics rather than
+	efficiency.</li>
+	<li>Extensibility. Users can create their own functions to do
+	special-purpose processing.</li>
+    </ul>
+    </p>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<script src="js/jquery.min.js"></script>
+<script type="text/ecmascript" src="javascript/jquery.jqGrid.min.js"></script>
+<link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+
+</head>
+<body>
+
+
+<script>
+
+jQuery.noConflict();
+
+/*
+jQuery.ajax({
+  method: "POST",
+  dataType: "json",
+  contentType: "application/json; charset=utf-8",
+  url: "http://localhost:9090/analytics-store/rest/allpackages",
+  data: JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }))
+}).then(function(data) {
+
+  jQuery.each(data, function(i, item) {
+    console.log(data[i].id);
+    console.log(data[i].name);
+    console.log(data[i].tags);
+    console.log(data[i].image);
+    console.log(data[i].type);
+  });  
+  
+});
+*/
+
+
+jQuery(document).ready(function () {
+
+	jQuery("#list2").jqGrid({ 
+		url:'http://localhost:9090/analytics-store/rest/allpackages', 
+		datatype: "json", 
+    		mtype: "POST",
+		postData:JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; })),
+		ajaxGridOptions: { contentType: "application/json" },
+		colNames:['id','name', 'tags', 'image','type'],
+		colModel:[ 
+			{name:'id',index:'id', width:55}, 
+			{name:'name',index:'name', width:90},
+			{name:'tags',index:'tags', width:100}, 
+			{name:'image',index:'image', width:80, align:"right"}, 
+			{name:'type',index:'type', width:80, align:"right"} ],
+		rowNum:10, 
+		rowList:[10,20,30], 
+		pager: '#pager2', 
+		sortname: 'id', 
+		viewrecords: true, 
+		sortorder: "desc",
+		caption:"JSON Example"
+	});
+
+});
+
+function reload() {
+  jQuery("#list2").trigger("reloadGrid");
+}
+
+
+</script>
+
+<form id="search">
+
+<input type="hidden" name="software" value="RedSqirl" />
+
+<input type="radio" name="type" value="package" id="r1" onclick="reload();" /><label for="r1">Package</label>
+<input type="radio" name="type" value="model" id="r2" onclick="reload();" /><label for="r2">Model</label>
+
+</form>
+
+
+<table id="list2"></table>
+<div id="pager2"></div>
+
+
+
+</body>
+</html>

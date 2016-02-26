@@ -1,5 +1,5 @@
 body{
-	font-family:verdana;
+	font-family: 'Open Sans', sans-serif;
 	font-size:16px;
 }
 
@@ -10,11 +10,14 @@ h1 {
 }
 
 h2 {
-    color: #888888
+    color: #333
 }
 
 h3 {
-    color: #C0C0C0
+    color: #333;
+    font-family: arial;
+    font-size: 3em;
+    font-weight: 500;
 }
 
 h4 {

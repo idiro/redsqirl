@@ -168,7 +168,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide(); return false;" />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession();" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();jQuery.blockUI({ message: jQuery('#domMessageDivAdmLogin') });invalidateSession();" />
 									</center>
 								</rich:modalPanel>
 			
@@ -178,7 +178,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedIn')}.hide(); return false;" />
-                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession();" />
+                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();jQuery.blockUI({ message: jQuery('#domMessageDivAdmLogin') });invalidateSession();" />
 									</center>
 								</rich:modalPanel>
 			

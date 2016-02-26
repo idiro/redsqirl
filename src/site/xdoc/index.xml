@@ -1,0 +1,84 @@
+<!-- 
+Copyright © 2016 Red Sqirl, Ltd. All rights reserved.
+Red Sqirl, Clarendon House, 34 Clarendon St., Dublin 2. Ireland
+
+This file is part of Red Sqirl
+
+User agrees that use of this software is governed by: 
+(1) the applicable user limitations and specified terms and conditions of 
+   the license agreement which has been entered into with Red Sqirl; and 
+(2) the proprietary and restricted rights notices included in this software.
+
+WARNING: THE PROPRIETARY INFORMATION OF Red Sqirl IS PROTECTED BY IRISH AND 
+INTERNATIONAL LAW.  UNAUTHORISED REPRODUCTION, DISTRIBUTION OR ANY PORTION
+OF IT, MAY RESULT IN CIVIL AND/OR CRIMINAL PENALTIES.
+
+If you have received this software in error please contact Red Sqirl at 
+support@redsqirl.com
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <body>
+
+      <div>
+	<h3>WHAT IS <span style="color:#c4161c">RED</span> SQIRL?</h3>
+
+<br/><br/>
+
+  Red Sqirl is a web-based application that is designed to construct
+data workflows for processing. 
+These processes will run on a Hadoop cluster. 
+<br/>
+The purpose of Red Sqirl is to enable data analysts to create workflows and run evaluations
+on large-scale datasets using Hadoop. 
+<br/>
+These operations can be achieved by
+running Pig/HiveQL commands or other hadoop base technology through Oozie. 
+<br/>
+To create a simple workflow, an analyst would drag and drop actions
+  onto the GUI workspace to perform operations like import ,
+ filter and many more , then they connect and configure them.
+<br/>
+This workflow  would then read, modify and write data within the HDFS/Hive
+tables.
+
+<br/>
+
+
+<h3>MAIN FEATURES</h3>
+<br/>
+
+<ul>
+  <li>Run a parallel Oozie workflow</li>
+  <li>Develop/install customized workflow actions</li>
+  <li>Save/load your work</li>
+  <li>HDFS and Hive browsing system</li>
+  <li>Easy to set up and administrate</li>
+  <li>Transparent tool</li>
+</ul>
+<br/>
+
+<h3>GETTING STARTED</h3>
+
+Red Sqirl can be installed easily on top of a Hadoop cluster
+<a href="./gettingstarted.html">Getting started</a>
+<br/><br/>
+
+<h3>USER TUTORIAL</h3>
+
+You can find user tutorials in the User Guide,
+<a href="./help/buildingworkflow.html">canvas section</a>
+<br/><br/>
+
+<h3>SUBMITTING A PACKAGE TO THE COMMUNITY</h3>
+
+  If you have a package that you would like to share with the community, this can be easily done! 
+<br/><br/>
+
+</div>
+  </body>
+
+</document>

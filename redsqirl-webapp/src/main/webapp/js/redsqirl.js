@@ -558,3 +558,12 @@ function updatedComboboxListInteraction(element, index){
     //alert(val + " " + content);
     reLoadlistInteractionInputHidden();
 }
+
+
+function disableAllButton(){
+	jQuery("input[type=button]").attr("disabled", "disabled");
+}
+
+function enableAllButton(){
+	jQuery("input[type=button]").removeAttr("disabled");
+}
