@@ -46,8 +46,8 @@ support@redsqirl.com
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
-		<managed-bean-name>hiveBean</managed-bean-name>
-		<managed-bean-class>com.redsqirl.HiveBean</managed-bean-class>
+		<managed-bean-name>jdbcBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.JdbcBean</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>

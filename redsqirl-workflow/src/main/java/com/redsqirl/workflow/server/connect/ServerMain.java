@@ -41,6 +41,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
+import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.ModelManagerInt;
@@ -110,7 +111,7 @@ public class ServerMain {
 				logger.debug("start server main");
 
 				String nameWorkflow = System.getProperty("user.name")+"@wfm";
-				//String nameHive = System.getProperty("user.name")+"@hive";
+				String nameJdbc = System.getProperty("user.name")+"@jdbc";
 				String nameSshArray = System.getProperty("user.name")+"@ssharray";
 				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
@@ -143,14 +144,13 @@ public class ServerMain {
 
 				logger.debug("nameWorkflow: "+nameWorkflow);
 				
-				/*
+				
 				registry.rebind(
-						nameHive,
-						(DataStore) new HiveInterface()
+						nameJdbc,
+						(DataStore) new JdbcStore()
 						);
 
-				logger.debug("nameHive: "+nameHive);
-				*/
+				logger.debug("nameJdbc: "+nameJdbc);
 				
 				registry.rebind(
 						nameOozie,

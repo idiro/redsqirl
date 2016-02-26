@@ -89,7 +89,7 @@ function resizeTables(){
 	
 	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
 	
-	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-5").height()-160+"px", "important");
+	jQuery("#jdbcFileSystem .extdt-content").style("height", jQuery("#tabs-5").height()-160+"px", "important");
 	
 	jQuery("#tabRemote .extdt-content").css("height", jQuery("#tabs-8").height()-205+"px", "important");
 

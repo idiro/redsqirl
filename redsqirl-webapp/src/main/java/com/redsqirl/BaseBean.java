@@ -164,12 +164,12 @@ public class BaseBean {
 	 * @return DataStore
 	 * @author Igor.Souza
 	 */
-	public DataStore getHiveInterface() throws RemoteException{
+	public DataStore getJdbcInterface() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStore) session.getAttribute("hive");
+		return (DataStore) session.getAttribute("jdbc");
 	}
 
 	/** getDataStoreArray

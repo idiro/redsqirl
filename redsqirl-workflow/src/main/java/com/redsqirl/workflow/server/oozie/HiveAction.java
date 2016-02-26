@@ -41,6 +41,13 @@ public class HiveAction extends OozieActionAbs{
 	 * 
 	 */
 	private static final long serialVersionUID = 5119314850496590566L;
+
+
+	/** Default Hive XML */
+	public static final String	hive_default_xml = "core.jdbc.hive.hive_default_xml",
+	/** Hive XML */
+	hive_xml = "core.jdbc.hive.hive_xml";
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -64,30 +71,36 @@ public class HiveAction extends OozieActionAbs{
 		attrXmlns.setValue("uri:oozie:hive-action:0.2");
 		hive.setAttributeNode(attrXmlns);
 		
-		/*
-		defaultParam(
-				oozieXmlDoc, 
-				hive,
-				WorkflowPrefManager.getProperty(
-				WorkflowPrefManager.sys_hive_xml));
-		*/
+		if(WorkflowPrefManager.getProperty(
+				hive_xml) != null){
+			defaultParam(
+					oozieXmlDoc, 
+					hive,
+					WorkflowPrefManager.getProperty(
+							hive_xml));
+		}else{
+			defaultParam(
+					oozieXmlDoc, 
+					hive);
+		}
 		
-		/*
-		Element confName = oozieXmlDoc.createElement("name");
-		confName.appendChild(oozieXmlDoc.createTextNode("oozie.hive.defaults"));
-		Element confValue = oozieXmlDoc.createElement("value");
-		
-		confValue.appendChild(oozieXmlDoc.createTextNode(
-				WorkflowPrefManager.getProperty(
-						WorkflowPrefManager.sys_hive_default_xml)));
-		
-		Element property = oozieXmlDoc.createElement("property");
-		property.appendChild(confName);
-		property.appendChild(confValue);
+		if(WorkflowPrefManager.getProperty(
+				hive_default_xml) != null){
+			Element confName = oozieXmlDoc.createElement("name");
+			confName.appendChild(oozieXmlDoc.createTextNode("oozie.hive.defaults"));
+			Element confValue = oozieXmlDoc.createElement("value");
+			confValue.appendChild(oozieXmlDoc.createTextNode(
+					WorkflowPrefManager.getProperty(
+							hive_default_xml)));
 
-		Element configuration = (Element) hive.getElementsByTagName("configuration").item(0);
-		configuration.appendChild(property);
-		*/
+			Element property = oozieXmlDoc.createElement("property");
+			property.appendChild(confName);
+			property.appendChild(confValue);
+
+			Element configuration = (Element) hive.getElementsByTagName("configuration").item(0);
+			configuration.appendChild(property);
+		}
+		
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
 		hive.appendChild(script);

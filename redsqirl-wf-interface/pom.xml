@@ -22,7 +22,7 @@ support@redsqirl.com
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<idiro-base.version>0.3</idiro-base.version>
-	<hadoop.version>1.0.4</hadoop.version>
+	<hadoop.version>2.7.0</hadoop.version>
 	<idiro-tm.version>0.3</idiro-tm.version>
     </properties>
 
