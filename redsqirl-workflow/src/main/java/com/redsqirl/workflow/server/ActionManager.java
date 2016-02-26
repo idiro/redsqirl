@@ -360,7 +360,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			String packName = packIt.next();
 			RedSqirlPackage pck = pm.getAvailablePackage(user, packName);
 			String packFooterName = WordUtils.capitalizeFully(packName.replace("redsqirl-", "")
-					.replace("_", " ").replace("-", " "));
+					.replace("_", " ").replace("-", " ")).replace(" ", "_");
 			List<String> packActions = pck.getAction();
 			if(!footer.containsKey(packFooterName)){
 				footer.put(packFooterName,new ArrayList<String>(packActions.size()));

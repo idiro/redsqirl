@@ -463,12 +463,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		
 		if(error == null){
-			Iterator<DataFlowElement> it = getElement().iterator();
-			while(it.hasNext()){
-				DataFlowElement cur = it.next();
-				cur.setRunningStatus("UNKNOWN");
-			}
-			it = toRun.iterator();
+			Iterator<DataFlowElement> it = toRun.iterator();
 			while(it.hasNext()){
 				DataFlowElement cur = it.next();
 				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
@@ -477,10 +472,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					DFEOutput outCur =  cur.getDFEOutput().get(outName);
 					if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
 						outCur.generatePath(cur.getComponentId(), outName);
-						outCur.clearCache();
 					}
 				}
-				cur.setRunningStatus(null);
 			}
 		}
 		
@@ -500,8 +493,31 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		
+		
 		if(error == null && !isrunning()){
 			error = LanguageManagerWF.getText("workflow.notrunning");
+		}
+		
+
+		if(error == null){
+			Iterator<DataFlowElement> it = getElement().iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				cur.setRunningStatus("UNKNOWN");
+			}
+			it = toRun.iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
+				while(itOut.hasNext()){
+					String outName = itOut.next();
+					DFEOutput outCur =  cur.getDFEOutput().get(outName);
+					if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
+						outCur.clearCache();
+					}
+				}
+				cur.setRunningStatus(null);
+			}
 		}
 
 		if (error != null) {

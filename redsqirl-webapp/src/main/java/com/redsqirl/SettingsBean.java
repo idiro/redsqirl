@@ -24,28 +24,21 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.SettingsControl;
-import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
-import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingInt;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 
 /**
  * Class to show and modify user and system settings.
@@ -76,6 +69,7 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 	
 
 	protected String storeUserSettings(){
+		logger.info("store user properties");
 		String error = null;
 		try {
 			Properties userProp = getPrefs().getUserProperties();
@@ -156,7 +150,7 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 	}
 	
 	public void refreshPath() throws RemoteException{
-
+		logger.info("refresh path");
 		s = mountPackageSettings(path);
 
 		if(s.isTemplate()){
@@ -166,7 +160,7 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		}
 
 		listSubMenu = new ArrayList<SettingsControl>();
-		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
+		for (Entry<String, SettingMenuInt> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
 
 			if(s.isTemplate()){
@@ -188,14 +182,15 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 
 		listSetting = new ArrayList<String>();
 
-		for (Entry<String, Setting> settings : s.getProperties().entrySet()) {
+		Map<String,SettingInt> props = s.getProperties();
+		for (Entry<String, SettingInt> settings : props.entrySet()) {
 			listSetting.add(settings.getKey());
-			Setting setting = settings.getValue();
+			SettingInt setting = settings.getValue();
 			
-			if(!Setting.Scope.USER.equals(setting.getScope())){
-
-				if(setting.getSysPropetyValue() != null){
-					setting.setSysValue(setting.getSysPropetyValue());
+			if(!SettingInt.Scope.USER.equals(setting.getScope())){
+				String propValue = s.getSysValue(settings.getKey());
+				if(propValue != null){
+					setting.setSysValue(propValue);
 					setting.setExistSysProperty(true);
 				}else{
 					setting.setExistSysProperty(false);
@@ -203,10 +198,11 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 
 			}
 			
-			if(!Setting.Scope.SYSTEM.equals(setting.getScope())){
-
-				if(setting.getUserPropetyValue() != null){
-					setting.setUserValue(setting.getUserPropetyValue());
+			if(!SettingInt.Scope.SYSTEM.equals(setting.getScope())){
+				String propValue = s.getUserValue(settings.getKey());
+				logger.info(settings.getKey()+": "+propValue);
+				if(propValue != null){
+					setting.setUserValue(propValue);
 					setting.setExistUserProperty(true);
 				}else{
 					setting.setExistUserProperty(false);
@@ -240,10 +236,10 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		String path = newPath.toString();
 		
 		
-		Map<String,Setting> templateSetting = new LinkedHashMap<String,Setting>();
+		Map<String,SettingInt> templateSetting = new LinkedHashMap<String,SettingInt>();
 		Map<String,String[]> langMsg = new LinkedHashMap<String,String[]>();
-		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
-			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM) ){
+		for (Entry<String, SettingInt> setting : s.getProperties().entrySet()) {
+			if(setting.getValue().getScope().equals(SettingInt.Scope.SYSTEM) ){
 				if(!isAdmin()){
 					error = "You are not allowed to create a template for this item, you required to be administrator.";
 				}else{
@@ -297,9 +293,9 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		Properties sysProp = WorkflowPrefManager.getSysProperties();
 		Properties userProp = getPrefs().getUserProperties();
 		
-		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+		for (Entry<String, SettingInt> setting : s.getProperties().entrySet()) {
 			String key = path +"."+setting.getKey();
-			if(setting.getValue().getScope().equals(Setting.Scope.SYSTEM) ){
+			if(setting.getValue().getScope().equals(SettingInt.Scope.SYSTEM) ){
 				if(!isAdmin()){
 					error = "You are not allowed to create a template for this item, you required to be administrator.";
 				}

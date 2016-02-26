@@ -19,6 +19,7 @@
 
 package com.redsqirl.workflow.settings;
 
+import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -31,13 +32,13 @@ public class TemplateSettingMenu extends SettingMenu{
 	
 	private static Logger logger = Logger.getLogger(TemplateSettingMenu.class);
 	
-	public TemplateSettingMenu() {
+	public TemplateSettingMenu() throws RemoteException {
 		super();
 	}
 
 	public TemplateSettingMenu(JSONObject json, String path,
 			Properties sysProperties, Properties userProperties,
-			Properties langProperties) {
+			Properties langProperties) throws RemoteException {
 		super(json, path, sysProperties, userProperties, langProperties);
 		readTemplateValues(json, path, sysProperties, userProperties, langProperties);
 	}
@@ -48,7 +49,7 @@ public class TemplateSettingMenu extends SettingMenu{
 	
 	protected void readTemplateValues(JSONObject json, String path,
 			Properties sysProperties, Properties userProperties,
-			Properties langProperties){
+			Properties langProperties) throws RemoteException{
 		Iterator<String> tempValuesIt = getTemplateValues(path, sysProperties, userProperties).iterator();
 		menu.clear();
 		while(tempValuesIt.hasNext()){

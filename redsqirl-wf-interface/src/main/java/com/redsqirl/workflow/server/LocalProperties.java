@@ -38,6 +38,7 @@ import org.json.JSONTokener;
 
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.settings.SettingMenu;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
 
@@ -50,13 +51,13 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	private static final long serialVersionUID = -7151397795232865426L;
 	private static Logger logger = Logger.getLogger(LocalProperties.class);
 	
-	private Map<String,SettingMenu> settingMenu = null;
-	private Map<String,SettingMenu> defaultsettingMenu = null;
+	private SettingMenuInt settingMenu = null;
+	private SettingMenuInt defaultsettingMenu = null;
 	
 
 	public void readSettingMenu(String user) throws RemoteException{
 
-		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
 		try {
 			
 			logger.info("readSettingMenu " + user);
@@ -87,11 +88,11 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 			logger.error("error "+ e,e);
 		}
 
-		settingMenu = ans;
+		settingMenu = new SettingMenu(ans);
 	}
 
 	public void readDefaultSettingMenu() throws RemoteException{
-		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
 
 		logger.info("read setting path " + WorkflowPrefManager.pathSystemPref);
 
@@ -104,21 +105,22 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		}catch(Exception e){
 			logger.info("read error " + e,e);
 		}
-		defaultsettingMenu = ans;
+		
+		defaultsettingMenu = new SettingMenu(ans);
 	}
 	
-	public Map<String, SettingMenu> getSettingMenu() throws RemoteException{
+	public SettingMenuInt getSettingMenu() throws RemoteException{
 		return settingMenu;
 	}
 
-	public Map<String, SettingMenu> getDefaultSettingMenu() throws RemoteException{
+	public SettingMenuInt getDefaultSettingMenu() throws RemoteException{
 		return defaultsettingMenu;
 	}
 	
 	public String getPluginSetting(String name) throws RemoteException{
 		String[] packageName = name.split("\\.",2);
-		if(getSettingMenu().containsKey(packageName[0])){
-			return getSettingMenu().get(packageName[0]).getPropertyValue(packageName[1]);
+		if(getSettingMenu().getMenu().containsKey(packageName[0])){
+			return getSettingMenu().goTo(packageName[0]).getPropertyValue(packageName[1]);
 		}
 		return null;
 	}
@@ -160,8 +162,8 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		}
 		
 		SettingMenu sm = new SettingMenu();
-		sm.getMenu().putAll(defaultsettingMenu);
-		sm.getMenu().putAll(getSettingMenu());
+		sm.getMenu().putAll(defaultsettingMenu.getMenu());
+		sm.getMenu().putAll(getSettingMenu().getMenu());
 		
 		return sm.getPropertyValue(key);
 	}
