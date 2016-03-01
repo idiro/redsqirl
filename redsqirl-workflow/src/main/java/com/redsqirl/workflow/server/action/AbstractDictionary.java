@@ -30,15 +30,34 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import com.idiro.hadoop.NameNodeVar;
+import com.idiro.utils.XmlUtils;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
@@ -79,6 +98,8 @@ public abstract class AbstractDictionary {
 	 * Functions Key
 	 */
 	protected Map<String, String[][]> functionsMap;
+	
+	private static Map<String,Map<String, String[][]>> functionsMapCach  = new LinkedHashMap<String,Map<String, String[][]>>();
 
 	/**
 	 * Generate an editor for one input
@@ -231,127 +252,184 @@ public abstract class AbstractDictionary {
 	}
 
 	/**
-	 * Load a file that contains all the functions
-	 * 
-	 * @param f
-	 */
-	private void loadFunctionsFile(File f) {
-
-		logger.debug("loadFunctionsFile");
-
-		functionsMap = new HashMap<String, String[][]>();
-
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(f));
-			String line = br.readLine();
-			logger.debug("loadFunctionsFile");
-			while (line != null) {
-				System.out.println(line);
-				if (line.startsWith("#")) {
-					String category = line.substring(1);
-
-					List<String[]> functions = new ArrayList<String[]>();
-					while ((line = br.readLine()) != null
-							&& !line.startsWith("#")) {
-						if (!line.trim().isEmpty()) {
-							String[] function = line.split(";",-1);
-							// logger.debug(line);
-							functions.add(function);
-						}
-					}
-
-					String[][] functionsArray = new String[functions.size()][];
-					for (int i = 0; i < functions.size(); ++i) {
-						functionsArray[i] = functions.get(i);
-					}
-
-					functionsMap.put(category, functionsArray);
-				} else {
-					line = br.readLine();
-				}
-			}
-			logger.debug("finishedLoadingFunctions");
-		} catch (Exception e) {
-			logger.error("Error loading functions file: " + e);
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
 	 * Initialize the dictionary
 	 */
 	protected void init() {
-
-		File file = new File(WorkflowPrefManager.pathSystemPref + "/"
-				+ getNameFile());
-		if (file.exists()) {
-			loadFunctionsFile(file);
-		} else {
-			file = new File(WorkflowPrefManager.getPathuserpref() + "/"
-					+ getNameFile());
-			if (file.exists()) {
-				loadFunctionsFile(file);
-			} else {
-				loadDefaultFunctions();
-				saveFile(file);
-				loadFunctionsFile(file);
+		String xmlFile = getNameFile();
+		if(!xmlFile.contains(".")){
+			xmlFile += ".xml";
+		}else{
+			if(!xmlFile.endsWith(".xml")){
+				xmlFile = xmlFile.substring(0, xmlFile.lastIndexOf("."))+".xml";
 			}
+		}
+		functionsMap = functionsMapCach.get(xmlFile);
+		if(functionsMap == null){
+			try{
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+						.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
+				File file = new File(WorkflowPrefManager.pathSystemPref + "/"
+						+ xmlFile);
+				if (file.exists()) {
+					Document doc = dBuilder.parse(file);
+					functionsMap = readXml(doc);
+				} else {
+					file = new File(WorkflowPrefManager.getPathuserpref() + "/"
+							+ xmlFile);
+					if (file.exists()) {
+						Document doc = dBuilder.parse(file);
+						functionsMap = readXml(doc);
+					} else {
+						loadDefaultFunctions();
+						try{
+							saveXml(file);
+						}catch(Exception e){
+							logger.warn("Fail saving dictionary for "+xmlFile,e);
+						}
+					}
+				}
+			}catch(Exception e){
+				logger.warn("Fail loading dictionary for "+xmlFile,e);
+				loadDefaultFunctions();
+			}
+			functionsMapCach.put(xmlFile, functionsMap);
 		}
 	}
+	
+	private void saveXml(File f) throws Exception{
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
-	/**
-	 * Save the functions into file
-	 * 
-	 * @param file
-	 */
-	private void saveFile(File file) {
-		BufferedWriter bw = null;
-		try {
-			file.getParentFile().mkdirs();
-			file.createNewFile();
-
-			bw = new BufferedWriter(new FileWriter(file));
-
-			for (Entry<String, String[][]> e : functionsMap.entrySet()) {
-				bw.write("#" + e.getKey());
-				bw.newLine();
-
-				for (String[] function : e.getValue()) {
-					String toWrite = "";
-					for(int i = 0; i < function.length;++i){
-						if(i >0){
-							toWrite += ";";
-						}
-						toWrite += function[i];
+		// root elements
+		Document doc = docBuilder.newDocument();
+		Element rootElement = doc.createElement("dictionary");
+		doc.appendChild(rootElement);
+		for (Entry<String, String[][]> e : functionsMap.entrySet()) {
+			Element menu= doc.createElement("menu");
+			menu.setAttribute("name", e.getKey());
+			for (String[] function : e.getValue()) {
+				try{
+					Element functionEl = doc.createElement("function");
+					{
+						Element name = doc.createElement("name");
+						name.appendChild(doc.createTextNode(function[0]));
+						functionEl.appendChild(name);
 					}
-					if(function.length < 4){
-						toWrite +=";"+"There is no Help for " + function[0];
+					{
+						Element input = doc.createElement("input");
+						input.appendChild(doc.createTextNode(function[1]));
+						functionEl.appendChild(input);
 					}
-					bw.write(toWrite);
-					bw.newLine();
-				}
+					{
+						Element output = doc.createElement("return");
+						output.appendChild(doc.createTextNode(function[2]));
+						functionEl.appendChild(output);
+					}
+
+					if(function.length >= 4){
+						Element help = doc.createElement("help");
+						help.appendChild(doc.createTextNode(function[3]));
+						functionEl.appendChild(help);
+					}
+
+					for(int i=4; i < function.length;++i){
+						Element other = doc.createElement("other"+(i-3));
+						other.appendChild(doc.createTextNode(function[i]));
+						functionEl.appendChild(other);
+					}
+
+					menu.appendChild(functionEl);
+				}catch(NullPointerException exc){}
 			}
-		} catch (IOException e) {
-			logger.error("Error saving hive functions file: " + e);
-			e.printStackTrace();
-		} finally {
-			if (bw != null) {
-				try {
-					bw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			rootElement.appendChild(menu);
 		}
+
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(f);
+		transformer.transform(source, result);		
+	}
+	
+	protected Map<String,String[][]> readXml(Document doc) throws Exception {
+		Map<String,String[][]> ans = new LinkedHashMap<String,String[][]>();
+		NodeList menuList = doc.getElementsByTagName("menu");
+		// Init element
+		for (int menuIdx = 0; menuIdx < menuList.getLength(); ++menuIdx) {
+			Node menuCur = menuList.item(menuIdx);
+			NodeList functionList = ((Element) menuCur).getElementsByTagName("function");
+			String menuName = menuCur.getAttributes().getNamedItem("name")
+					.getNodeValue();
+			String[][] functionMenu = new String[functionList.getLength()][];
+			for (int functionIdx = 0; functionIdx < functionList.getLength(); ++functionIdx) {
+				Node functionCur = functionList.item(functionIdx);
+				
+				String fctName = null;
+				try {
+					fctName = ((Element) functionCur)
+							.getElementsByTagName("name").item(0)
+							.getChildNodes().item(0).getNodeValue();
+				} catch (Exception e) {
+				}
+				String fctInput = null;
+				try {
+					fctInput = ((Element) functionCur)
+							.getElementsByTagName("input").item(0)
+							.getChildNodes().item(0).getNodeValue();
+				} catch (Exception e) {
+				}
+				String fctOutput = null;
+				try {
+					fctOutput = ((Element) functionCur)
+							.getElementsByTagName("return").item(0)
+							.getChildNodes().item(0).getNodeValue();
+				} catch (Exception e) {
+				}
+				String fctHelp = null;
+				try {
+					fctHelp = ((Element) functionCur)
+							.getElementsByTagName("help").item(0)
+							.getChildNodes().item(0).getNodeValue();
+				} catch (Exception e) {
+				}
+				List<String> others = new LinkedList<String>();
+				String other = null;
+				int otherIdx = 1;
+				do{
+					try {
+						other = ((Element) functionCur)
+								.getElementsByTagName("other"+otherIdx).item(0)
+								.getChildNodes().item(0).getNodeValue();
+						if(other != null){
+							others.add(other);
+						}
+					} catch (Exception e) {
+						other = null;
+					}
+					++otherIdx;
+				}while(other != null);
+				
+				String[] funcArray = new String[4+others.size()];
+				funcArray[0]= fctName;
+				funcArray[1] = fctInput;
+				funcArray[2] = fctOutput;
+				funcArray[3] = fctHelp;
+				for(int i=0;i<others.size();++i){
+					funcArray[4+i] = others.get(i);
+				}
+
+				functionMenu[functionIdx] = funcArray;
+			}
+			
+			ans.put(menuName, functionMenu);
+			
+		}
+		return ans;
 	}
 
 	/**
@@ -377,7 +455,7 @@ public abstract class AbstractDictionary {
 		String output = "";
 		String template = "<div class=\"help\">";
 		logger.debug(helpString);
-		if (helpString.contains("@")) {
+		if (helpString != null && helpString.contains("@")) {
 			String[] element = helpString.split("@");
 
 			for (String function : element) {

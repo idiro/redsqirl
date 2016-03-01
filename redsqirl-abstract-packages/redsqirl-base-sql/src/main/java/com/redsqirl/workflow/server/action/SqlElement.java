@@ -205,6 +205,7 @@ public abstract class SqlElement extends DataflowAction {
 		for(FieldType ft:FieldType.values()){
 			types.add(ft.name());
 		}
+		logger.info(types);
 		return types;
 	}
 }
