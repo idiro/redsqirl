@@ -40,7 +40,6 @@ import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.WorkflowInterface;
-import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -544,10 +543,9 @@ public abstract class AbstractSource extends DataflowAction {
 				if (wa.getBrowserName() != null
 						&& wa.getBrowserName().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
-					if ((wa.getTypeName().equalsIgnoreCase(
-							(new HiveType()).getTypeName()) || wa.getTypeName()
+					if(wa.getTypeName()
 							.equalsIgnoreCase(
-									(new MapRedTextType()).getTypeName()))
+									(new MapRedTextType()).getTypeName())
 							&& dataSubtype.getValue() == null) {
 						setValue = wa.getTypeName();
 					}

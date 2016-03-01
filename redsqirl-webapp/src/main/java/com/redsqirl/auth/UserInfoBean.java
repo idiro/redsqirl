@@ -407,7 +407,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		fCtx.getExternalContext().getSessionMap().remove("#{canvasBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{hdfsBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{browserHdfsBean}");
-		fCtx.getExternalContext().getSessionMap().remove("#{hiveBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{jdbcBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{sshBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{canvasModalBean}");
 		fCtx.getExternalContext().getSessionMap().remove("#{configureTabsBean}");
@@ -487,15 +487,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HdfsBrowserBean hdfsBrowserBean = new HdfsBrowserBean();
 		hdfsBrowserBean.openCanvasScreen();
 
-		HiveBean hiveBean = new HiveBean();
-		hiveBean.openCanvasScreen();
+		HiveBean jdbcBean = new HiveBean();
+		jdbcBean.openCanvasScreen();
 
 		SshBean sshBean = new SshBean();
 		sshBean.openCanvasScreen();
 
 		fCtx.getExternalContext().getSessionMap().put("#{hdfsBean}", hdfsBean);
 		fCtx.getExternalContext().getSessionMap().put("#{browserHdfsBean}", hdfsBrowserBean);
-		fCtx.getExternalContext().getSessionMap().put("#{hiveBean}", hiveBean);
+		fCtx.getExternalContext().getSessionMap().put("#{jdbcBean}", jdbcBean);
 		fCtx.getExternalContext().getSessionMap().put("#{sshBean}", sshBean);
 		 */
 
@@ -518,7 +518,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		List<String> beans = new ArrayList<String>();
 		beans.add("wfm");
 		beans.add("ssharray");
-		beans.add("hive");
+		beans.add("jdbc");
 		beans.add("oozie");
 		beans.add("hdfs");
 		beans.add("prefs");

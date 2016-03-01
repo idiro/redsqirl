@@ -21,7 +21,7 @@ support@redsqirl.com
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-	<hadoop.version>1.0.4</hadoop.version>
+	<hadoop.version>2.7.0</hadoop.version>
     </properties>
 
     <parent>

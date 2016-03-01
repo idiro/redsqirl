@@ -125,7 +125,7 @@
 			  nameTabs[0] = "canvas-1";
 
 	    	  jQuery("[id$='openCanvasScreenHdfs']").click();
-	    	  jQuery("[id$='openCanvasScreenHive']").click();
+	    	  jQuery("[id$='openCanvasScreenJdbc']").click();
 	    	  jQuery("[id$='openCanvasScreenSsh']").click();
 	    	  jQuery("[id$='openCanvasScreenHdfsBrowser']").click();
 
@@ -2052,11 +2052,11 @@
 					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
 					oncomplete="console.log('openCanvasScreenHdfs'); jQuery('#tabs-4').unblock();resiziFileSystem();" />
 
-				<a4j:commandLink id="openCanvasScreenHive"
-					action="#{hiveBean.openCanvasScreen}" style="display:none;"
-					reRender="fileSysGridFormHive"
+				<a4j:commandLink id="openCanvasScreenJdbc"
+					action="#{jdbcBean.openCanvasScreen}" style="display:none;"
+					reRender="fileSysGridFormJdbc"
 					onclick="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
-					oncomplete="console.log('openCanvasScreenHive'); jQuery('#tabs-5').unblock();resiziFileSystem();" />
+					oncomplete="console.log('openCanvasScreenJdbc'); jQuery('#tabs-5').unblock();resiziFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenSsh"
 					action="#{sshBean.openCanvasScreen}" style="display:none;"
@@ -2661,8 +2661,8 @@
 									value="#{messages.label_tab_hadoopfilesystem}" />
 						</a></li>
 						<li><a href="#tabs-5"
-							onclick="jQuery('#helpmain_hive').click();return false;"> <h:outputText
-									value="#{messages.label_tab_hiveview}" />
+							onclick="jQuery('#helpmain_jdbc').click();return false;"> <h:outputText
+									value="#{messages.label_tab_jdbcview}" />
 						</a></li>
 
 
@@ -2705,14 +2705,15 @@
 							<a4j:status
 								onstart="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
 								onerror="jQuery('#tabs-5').unblock();"
-								onsuccess="jQuery('#tabs-5').unblock();" />
+								onsuccess="jQuery('#tabs-5').unblock();"
+								onstop="jQuery('#tabs-5').unblock();"  />
 
 							<div id="domMessageDiv5" style="display: none;">
 								<img src="../image/icons/waiting.gif" />
 							</div>
 
 							<h:panelGroup>
-								<ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
+								<ui:include src="/pages/jdbc/jdbcfileSystemGrid.xhtml" />
 							</h:panelGroup>
 						</a4j:region>
 					</div>

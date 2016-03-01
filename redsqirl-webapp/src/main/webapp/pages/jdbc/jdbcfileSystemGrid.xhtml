@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+<head>
+	<script>
+	    
+	    function selectFileJdbc(isFile, nameFile){
+	    	if (isFile == "true"){
+	    		openFileJdbc(nameFile);
+	    	}
+	    	else{
+	    		updateTableJdbc(nameFile);
+	    	}
+	    }
+		
+	</script>
+</head>
+
+<body>
+
+	<a4j:keepAlive beanName = "jdbcBean"/>
+	<div id="jdbcFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	
+		<h:form id="fileSysGridFormJdbc">
+		
+			<a4j:jsFunction name="openFileJdbc" action="#{jdbcBean.openFile}" oncomplete="#{rich:component('jdbcOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateTableJdbc" action="#{jdbcBean.selectFile}" reRender="jdbcfs,jdbcpath" oncomplete="resizeTables();">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+
+			<div class="pathHeader">
+				<h:outputText value="#{messages.label_path}" />
+				<h:inputText id="jdbcpath" label="Path" styleClass="mainPageTextField" value="#{jdbcBean.path}" maxlength="255" style="width:395px; margin-left:5px; background:white" 
+					onkeypress="return enableEnterKey(event, 'jdbcfsPathBtn');"/>
+				
+				<a4j:commandLink id="jdbcfsPathBtn" action="#{jdbcBean.changePath}" reRender="jdbcfs" style="color:#FFFFFF" 
+					oncomplete="resizeTables();" >
+					<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
+				</a4j:commandLink>
+			</div>
+			
+			<div class="divMenu">
+	
+				<a4j:commandLink action="#{jdbcBean.deleteFile}" reRender="jdbcfs" 
+					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
+					rendered="#{jdbcBean.canDelete != null &amp;&amp; jdbcBean.canDelete != 'NULL' &amp;&amp; not empty jdbcBean.tableGrid.rows }" oncomplete="jQuery('#tabs-5').unblock();">
+					<h:graphicImage id="jdbcbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.JdbcInterface_delete_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{jdbcBean.goPrevious}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+					<h:graphicImage id="jdbcbtUndo" value="../image/icons/button-previous.gif" title="#{messages.JdbcInterface_previous_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{jdbcBean.goNext}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+					<h:graphicImage id="jdbcbtRedo" value="../image/icons/button-next.gif" title="#{messages.JdbcInterface_next_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+				
+				<a4j:commandLink action="#{jdbcBean.goUp}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+					<h:graphicImage id="jdbcgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+			</div>
+
+			<rich:extendedDataTable id="jdbcfs" value="#{jdbcBean.tableGrid.rows}"
+				var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{jdbcBean.tableState}" >
+
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="50px;">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox onclick="selectAll(this, /jdbcselect$/);"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="jdbcselect" value="#{item.selected}" />
+				</rich:column>
+				
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="50px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<h:graphicImage value="../image/icons/button-directory-property.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
+					<h:graphicImage value="../image/icons/button-file-property.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+						<f:param name="indexFileEdit" value="#{indexTable}" />
+				</rich:column>
+				
+				<rich:column sortBy="#{jdbcBean.allProps[indexTable]['name']}" filterBy="#{jdbcBean.allProps[indexTable]['name']}" 
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_name}" />
+					</f:facet>
+					<a4j:commandLink 
+					    value="#{jdbcBean.allProps[indexTable]['name']}"
+					    title="#{jdbcBean.allProps[indexTable]['name']}" 
+					    action="#{jdbcBean.verifyIfIsFile}"
+     					oncomplete="selectFileJdbc('#{jdbcBean.file}', '#{jdbcBean.allProps[indexTable]['name']}')">
+     						<f:param name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}" />
+     				</a4j:commandLink>
+				</rich:column>
+
+				<rich:columns value="#{jdbcBean.tableGrid.titles == null? canvasBean.emptyList : jdbcBean.tableGrid.titles}" var="column" index="ind" begin="1"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{column}" />
+					</f:facet>
+					<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
+				</rich:columns>
+
+			</rich:extendedDataTable>
+		</h:form>
+	</div>
+	
+	<a4j:region>
+		<rich:modalPanel id="jdbceditModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Edit File</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('jdbceditModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="jdbcform5">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/jdbc/editJdbc.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>	
+		<rich:modalPanel id="jdbcOpenFileModalPanel" width="600" height="400"
+			style="overflow:auto;" >
+	
+			<f:facet name="header">Preview Table</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('jdbcOpenFileModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="jdbcform6">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/jdbc/openFileJdbc.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+
+</body>
+</html>

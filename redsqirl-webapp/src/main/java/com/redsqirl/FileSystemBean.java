@@ -142,23 +142,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		LinkedList<String> titles = new LinkedList<String>();
 		LinkedList<String> editProps = new LinkedList<String>();
 		LinkedList<String> createProps = new LinkedList<String>();
-
 		for (String properties : propsParam.keySet()) {
-
-			if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
-				titles.add(properties);
-				editProps.add(properties);
-			}else if (propsParam.get(properties).editOnly()) {
-				editProps.add(properties);
-			}else if (propsParam.get(properties).createOnly()) {
-				createProps.add(properties);
-			}
+			titles.add(properties);
 
 		}
 
 		setTableGrid(new SelectableTable(titles));
-		setEditProps(editProps);
-		setCreateProps(createProps);
 
 		updateTable();
 

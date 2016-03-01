@@ -149,5 +149,5 @@ public abstract class SqlUnionConditions extends TableInteraction {
 		addColumn(table_op_title, null, null, null);
 	}
 	
-	protected abstract SqlDictionary getDictionary();
+	protected abstract SqlDictionary getDictionary() throws RemoteException;
 }

@@ -10,15 +10,15 @@
 	<h:outputText value="Content:" />
 	
 	<br />
-	<h:inputTextarea value="#{hiveBean.fileContent}" rows="500" cols="500"
-		style="border:1px solid;width:550px;height:278px;" disabled="true" />
+	<h:inputTextarea value="#{jdbcBean.fileContent}" rows="500" cols="500"
+		style="border:1px solid;width:550px;height:278px;white-space: pre;overflow-wrap: normal;" disabled="true" />
 	
 	<br />
 
-	<h:panelGrid columns="1" id="prevHivelBt" style="border:none; float:right;">
+	<h:panelGrid columns="1" id="prevJdbclBt" style="border:none; float:right;">
 	<a4j:commandButton value="#{messages.button_ok}"
 		styleClass="greenButton"
-		onclick="#{rich:component('hiveOpenFileModalPanel')}.hide();" />
+		onclick="#{rich:component('jdbcOpenFileModalPanel')}.hide();" />
 	</h:panelGrid>
 
 </ui:composition>

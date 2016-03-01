@@ -27,15 +27,15 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.auth.UserInfoBean;
 
-/** HiveBean
+/** JdbcBean
  * 
  * Class to screen control of the File System Hive
  * 
  * @author Igor.Souza
  */
-public class HiveBean extends FileSystemBean {
+public class JdbcBean extends FileSystemBean {
 
-	private static Logger logger = Logger.getLogger(HiveBean.class);
+	private static Logger logger = Logger.getLogger(JdbcBean.class);
 	
 	private String tableState = new String();
 
@@ -51,7 +51,7 @@ public class HiveBean extends FileSystemBean {
 		logger.info("HiveOpenCanvasScreen");
 
 		try {
-			setDataStore(getHiveInterface());
+			setDataStore(getJdbcInterface());
 
 			if(getTableGrid() != null && 
 					getTableGrid().getRows() != null &&
@@ -67,7 +67,7 @@ public class HiveBean extends FileSystemBean {
 			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar()+24);*/
 
 		}catch(Exception e){
-			logger.error(e);
+			logger.error(e,e);
 			getBundleMessage("error.mount.table");
 		}
 

@@ -39,7 +39,7 @@ support@redsqirl.com
 		<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
 		<tutorial.data>${basedir}/../src/site/files</tutorial.data>
 		<dist.tutorialdata>${dist}/tutorialdata</dist.tutorialdata>
-		<hadoop.version>1.0.4</hadoop.version>
+		<hadoop.version>2.7.0</hadoop.version>
 	</properties>
 
 

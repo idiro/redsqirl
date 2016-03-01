@@ -236,13 +236,6 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Oozie xml schema location */
 			sys_oozie_xmlns = core_settings_oozie+".oozie_xmlns",
 
-			/** Default Hive XML */
-			sys_hive_default_xml = core_settings_hive+".hive_default_xml",
-			/** Hive XML */
-			sys_hive_xml = core_settings_hive+".hive_xml",
-			/** Hive Extra Lib */
-			sys_hive_extralib = core_settings_hive+".hive_extra_lib",
-
 			/** namenode path */
 			sys_namenode = core_settings+".namenode",
 			/** The Hadoop Home Folder (with /bin and /conf inside */
@@ -269,8 +262,7 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Max number of workers for Giraph */
 			sys_max_workers = "max_workers";
 
-	/** Hive JDBC Url */
-	public static final String user_hive = core_settings_hive+".hive_jdbc_url",
+	public static final String 
 			/** Path to Private Key */
 			user_rsa_private = "private_rsa_key",
 			/** Backup Path of workflow on HFDS */
@@ -522,7 +514,6 @@ public class WorkflowPrefManager extends BlockManager {
 		File userProp = new File(pathUserCfgPref);
 		if (!userProp.exists()) {
 			Properties prop = new Properties();
-			prop.setProperty(user_hive, "");
 			try {
 				prop.store(new FileWriter(userProp), "");
 				userProp.setWritable(true, true);

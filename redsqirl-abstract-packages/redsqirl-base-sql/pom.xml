@@ -28,7 +28,7 @@ support@redsqirl.com
 	<generated.pck.dir>${project.build.directory}/${project.artifactId}-${project.version}/</generated.pck.dir>
 	<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 	<timestamp>${maven.build.timestamp}</timestamp>
-	<hadoop.version>1.0.4</hadoop.version>
+	<hadoop.version>2.7.0</hadoop.version>
     </properties>
 
     <parent>

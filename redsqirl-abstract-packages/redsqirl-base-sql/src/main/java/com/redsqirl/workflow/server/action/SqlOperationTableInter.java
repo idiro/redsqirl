@@ -45,5 +45,5 @@ public abstract class SqlOperationTableInter  extends TableInteraction{
 		super(id, name, legend, texttip, column, placeInColumn);
 	}
 
-	protected abstract SqlDictionary getDictionary();
+	protected abstract SqlDictionary getDictionary() throws RemoteException;
 }

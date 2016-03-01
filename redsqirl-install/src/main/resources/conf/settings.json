@@ -1,142 +1,230 @@
 {
-  "settings": [
+    "settings": [
     {
-      "property": "namenode",
-      "scope": "system",
-      "optional": "false",
-      "default": "hdfs://namenode:9000",
-      "type": "STRING"
+	"property": "namenode",
+	"scope": "system",
+	"optional": "false",
+	"default": "hdfs://namenode:9000",
+	"type": "STRING"
     },
     {
-      "property": "jobtracker",
-      "scope": "system",
-      "optional": "false",
-      "default": "namenode:9001",
-      "type": "STRING",
+	"property": "jobtracker",
+	"scope": "system",
+	"optional": "false",
+	"default": "namenode:9001",
+	"type": "STRING",
     },
     {
-      "property": "hadoop_home",
-      "scope": "system",
-      "optional": "false",
-      "default": "/home/hadoop/hadoop-1.0.4",
-      "type": "STRING"
+	"property": "hadoop_home",
+	"scope": "system",
+	"optional": "false",
+	"default": "/home/hadoop/hadoop-1.0.4",
+	"type": "STRING"
     },
     {
-      "property": "admin_user",
-      "scope": "system",
-      "optional": "false",
-      "default": "root:admin:http:redsqirl",
-      "type": "STRING"
+	"property": "admin_user",
+	"scope": "system",
+	"optional": "false",
+	"default": "root:admin:http:redsqirl",
+	"type": "STRING"
     },
     {
-      "property": "allow_user_install",
-      "scope": "system",
-      "optional": "true",
-      "default": "true",
-      "type": "STRING"
+	"property": "allow_user_install",
+	"scope": "system",
+	"optional": "true",
+	"default": "true",
+	"type": "STRING"
     },
     {
-      "property": "data_usage",
-      "scope": "system",
-      "optional": "true",
-      "default": "true",
-      "type": "BOOLEAN"
+	"property": "data_usage",
+	"scope": "system",
+	"optional": "true",
+	"default": "true",
+	"type": "BOOLEAN"
     },
     {
-      "property": "pack_manager_url",
-      "scope": "system",
-      "optional": "false",
-      "default": "http://154.50.192.12:8091/analytics-store",
-      "type": "STRING"
+	"property": "pack_manager_url",
+	"scope": "system",
+	"optional": "false",
+	"default": "http://154.50.192.12:8091/analytics-store",
+	"type": "STRING"
     },
     {
-      "property": "tomcat_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
-      "type": "STRING"
+	"property": "tomcat_path",
+	"scope": "system",
+	"optional": "false",
+	"default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
+	"type": "STRING"
     },
     {
-      "property": "package_dir",
-      "scope": "system",
-      "optional": "false",
-      "default": "/opt/git/redsqirl/redsqirl-webapp/src/main/webapp/pages",
-      "type": "STRING"
+	"property": "package_dir",
+	"scope": "system",
+	"optional": "false",
+	"default": "/opt/git/redsqirl/redsqirl-webapp/src/main/webapp/pages",
+	"type": "STRING"
     },
     {
-      "property": "workflow_lib_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/opt/git/redsqirl/redsqirl-workflow/target/redsqirl-workflow-1.0.4-0.6/lib:/opt/git/redsqirl/redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-1.0.4-0.6/lib",
-      "type": "STRING"
+	"property": "workflow_lib_path",
+	"scope": "system",
+	"optional": "false",
+	"default": "/opt/git/redsqirl/redsqirl-workflow/target/redsqirl-workflow-1.0.4-0.6/lib:/opt/git/redsqirl/redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-1.0.4-0.6/lib",
+	"type": "STRING"
     },
     {
-      "property": "idiro_interface_path",
-      "scope": "system",
-      "optional": "false",
-      "default": "/opt/git/redsqirl/redsqirl-wf-interface/target/redsqirl-wf-interface-1.0.4-0.6.jar",
-      "type": "STRING"
+	"property": "idiro_interface_path",
+	"scope": "system",
+	"optional": "false",
+	"default": "/opt/git/redsqirl/redsqirl-wf-interface/target/redsqirl-wf-interface-1.0.4-0.6.jar",
+	"type": "STRING"
     }
-  ],
-  "tabs": [
-    {
-      "name": "oozie",
-      "settings": [
-        {
-          "property": "oozie_url",
-          "scope": "system",
-          "optional": "false",
-          "default": "http://namenode:11000/oozie",
-          "type": "STRING"
-        },
-        {
-          "property": "oozie_action_queue",
-          "scope": "any",
-          "optional": "false",
-          "default": "default",
-          "type": "STRING"
-        },
-        {
-          "property": "oozie_launcher_queue",
-          "scope": "any",
-          "optional": "false",
-          "default": "default",
-          "type": "STRING"
-        },
-        {
-          "property": "oozie_xmlns",
-          "scope": "system",
-          "optional": "true",
-          "default": "uri:oozie:workflow:0.2",
-          "type": "STRING"
-        }
-      ]
-    },
-    {
-      "name": "hive",
-      "settings": [
-        {
-          "property": "jdbc_hive_server",
-          "scope": "system",
-          "optional": "true",
-          "default": "namenode",
-          "type": "STRING"
-        },
-        {
-          "property": "hive_xml",
-          "scope": "system",
-          "optional": "true",
-          "default": "/etc/hive/hive-site.xml",
-          "type": "STRING"
-        },
-        {
-          "property": "hive_default_xml",
-          "scope": "system",
-          "optional": "true",
-          "default": "/etc/hive/hive-default.xml",
-          "type": "STRING"
-        }
-      ]
-    }
-  ]
+    ],
+	"tabs": [
+	{
+	    "name": "oozie",
+	    "settings": [
+	    {
+		"property": "oozie_url",
+		"scope": "system",
+		"optional": "false",
+		"default": "http://namenode:11000/oozie",
+		"type": "STRING"
+	    },
+	    {
+		"property": "oozie_action_queue",
+		"scope": "any",
+		"optional": "false",
+		"default": "default",
+		"type": "STRING"
+	    },
+	    {
+		"property": "oozie_launcher_queue",
+		"scope": "any",
+		"optional": "false",
+		"default": "default",
+		"type": "STRING"
+	    },
+	    {
+		"property": "oozie_xmlns",
+		"scope": "system",
+		"optional": "true",
+		"default": "uri:oozie:workflow:0.2",
+		"type": "STRING"
+	    }
+	    ]
+	},
+	{
+	    "name":"jdbc",
+	    "settings": [
+	    {
+		"property": "jdbc_oracle_driver",
+		"scope": "any",
+		"optional": "true",
+		"default": "/opt/jdbcdriver/ojdbc.jar",
+		"type": "STRING"
+	    },
+	    {
+		"property": "jdbc_mysql_driver",
+		"scope": "any",
+		"optional": "true",
+		"default": "/opt/jdbcdriver/mysql-connector.jar",
+		"type": "STRING"
+	    }
+	    ],
+		"tabs": [
+		{
+		    "name": "hive",
+		    "settings": [
+
+		    {
+			"property": "jdbc_url",
+			"scope": "user",
+			"optional": "false",
+			"default": "jdbc:oracle:thin:@myserver:1521:xe",
+			"type": "STRING"
+		    },
+		    {
+			"property": "jdbc_password",
+			"scope": "user",
+			"optional": "true",
+			"default": "password",
+			"type": "STRING"
+		    }
+		    ],
+			"tabs": [
+			{
+			    "template_name": "other_drivers",
+			    "settings": [
+
+			    {
+				"property": "class_name",
+				"scope": "user",
+				"optional": "false",
+				"default": "org.apache.mytech.jdbc.MyDriver",
+				"type": "STRING"
+			    },
+			    {
+				"property": "path_driver",
+				"scope": "user",
+				"optional": "true",
+				"default": "/opt/jdbcdriver/mydriver.jar",
+				"type": "STRING"
+			    }
+			    ]
+			}
+		    ]
+
+		},
+		{
+		    "template_name": "host",
+		    "settings": [
+
+		    {
+			"property": "jdbc_url",
+			"scope": "user",
+			"optional": "false",
+			"default": "jdbc:oracle:thin:@myserver:1521:xe",
+			"type": "STRING"
+		    },
+		    {
+			"property": "jdbc_user",
+			"scope": "user",
+			"optional": "false",
+			"default": "MYUSER",
+			"type": "STRING"
+		    },
+		    {
+			"property": "jdbc_password",
+			"scope": "user",
+			"optional": "false",
+			"default": "password",
+			"type": "STRING"
+		    }
+		    ]
+		},
+		{
+		    "template_name": "other_drivers",
+		    "settings": [
+
+		    {
+			"property": "class_name",
+			"scope": "user",
+			"optional": "false",
+			"default": "org.apache.mytech.jdbc.MyDriver",
+			"type": "STRING"
+		    },
+		    {
+			"property": "path_driver",
+			"scope": "user",
+			"optional": "true",
+			"default": "/opt/jdbcdriver/mydriver.jar",
+			"type": "STRING"
+		    }
+		    ]
+		}
+
+	    ]
+
+	}
+
+    ]
 }

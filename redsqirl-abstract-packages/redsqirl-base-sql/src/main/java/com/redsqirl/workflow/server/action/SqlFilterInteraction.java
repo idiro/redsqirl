@@ -124,6 +124,6 @@ public abstract class SqlFilterInteraction extends EditorInteraction {
 				.createConditionHelpMenu(), el.getInFields()).getTree();
 	}
 	
-	protected abstract SqlDictionary getDictionary();
+	protected abstract SqlDictionary getDictionary() throws RemoteException;
 
 }

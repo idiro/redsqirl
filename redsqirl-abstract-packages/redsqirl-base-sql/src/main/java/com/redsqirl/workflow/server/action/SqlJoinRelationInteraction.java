@@ -213,5 +213,5 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		return error;
 	}
 
-	protected abstract SqlDictionary getDictionary();
+	protected abstract SqlDictionary getDictionary() throws RemoteException;
 }

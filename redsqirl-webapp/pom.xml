@@ -28,7 +28,7 @@ support@redsqirl.com
 		<compile.resources>${basedir}/src/main/resources</compile.resources>
 		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
 		<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
-		<hadoop.version>1.0.4</hadoop.version>
+		<hadoop.version>2.7.0</hadoop.version>
 	</properties>
 
 	<parent>

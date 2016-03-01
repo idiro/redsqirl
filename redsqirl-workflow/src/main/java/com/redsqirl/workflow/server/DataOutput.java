@@ -388,6 +388,8 @@ DFEOutput {
 			statLogger.debug("New path for "+component+"("+getPath()+"): "+newPath);
 			if(copy == null){
 				setPath(newPath);
+				cachExist = false;
+				cachExistTimeStamp = System.currentTimeMillis();
 			}else if (copy) {
 				copyTo(newPath);
 			} else {

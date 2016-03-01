@@ -122,12 +122,12 @@ public class SetupEnvironmentTest {
 		}
 		logger.debug("Log4j initialised");
 		logger.info("Hive url '"+ 
-						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")+
+						"hive_jdbc_url"+"_"+System.getProperty("user.name")+
 						"': "+WorkflowPrefManager.getUserProperty(
-						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+								"hive_jdbc_url"+"_"+System.getProperty("user.name")));
 		HiveInterface.setUrl(
 				WorkflowPrefManager.getUserProperty(
-						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+						"hive_jdbc_url"+"_"+System.getProperty("user.name")));
 
 		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
 		Properties prop = new Properties();
