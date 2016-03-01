@@ -137,9 +137,9 @@
 
 		    {
 			"property": "jdbc_url",
-			"scope": "user",
+			"scope": "any",
 			"optional": "false",
-			"default": "jdbc:oracle:thin:@myserver:1521:xe",
+			"default": "jdbc:hive2://myserver:10000",
 			"type": "STRING"
 		    },
 		    {
@@ -157,14 +157,14 @@
 
 			    {
 				"property": "class_name",
-				"scope": "user",
+				"scope": "any",
 				"optional": "false",
 				"default": "org.apache.mytech.jdbc.MyDriver",
 				"type": "STRING"
 			    },
 			    {
 				"property": "path_driver",
-				"scope": "user",
+				"scope": "any",
 				"optional": "true",
 				"default": "/opt/jdbcdriver/mydriver.jar",
 				"type": "STRING"
@@ -180,7 +180,7 @@
 
 		    {
 			"property": "jdbc_url",
-			"scope": "user",
+			"scope": "any",
 			"optional": "false",
 			"default": "jdbc:oracle:thin:@myserver:1521:xe",
 			"type": "STRING"
@@ -207,14 +207,14 @@
 
 		    {
 			"property": "class_name",
-			"scope": "user",
+			"scope": "any",
 			"optional": "false",
 			"default": "org.apache.mytech.jdbc.MyDriver",
 			"type": "STRING"
 		    },
 		    {
 			"property": "path_driver",
-			"scope": "user",
+			"scope": "any",
 			"optional": "true",
 			"default": "/opt/jdbcdriver/mydriver.jar",
 			"type": "STRING"

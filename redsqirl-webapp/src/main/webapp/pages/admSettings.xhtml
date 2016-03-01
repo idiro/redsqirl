@@ -29,6 +29,10 @@ jQuery(function() {
 	
 });
 
+	function getNewASTemplateNameValue(){
+		return jQuery("[id$='newastemplatename']").val();
+	}
+
 </script>
 
 </head>
@@ -127,15 +131,33 @@ jQuery(function() {
 					    <h:panelGrid columns="2" width="100%" >
 					    
 						    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:2px;position:absolute;top:100px;height:70%;overflow:auto;width:165px;" >
-						    
-							    <ui:repeat value="#{analyticsStoreLoginBean.listSubMenu}" var="sc">
+
+								<a4j:commandLink title="#{messages.label_add_template}"
+									oncomplete="#{rich:component('addNewASTemplate')}.show();"
+									rendered="#{analyticsStoreLoginBean.template == 'Y'}">
+									<img src="../image/icons/button-plus-small.gif" />
+								</a4j:commandLink>
+
+								<br />
+								<br />
+
+								<ui:repeat value="#{analyticsStoreLoginBean.listSubMenu}" var="sc">
 							     	
 							     	<a4j:commandButton value="#{sc.name}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" 
 							     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
 							     		<f:param name="name" value="#{sc.name}" />
 							     	</a4j:commandButton>
-							     	
-							     	<br/>
+
+									<a4j:commandLink title="#{messages.label_remove_template}"
+										action="#{analyticsStoreLoginBean.removeTemplate}"
+										rendered="#{sc.template == 'Y'}"
+										reRender="listSubMenuSettings">
+										<h:graphicImage url="../image/icons/button-delete-small.gif"
+											style="width:20px;" title="#{messages.button_remove}" />
+										<f:param name="name" value="#{sc.name}" />
+									</a4j:commandLink>
+
+									<br/>
 						    		<br/>
 						    		<br/>
 						    		
@@ -147,7 +169,8 @@ jQuery(function() {
 						     		
 						     		<tr>
 					     				<td colspan="2">
-					     					<h:outputText value="#{analyticsStoreLoginBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
+		     								<h:outputText rendered="#{analyticsStoreLoginBean.template != 'Y'}" value="#{analyticsStoreLoginBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
+		     								<h:outputText rendered="#{analyticsStoreLoginBean.template == 'Y'}" value="#{messages.label_template} #{analyticsStoreLoginBean.pathPosition}" style="font-size:20px;padding-left:200px;" />
 					     				</td>
 					     			</tr>
 						     		<tr>
@@ -167,15 +190,16 @@ jQuery(function() {
 						     				<td colspan="2">
 						     					
 						     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;vertical-align:-6px;" title="#{messages.label_system}" />
-						     					<h:inputText title="#{analyticsStoreLoginBean.s.properties[obj].description}" value="#{analyticsStoreLoginBean.s.properties[obj].sysValue}" 
+						     					<h:inputText title="#{analyticsStoreLoginBean.s.properties[obj].description}" 
+						     					    value="#{analyticsStoreLoginBean.s.properties[obj].sysValue}" 
 						     						style="background-color:#FF3333;border: 1px solid;" 
-						     						rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty}" />
+						     						rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty &amp;&amp; analyticsStoreLoginBean.template != 'Y'}" />
 						     					<h:outputText value="#{analyticsStoreLoginBean.s.properties[obj].description}" 
-			     									rendered="#{!analyticsStoreLoginBean.s.properties[obj].existSysProperty}" />
+			     									rendered="#{!analyticsStoreLoginBean.s.properties[obj].existSysProperty or analyticsStoreLoginBean.template == 'Y'}" />
 						     					<br/>
 						     					<br/>
 						     				
-						     					<h:panelGrid columns="3">
+						     					<h:panelGrid columns="3" rendered="#{analyticsStoreLoginBean.template != 'Y'}" >
 						     					
 						     						<a4j:commandLink action="#{analyticsStoreLoginBean.setDefaultValue}"
 						     							rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty}"
@@ -234,6 +258,45 @@ jQuery(function() {
 	</h:form>
 	
 	
+    <rich:modalPanel id="addNewASTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
+
+		<f:facet name="header">
+			<h:outputText value='#{messages.label_addNewTemplate}' />
+		</f:facet>
+
+		<h:form>
+
+			<a4j:region>
+				<a4j:jsFunction name="addNewASTemplateNameAndClose"
+					action="#{analyticsStoreLoginBean.addNewTemplate}"
+					reRender="listSubMenuSettings"
+					oncomplete="#{rich:component('addNewASTemplate')}.hide();">
+					<f:param name="name" />
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<h:panelGrid>
+				<h:outputText value="#{messages.label_addNewTemplate_name}" />
+				<h:inputText id="newastemplatename" value=""
+					onkeypress="return enableEnterKey(event, 'newASTemplateNameBtn');" />
+			</h:panelGrid>
+
+			<br />
+			<br />
+
+			<center>
+				<a4j:commandButton value="#{messages.button_cancel}"
+					oncomplete="#{rich:component('addNewASTemplate')}.hide();"
+					styleClass="greenButton" />
+				<a4j:commandButton value="#{messages.button_ok}"
+					id="newASTemplateNameBtn"
+					oncomplete="addNewASTemplateNameAndClose(getNewASTemplateNameValue());"
+					styleClass="greenButton" />
+			</center>
+
+		</h:form>
+
+	</rich:modalPanel>
 	
 	
 

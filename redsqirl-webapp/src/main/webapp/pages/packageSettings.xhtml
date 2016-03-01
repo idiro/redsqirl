@@ -9,22 +9,13 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
   
 <script>
-	function getNewTemplateNameValue(){
-		return jQuery("[id$='newtemplatename']").val();
+	function getNewPSTemplateNameValue(){
+		return jQuery("[id$='newpstemplatename']").val();
 	}
 </script>
 <a4j:loadBundle basename="MessagesResources" var="messages" />
     
 	<h:form>
-
-		<a4j:region>
-		<a4j:jsFunction name="addNewTemplateNameAndClose"
-			action="#{packageMngBean.addNewTemplate}"
-			reRender="listSubMenuSettings"
-			oncomplete="#{rich:component('addNewTemplate')}.hide();">
-			<f:param name="name"/>
-		</a4j:jsFunction>
-		</a4j:region>
 		<div class="editPackageSettings" >
 		    
 	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
@@ -46,8 +37,9 @@
 			    <h:panelGroup layout="block" id="listSubMenuSettings" style="margin-left:2px;position:absolute;top:100px;height:70%;overflow:auto;width:165px;" >
 			    
 			    	<a4j:commandLink title="#{messages.label_add_template}" 
-			    		oncomplete="#{rich:component('addNewTemplate')}.show();" 
-			    		rendered="#{packageMngBean.template == 'Y'}" >
+			    		oncomplete="#{rich:component('addNewPSTemplate')}.show();" 
+			    		rendered="#{packageMngBean.template == 'Y'}"
+						reRender="listSubMenuSettings" >
 				    	<img src="../image/icons/button-plus-small.gif" />
 				    </a4j:commandLink>
 				    
@@ -205,31 +197,45 @@
      </h:form>
     
     
-    <rich:modalPanel id="addNewTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
+    <rich:modalPanel id="addNewPSTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
 
 		<f:facet name="header">
 			<h:outputText value='#{messages.label_addNewTemplate}' />
 		</f:facet>
 
 		<h:form>
-		
+
+			<a4j:region>
+				<a4j:jsFunction name="addNewPSTemplateNameAndClose"
+					action="#{packageMngBean.addNewTemplate}"
+					reRender="listSubMenuSettings"
+					oncomplete="#{rich:component('addNewPSTemplate')}.hide();">
+					<f:param name="name" />
+				</a4j:jsFunction>
+			</a4j:region>
+
 			<h:panelGrid>
 				<h:outputText value="#{messages.label_addNewTemplate_name}" />
-				<h:inputText id="newtemplatename" value="" onkeypress="return enableEnterKey(event, 'newTemplateNameBtn');" />
+				<h:inputText id="newpstemplatename" value=""
+					onkeypress="return enableEnterKey(event, 'newPSTemplateNameBtn');" />
 			</h:panelGrid>
-					
-			<br/><br/>
-			
+
+			<br />
+			<br />
+
 			<center>
-				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('addNewTemplate')}.hide();" styleClass="greenButton" />
-				<a4j:commandButton value="#{messages.button_ok}" id="newTemplateNameBtn"
-					oncomplete="addNewTemplateNameAndClose(getNewTemplateNameValue());" styleClass="greenButton" />
+				<a4j:commandButton value="#{messages.button_cancel}"
+					oncomplete="#{rich:component('addNewPSTemplate')}.hide();"
+					styleClass="greenButton" />
+				<a4j:commandButton value="#{messages.button_ok}"
+					id="newPSTemplateNameBtn"
+					oncomplete="addNewPSTemplateNameAndClose(getNewPSTemplateNameValue());"
+					styleClass="greenButton" />
 			</center>
-			
+
 		</h:form>
-		
+
 	</rich:modalPanel>
-	
 	
     
 </ui:composition>

@@ -29,6 +29,8 @@ public interface SettingMenuInt extends Remote{
 	
 	boolean isTemplate() throws RemoteException;
 	
+	boolean isUserOnly() throws RemoteException;
+	
 	void read(String path,JSONObject json) throws RemoteException;
 	
 	void deleteAllProperties() throws RemoteException;

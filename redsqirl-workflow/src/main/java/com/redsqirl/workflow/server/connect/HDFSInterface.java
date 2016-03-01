@@ -27,12 +27,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -71,7 +69,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author etienne
  * 
  */
-public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore {
+public class HDFSInterface extends Storage implements HdfsDataStore{
 
 	/**
 	 * 
@@ -99,16 +97,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			key_size = "size",
 			/** Recursive Key */
 			key_recursive = "recursive";
-	/** max allowed history */
-	public static final int historyMax = 50;
-	/** Default path preference */
-	protected Preference<String> pathDataDefault;
-	/**
-	 * List of paths previously used/visited
-	 */
-	protected List<Path> history = new LinkedList<Path>();
-	/** Current position in history list */
-	protected int cur = 0;
 
 	protected static Map<String, DataStore.ParamProperty> paramProp = new LinkedHashMap<String, DataStore.ParamProperty>();
 
@@ -119,10 +107,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	 */
 	public HDFSInterface() throws RemoteException {
 		super();
-		pathDataDefault = new Preference<String>(prefs,
-				"Path to store/retrieve data by default", "/user/"
-						+ System.getProperty("user.name"));
-		history.add(new Path(pathDataDefault.get()));
+		history.add("/user/"+ System.getProperty("user.name"));
 		if (paramProp.isEmpty()) {
 			paramProp.put(key_type, new DSParamProperty(
 					"Type of the file: \"directory\" or \"file\"", true, true,
@@ -152,164 +137,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		return null;
 	}
 
-	/**
-	 * Get the current path
-	 * 
-	 * @return path current path
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getPath() throws RemoteException {
-		logger.debug("Get path");
-		return history.get(cur).toString();
-	}
 
-	/**
-	 * Set the default path for the interface
-	 * 
-	 * @param path
-	 *            to set
-	 * @throws RemoteException
-	 */
-	@Override
-	public void setDefaultPath(String path) throws RemoteException {
-		HdfsFileChecker fCh = new HdfsFileChecker(path);
-		if (fCh.isDirectory()) {
-			pathDataDefault.put(path);
-		}
-		// fCh.close();
-	}
-
-
-	/**
-	 * Go to a path if it exists
-	 * 
-	 * @param path
-	 * @return <code>true</code> if current path was changed else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean goTo(String path) throws RemoteException {
-		boolean ok = false;
-		if(path != null && !path.isEmpty()){
-			try{
-				HdfsFileChecker fCh = new HdfsFileChecker(path);
-				if (fCh.isDirectory() || fCh.isFile()) {
-					while (history.size() - 1 > cur) {
-						history.remove(history.size() - 1);
-					}
-					history.add(new Path(path));
-					++cur;
-					while (history.size() > historyMax) {
-						history.remove(0);
-						--cur;
-					}
-					ok = true;
-				}
-			}catch(Exception e){
-				logger.debug(e.getMessage(),e);
-			}
-		}
-		// fCh.close();
-		return ok;
-	}
-
-	/**
-	 * Does the history have a previous path
-	 * 
-	 * @return <code>true</code> there is a previous path else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean havePrevious() throws RemoteException {
-		return cur > 0;
-	}
-
-	/**
-	 * Go to the previous path in history
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goPrevious() throws RemoteException {
-		if (havePrevious()) {
-			--cur;
-		}
-	}
-
-	/**
-	 * Does the history have next path
-	 * 
-	 * @return <code>true</code> there is a next path else <code>false</code>
-	 * @throws RemoteException
-	 * 
-	 */
-	@Override
-	public boolean haveNext() throws RemoteException {
-		return cur < history.size() - 1;
-	}
-
-	/**
-	 * Go to the next position of users history
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goNext() throws RemoteException {
-		if (haveNext()) {
-			++cur;
-		}
-	}
-
-
-	@Override
-	public void savePathList(String repo, List<String> paths) throws RemoteException {
-
-		logger.debug("savePathList ");
-
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"hdfs_history_"+repo+".txt");
-		String newLine = System.getProperty("line.separator");
-		FileWriter fw;
-		try {
-			fw = new FileWriter(pathHistory);
-			for (String path : paths) {
-				fw.write(path + newLine);
-			}
-			fw.close();
-		} catch (IOException e) {
-			logger.error("error savePathList: ", e);
-		}
-	}
-
-	@Override
-	public Map<String, String> readPathList(String repo) throws RemoteException {
-
-		logger.debug("readPathList ");
-
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name"))+"/hdfs_history_"+repo+".txt");
-		LinkedHashMap<String, String> mapHistory = new LinkedHashMap<String, String>();
-
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(pathHistory));
-			String line = null;
-			while((line = br.readLine()) != null){
-				if(line.endsWith("/")){
-					line = line.substring(0, line.length()-1);
-				}
-				String alias = line.substring(line.lastIndexOf("/"));
-				mapHistory.put(line, alias);
-				logger.debug("path " + line);
-				logger.debug("alias " + alias);
-			}
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return mapHistory;
-	}
 
 	/**
 	 * Create a path on HDFS with properties
@@ -706,20 +534,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	}
 
 	/**
-	 * Read a number of lines of a file
-	 * 
-	 * @param delimiter
-	 * @param maxToRead
-	 * @return List of read rows from the current path
-	 * @throws RemoteException
-	 */
-	@Override
-	public List<String> select(String delimiter, int maxToRead)
-			throws RemoteException {
-		return select(getPath(), delimiter, maxToRead);
-	}
-
-	/**
 	 * Get the properties of a path
 	 * 
 	 * @param path
@@ -762,8 +576,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			} else {
 				if (stat.isDir()) {
 					prop.put(key_type, "directory");
+					prop.put(key_children, "true");
 				} else {
 					prop.put(key_type, "file");
+					prop.put(key_children, "false");
 					double res = stat.getBlockSize();
 					boolean end = res < 1024;
 					int pow = 0;
@@ -808,29 +624,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		logger.debug("Properties of " + path + ": " + prop.toString());
 		return prop;
 	}
-
-	/**
-	 * Get the properties of the current path
-	 * 
-	 * @return Map of properties
-	 * @throws RemoteException
-	 */
-	@Override
-	public Map<String, String> getProperties() throws RemoteException {
-		return getProperties(getPath());
-	}
-
-	/**
-	 * Get Children Properties of a sub directories
-	 * 
-	 * @return Map of child properties
-	 * @throws RemoteException
-	 */
-	@Override
-	public Map<String, Map<String, String>> getChildrenProperties()
-			throws RemoteException {
-		return getChildrenProperties(history.get(cur).toString());
-	}
 	
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties(String pathStr)
@@ -858,19 +651,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		// fCh.close();
 
 		return ans;
-	}
-
-	/**
-	 * Change a Property
-	 * 
-	 * @param key
-	 * @param newValue
-	 * @throws RemoteException
-	 */
-	@Override
-	public String changeProperty(String key, String newValue)
-			throws RemoteException {
-		return changeProperty(getPath(), key, newValue);
 	}
 
 	/**
@@ -954,11 +734,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		return error;
 	}
 
-	@Override
-	public String changeProperties(Map<String, String> newProperties)
-			throws RemoteException {
-		return changeProperties(getPath(), newProperties);
-	}
 
 	/**
 	 * Change Ownership of a Path
@@ -1406,8 +1181,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	}
 
 	@Override
-	public List<String> displaySelect(int maxToRead) throws RemoteException {
-		return select(getPath(),",", maxToRead);
+	public boolean exists(String path) throws RemoteException {
+		HdfsFileChecker fCh = new HdfsFileChecker(path);
+		return fCh.exists();
 	}
 
 }

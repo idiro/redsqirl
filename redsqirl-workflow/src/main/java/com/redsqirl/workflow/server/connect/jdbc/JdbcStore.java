@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,7 +33,9 @@ import com.idiro.utils.db.JdbcDetails;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.DSParamProperty;
+import com.redsqirl.workflow.server.connect.Storage;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.jdbc.DbConfFile;
 
@@ -50,7 +51,7 @@ import com.redsqirl.workflow.utils.jdbc.DbConfFile;
  * @author etienne
  * 
  */
-public class JdbcStore extends UnicastRemoteObject implements DataStore {
+public class JdbcStore extends Storage {
 
 	/**
 	 * 
@@ -80,15 +81,6 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	property_other_drivers = "core.jdbc.other_drivers",
 	property_class_name = ".class_name",
 	property_path_driver = ".path_driver";
-	
-	/** Max History Size */
-	public static final int historyMax = 50;
-	
-	/** History of paths/tables */
-	protected List<String> history = new LinkedList<String>();
-	
-	/** Current position in history */
-	protected int cur = 0;
 	/** jdbcstore IsInit */
 	private static boolean isInit = false;
 
@@ -96,7 +88,6 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	/** Refresh count */
 	protected static final long refreshTimeOut = 10000;
 	
-	protected static String curName = null; 
 	/** Tables List */
 	static Set<String> connectionList = new LinkedHashSet<String>(); 
 	protected static Map<String,JdbcStoreConnection> connections = new LinkedHashMap<String, JdbcStoreConnection>();
@@ -115,6 +106,7 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 		if (!isInit) {
 			DbConfFile.initAllConfs();
 			open();
+			isInit = true;
 		}
 		logger.debug("Exist hive interface constructor");
 	}
@@ -252,169 +244,6 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	}
 
 	/**
-	 * Get Current path from history
-	 */
-	@Override
-	public String getPath() throws RemoteException {
-		return history.isEmpty()? null:history.get(cur);
-	}
-
-	@Override
-	public void setDefaultPath(String path) throws RemoteException {
-	}
-
-	/**
-	 * Go to a path in history or add it to history
-	 * 
-	 * @param path
-	 * @return <code>true</code> if current path was updated to passed path else
-	 *         <code>false</code>
-	 */
-	@Override
-	public boolean goTo(String path) throws RemoteException {
-		boolean ok = false;
-		if (exists(path)) {
-			while (history.size() - 1 > cur) {
-				history.remove(history.size() - 1);
-			}
-			history.add(path);
-			++cur;
-			while (history.size() > historyMax) {
-				history.remove(0);
-				--cur;
-			}
-			ok = true;
-		}
-		return ok;
-	}
-
-	/**
-	 * Check if history has previous path
-	 * 
-	 * @return <code>true</code> if history has previous path else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean havePrevious() throws RemoteException {
-		return cur > 0;
-	}
-
-	/**
-	 * Go to the previous path
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goPrevious() throws RemoteException {
-		if (havePrevious()) {
-			--cur;
-		}
-	}
-
-	/**
-	 * Check if history have a next path
-	 * 
-	 * @return <code>true</code> if history has next path else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean haveNext() throws RemoteException {
-		return cur < history.size() - 1;
-	}
-
-	/**
-	 * Go to the next Path in History
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goNext() throws RemoteException {
-		if (haveNext()) {
-			++cur;
-		}
-	}
-
-	/**
-	 * Get the type from an expression
-	 * 
-	 * @param expression
-	 * @return type
-	 */
-	public String getType(String expression) {
-		String ans = null;
-		if (expression.contains("'") || expression.contains("\"")) {
-			ans = "STRING";
-		}
-		if (ans == null) {
-			try {
-				Integer.valueOf(expression);
-				ans = "INT";
-			} catch (Exception e) {
-			}
-		}
-
-		if (ans == null) {
-			try {
-				Float.valueOf(expression);
-				ans = "FLOAT";
-			} catch (Exception e) {
-			}
-		}
-
-		return ans;
-	}
-	
-
-	/**
-	 * Change the condition to be the same variable type as "type"
-	 * 
-	 * @param condition
-	 * @param type
-	 * @return changed Type
-	 */
-	public String changeType(String condition, String type) {
-		String ans = "";
-		if (condition != null && !(condition.isEmpty())) {
-			logger.info("cond : " + condition + " , " + type);
-			if (type.equalsIgnoreCase("string")) {
-				if (!condition.contains("'")) {
-					logger.info("should be false : " + condition.contains("'"));
-					ans = "'" + condition.trim() + "'";
-				} else if (condition.contains("'")) {
-					ans = condition;
-				}
-			} else if (type.equalsIgnoreCase("float")) {
-				boolean isFloat = false;
-				try {
-					Double.valueOf(condition);
-					isFloat = true;
-				} catch (Exception e) {
-					isFloat = false;
-				}
-				if (isFloat) {
-					ans = condition;
-				}
-
-			} else if (type.equalsIgnoreCase("int")) {
-				boolean isInt = false;
-				try {
-					Integer.valueOf(condition);
-					isInt = true;
-				} catch (Exception e) {
-					isInt = false;
-				}
-				if (isInt) {
-					ans = condition;
-				}
-			}
-		}
-		logger.info("ans : " + ans);
-		return ans;
-	}
-
-	/**
 	 * Get a map of properties from a path
 	 * 
 	 * @param path
@@ -453,21 +282,7 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	@Override
 	public String create(String path, Map<String, String> properties)
 			throws RemoteException {
-		//TODO
-		String error = null;
-
-		if (!exists(path)) {
-			
-		} else {
-			error = LanguageManagerWF.getText("sqoopinterface.createpartfail",
-					new Object[] { path });
-		}
-
-		if (error != null) {
-			logger.error(error);
-		}
-
-		return error;
+		return null;
 	}
 
 	/**
@@ -603,19 +418,7 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	}
 	*/
 
-	/**
-	 * Select date from current path
-	 * 
-	 * @param delimiter
-	 * @param maxToRead
-	 * @return result from select statement
-	 * @throws RemoteException
-	 */
-	@Override
-	public List<String> select(String delimiter, int maxToRead)
-			throws RemoteException {
-		return select(history.get(cur), delimiter, maxToRead);
-	}
+	
 
 	/**
 	 * Get Properties of a path if it exists
@@ -650,52 +453,13 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 		String[] connectionAndTable = getConnectionAndTable(path);
 		Map<String, String> ans = new HashMap<String, String>();
 		if(connectionAndTable.length == 2){
-			ans.put(key_type, "file");
+			ans.put(key_type, "table");
+			ans.put(key_children, "false");
 		}else{
-			ans.put(key_type, "directory");
+			ans.put(key_type, "connection");
+			ans.put(key_children, "true");
 		}
 		return ans;
-	}
-
-	/**
-	 * Get Properties of current path
-	 * 
-	 * @return Map of Properties
-	 * @throws RemoteException
-	 */
-	@Override
-	public Map<String, String> getProperties() throws RemoteException {
-		return getProperties(history.get(cur));
-	}
-
-	/**
-	 * Get properties of table with or without partitions include description
-	 * and extended description of tables and partition if they exist
-	 * 
-	 * @return Map of Properties
-	 * @throws RemoteException
-	 */
-	@Override
-	public Map<String, Map<String, String>> getChildrenProperties()
-			throws RemoteException,Exception {
-		if(history.isEmpty()){
-			return null;
-		}
-		return getChildrenProperties(history.get(cur));
-	}
-
-	/**
-	 * Change the property of the current path
-	 * 
-	 * @param key
-	 * @param newValue
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	@Override
-	public String changeProperty(String key, String newValue)
-			throws RemoteException {
-		return changeProperty(history.get(cur), key, newValue);
 	}
 
 	/**
@@ -725,19 +489,6 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	public String changeProperties(String path,
 			Map<String, String> newProperties) throws RemoteException {
 		return "Cannot change any property";
-	}
-
-	/**
-	 * Change the properties of the current path
-	 * 
-	 * @param newProperties
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	@Override
-	public String changeProperties(Map<String, String> newProperties)
-			throws RemoteException {
-		return changeProperties(history.get(cur), newProperties);
 	}
 
 	/**
@@ -996,8 +747,9 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 
 		Map<String, DataStore.ParamProperty> paramProp = new LinkedHashMap<String, DataStore.ParamProperty>();
 		paramProp.put(key_type, new DSParamProperty(
-				"Type of the file: \"directory\" or \"file\"", true, true,
+				"Type of the file: \"connection\" or \"table\"", true, true,
 				false));
+		
 		if (getPath() != null && getConnectionAndTable(getPath()).length == 2) {
 			/*paramProp.put(key_describe, new DSParamProperty("Table description",
 					true, false, false));*/
@@ -1129,59 +881,6 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
-	@Override
-	public List<String> displaySelect(int maxToRead) throws RemoteException {
-		return displaySelect(history.get(cur), maxToRead);
-	}
-
-	@Override
-	public void savePathList(String repo, List<String> paths) throws RemoteException {
-		
-		logger.info("savePathList ");
-
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"sqoop_history_"+repo+".txt");
-		String newLine = System.getProperty("line.separator");
-		FileWriter fw;
-		try {
-			fw = new FileWriter(pathHistory);
-			for (String path : paths) {
-				fw.write(path + newLine);
-			}
-			fw.close();
-		} catch (IOException e) {
-			logger.error("error savePathList: ", e);
-		}
-		
-	}
-
-	@Override
-	public Map<String, String> readPathList(String repo) throws RemoteException {
-		
-		logger.info("readPathList ");
-
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name"))+"/sqoop_history_"+repo+".txt");
-		LinkedHashMap<String, String> mapHistory = new LinkedHashMap<String, String>();
-
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(pathHistory));
-			String line = null;
-			while((line = br.readLine()) != null){
-				if(line.endsWith("/")){
-					line = line.substring(0, line.length()-1);
-				}
-				String alias = line.substring(line.lastIndexOf("/"));
-				mapHistory.put(line, alias);
-				logger.info("path " + line);
-				logger.info("alias " + alias);
-			}
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return mapHistory;
-	}
-
 	public static Map<String, JdbcStoreConnection> getConnections() {
 		return connections;
 	}
@@ -1227,7 +926,7 @@ public class JdbcStore extends UnicastRemoteObject implements DataStore {
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties(String path)
 			throws RemoteException,Exception {
-		logger.info("path : " + history.get(cur));
+		logger.info("path : " + path);
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
 		
 		String[] connectionAndTable = getConnectionAndTable(path);

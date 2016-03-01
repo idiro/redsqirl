@@ -121,14 +121,6 @@ public interface DataStore extends Remote {
 	String getPath() throws RemoteException;
 
 	/**
-	 * Default Path where to start from next time
-	 * 
-	 * @param path default
-	 * @throws RemoteException
-	 */
-	void setDefaultPath(String path) throws RemoteException;
-
-	/**
 	 * Go to the given path if exists
 	 * 
 	 * @param path
@@ -182,7 +174,6 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	Map<String,String> readPathList(String repo) throws RemoteException;
-	
 	
 	/**
 	 * Get all the properties available in this datastore. 
@@ -258,6 +249,13 @@ public interface DataStore extends Remote {
 	String delete(String path) throws RemoteException;
 
 	/**
+	 * Return true if the path exists
+	 * @param path
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean exists(String path) throws RemoteException;
+	/**
 	 * Select from the given path the n first elements with a delimiter.
 	 * 
 	 * @param path
@@ -324,7 +322,7 @@ public interface DataStore extends Remote {
 	 * @return Children properties of the current element, or null if the object cannot have children.
 	 * @throws RemoteException
 	 */
-	Map<String, Map<String, String>> getChildrenProperties()
+	Map<String, Map<String, String>> getChildrenProperties(boolean refresh)
 			throws RemoteException,Exception;
 
 	/**

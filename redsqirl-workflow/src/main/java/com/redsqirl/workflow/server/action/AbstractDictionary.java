@@ -223,6 +223,12 @@ public abstract class AbstractDictionary {
 	protected AbstractDictionary() {
 		init();
 	}
+	
+	protected AbstractDictionary(boolean init) {
+		if(init){
+			init();
+		}
+	}
 
 	/**
 	 * Load a file that contains all the functions
@@ -283,7 +289,7 @@ public abstract class AbstractDictionary {
 	/**
 	 * Initialize the dictionary
 	 */
-	private void init() {
+	protected void init() {
 
 		File file = new File(WorkflowPrefManager.pathSystemPref + "/"
 				+ getNameFile());

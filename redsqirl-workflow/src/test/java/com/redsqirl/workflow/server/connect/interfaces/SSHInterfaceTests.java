@@ -1,4 +1,5 @@
 /** 
+
  *  Copyright © 2016 Red Sqirl, Ltd. All rights reserved.
  *  Red Sqirl, Clarendon House, 34 Clarendon St., Dublin 2. Ireland
  *
@@ -78,7 +79,7 @@ public class SSHInterfaceTests {
 			assertTrue("getPath: "+hInt.getPath(),
 					hInt.getPath().equals(new_path2));
 			
-			Set<String> child = hInt.getChildrenProperties().keySet();
+			Set<String> child = hInt.getChildrenProperties(true).keySet();
 			assertTrue("number of children should be one instead of "+child.toString(),child.size()==1);
 			assertTrue("Child is "+new_path3+" instead of "+child.toString(),child.contains(new_path3));
 			

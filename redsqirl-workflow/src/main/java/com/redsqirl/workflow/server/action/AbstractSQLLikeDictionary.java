@@ -47,6 +47,19 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	protected static final String arithmeticOperators = "arithmeticOperators";
 
 	/**
+	 * Constructor
+	 */
+	protected AbstractSQLLikeDictionary() {
+		init();
+	}
+	
+	protected AbstractSQLLikeDictionary(boolean init) {
+		if(init){
+			init();
+		}
+	}
+	
+	/**
 	 * Load the default funtions into a map
 	 */
 	protected void loadStandardOperators(String operatorEqual) {

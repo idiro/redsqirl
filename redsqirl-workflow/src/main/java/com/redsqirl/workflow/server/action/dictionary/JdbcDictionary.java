@@ -42,11 +42,10 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 
 	protected String dictionaryName;
 
-	public JdbcDictionary(){
-	}
-	
 	public JdbcDictionary(String dictionaryName){
+		super(false);
 		this.dictionaryName = dictionaryName;
+		init();
 	}
 	
 	/**
@@ -304,6 +303,14 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 										"ANY",
 								"@function:DISTINCT()@short: Get the distinct value of a column.@description:This function can be used with a COUNT." }});
 
+		
+		String[][] extraRelationalOperators = new String[][] {
+			new String[] { "LIKE", "STRING,STRING", "BOOLEAN",
+			"@function:LIKE@short:Boolean LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns true." },
+			new String[] { "NOT LIKE", "STRING,STRING", "BOOLEAN",
+			"@function:LIKE@short:Boolean NOT LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns false." }
+		};
+		addToFunctionsMap(relationalOperators,extraRelationalOperators);
 	}
 
 	

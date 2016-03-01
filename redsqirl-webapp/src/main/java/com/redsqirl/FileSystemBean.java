@@ -149,7 +149,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		setTableGrid(new SelectableTable(titles));
 
-		updateTable();
+		updateTable(false);
 
 		logger.info("update progressbar");
 		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
@@ -158,7 +158,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("Finished mounting table");
 	}
 
-	public void updateTable() throws RemoteException{
+	protected void updateTable(boolean refresh) throws RemoteException{
 		String oldPath = getPath();
 		String error = null;
 		setPath(getDataStore().getPath());
@@ -174,7 +174,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		try{
 			if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
 					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
-				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties(refresh);
 				if(mapSSH != null){
 					setAllProps(new LinkedList<Map<String,String>>());
 					getTableGrid().getRows().clear();
@@ -244,7 +244,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			
 			//Force the refresh
 			setPath(null);
-			updateTable();
+			updateTable(false);
 		}
 
 		usageRecordLog().addSuccess("DELETEFILE");
@@ -264,11 +264,16 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if (getDataStore().goTo(getPath())) {
 			//Force the refresh
 			setPath(null);
-			updateTable();
+			updateTable(false);
 		} else {
 			getBundleMessage("error.invalid.path");
 		}
 
+	}
+	
+	public void refreshPath() throws RemoteException {
+		setPath(null);
+		updateTable(true);
 	}
 
 	/**
@@ -294,7 +299,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			if (getDataStore().goTo(newPath)) {
 				//setPath(newPath);
-				updateTable();
+				updateTable(false);
 				logger.info("selectFile updateTable");
 
 			} else {
@@ -318,7 +323,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			logger.info("selectFileHistory " + name);
 
 			if (getDataStore().goTo(name)) {
-				updateTable();
+				updateTable(false);
 				logger.info("selectFileHistory updateTable");
 			} else {
 				logger.error("Error: " + name + " this is not a directory");
@@ -378,7 +383,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void verifyIfIsFile(String name) throws RemoteException {
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
 		try{
-			file = getDataStore().getChildrenProperties() == null;
+			file = getDataStore().getChildrenProperties(true) == null;
 		}catch(Exception e){
 			file = true;
 		}
@@ -457,7 +462,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			usageRecordLog().addError("ERROR COPYMOVEFILE", error);
 		}
 
-		updateTable();
+		updateTable(true);
 		
 		usageRecordLog().addSuccess("COPYMOVEFILE");
 	}
@@ -550,7 +555,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		//Force the refresh
 		setPath(null);
-		updateTable();
+		updateTable(true);
 	}
 
 	/**
@@ -623,7 +628,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goPrevious() throws RemoteException {
 
 		getDataStore().goPrevious();
-		updateTable();
+		updateTable(false);
 
 	}
 
@@ -639,7 +644,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goNext() throws RemoteException {
 
 		getDataStore().goNext();
-		updateTable();
+		updateTable(false);
 
 	}
 
@@ -670,7 +675,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("newPath" + newPath);
 
 				if (getDataStore().goTo(newPath)) {
-					updateTable();
+					updateTable(false);
 				} else {
 					getBundleMessage("error.invalid.path");
 				}
