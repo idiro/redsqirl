@@ -1,0 +1,27 @@
+.divTab {
+    background-color: #ffffff;
+    border: 1px solid #c4c0c9;
+    overflow: hidden;
+}
+
+.ui-jqgrid-sortable {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: white !important;
+    font-weight: bold;
+    text-align: center;
+    font-family: Arial,Verdana,sans-serif;
+}
+
+.ui-jqgrid-labels {
+   background:rgba(0, 0, 0, 0) linear-gradient(to right, #cc1b1a, #991916) repeat scroll 0 0 !important
+}
+
+.ui-jqgrid-view  {
+   border:1px solid;
+   width: 100%;
+}
+
+.labelLinkTable {
+   color:#0078d0;
+}

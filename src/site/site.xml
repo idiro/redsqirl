@@ -13,7 +13,7 @@
 	<custom>
 		<fluidoSkin>
 			<copyrightClass>pull-right</copyrightClass>
-			<topBarEnabled>true</topBarEnabled>
+			<topBarEnabled>false</topBarEnabled>
 			<sideBarEnabled>false</sideBarEnabled>
 		</fluidoSkin>
 	</custom>

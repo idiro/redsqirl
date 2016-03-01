@@ -203,7 +203,27 @@ support@redsqirl.com
 				</resource>
 			    </resources>              
 			</configuration>            
-		    </execution>
+		</execution>
+
+		<execution>
+			<id>copy-resources-analytics</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${basedir}/target/site</outputDirectory>
+				<overwrite>true</overwrite>
+			    <resources>
+				<resource>
+				    <directory>${basedir}/src/site/analytics</directory>
+					<includes>
+	          				<include>*.html</include>
+					</includes>
+				</resource>
+			    </resources>              
+			</configuration>            
+		</execution>
 
 
 		   <execution>
