@@ -95,6 +95,11 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 				ans.add("hive");
 			}
 		}
+		if(!ans.contains("hive")){
+			if(WorkflowPrefManager.getSysProperty(template_hive+url_key_root) != null){
+				ans.add("hive");
+			}
+		}
 		Iterator<String> namesIt = allOK.keySet().iterator();
 		while(namesIt.hasNext()){
 			String curKey = namesIt.next();
