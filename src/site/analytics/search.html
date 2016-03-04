@@ -1,0 +1,97 @@
+<html>
+<head>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+
+</head>
+<body>
+
+<script>
+
+jQuery(document).ready(function () {
+	doSearch();
+	sessionStorage();
+});
+
+function doSearch() {
+
+//console.log(JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {})));
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: "http://localhost:9090/analytics-store/rest/allpackages",
+		data: JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {}))
+	}).then(function(data) {
+
+		data = removeDuplicate(data, 'name');
+
+		jQuery.each(data, function(i) {
+
+			jQuery(".packageList").append("<div class='packageItem' onclick='goToUrl(event, this);'><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ data[i].type + "</div><div class='title'><a class='hiddenLink' href='moduleDetail.html?id="+ data[i].id +"'></a>" + data[i].name + " </div><div class='license'>" + data[i].tags + "</div></div>");
+
+		});
+	});
+
+}
+
+function reload() {
+	jQuery(".packageList").empty();
+	doSearch();
+}
+
+function goToUrl(event, component){
+	event.preventDefault();
+	var target = jQuery(event.target);
+	if(!target.is("input")){
+		window.location = jQuery(component).find("a.hiddenLink").attr("href");
+	}
+	return false;
+}
+
+
+function removeDuplicate(items,propertyName){
+	var newArr = [];
+	var lookup = {};
+	for (var i in items) {
+	    lookup[items[i][propertyName]] = items[i];
+	}
+	for (i in lookup) {
+	    newArr.push(lookup[i]);
+	}
+	return newArr;
+}
+
+</script>
+
+
+<div class="mainContent" id="mainPanel">
+
+<form id="search">
+
+<input type="hidden" value="Redsqirl" name="software">
+
+<div class="searchBar">
+
+<input type="text" placeholder="Search" style="width:420px;" name="filter">
+
+<input type="radio" name="type" value="package" id="r1" onclick="reload();" /><label for="r1">Package</label>
+<input type="radio" name="type" value="model" id="r2" onclick="reload();" /><label for="r2">Model</label>
+
+
+<input type="submit" class="contentbutton" value="Search" onclick="event.preventDefault();reload();" >
+
+</div>
+
+</form>
+
+<div class="packageList">
+<span id="out">
+</span>
+</div>
+
+</body>
+</html>

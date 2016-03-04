@@ -76,7 +76,7 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 		String softwareKey = getSoftwareKey();
 
 		try{
-			String uri = getRepoServer()+"rest/installations";
+			String uri = getRepoServer()+"rest/installations/installationslist";
 
 			JSONObject object = new JSONObject();
 			object.put("idk", softwareKey);

@@ -1,0 +1,96 @@
+<html>
+<head>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/bootstrap.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<script src="javascript/jquery.jqGrid.min.js"></script>
+<script src="javascript/grid.locale-en.js"></script>
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/analytics.css" type="text/css" />
+
+</head>
+
+<body>
+
+<script>
+
+jQuery(document).ready(function () {
+
+sessionStorage();
+softwareKey();
+
+
+});
+
+function softwareKey() {
+
+	$("#myGrid").jqGrid({
+	    url: 'http://localhost:9090/analytics-store/rest/installations/modulekey',
+	    postData: JSON.stringify({id: getUrlParameter('id')}),
+	    datatype: "json",
+	    mtype: 'POST',
+	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
+	    colModel: [
+		{ name: 'id', index: 'id', width: 20, align: 'left', formatter: function () {
+		        return "<a href=''><img src='images/transfer_key.gif' alt='my image' /></a>";
+		    }
+		},
+		{ name: 'date', index: 'date', width: 70, align: 'left' },
+		{ name: 'softwareModulestype', index: 'softwareModulestype', width: 80, align: 'left' },
+		{ name: 'module', index: 'module', width: 150, align: 'left' },		
+		{ name: 'moduleVersion', index: 'moduleVersion', width: 30, align: 'left' },
+		{ name: 'owner', index: 'owner', width: 100, align: 'left' },
+		{ name: 'userName', index: 'userName', width: 50, align: 'left' }
+	    ],
+	    rowNum: 10,
+	    rowList: [10, 20, 30],
+	    pager: '#myGridDiv',
+	    height: 'auto',
+	    width: '790',
+	    viewrecords: true,
+	    sortorder: "desc",
+	    ajaxGridOptions: { contentType: "application/json" },
+	    headertitles: true,
+	    sortable: true,
+	    jsonReader: {
+		repeatitems: false,
+		root: function(obj) { return obj.Items; },
+		page: function(obj) { return obj.CurrentPage; },
+		total: function(obj) { return obj.TotalPages; },
+		records: function(obj) { return obj.ItemCount; },
+		id: "id"
+	    },
+	    loadComplete: function() {
+		$("tr.jqgrow:odd").css("background", "#E0E0E0");
+	    },
+	    loadBeforeSend: function(jqXHR) {
+	    	jqXHR.setRequestHeader("Authorization", getsessionToken());
+	    }
+	});
+	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
+	
+}
+
+</script>
+
+
+<div class="mainContent" id="mainPanel">
+
+<div class="divTab">
+
+
+<table id='myGrid'></table>
+<div id="myGridDiv"></div>
+<a href=""><img class="iconBT" src="images/new_key.gif"></a>
+
+
+</div>
+
+</div>
+
+
+</body>
+</html>

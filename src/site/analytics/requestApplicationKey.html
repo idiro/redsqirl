@@ -1,0 +1,81 @@
+<html>
+<head>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<script>
+
+jQuery(document).ready(function () {
+
+
+jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: "http://localhost:9090/analytics-store/rest/requestApplicationKey",
+		data: JSON.stringify({ id: 3 }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', getsessionToken());
+		}
+	}).then(function(data) {
+
+		var obj = jQuery.parseJSON(data.jsonSoftwareVersion);
+		jQuery.each(obj, function(i,v) {
+			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.version +"</option>");
+		});
+
+		var obj2 = jQuery.parseJSON(data.jsonSoftwareParameters);
+		jQuery.each(obj2, function(i,v) {
+
+			jQuery("#labelSoftwareParametersID").append(v.label);
+			jQuery("#valueSoftwareParametersID").append("<input type='text' placeholder='"+ v.value +"' style='width:400px;float:left;'>");
+
+		});
+		
+	});
+
+
+});
+
+
+</script>
+		
+
+
+
+
+
+<div class="mainContent" id="mainPanel">
+    	
+
+
+<form style="width:570px;">
+
+<br>
+<span style="display:block;width:150px;float:left;text-align:right;">Version</span>
+<select style="width:400px;float:left;margin-left:5px;" size="1" id="selectVersion">
+</select>
+<br>
+<span style="display:block;width:150px;float:left;text-align:right;">Installation Name</span>
+<input type="text" placeholder="Name of the installation" style="width:400px;float:left;" name="j_idt39:j_idt47">
+<br>
+<span style="display:block;width:150px;float:left;text-align:right;" id="labelSoftwareParametersID"></span>
+<span id="valueSoftwareParametersID"></span>
+<br>
+<br>
+<input type="submit" class="contentbutton" value="Generate Key" >
+</form>
+
+</div>
+
+	
+
+
+</body>
+</html>

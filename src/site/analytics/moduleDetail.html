@@ -1,0 +1,148 @@
+<html>
+<head>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<script>
+
+jQuery(document).ready(function () {
+	doSearch(JSON.stringify({id: getUrlParameter('id')}), true);
+	sessionRead();
+});
+
+
+/**
+ * doSearch
+ * @param json to submit POST rest
+ * @param boolean if need refresh dependency
+ * @return rest
+ */
+function doSearch(val, version) {
+
+	//console.log(getUrlParameter('id'));
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: "http://localhost:9090/analytics-store/rest/allpackages",
+		data: val 
+	}).then(function(data) {
+
+		var lVersion = listVersion(data, 'versionName');
+		var lIdVersion = listVersion(data, 'idVersion');
+		
+		data = removeDuplicate(data, 'name');
+
+		jQuery.each(data, function(i) {
+
+			var obj = jQuery.parseJSON(data[i].jsonObject);
+			jQuery.each(obj.jsonArray, function(idx,value) {
+
+				jQuery("#dependency").append(" " + (value.moduleName !== undefined ? value.moduleName+ " " : "") + (value.valueStart !== undefined ? value.valueStart : "") + (value.valueEnd !== undefined ? value.valueEnd : ""));
+
+			});
+
+			jQuery("#desc").append(data[i].htmlDescription);
+
+			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br><input type='submit' class='contentbutton' value='Request Key' >");
+
+		});
+
+		if(version){
+			jQuery.each(lVersion, function(i) {
+				jQuery("#version").append("</br><a onclick='reload("+ lIdVersion[i] +");' href='#'>"+ lVersion[i] +"</a>");
+			});
+		}
+
+	});
+
+}
+
+function removeDuplicate(items,propertyName){
+	var newArr = [];
+	var lookup = {};
+	for (var i in items) {
+	    lookup[items[i][propertyName]] = items[i];
+	}
+	for (i in lookup) {
+	    newArr.push(lookup[i]);
+	}
+	return newArr;
+}
+
+function listVersion(items,propertyName){
+	var newArr = [];
+	for (var i in items) {
+		var value = items[i][propertyName];
+		newArr.push(value);
+	}
+	return newArr;
+}
+
+function reload(val) {
+	jQuery("#dependency").empty();
+	jQuery("#desc").empty();
+	jQuery("#detail").empty();
+	doSearch(JSON.stringify({id: getUrlParameter('id'), version: val}) , false);
+}
+
+
+</script>
+ 
+
+			
+<div id="moduleDetailDiv">
+
+
+<div class="mainContent" id="mainPanel">
+
+<form>
+
+<a href="search.html">Back</a>
+<br>
+								
+<table>
+<tbody><tr>
+<td style="width:79%">
+
+<p id="desc"></p>
+
+
+<div class="rf-p-hdr ">Dependency<div id="dependency"></div></div>
+&nbsp;
+<div class="rf-p-hdr ">Versions<div id="version"></div></div>
+
+
+
+<br>
+<br>
+</div>
+</div>
+					
+</td>
+
+<td style="display:table;">
+
+<div id="detail"></div>
+
+
+
+</td>
+</tr>
+</tbody>
+</table>
+
+
+</form>
+
+
+
+</body>
+</html>
