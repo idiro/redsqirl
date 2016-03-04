@@ -47,7 +47,7 @@
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-			<h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableSelectOneRadio(this);" >
+			<h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableSelectOneRadio(this);" rendered="#{item.disableSelect}">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>
 		</rich:column>
@@ -69,9 +69,13 @@
 			</f:facet>
 			<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
 				title="#{hdfsBean.allProps[indexTable]['name']}"
-				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy">
+				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy"
+				rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] == 'true'}">
 				<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 			</a4j:commandLink>
+			<h:outputText value="#{hdfsBean.allProps[indexTable]['name']}"
+				title="#{hdfsBean.allProps[indexTable]['name']}"
+				rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"/>
 		</rich:column>
 
 		<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column"

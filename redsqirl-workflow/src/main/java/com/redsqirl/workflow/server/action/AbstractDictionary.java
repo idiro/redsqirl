@@ -20,14 +20,9 @@
 package com.redsqirl.workflow.server.action;
 
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,24 +35,19 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.Path;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.idiro.hadoop.NameNodeVar;
-import com.idiro.utils.XmlUtils;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
@@ -101,6 +91,8 @@ public abstract class AbstractDictionary {
 	
 	private static Map<String,Map<String, String[][]>> functionsMapCach  = new LinkedHashMap<String,Map<String, String[][]>>();
 
+	private static Map<String,String> dictionaryIds   = new LinkedHashMap<String, String>();
+	
 	/**
 	 * Generate an editor for one input
 	 * 
@@ -109,7 +101,7 @@ public abstract class AbstractDictionary {
 	 * @return EditorInteraction
 	 * @throws RemoteException
 	 */
-	public static EditorInteraction generateEditor(Tree<String> help,
+	public EditorInteraction generateEditor(Tree<String> help,
 			DFEOutput in) throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
@@ -124,7 +116,7 @@ public abstract class AbstractDictionary {
 	 * @return EditorInteraction
 	 * @throws RemoteException
 	 */
-	public static EditorInteraction generateEditor(Tree<String> help,
+	public EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -152,6 +144,7 @@ public abstract class AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
+		editor.add("dictionary").add(getId());
 
 		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
 				0, 0);
@@ -184,6 +177,7 @@ public abstract class AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
+		editor.add("dictionary").add(getId());
 		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
 				0, 0);
 		ei.getTree().removeAllChildren();
@@ -199,7 +193,7 @@ public abstract class AbstractDictionary {
 	 * @return EditorInteraction
 	 * @throws RemoteException
 	 */
-	public static EditorInteraction generateEditor(Tree<String> help,
+	public EditorInteraction generateEditor(Tree<String> help,
 			FieldList inFeat, Map<String, List<String>> extraWords)
 			throws RemoteException {
 		logger.debug("generate Editor...");
@@ -230,6 +224,7 @@ public abstract class AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
+		editor.add("dictionary").add(getId());
 		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
 				0, 0);
 		ei.getTree().removeAllChildren();
@@ -250,11 +245,8 @@ public abstract class AbstractDictionary {
 			init();
 		}
 	}
-
-	/**
-	 * Initialize the dictionary
-	 */
-	protected void init() {
+	
+	private String getXmlFile(){
 		String xmlFile = getNameFile();
 		if(!xmlFile.contains(".")){
 			xmlFile += ".xml";
@@ -263,6 +255,18 @@ public abstract class AbstractDictionary {
 				xmlFile = xmlFile.substring(0, xmlFile.lastIndexOf("."))+".xml";
 			}
 		}
+		return xmlFile;
+	}
+	
+	public String getId(){
+		return dictionaryIds.get(getXmlFile());
+	}
+
+	/**
+	 * Initialize the dictionary
+	 */
+	protected void init() {
+		String xmlFile = getXmlFile();
 		functionsMap = functionsMapCach.get(xmlFile);
 		if(functionsMap == null){
 			try{
@@ -289,6 +293,11 @@ public abstract class AbstractDictionary {
 							logger.warn("Fail saving dictionary for "+xmlFile,e);
 						}
 					}
+				}
+				try{	
+					dictionaryIds.put(xmlFile, DigestUtils.md5Hex(new FileInputStream(file)));
+				}catch(Exception e){
+					logger.warn("Fail calculation md5sum",e);
 				}
 			}catch(Exception e){
 				logger.warn("Fail loading dictionary for "+xmlFile,e);
@@ -383,6 +392,9 @@ public abstract class AbstractDictionary {
 							.getChildNodes().item(0).getNodeValue();
 				} catch (Exception e) {
 				}
+				if(fctInput == null){
+					fctInput="";
+				}
 				String fctOutput = null;
 				try {
 					fctOutput = ((Element) functionCur)
@@ -401,15 +413,22 @@ public abstract class AbstractDictionary {
 				String other = null;
 				int otherIdx = 1;
 				do{
-					try {
-						other = ((Element) functionCur)
-								.getElementsByTagName("other"+otherIdx).item(0)
-								.getChildNodes().item(0).getNodeValue();
+					try{
+						Node otherEl = ((Element) functionCur)
+								.getElementsByTagName("other"+otherIdx).item(0);
+						logger.debug("read "+otherIdx);
+						if(otherEl != null && otherEl.getChildNodes().getLength() > 0){
+							other = otherEl.getChildNodes().item(0).getNodeValue();
+						}else if(otherEl != null){
+							other = "";
+						}else{
+							other = null;
+						}
 						if(other != null){
 							others.add(other);
 						}
 					} catch (Exception e) {
-						other = null;
+						break;
 					}
 					++otherIdx;
 				}while(other != null);

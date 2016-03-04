@@ -204,13 +204,14 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 			browserMap =  new LinkedHashMap<String,Map<String,Map<String,String>>>();
 			cach.put(getBrowserName(),browserMap);
 		}
+		String path = getPath();
 		Map<String,Map<String,String>> ans = null;
 		if(!refresh){
-			ans = browserMap.get(getPath());
+			ans = browserMap.get(path);
 		}
 		if(ans == null){
-			ans = getChildrenProperties(history.get(cur));
-			browserMap.put(history.get(cur),ans);
+			ans = getChildrenProperties(path);
+			browserMap.put(path,ans);
 		}
 		return ans;
 	}

@@ -55,11 +55,16 @@ public class OracleConfFile extends DbConfFile{
 	protected String getRsTypeFileContent() {
 		String ans = "";
 		ans +="NUMBER:DOUBLE\n";
+		ans +="NUMBER\\(\\d+,0\\):INT\n";
+		ans +="NUMBER\\(\\*,0\\):INT\n";
+		ans +="INT:INT\n";
+		ans +="NUMBER\\(\\d+,\\d+\\):FLOAT\n";
+		ans +="NUMBER\\(\\*,\\d+\\):FLOAT\n";
 		ans +="CHAR\\(\\d+\\):STRING\n";
 		ans +="VARCHAR2\\(\\d+\\):STRING\n";
 		ans +="TIMESTAMP:TIMESTAMP\n";
 		ans +="DATE:DATETIME\n";
-		ans += "VARCHAR2:STRING\n";
+		ans +="VARCHAR2:STRING\n";
 		return ans;
 	}
 	

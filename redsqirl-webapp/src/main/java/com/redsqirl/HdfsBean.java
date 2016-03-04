@@ -47,6 +47,11 @@ public class HdfsBean extends FileSystemBean {
 	
 	private String tableState = new String();
 
+	
+	public HdfsBean(){
+		setAllowDirectories(true);
+		setAllowOnlyDirectories(true);
+	}
 
 	/** openCanvasScreen
 	 * 
@@ -61,7 +66,6 @@ public class HdfsBean extends FileSystemBean {
 		try {
 
 			setDataStore(getRmiHDFS());
-
 			if(getTableGrid() != null && 
 					getTableGrid().getRows() != null &&
 					getTableGrid().getRows().isEmpty()){

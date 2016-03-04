@@ -49,7 +49,7 @@
         var tbody = table.find("tbody");
         var rows = tbody.find("tr");
         rows.each(function(key, value){
-            var file2 = jQuery(this).find("td a").html();
+            var file2 = jQuery(this).find("td span").html();
             if ((fileModalFileHdfs == file2) || (fileModalFileHdfs+'.rs' == file2) || (fileModalFileHdfs+'.srs' == file2)){
                 fileExist = true;
             }
@@ -173,10 +173,16 @@
                <a4j:commandLink value="#{browserHdfsBean.allProps[indexTable]['name']}"
                     title="#{browserHdfsBean.allProps[indexTable]['name']}"
 					action="#{browserHdfsBean.verifyIfIsFile}"
-					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')">
+					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')"
+					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] == 'true'}">
 					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
-            </rich:column>
+				<h:outputText
+					value="#{browserHdfsBean.allProps[indexTable]['name']}"
+					title="#{browserHdfsBean.allProps[indexTable]['name']}"
+					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] != 'true'}" />
+
+			</rich:column>
     
             <rich:columns value="#{browserHdfsBean.tableGrid.titles == null? canvasBean.emptyList : browserHdfsBean.tableGrid.titles}" 
             	var="column" index="ind"

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -523,6 +524,45 @@ public class TableInteraction extends UserInteraction {
 			column.add(editor.getTree().getFirstChild("editor"));
 			editors.put(columnName, editor);
 		}
+	}
+	public void updateEditor(String columnName,
+			Map<String,String> fl) throws RemoteException{
+		EditorInteraction cur = editors.get(columnName);
+		if(cur != null){
+			cur.removeFields();
+			cur.addFields(fl);
+		}
+	}
+	
+	public void updateEditor(String columnName,
+			Map<String,String> fl, Map<String,List<String>> extras) throws RemoteException{
+		EditorInteraction cur = editors.get(columnName);
+		if(cur != null){
+			cur.removeFields();
+			cur.addFields(fl,extras);
+		}
+	}
+	
+	
+	public String getDictionaryId(String columnName) throws RemoteException{
+		String ans = null;
+		if(editors != null){
+			try{
+				ans = editors.get(columnName).getDicId();
+			}catch(Exception e){}
+		}
+		logger.debug("Dictionary id: "+ans);
+		return ans;
+	}
+	
+	public Map<String,List<String>> getKeyWordsFromEditor(String columnName){
+		Map<String,List<String>> ans = null;
+		if(editors != null){
+			try{
+				ans = editors.get(columnName).getFields();
+			}catch(Exception e){}
+		}
+		return ans;
 	}
 
 

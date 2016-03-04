@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -29,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
@@ -48,6 +51,7 @@ import com.redsqirl.workflow.utils.SqlLanguageManager;
  */
 public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
+	static private Logger logger = Logger.getLogger(SqlTableUnionInteraction.class);
 	/**
 	 * 
 	 */
@@ -102,6 +106,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 			Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
 			FieldList mapFeatType = getNewFields();
+			FieldList inFields = hu.getInFields();
 
 			// Check if we have the right number of list
 			if (mapRelationRow.keySet().size() != hu.getAliases().size()) {
@@ -130,8 +135,13 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 					//
 					Map<String, String> row = rows.next();
 					try {
-						String typeRetuned = getDictionary()
-								.getReturnType(row.get(table_op_title),hu.getInFields());
+						String expression = row.get(table_op_title);
+						String typeRetuned = dictionaryCach.get(expression);
+						if(typeRetuned == null){
+								typeRetuned = getDictionary()
+								.getReturnType(expression,inFields);
+							dictionaryCach.put(expression,typeRetuned);
+						}
 						String type = row.get(table_type_title); 
 						String fieldName = row.get(table_feat_title);
 						if (!getDictionary().check(
@@ -143,7 +153,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 											fieldName, typeRetuned,
 											type });
 						} else {
-							logger.info("is it contained in map : "	+ fieldName);
+							logger.debug("is it contained in map : "	+ fieldName);
 							if (!mapFeatType.containsField(fieldName)) {
 								msg = SqlLanguageManager.getText("sql.union_fields_interaction.checkfeatimplemented");
 							} else {
@@ -187,10 +197,16 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 			throws RemoteException {
 		String error = null;
 		try {
-			if (getDictionary().getReturnType(expression,
-					hu.getInFields()) == null) {
-				error = SqlLanguageManager.getText(
-						"sql.expressionnull");
+			String returnType = dictionaryCach.get(expression);
+			if(returnType == null){
+				returnType = getDictionary().getReturnType(expression,
+						hu.getInFields());
+				if (returnType == null) {
+					error = SqlLanguageManager.getText(
+							"sql.expressionnull");
+				}else{
+					dictionaryCach.put(expression,returnType);
+				}
 			}
 		} catch (Exception e) {
 			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
@@ -199,6 +215,11 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 		return error;
 	}
 	
+	protected EditorInteraction generateEditor(FieldList feats) throws RemoteException{
+		return getDictionary().generateEditor(
+				getDictionary().createDefaultSelectHelpMenu(),
+				feats);
+	}
 	
 	/**
 	 * Update the interaction with a list of inuts
@@ -212,51 +233,61 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 		updateColumnConstraint(table_feat_title,
 				"[a-zA-Z]([A-Za-z0-9_]{0,29})", hu.getAllInputComponent()
 						.size(), null);
-
-		updateEditor(table_op_title, generateEditor());
+		
+		boolean gen = false;
+		FieldList inFl = hu.getInFields();
+		if(isDifferentDictionary(table_op_title)){
+			updateEditor(table_op_title, generateEditor(inFl));
+			gen = true;
+		}else if(changeKeyWords(table_op_title, inFl)){
+			gen = true;
+		}
 
 		// Set the Generator
-		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
-		FieldList firstIn = in.get(0).getFields();
-		Iterator<String> featIt = firstIn.getFieldNames().iterator();
-		while (featIt.hasNext()) {
-			String field = featIt.next();
-			FieldType fieldType = firstIn.getFieldType(field);
-			Iterator<DFEOutput> itIn = in.iterator();
-			itIn.next();
-			boolean found = true;
-			while (itIn.hasNext() && found) {
-				DFEOutput cur = itIn.next();
-				found = fieldType.equals(cur.getFields().getFieldType(
-						field));
-			}
-			if (found) {
-				Iterator<String> aliases = getAliases().iterator();
-				while (aliases.hasNext()) {
-					Map<String, String> curMap = new LinkedHashMap<String, String>();
-					String alias = aliases.next();
+		if(gen){
+			dictionaryCach.clear();
+			List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
+			FieldList firstIn = in.get(0).getFields();
+			Iterator<String> featIt = firstIn.getFieldNames().iterator();
+			while (featIt.hasNext()) {
+				String field = featIt.next();
+				FieldType fieldType = firstIn.getFieldType(field);
+				Iterator<DFEOutput> itIn = in.iterator();
+				itIn.next();
+				boolean found = true;
+				while (itIn.hasNext() && found) {
+					DFEOutput cur = itIn.next();
+					found = fieldType.equals(cur.getFields().getFieldType(
+							field));
+				}
+				if (found) {
+					Iterator<String> aliases = getAliases().iterator();
+					while (aliases.hasNext()) {
+						Map<String, String> curMap = new LinkedHashMap<String, String>();
+						String alias = aliases.next();
 
-					curMap.put(table_table_title, alias);
-					curMap.put(table_op_title, alias + "." + field);
-					curMap.put(table_feat_title, field);
-					curMap.put(table_type_title,fieldType.toString());
+						curMap.put(table_table_title, alias);
+						curMap.put(table_op_title, alias + "." + field);
+						curMap.put(table_feat_title, field);
+						curMap.put(table_type_title,fieldType.toString());
 
-					copyRows.add(curMap);
+						copyRows.add(curMap);
+					}
 				}
 			}
+			updateGenerator("copy", copyRows);
+		}else{
+			try{
+				if(getTree()
+						.getFirstChild("table").getChildren("row").size()*2 > dictionaryCach.size()){
+					dictionaryCach.clear();
+				}
+			}catch(Exception e){}
 		}
-		updateGenerator("copy", copyRows);
-
 	}
 	
 	protected Set<String> getAliases() throws RemoteException{
 		return hu.getAliases().keySet();
-	}
-	
-	protected EditorInteraction generateEditor() throws RemoteException{
-		return getDictionary().generateEditor(
-				getDictionary().createDefaultSelectHelpMenu(),
-				hu.getInFields());
 	}
 	
 	/**
@@ -314,7 +345,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 				List<Map<String, String>> list = new LinkedList<Map<String, String>>();
 				mapRelationRow.put(relationName, list);
-				logger.info("adding to " + relationName);
+				logger.debug("adding to " + relationName);
 			}
 			mapRelationRow.get(relationName).add(row);
 		}

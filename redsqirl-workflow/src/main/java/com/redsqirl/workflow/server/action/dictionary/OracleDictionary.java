@@ -16,8 +16,8 @@ public class OracleDictionary extends JdbcDictionary{
 			+ "   <th align=left>Date and Time Pattern"
 			+ "   <th align=left>Result"
 			+ "<tr bgcolor=\"#eeeeff\">"
-			+"    <td><code>\"EEE, MMM d, ''yy\"</code>"
-			+"    <td><code>Wed, Jul 4, '01</code>"
+			+"    <td><code>\"EEE, MMM d, yy\"</code>"
+			+"    <td><code>Wed, Jul 4, 01</code>"
 			+" <tr>"
 			+"     <td><code>\"h:mm a\"</code>"
 			+"     <td><code>12:08 PM</code>"
@@ -65,12 +65,15 @@ public class OracleDictionary extends JdbcDictionary{
 					new String[] { "TO_DATE()", "STRING,STRING", "DATETIME",
 					"@function:TO_DATE@short:returns the date value of the object given in the non default format."+dateFormats+
 					"@example: TO_DATE('20160201','YYYYMMDD')"},
-					new String[] { "TO_TIMESTAMP()", "STRING", "TIMESTAMP",
-					"@function:TO_DATE@short:returns the date value of the object.@example: TO_DATE('2016-02-01')"},
 					new String[] { "TO_TIMESTAMP()", "STRING,STRING", "TIMESTAMP",
 					"@function:TO_TIMESTAMP@short:returns the date value of the object given in the non default format."+dateFormats+
-					"@example: TO_TIMESTAMP('20160201','YYYYMMDD')"},
-					
+					"@example: TO_TIMESTAMP('10-SEP-0214:10:10.123000','DD-MON-RRHH24:MI:SS.FF')"},
+					new String[] { "TO_CHAR()", "TIMESTAMP", "STRING",
+							"@function:TO_CHAR@short:returns a string value fo the date in the default format."+
+							"@example: TO_CHAR(MYDATE,'YYYYMMDD')"},
+					new String[] { "TO_CHAR()", "TIMESTAMP,STRING", "STRING",
+							"@function:TO_CHAR@short:returns a string value fo the date in the given format."+dateFormats+
+							"@example: TO_CHAR(MYDATE,'YYYYMMDD')"},
 				});
 		
 		String[][] oracleStringMethods = new String[][] {

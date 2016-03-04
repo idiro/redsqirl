@@ -69,7 +69,7 @@ public class MapRedTextFileWithOptQuotesType extends MapRedTextFileType{
 	}
 	
 	@Override
-	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+	protected List<Map<String,String>> readRecord(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		

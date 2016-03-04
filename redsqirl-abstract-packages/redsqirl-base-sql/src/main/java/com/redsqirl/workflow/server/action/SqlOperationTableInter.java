@@ -21,8 +21,14 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -33,6 +39,8 @@ public abstract class SqlOperationTableInter  extends TableInteraction{
 	 * 
 	 */
 	private static final long serialVersionUID = 169938426599555676L;
+
+	protected Map<String,String> dictionaryCach = new LinkedHashMap<String,String>();
 
 	public SqlOperationTableInter(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
@@ -46,4 +54,64 @@ public abstract class SqlOperationTableInter  extends TableInteraction{
 	}
 
 	protected abstract SqlDictionary getDictionary() throws RemoteException;
+	
+	protected boolean isDifferentDictionary(String columnName) throws RemoteException{
+		SqlDictionary dic = getDictionary();
+		logger.debug(dic.getId()+" vs "+getDictionaryId(columnName));
+		return dic.getId() == null || !dic.getId().equals(getDictionaryId(columnName));
+	}
+	
+
+	protected boolean changeKeyWords(String colomnName, FieldList feats) throws RemoteException{
+		boolean ans = false;
+		Map<String,List<String>> keyW = getKeyWordsFromEditor(colomnName);
+		Map<String,List<String>> calcW = feats.getMapList();
+		Map<String,List<String>> extras = getExtraKeyWords();
+		
+		if(keyW == null){
+			ans = true;
+		}else{
+			if(extras == null && !keyW.keySet().equals(calcW.keySet())){
+				ans = true;
+			}else if(extras != null){
+				Set<String> comp = new HashSet<String>();
+				comp.addAll(calcW.keySet());
+				comp.addAll(extras.keySet());
+				if(!keyW.keySet().equals(comp)){
+					ans = true;
+				}
+			}
+		}
+		if(!ans){
+
+			Iterator<String> it = keyW.keySet().iterator();
+			while(it.hasNext() && !ans){
+				String keyCur = it.next();
+				List<String> keyWL = keyW.get(keyCur);
+				List<String> fL = calcW.get(keyCur);
+				List<String> extraL = null;
+				if(fL == null){
+					ans = true;
+					break;
+				}
+				if(extras != null && (extraL = extras.get(keyCur)) != null ){
+					fL.addAll(extraL);
+				}
+				ans = !(keyWL.containsAll(fL) && fL.containsAll(keyWL));
+			}
+		}
+
+		if(ans){
+			if(extras == null){
+				updateEditor(colomnName, feats.getMap());
+			}else{
+				updateEditor(colomnName, feats.getMap(), extras);
+			}
+		}
+		return ans;
+	}
+	
+	protected Map<String,List<String>> getExtraKeyWords() throws RemoteException{
+		return null;
+	}
 }

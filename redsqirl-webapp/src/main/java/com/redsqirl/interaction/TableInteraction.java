@@ -51,7 +51,7 @@ public class TableInteraction extends CanvasModalInteraction{
 
 	private static final long serialVersionUID = 1876499872304228674L;
 	
-	static protected Logger logger = Logger.getLogger(TableInteraction.class);
+	static private Logger logger = Logger.getLogger(TableInteraction.class);
 	
 	/**
 	 * The list of rows of the grid.

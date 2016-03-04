@@ -58,6 +58,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<SelectItem> listExtensions;
 	private List<String> listExtensionsString;
 	private boolean allowDirectories;
+	private boolean allowOnlyDirectories = false;
 	private String extensionsSelected;
 	private String openOutputData;
 
@@ -143,11 +144,21 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		LinkedList<String> editProps = new LinkedList<String>();
 		LinkedList<String> createProps = new LinkedList<String>();
 		for (String properties : propsParam.keySet()) {
-			titles.add(properties);
+
+			if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
+				titles.add(properties);
+				editProps.add(properties);
+			}else if (propsParam.get(properties).editOnly()) {
+				editProps.add(properties);
+			}else if (propsParam.get(properties).createOnly()) {
+				createProps.add(properties);
+			}
 
 		}
 
 		setTableGrid(new SelectableTable(titles));
+		setEditProps(editProps);
+		setCreateProps(createProps);
 
 		updateTable(false);
 
@@ -163,12 +174,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String error = null;
 		setPath(getDataStore().getPath());
 		
-		String regex = null;
-		if(extensionsSelected != null && !extensionsSelected.isEmpty()){
-			logger.info("extension select: "+extensionsSelected);
-			regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
-			logger.info("Regex: "+regex);
-		}
 		
 		//Fill rows
 		try{
@@ -189,29 +194,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 					}
 				}
 			}
-
-			if(getAllProps() != null){
-				for(int i=0;i < getAllProps().size();++i){
-					String childName = getAllProps().get(i).get("name");
-					getTableGrid().getRows().get(i).setSelected(false);
-					getTableGrid().getRows().get(i).setDisableSelect(false);
-					try{
-						if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
-							getTableGrid().getRows().get(i).setDisableSelect(false);
-						}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
-							getTableGrid().getRows().get(i).setDisableSelect(false);
-						}else{
-							if(regex != null){
-								getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
-							}else{
-								getTableGrid().getRows().get(i).setDisableSelect(true);
-							}
-						}
-					}catch(Exception e){
-						//No Directory Types
-					}
-				}
-			}
+			
+			updateSelection();
+			
 		}catch(Exception e){
 			error = e.getMessage();
 		}
@@ -220,6 +205,42 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setPath(oldPath);
 		}
 		displayErrorMessage(error, "UPDATETABLE");
+	}
+	
+	private void updateSelection(){
+		if(getAllProps() != null){
+
+			String regex = null;
+			if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+				logger.info("extension select: "+extensionsSelected);
+				regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
+				logger.info("Regex: "+regex);
+			}
+			
+			
+			for(int i=0;i < getAllProps().size();++i){
+				String childName = getAllProps().get(i).get("name");
+				getTableGrid().getRows().get(i).setSelected(false);
+				getTableGrid().getRows().get(i).setDisableSelect(false);
+				try{
+					if(getAllProps().get(i).get("type").equalsIgnoreCase("connection") ||
+							(getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) ||
+							(!getAllProps().get(i).get("type").equalsIgnoreCase("directory") && isAllowOnlyDirectories()) ||
+							(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory"))
+							) {
+						getTableGrid().getRows().get(i).setDisableSelect(false);
+					}else{
+						if(regex != null){
+							getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+						}else{
+							getTableGrid().getRows().get(i).setDisableSelect(true);
+						}
+					}
+				}catch(Exception e){
+					//No Directory Types
+				}
+			}
+		}
 	}
 
 
@@ -244,7 +265,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			
 			//Force the refresh
 			setPath(null);
-			updateTable(false);
+			updateTable(true);
 		}
 
 		usageRecordLog().addSuccess("DELETEFILE");
@@ -859,6 +880,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setListExtensionsString(List<String> listExtensionsString) {
 		this.listExtensionsString = listExtensionsString;
+	}
+
+	public boolean isAllowOnlyDirectories() {
+		return allowOnlyDirectories;
+	}
+
+	public void setAllowOnlyDirectories(boolean allowOnlyDirectories) {
+		this.allowOnlyDirectories = allowOnlyDirectories;
 	}
 	
 }

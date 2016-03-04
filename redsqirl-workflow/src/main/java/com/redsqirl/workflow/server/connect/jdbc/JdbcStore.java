@@ -90,12 +90,13 @@ public class JdbcStore extends Storage {
 	
 	/** Tables List */
 	static Set<String> connectionList = new LinkedHashSet<String>(); 
+	static Map<String,Object[]> cachDesc = new LinkedHashMap<String,Object[]>();
 	protected static Map<String,JdbcStoreConnection> connections = new LinkedHashMap<String, JdbcStoreConnection>();
 	protected static Map<String,Long> connectionFailure = new LinkedHashMap<String,Long>();
 	/***/
 	protected static long updateConnections = 0;
 
-
+	
 	/**
 	 * Constructor
 	 * */
@@ -617,7 +618,22 @@ public class JdbcStore extends Storage {
 	public Map<String, String> getDescription(String connection, String table) {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
 		String fieldsStr = null;
+		Object[] obj = cachDesc.get(connection+"/"+table);
+		if(obj == null || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
+			fieldsStr = execDesc(connection,table);
+			cachDesc.put(connection+"/"+table, new Object[]{System.currentTimeMillis(),fieldsStr});
+		}else{
+			fieldsStr = (String) obj[1];
+		}
+		ans.put(key_describe, fieldsStr);
+		logger.debug("desc : " + ans);
+		return ans;
+	}
+	
+	private String execDesc(String connection, String table){
+		String fieldsStr = null;
 		try {
+			
 			ResultSet rs = getConnection(connection).showFeaturesFrom(table);
 			int i = 0;
 			Integer parts = 0;
@@ -658,13 +674,10 @@ public class JdbcStore extends Storage {
 			}
 			rs.close();
 
-			ans.put(key_describe, fieldsStr);
-
 		} catch (Exception e) {
 			logger.error("Fail to check the existence " + table,e);
 		}
-		logger.debug("desc : " + ans);
-		return ans;
+		return fieldsStr;
 	}
 
 	/**

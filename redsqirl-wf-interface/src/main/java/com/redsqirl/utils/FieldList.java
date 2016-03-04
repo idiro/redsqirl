@@ -23,6 +23,7 @@ package com.redsqirl.utils;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 import com.redsqirl.workflow.server.enumeration.FieldType;
 /**
@@ -59,6 +60,21 @@ public interface FieldList extends Remote {
 	 * @throws RemoteException
 	 */
 	public List<String> getFieldNames() throws RemoteException;
+	
+	/**
+	 * Get the fields with their types as string
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,String> getMap() throws RemoteException;
+
+	/**
+	 * Get the fields with their types as string
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,List<String>> getMapList() throws RemoteException;
+	
 	/**
 	 * Get the size of the list
 	 * @return int size of the list

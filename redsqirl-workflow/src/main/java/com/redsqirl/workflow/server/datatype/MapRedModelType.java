@@ -136,7 +136,7 @@ public class MapRedModelType extends MapRedDir {
 	}
 
 	@Override
-	public List<Map<String, String>> select(int maxToRead) throws RemoteException {
+	protected List<Map<String, String>> readRecord(int maxToRead) throws RemoteException {
 		List<Map<String, String>> ans = new LinkedList<Map<String, String>>();
 		String patternStr = Pattern.quote(delimiter);
 		List<String> list = selectLine(maxToRead);

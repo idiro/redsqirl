@@ -1144,6 +1144,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	protected String readFromXml(Document doc) throws Exception {
 		String error = null;
+		doc.getDocumentElement().normalize();
 		Node jobId = doc.getElementsByTagName("job-id").item(0);
 		try {
 			String jobIdContent = jobId.getChildNodes().item(0).getNodeValue();
@@ -1230,8 +1231,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					.getOutputComponent();
 
 			logger.debug(compId + ": input...");
-			NodeList inList = ((Element) compCur)
-					.getElementsByTagName("inputs").item(0).getChildNodes();
+			NodeList inList = ((Element) ((Element) compCur)
+					.getElementsByTagName("inputs").item(0)).getElementsByTagName("input");
 			if (inList != null) {
 				for (int index = 0; index < inList.getLength() && error == null; index++) {
 					logger.debug(compId + ": input index " + index);
@@ -1289,8 +1290,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 
 			logger.debug(compId + ": output...");
-			NodeList outList = ((Element) compCur)
-					.getElementsByTagName("outputs").item(0).getChildNodes();
+			NodeList outList = ((Element) ((Element) compCur)
+					.getElementsByTagName("outputs").item(0)).getElementsByTagName("output");
 			if (outList != null) {
 				for (int index = 0; index < outList.getLength()
 						&& error == null; index++) {
@@ -1319,7 +1320,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					} catch (Exception e) {
 						error = LanguageManagerWF
 								.getText("workflow.read_failLoadOut");
-						logger.error(error);
+						logger.error(error,e);
 					}
 				}
 			}

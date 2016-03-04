@@ -51,7 +51,11 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 	}
 	
 	private void read(){
-		this.url = WorkflowPrefManager.getUserProperty(url_key);
+		try{
+			this.url = WorkflowPrefManager.getProperty(url_key);
+		}catch(Exception e){
+			this.url = WorkflowPrefManager.getUserProperty(url_key);
+		}
 		this.username = WorkflowPrefManager.getUserProperty(username_key);
 		this.password = WorkflowPrefManager.getUserProperty(password_key);
 	}

@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +154,28 @@ FieldList {
 		List<String> tmp = new LinkedList<String>();
 		tmp.addAll(positions);
 		return tmp;
+	}
+	
+	public Map<String,String> getMap() throws RemoteException{
+		Map<String,String> ans = new LinkedHashMap<String,String>();
+		Iterator<String> it = field.keySet().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			ans.put(cur,field.get(cur).name());
+		}
+		return ans;
+	}
+	
+	public Map<String,List<String>> getMapList() throws RemoteException{
+		Map<String,List<String>> ans = new LinkedHashMap<String,List<String>>();
+		Iterator<String> it = field.keySet().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			List<String> l = new LinkedList<String>();
+			l.add(field.get(cur).name());
+			ans.put(cur,l);
+		}
+		return ans;
 	}
 	
 	public String toString(){
