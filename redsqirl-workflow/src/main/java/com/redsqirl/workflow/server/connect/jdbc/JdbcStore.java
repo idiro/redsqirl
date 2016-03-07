@@ -395,7 +395,7 @@ public class JdbcStore extends Storage {
 				}
 			} catch (Exception e) {
 				logger.error("Fail to select the table " + connectionAndTable[0]);
-				logger.error(e.getMessage());
+				logger.error(e.getMessage(),e);
 			}
 
 		}

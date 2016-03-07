@@ -20,6 +20,7 @@
 package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -121,6 +122,17 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	protected void addToFunctionsMap(String list,String[][] newOptions){
 		functionsMap.put(list, 
 				concat(functionsMap.get(list),newOptions));
+	}
+	
+	protected void removeFromFunctionsMap(String list, String function){
+		String[][] fcts = functionsMap.get(list);
+		List<String[]> newF = new ArrayList<String[]>(fcts.length);
+		for(int i = 0; i < fcts.length;++i){
+			if(!function.equals(fcts[i][0])){
+				newF.add(fcts[i]);
+			}
+		}
+		functionsMap.put(list, newF.toArray(new String[newF.size()][]));
 	}
 	
 	/**

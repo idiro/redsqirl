@@ -347,9 +347,7 @@ DFEOutput {
 		}
 		
 		if(!getPath().equals(oldPath) && SavingState.RECORDED.equals(savingState)){
-			cachExistTimeStamp = 0;
-			cachValidTimeStamp = 0;
-			cachSelectTimeStamp = 0;
+			clearCache();
 		}
 		
 		if( (SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachExistTimeStamp)) || cachExistTimeStamp == 0){
@@ -364,9 +362,7 @@ DFEOutput {
 	@Override
 	public final List<Map<String,String>> select(int maxToRead) throws RemoteException{
 		if(getPath() == null || (!getPath().equals(oldPath) && SavingState.RECORDED.equals(savingState))){
-			cachExistTimeStamp = 0;
-			cachValidTimeStamp = 0;
-			cachSelectTimeStamp = 0;
+			clearCache();
 		}
 		if((SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachSelectTimeStamp)) ||
 				cachSelectTimeStamp == 0 ||
@@ -386,6 +382,7 @@ DFEOutput {
 		cachExistTimeStamp = 0;
 		cachValidTimeStamp = 0;
 		cachSelectTimeStamp = 0;
+		cachSelect = null;
 	}
 	
 	protected abstract boolean exists() throws RemoteException;
@@ -420,6 +417,7 @@ DFEOutput {
 			statLogger.debug("New path for "+component+"("+getPath()+"): "+newPath);
 			if(copy == null){
 				setPath(newPath);
+				clearCache();
 				cachExist = false;
 				cachExistTimeStamp = System.currentTimeMillis();
 			}else if (copy) {
@@ -443,6 +441,7 @@ DFEOutput {
 	@Override
 	public void generatePath(String component,
 			String outputName) throws RemoteException {
+		clearCache();
 		cachExist = false;
 		cachExistTimeStamp = System.currentTimeMillis();
 		setPath(generatePathStr(component, outputName));

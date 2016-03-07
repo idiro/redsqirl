@@ -307,7 +307,7 @@ public class SSHInterface extends Storage implements SSHDataStore {
 		try {
 			logger.debug("open connection...");
 			channel.connect();
-			goTo(channel.getHome());
+			history.add(channel.getHome());
 		} catch (JSchException e) {
 			error = LanguageManagerWF.getText(
 					"sshinterface.connectchannelfail",

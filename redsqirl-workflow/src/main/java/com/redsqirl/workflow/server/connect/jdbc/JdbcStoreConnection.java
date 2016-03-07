@@ -28,16 +28,19 @@ public class JdbcStoreConnection extends JdbcConnection{
 	public JdbcStoreConnection(JdbcDetails arg0, RedSqirlBasicStatement arg1)
 			throws Exception {
 		super(arg0, (BasicStatement) arg1);
+		setMaxTimeInMinuteBeforeCleaningStatement(2);
 	}
 	
 	public JdbcStoreConnection(URL jarPath, String driverClassname,
 			JdbcDetails connectionDetails, RedSqirlBasicStatement bs) throws Exception {
 		super(jarPath, driverClassname, connectionDetails, (BasicStatement) bs);
+		setMaxTimeInMinuteBeforeCleaningStatement(2);
 	}
 	
 	public JdbcStoreConnection(String driverClassname,
 			JdbcDetails connectionDetails, RedSqirlBasicStatement bs) throws Exception {
 		super(driverClassname, connectionDetails, (BasicStatement) bs);
+		setMaxTimeInMinuteBeforeCleaningStatement(2);
 	}
 
 	public final List<String> listTables() throws SQLException, RemoteException {
