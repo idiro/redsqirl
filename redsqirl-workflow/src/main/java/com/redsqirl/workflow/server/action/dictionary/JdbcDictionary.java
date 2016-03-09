@@ -479,7 +479,8 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		return (cleanUp.startsWith("CASE") && cleanUp.endsWith("END"))
 				|| (cleanUp.startsWith("NTILE(") &&  cleanUp.indexOf(")") != -1)
 				|| cleanUp.startsWith("DENSE_RANK()") 
-				|| cleanUp.startsWith("RANK()");
+				|| cleanUp.startsWith("RANK()")
+				|| cleanUp.startsWith("ROW_NUMBER()");
 	}
 
 

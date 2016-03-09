@@ -21,10 +21,10 @@ public class OracleConfFile extends DbConfFile{
 		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} ({1})";
 		ans +=JdbcQueryManager.Query.INSERT_VALUES.toString()+":INSERT INTO {0} ({1}) VALUES ({2})\n";
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":"
-		+"select owner||'.'||table_name AS TABLE_NAME from user_tab_privs where privilege='SELECT' "
+		+"select owner||'.'||table_name AS TABLE_NAME from user_tab_privs where privilege='SELECT' AND owner != user "
 		+" union " 
 		+" select rtp.owner||'.'||rtp.table_name  AS TABLE_NAME from user_role_privs urp, role_tab_privs rtp "
-		+" where urp.granted_role = rtp.role and rtp.privilege='SELECT' "
+		+" where urp.granted_role = rtp.role and rtp.privilege='SELECT' AND owner != user "
 		+" union "
 		+" select table_name from user_tables "
 		+" ORDER BY TABLE_NAME\n";

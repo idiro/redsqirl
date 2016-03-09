@@ -194,7 +194,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		try {
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref)));
 		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.pathUserCfgPref + "', "
+			logger.debug("Error when loading '" + WorkflowPrefManager.pathUserCfgPref + "', "
 					+ e.getMessage(), e);
 		}
 		return prop;

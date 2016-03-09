@@ -85,6 +85,9 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 						if(curBool == null){
 							allOK.put(name, new Boolean[3]);
 							curBool = allOK.get(name);
+							for(int i = 0;i<3;++i){
+								curBool[i] = false;
+							}
 						}
 						if(keyStr.endsWith(url_key_root)){
 							curBool[0] = true;
@@ -108,6 +111,9 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 		while(namesIt.hasNext()){
 			String curKey = namesIt.next();
 			Boolean[] curValue = allOK.get(curKey);
+			if(!curValue[0]){
+				curValue[0] = WorkflowPrefManager.getSysProperty(template+curKey+"."+url_key_root) != null;
+			}
 			if(curValue[0] && curValue[1] && curValue[2]){
 				ans.add(curKey);
 			}

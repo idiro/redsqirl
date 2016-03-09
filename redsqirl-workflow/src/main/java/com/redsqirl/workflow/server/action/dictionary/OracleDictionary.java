@@ -160,6 +160,9 @@ public class OracleDictionary extends JdbcDictionary{
 			new String[] { "DENSE_RANK() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
+			new String[] { "ROW_NUMBER() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			"@function:NTILE@short:returns the row number.",
+			},
 			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT,EXPRESSION,EXPRESSION", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
@@ -168,6 +171,9 @@ public class OracleDictionary extends JdbcDictionary{
 			},
 			new String[] { "DENSE_RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION,EXPRESSION", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
+			},
+			new String[] { "ROW_NUMBER() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			"@function:NTILE@short:returns the row number.",
 			},
 		};
 		addToFunctionsMap(utilsMethods,oracleUtilMethods);

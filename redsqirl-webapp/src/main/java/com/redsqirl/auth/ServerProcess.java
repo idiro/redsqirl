@@ -101,6 +101,10 @@ public class ServerProcess {
 					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
+					File uRdmFile = new File("/dev/urandom");
+					if(uRdmFile.exists()){
+						argJava+= " -Djava.security.egd=file:///dev/urandom ";
+					}
 					logger.info("opening channel");
 					Channel channel = session.openChannel("exec");
 					logger.info("command to launch:\n" + javahome + argJava + command);
