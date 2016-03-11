@@ -106,6 +106,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
 
 	private String runningStatus;
+	
+	private Long lastTimeRun;
 
 	//private static Logger logger = Logger.getLogger(.class);
 
@@ -377,17 +379,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		NodeList nl = n.getChildNodes();
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
-			String id = cur.getNodeName();
-			waLogger.debug(componentId + ": loads " + id + "...");
-			try {
-				DFEInteraction intCur = getInteraction(id);
-				if (intCur != null) {
-					intCur.readXml(cur.getFirstChild());
+			if(cur.getNodeType() == Node.ELEMENT_NODE){
+				String id = cur.getNodeName();
+				waLogger.debug(componentId + ": loads " + id + "...");
+				try {
+					DFEInteraction intCur = getInteraction(id);
+					if (intCur != null) {
+						intCur.readXml(((Element) cur).getElementsByTagName(id).item(0));
+						if(waLogger.isDebugEnabled()){
+							waLogger.debug(intCur.getTree());
+						}
+					}
+				} catch (Exception e) {
+					waLogger.error(e,e);
+					error = LanguageManagerWF.getText(
+							"dataflowaction.readvaluesxml",
+							new Object[] { componentId });
 				}
-			} catch (Exception e) {
-				error = LanguageManagerWF.getText(
-						"dataflowaction.readvaluesxml",
-						new Object[] { componentId });
 			}
 		}
 
@@ -423,9 +431,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			error = LanguageManagerWF.getText(
 					"dataflowaction.writevaluesxml_domexception",
 					new Object[] { dme.getMessage() });
+			waLogger.error(dme,dme);
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
+			waLogger.error(e,e);
 		}
 
 		waLogger.debug("writeValuesXml error: " + error);
@@ -1107,6 +1117,25 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		writeOozieActionFiles(files);
 
 		waLogger.debug("writeProcess 3");
+		lastTimeRun = System.currentTimeMillis();
+	}
+	
+	@Override
+	public Long getLastTimeInputComponentRun() throws RemoteException {
+		Long ans = null;
+		Iterator<DataFlowElement> it = getAllInputComponent().iterator();
+		while(it.hasNext()){
+			Long cur = it.next().getLastTimeRun();
+			if(cur == null){
+				continue;
+			}
+			if(ans == null ){
+				ans = cur;
+			}else if(ans < cur){
+				ans = cur;
+			}
+		}
+		return ans;
 	}
 
 	@Override
@@ -1224,6 +1253,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	@Override
 	public final void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public Long getLastTimeRun() {
+		return lastTimeRun;
 	}
 
 }

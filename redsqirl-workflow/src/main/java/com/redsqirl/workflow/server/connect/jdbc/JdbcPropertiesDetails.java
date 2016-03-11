@@ -51,7 +51,11 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 	}
 	
 	private void read(){
-		this.url = WorkflowPrefManager.getUserProperty(url_key);
+		try{
+			this.url = WorkflowPrefManager.getProperty(url_key);
+		}catch(Exception e){
+			this.url = WorkflowPrefManager.getUserProperty(url_key);
+		}
 		this.username = WorkflowPrefManager.getUserProperty(username_key);
 		this.password = WorkflowPrefManager.getUserProperty(password_key);
 	}
@@ -81,6 +85,9 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 						if(curBool == null){
 							allOK.put(name, new Boolean[3]);
 							curBool = allOK.get(name);
+							for(int i = 0;i<3;++i){
+								curBool[i] = false;
+							}
 						}
 						if(keyStr.endsWith(url_key_root)){
 							curBool[0] = true;
@@ -95,10 +102,18 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 				ans.add("hive");
 			}
 		}
+		if(!ans.contains("hive")){
+			if(WorkflowPrefManager.getSysProperty(template_hive+url_key_root) != null){
+				ans.add("hive");
+			}
+		}
 		Iterator<String> namesIt = allOK.keySet().iterator();
 		while(namesIt.hasNext()){
 			String curKey = namesIt.next();
 			Boolean[] curValue = allOK.get(curKey);
+			if(!curValue[0]){
+				curValue[0] = WorkflowPrefManager.getSysProperty(template+curKey+"."+url_key_root) != null;
+			}
 			if(curValue[0] && curValue[1] && curValue[2]){
 				ans.add(curKey);
 			}

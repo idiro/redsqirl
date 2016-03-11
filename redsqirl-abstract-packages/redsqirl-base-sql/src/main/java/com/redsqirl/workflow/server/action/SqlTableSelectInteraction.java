@@ -22,11 +22,15 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
@@ -46,6 +50,7 @@ import com.redsqirl.workflow.utils.SqlLanguageManager;
  */
 public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 
+	static private Logger logger = Logger.getLogger(SqlTableSelectInteraction.class);
 	/**
 	 * 
 	 */
@@ -63,7 +68,6 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 			/** type title key */
 			table_type_title = SqlLanguageManager
 			.getTextWithoutSpace("sql.select_fields_interaction.type_column");
-
 	/**
 	 * Constructor
 	 * 
@@ -122,7 +126,9 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 				msg = SqlLanguageManager
 						.getText("sql.select_fields_interaction.checkempty");
 			} else {
-				logger.info("Feats " + in.getFields().getFieldNames());
+				if(logger.isDebugEnabled()){
+					logger.debug("Feats " + in.getFields().getFieldNames());
+				}
 				Set<String> featGrouped = getFieldGrouped();
 				fl = getInputFieldList(in);
 
@@ -137,9 +143,14 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 					logger.debug("checking : " + featoperation + " "
 							+ feattitle + " ");
 					try {
-						String typeRetuned = getDictionary()
-								.getReturnType(featoperation, fl, featGrouped);
-						logger.info("type returned : " + typeRetuned);
+						String typeRetuned = dictionaryCach.get(featoperation);
+						if(typeRetuned == null){
+							typeRetuned = getDictionary()
+									.getReturnType(featoperation, fl, featGrouped);
+							dictionaryCach.put(featoperation,typeRetuned);
+						}
+								
+						logger.debug("type returned : " + typeRetuned);
 						if (!getDictionary().check(feattype, typeRetuned)) {
 							msg = SqlLanguageManager
 									.getText(
@@ -148,7 +159,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 													featoperation, typeRetuned,
 													feattype });
 						}
-						logger.info("added : " + featoperation
+						logger.debug("added : " + featoperation
 								+ " to fields type list");
 					} catch (Exception e) {
 						msg = SqlLanguageManager
@@ -163,6 +174,16 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 		return msg;
 	}
 
+	protected EditorInteraction generateEditor(FieldList feats) throws RemoteException{
+		EditorInteraction ans = null;
+		if (hs.getGroupingInt() != null) {
+			ans = generateGroupEditor(feats);
+		}else{
+			ans = generateDefaultEditor(feats);
+		}
+		return ans;
+	}
+	
 	/**
 	 * Update the interaction with an input
 	 * 
@@ -172,25 +193,38 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 	public void update(DFEOutput in) throws RemoteException {
 		// get Alias
 		String alias = getAlias();
-		logger.info("got alias");
+		logger.debug("got alias");
 		FieldList fl = getInputFieldList(in);
-		logger.info("got input fieldList");
+		logger.debug("got input fieldList");
+		boolean gen = false;
 		// Generate Editor
-		if (hs.getGroupingInt() != null) {
-			updateEditor(table_op_title, generateGroupEditor(fl));
-		} else {
-			updateEditor(table_op_title, generateDefaultEditor(fl));
+		if(isDifferentDictionary(table_op_title)){
+			updateEditor(table_op_title, generateEditor(fl));
+			gen = true;
+		}else if(changeKeyWords(table_op_title, fl)){
+			gen = true;
 		}
 
-		removeGenerators();
-		
-		// Set the Generator
-		logger.debug("Set the generator...");
-		// Copy Generator operation
-		logger.info("setting alias");
-		logger.info("alias : " + alias);
 
-		addGenerators(alias, fl, in);
+		if(gen){
+			dictionaryCach.clear();
+			removeGenerators();
+
+			// Set the Generator
+			logger.debug("Set the generator...");
+			// Copy Generator operation
+			logger.debug("setting alias");
+			logger.debug("alias : " + alias);
+
+			addGenerators(alias, fl, in);
+		}else{
+			try{
+				if(getTree()
+						.getFirstChild("table").getChildren("row").size()*2 > dictionaryCach.size()){
+					dictionaryCach.clear();
+				}
+			}catch(Exception e){}
+		}
 
 	}
 	
@@ -270,13 +304,18 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 			throws RemoteException {
 		String error = null;
 		try {
-			DFEOutput in = hs.getDFEInput().get(SqlElement.key_input).get(0);
-			Set<String> fieldGrouped = getFieldGrouped();
-			FieldList fl = getInputFieldList(in);
-			
-			if (getDictionary().getReturnType(expression,
-					fl, fieldGrouped) == null) {
-				error = SqlLanguageManager.getText("sql.expressionnull");
+			String typeRetuned = dictionaryCach.get(expression);
+			if(typeRetuned == null){
+				DFEOutput in = hs.getDFEInput().get(SqlElement.key_input).get(0);
+				Set<String> fieldGrouped = getFieldGrouped();
+				FieldList fl = getInputFieldList(in);
+				typeRetuned = getDictionary().getReturnType(expression,
+						fl, fieldGrouped);
+				if (typeRetuned == null) {
+					error = SqlLanguageManager.getText("sql.expressionnull");
+				}else{
+					dictionaryCach.put(expression, typeRetuned);
+				}
 			}
 		} catch (Exception e) {
 			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
@@ -304,7 +343,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 		List<String> featGrouped = null;
 		// only show what is in grouped interaction
 		if (hs.getGroupingInt() != null) {
-			logger.info("group interaction is not null");
+			logger.debug("group interaction is not null");
 			featGrouped = new LinkedList<String>();
 			Iterator<String> grInt = hs.getGroupingInt().getValues().iterator();
 			while (grInt.hasNext()) {

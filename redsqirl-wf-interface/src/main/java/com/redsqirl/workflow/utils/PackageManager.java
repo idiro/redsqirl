@@ -608,7 +608,6 @@ public class PackageManager extends UnicastRemoteObject {
 	public List<String> getCoreActions(){
 		List<String> actions = new LinkedList<String>();
 		actions.add("convert_file_text");
-		actions.add("convert");
 		actions.add("file_text_source");
 		actions.add("send_email");
 		actions.add("source");

@@ -58,6 +58,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<SelectItem> listExtensions;
 	private List<String> listExtensionsString;
 	private boolean allowDirectories;
+	private boolean allowOnlyDirectories = false;
 	private String extensionsSelected;
 	private String openOutputData;
 
@@ -143,13 +144,23 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		LinkedList<String> editProps = new LinkedList<String>();
 		LinkedList<String> createProps = new LinkedList<String>();
 		for (String properties : propsParam.keySet()) {
-			titles.add(properties);
+
+			if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
+				titles.add(properties);
+				editProps.add(properties);
+			}else if (propsParam.get(properties).editOnly()) {
+				editProps.add(properties);
+			}else if (propsParam.get(properties).createOnly()) {
+				createProps.add(properties);
+			}
 
 		}
 
 		setTableGrid(new SelectableTable(titles));
+		setEditProps(editProps);
+		setCreateProps(createProps);
 
-		updateTable();
+		updateTable(false);
 
 		logger.info("update progressbar");
 		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
@@ -158,23 +169,17 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("Finished mounting table");
 	}
 
-	public void updateTable() throws RemoteException{
+	protected void updateTable(boolean refresh) throws RemoteException{
 		String oldPath = getPath();
 		String error = null;
 		setPath(getDataStore().getPath());
 		
-		String regex = null;
-		if(extensionsSelected != null && !extensionsSelected.isEmpty()){
-			logger.info("extension select: "+extensionsSelected);
-			regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
-			logger.info("Regex: "+regex);
-		}
 		
 		//Fill rows
 		try{
 			if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
 					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
-				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties(refresh);
 				if(mapSSH != null){
 					setAllProps(new LinkedList<Map<String,String>>());
 					getTableGrid().getRows().clear();
@@ -189,29 +194,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 					}
 				}
 			}
-
-			if(getAllProps() != null){
-				for(int i=0;i < getAllProps().size();++i){
-					String childName = getAllProps().get(i).get("name");
-					getTableGrid().getRows().get(i).setSelected(false);
-					getTableGrid().getRows().get(i).setDisableSelect(false);
-					try{
-						if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
-							getTableGrid().getRows().get(i).setDisableSelect(false);
-						}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
-							getTableGrid().getRows().get(i).setDisableSelect(false);
-						}else{
-							if(regex != null){
-								getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
-							}else{
-								getTableGrid().getRows().get(i).setDisableSelect(true);
-							}
-						}
-					}catch(Exception e){
-						//No Directory Types
-					}
-				}
-			}
+			
+			updateSelection();
+			
 		}catch(Exception e){
 			error = e.getMessage();
 		}
@@ -220,6 +205,42 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setPath(oldPath);
 		}
 		displayErrorMessage(error, "UPDATETABLE");
+	}
+	
+	private void updateSelection(){
+		if(getAllProps() != null){
+
+			String regex = null;
+			if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+				logger.info("extension select: "+extensionsSelected);
+				regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
+				logger.info("Regex: "+regex);
+			}
+			
+			
+			for(int i=0;i < getAllProps().size();++i){
+				String childName = getAllProps().get(i).get("name");
+				getTableGrid().getRows().get(i).setSelected(false);
+				getTableGrid().getRows().get(i).setDisableSelect(false);
+				try{
+					if(getAllProps().get(i).get("type").equalsIgnoreCase("connection") ||
+							(getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) ||
+							(!getAllProps().get(i).get("type").equalsIgnoreCase("directory") && isAllowOnlyDirectories()) ||
+							(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory"))
+							) {
+						getTableGrid().getRows().get(i).setDisableSelect(false);
+					}else{
+						if(regex != null){
+							getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+						}else{
+							getTableGrid().getRows().get(i).setDisableSelect(true);
+						}
+					}
+				}catch(Exception e){
+					//No Directory Types
+				}
+			}
+		}
 	}
 
 
@@ -244,7 +265,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			
 			//Force the refresh
 			setPath(null);
-			updateTable();
+			updateTable(true);
 		}
 
 		usageRecordLog().addSuccess("DELETEFILE");
@@ -264,11 +285,16 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if (getDataStore().goTo(getPath())) {
 			//Force the refresh
 			setPath(null);
-			updateTable();
+			updateTable(false);
 		} else {
 			getBundleMessage("error.invalid.path");
 		}
 
+	}
+	
+	public void refreshPath() throws RemoteException {
+		setPath(null);
+		updateTable(true);
 	}
 
 	/**
@@ -294,7 +320,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			if (getDataStore().goTo(newPath)) {
 				//setPath(newPath);
-				updateTable();
+				updateTable(false);
 				logger.info("selectFile updateTable");
 
 			} else {
@@ -318,7 +344,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			logger.info("selectFileHistory " + name);
 
 			if (getDataStore().goTo(name)) {
-				updateTable();
+				updateTable(false);
 				logger.info("selectFileHistory updateTable");
 			} else {
 				logger.error("Error: " + name + " this is not a directory");
@@ -378,7 +404,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void verifyIfIsFile(String name) throws RemoteException {
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
 		try{
-			file = getDataStore().getChildrenProperties() == null;
+			file = getDataStore().getChildrenProperties(true) == null;
 		}catch(Exception e){
 			file = true;
 		}
@@ -457,7 +483,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			usageRecordLog().addError("ERROR COPYMOVEFILE", error);
 		}
 
-		updateTable();
+		updateTable(true);
 		
 		usageRecordLog().addSuccess("COPYMOVEFILE");
 	}
@@ -550,7 +576,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		//Force the refresh
 		setPath(null);
-		updateTable();
+		updateTable(true);
 	}
 
 	/**
@@ -623,7 +649,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goPrevious() throws RemoteException {
 
 		getDataStore().goPrevious();
-		updateTable();
+		updateTable(false);
 
 	}
 
@@ -639,7 +665,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goNext() throws RemoteException {
 
 		getDataStore().goNext();
-		updateTable();
+		updateTable(false);
 
 	}
 
@@ -670,7 +696,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("newPath" + newPath);
 
 				if (getDataStore().goTo(newPath)) {
-					updateTable();
+					updateTable(false);
 				} else {
 					getBundleMessage("error.invalid.path");
 				}
@@ -854,6 +880,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setListExtensionsString(List<String> listExtensionsString) {
 		this.listExtensionsString = listExtensionsString;
+	}
+
+	public boolean isAllowOnlyDirectories() {
+		return allowOnlyDirectories;
+	}
+
+	public void setAllowOnlyDirectories(boolean allowOnlyDirectories) {
+		this.allowOnlyDirectories = allowOnlyDirectories;
 	}
 	
 }

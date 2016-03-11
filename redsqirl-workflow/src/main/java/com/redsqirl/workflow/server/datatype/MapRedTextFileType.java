@@ -217,7 +217,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 * @return List of rows returned
 	 * @throws RemoteException
 	 */
-	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+	protected List<Map<String,String>> readRecord(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		
 		List<String> list = selectLine(maxToRead);

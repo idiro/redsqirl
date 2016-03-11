@@ -21,12 +21,13 @@ package com.redsqirl.workflow.server.action;
 
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -34,8 +35,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.EditorInteraction;
-import com.redsqirl.workflow.server.TableInteraction;
-import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.SqlLanguageManager;
 
@@ -118,8 +117,12 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 						new Object[] { rowNb, field });
 			} else {
 				try {
-					String typeRetuned = getDictionary()
-							.getReturnType(op,fields);
+					String typeRetuned = dictionaryCach.get(op);
+					if(typeRetuned == null){
+							typeRetuned = getDictionary()
+									.getReturnType(op,fields);
+						dictionaryCach.put(op,typeRetuned);
+					}
 					if (!getDictionary().check(type, 
 							typeRetuned)) {
 						msg = SqlLanguageManager.getText(
@@ -137,6 +140,12 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 
 		return msg;
 	}
+	
+	protected EditorInteraction generateEditor(FieldList feats) throws RemoteException{
+		return getDictionary().generateEditor(
+				getDictionary().createDefaultSelectHelpMenu(), feats);
+	}
+	
 	/**
 	 * Update the interaction 
 	 * @throws RemoteException
@@ -145,30 +154,43 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 
 		FieldList feats = hj.getInFields();
 
-		updateEditor(table_op_title, generateEditor());
-
-		// Set the Generator
-		logger.debug("Set the generator...");
-
-		// Copy Generator operation
-		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
-		Iterator<String> featIt = feats.getFieldNames().iterator();
-		while (featIt.hasNext()) {
-			Map<String, String> curMap = new LinkedHashMap<String, String>();
-			String cur = featIt.next();
-
-			curMap.put(table_op_title, cur);
-			curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
-			curMap.put(table_type_title,feats.getFieldType(cur).toString() );
-			copyRows.add(curMap);
+		
+		boolean gen = false;
+		if(isDifferentDictionary(table_op_title)){
+			updateEditor(table_op_title, generateEditor(feats));
+			gen = true;
+		}else if(changeKeyWords(table_op_title,feats)){
+			gen = true;
 		}
-		updateGenerator("copy", copyRows);
+		
+		
+		if(gen){
+			// Set the Generator
+			logger.debug("Set the generator...");
+			dictionaryCach.clear();
+			// Copy Generator operation
+			List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
+			Iterator<String> featIt = feats.getFieldNames().iterator();
+			while (featIt.hasNext()) {
+				Map<String, String> curMap = new LinkedHashMap<String, String>();
+				String cur = featIt.next();
+
+				curMap.put(table_op_title, cur);
+				curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
+				curMap.put(table_type_title,feats.getFieldType(cur).toString() );
+				copyRows.add(curMap);
+			}
+			updateGenerator("copy", copyRows);
+		}else{
+			try{
+				if(getTree()
+						.getFirstChild("table").getChildren("row").size()*2 > dictionaryCach.size()){
+					dictionaryCach.clear();
+				}
+			}catch(Exception e){}
+		}
 	}
 	
-	protected EditorInteraction generateEditor() throws RemoteException{
-		return getDictionary().generateEditor(
-				getDictionary().createDefaultSelectHelpMenu(), hj.getInFields());
-	}
 	
 	/**
 	 * Generate a root table for the interaction
@@ -195,10 +217,16 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 			throws RemoteException {
 		String error = null;
 		try {
-			if (getDictionary().getReturnType(expression,
-					hj.getInFields()) == null) {
-				error = SqlLanguageManager.getText(
-						"sql.expressionnull");
+			String returnType = dictionaryCach.get(expression);
+			if(returnType == null){
+				returnType = getDictionary().getReturnType(expression,
+						hj.getInFields());
+				if (returnType == null) {
+					error = SqlLanguageManager.getText(
+							"sql.expressionnull");
+				}else{
+					dictionaryCach.put(expression,returnType);
+				}
 			}
 		} catch (Exception e) {
 			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});

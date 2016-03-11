@@ -74,7 +74,7 @@ if [ -z "${TOMCAT_PATH}" ]; then
         read TOMCAT_PORT
 	if [[ -z "${TOMCAT_PORT}" ]]; then
 	    TOMCAT_PORT=8080
-	elif [[  ! "${TOMCAT_PORT}" =~ [0-9]4 ]]; then
+	elif [[  ! "${TOMCAT_PORT}" =~ ^[0-9]{4}$ ]]; then
         	echo "port number is invalid "
                 exit;
         fi

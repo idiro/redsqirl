@@ -20,6 +20,7 @@
 package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,6 +47,17 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	/** Key for arithmetic operation */
 	protected static final String arithmeticOperators = "arithmeticOperators";
 
+	/**
+	 * Constructor
+	 */
+	protected AbstractSQLLikeDictionary() {
+		super();
+	}
+	
+	protected AbstractSQLLikeDictionary(boolean init) {
+		super(init);
+	}
+	
 	/**
 	 * Load the default funtions into a map
 	 */
@@ -110,6 +122,17 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	protected void addToFunctionsMap(String list,String[][] newOptions){
 		functionsMap.put(list, 
 				concat(functionsMap.get(list),newOptions));
+	}
+	
+	protected void removeFromFunctionsMap(String list, String function){
+		String[][] fcts = functionsMap.get(list);
+		List<String[]> newF = new ArrayList<String[]>(fcts.length);
+		for(int i = 0; i < fcts.length;++i){
+			if(!function.equals(fcts[i][0])){
+				newF.add(fcts[i]);
+			}
+		}
+		functionsMap.put(list, newF.toArray(new String[newF.size()][]));
 	}
 	
 	/**
@@ -275,7 +298,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			}
 		}
 
-		logger.debug("type returning: " + type);
+		logger.debug("type returning for "+expr+": " + type);
 		return type;
 
 	}
@@ -300,8 +323,15 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			
 			logger.debug(arg);
 			String[] expressions = getCaseArguments(arg);
-			if(expressions == null){
+			if(expressions == null || expressions.length == 0){
 				return null;
+			}
+			
+			if(logger.isDebugEnabled()){
+				logger.debug("Case When arguments: ");
+				for(int i = 0; i < expressions.length;++i){
+					logger.debug(expressions[i]);
+				}
 			}
 			
 			for (int i = 0; i < expressions.length; ++i) {
@@ -310,15 +340,11 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					logger.debug(expression);
 					String argType = null;
 					
+					//Find the condition first argument
 					int indexOfThen = expression.indexOf(" THEN ");
-					int indexOfCase = expression.indexOf(" CASE ");
-					if(expression.startsWith("CASE ")){
-						argType = expression;
-					}else if( indexOfThen == -1 && i != expressions.length-1){
+					if( indexOfThen == -1 && i != expressions.length-1){
 						return null;
-					}else if(indexOfThen == -1 || (indexOfCase != -1 && indexOfCase < indexOfThen)){
-						argType = expression;
-					}else{
+					}else if(indexOfThen != -1 && !(i == expressions.length-1 && expression.startsWith("CASE "))){
 						String condition = expression.substring(0,indexOfThen);
 						argType = expression.substring(indexOfThen+6);
 						logger.debug(condition);
@@ -328,6 +354,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 							logger.debug(error);
 							throw new Exception(error);
 						}
+					}else{
+						argType = expression;
 					}
 
 					String t = getReturnType(argType, fields);
@@ -551,7 +579,11 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				suggestion.add("name").add(elStr[0]);
 				suggestion.add("input").add(elStr[1]);
 				suggestion.add("return").add(elStr[2]);
-				suggestion.add("help").add(convertStringtoHelp(elStr[3]));
+				try{
+					suggestion.add("help").add(convertStringtoHelp(elStr[3]));
+				}catch(Exception e){
+					suggestion.add("help").add(convertStringtoHelp(null));
+				}
 			}
 		}
 		return root;
@@ -702,21 +734,25 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				sizeSearched = argSplit.length;
 				logger.debug("argsplit last: " + argSplit[sizeSearched - 1]);
 				logger.debug("argsplit size : " + sizeSearched);
-				logger.debug("test " + method[1].trim().isEmpty());
 				logger.debug("test " + expr.trim().equalsIgnoreCase(method[0].trim()));
-				if (method[1].trim().isEmpty() && expr.trim().equalsIgnoreCase(method[0].trim())) {
-					// Hard-copy method
+				if(method[1] == null){
 					type = method[2];
-				} else {
-					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+				}else{
+					logger.debug("test " + method[1].trim().isEmpty());
+					if (method[1].trim().isEmpty() && expr.trim().equalsIgnoreCase(method[0].trim())) {
+						// Hard-copy method
+						type = method[2];
+					} else {
+						int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
 
-					if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched > methodArgs)) {
-						method = null;
+						if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched > methodArgs)) {
+							method = null;
+						}
 					}
-				}
 
-				if (type == null && method != null && check(method, argSplit, fields)) {
-					type = method[2];
+					if (type == null && method != null && check(method, argSplit, fields)) {
+						type = method[2];
+					}
 				}
 
 			}

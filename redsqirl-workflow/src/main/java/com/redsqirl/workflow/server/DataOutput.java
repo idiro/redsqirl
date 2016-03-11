@@ -36,6 +36,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.redsqirl.utils.FieldList;
@@ -101,6 +102,9 @@ DFEOutput {
 	private transient Boolean cachExist = null;
 	private transient long cachValidTimeStamp = 0;
 	private transient String cachValid = null;
+	private transient long cachSelectTimeStamp = 0;
+	private transient int cachMaxSelectLineLast = 0;
+	private transient List<Map<String,String>> cachSelect = null;
 	private static Map<String,String> cachColour = new LinkedHashMap<String,String>();
 	
 	
@@ -292,8 +296,8 @@ DFEOutput {
 		}
 
 		statLogger.debug("properties");
-		NodeList property = parent.getElementsByTagName("properties").item(0)
-				.getChildNodes();
+		NodeList property = ((Element) parent.getElementsByTagName("properties").item(0))
+				.getElementsByTagName("property");
 		for (int i = 0; i < property.getLength(); ++i) {
 			String key = ((Element) property.item(i))
 					.getElementsByTagName("key").item(0).getChildNodes()
@@ -312,18 +316,23 @@ DFEOutput {
 
 		statLogger.debug("fields");
 		fields = new OrderedFieldList();
-		NodeList fieldEl = parent.getElementsByTagName("fields").item(0)
-				.getChildNodes();
+		NodeList fieldEl = ((Element) parent.getElementsByTagName("fields").item(0))
+				.getElementsByTagName("field");
 		for (int i = 0; i < fieldEl.getLength(); ++i) {
-			String name = ((Element) fieldEl.item(i))
+			try{
+			Node field = fieldEl.item(i);
+			String name = ((Element) field)
 					.getElementsByTagName("name").item(0).getChildNodes()
 					.item(0).getNodeValue();
 			statLogger.debug("name: " + name);
-			String type = ((Element) fieldEl.item(i))
+			String type = ((Element) field)
 					.getElementsByTagName("type").item(0).getChildNodes()
 					.item(0).getNodeValue();
 			statLogger.debug("type: " + type);
 			fields.addField(name, FieldType.valueOf(type));
+			}catch(Exception e){
+				statLogger.warn(e,e);
+			}
 		}
 
 	}
@@ -338,8 +347,7 @@ DFEOutput {
 		}
 		
 		if(!getPath().equals(oldPath) && SavingState.RECORDED.equals(savingState)){
-			cachExistTimeStamp = 0;
-			cachValidTimeStamp = 0;
+			clearCache();
 		}
 		
 		if( (SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachExistTimeStamp)) || cachExistTimeStamp == 0){
@@ -352,9 +360,29 @@ DFEOutput {
 	}
 	
 	@Override
+	public final List<Map<String,String>> select(int maxToRead) throws RemoteException{
+		if(getPath() == null || (!getPath().equals(oldPath) && SavingState.RECORDED.equals(savingState))){
+			clearCache();
+		}
+		if((SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachSelectTimeStamp)) ||
+				cachSelectTimeStamp == 0 ||
+				(cachSelect != null && cachMaxSelectLineLast < maxToRead && cachSelect.size() >= cachMaxSelectLineLast )){
+			cachSelect = readRecord(maxToRead);
+			cachMaxSelectLineLast = maxToRead;
+			cachSelectTimeStamp = System.currentTimeMillis();
+			oldPath = getPath();
+		}
+		return cachSelect;
+	}
+	
+	protected abstract List<Map<String,String>> readRecord(int maxToRead)  throws RemoteException;
+	
+	@Override
 	public void clearCache() throws RemoteException {
 		cachExistTimeStamp = 0;
 		cachValidTimeStamp = 0;
+		cachSelectTimeStamp = 0;
+		cachSelect = null;
 	}
 	
 	protected abstract boolean exists() throws RemoteException;
@@ -367,6 +395,7 @@ DFEOutput {
 		if(getPath() == null || (!getPath().equals(oldPath) && SavingState.RECORDED.equals(savingState))){
 			cachExistTimeStamp = 0;
 			cachValidTimeStamp = 0;
+			cachSelectTimeStamp = 0;
 		}
 		if(SavingState.RECORDED.equals(savingState) && (refreshTimeOut < (System.currentTimeMillis() - cachValidTimeStamp)) ||
 				cachValidTimeStamp == 0){
@@ -388,6 +417,7 @@ DFEOutput {
 			statLogger.debug("New path for "+component+"("+getPath()+"): "+newPath);
 			if(copy == null){
 				setPath(newPath);
+				clearCache();
 				cachExist = false;
 				cachExistTimeStamp = System.currentTimeMillis();
 			}else if (copy) {
@@ -411,6 +441,7 @@ DFEOutput {
 	@Override
 	public void generatePath(String component,
 			String outputName) throws RemoteException {
+		clearCache();
 		cachExist = false;
 		cachExistTimeStamp = System.currentTimeMillis();
 		setPath(generatePathStr(component, outputName));
@@ -526,6 +557,9 @@ DFEOutput {
 				cachExist = false;
 				cachExistTimeStamp = System.currentTimeMillis();
 				cachValidTimeStamp = 0;
+
+				cachSelectTimeStamp = System.currentTimeMillis();
+				cachSelect = null;
 			}else{
 				cachExistTimeStamp = 0;
 				cachValidTimeStamp = 0;

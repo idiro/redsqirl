@@ -86,26 +86,6 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		return error;
 	}
 
-
-	protected void storeNewSettingsLang(Map<String,String[]> langSettings){
-		try {
-			Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
-
-			Iterator<String> langKey = langSettings.keySet().iterator();
-			while(langKey.hasNext()){
-				String cur = langKey.next();
-				String[] msg = langSettings.get(cur);
-				langProp.put(cur+"_desc",msg[0]);
-				langProp.put(cur+"_label",msg[1]);
-			}
-
-			WorkflowPrefManager.getProps().storeLangProperties(langProp);
-
-		} catch (IOException e) {
-			logger.error("Error " + e,e);
-		}
-	}
-
 	public void defaultSettings() {
 		logger.info("defaultSettings");
 
@@ -126,27 +106,6 @@ public class SettingsBean extends SettingsBeanAbs implements Serializable  {
 		} catch (RemoteException e) {
 			logger.error(e,e);
 		}
-	}
-
-	public void mountPath(String name) throws RemoteException{
-
-		if(path.contains(name)){
-			boolean removeValue = false;
-			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
-				String value = (String) iterator.next();
-				if(value.equals(name)){
-					removeValue = true;
-					continue;
-				}
-				if(removeValue){
-					iterator.remove();
-				}
-			}
-		}else{
-			path.add(name);
-		}
-		
-		refreshPath();
 	}
 	
 	public void refreshPath() throws RemoteException{

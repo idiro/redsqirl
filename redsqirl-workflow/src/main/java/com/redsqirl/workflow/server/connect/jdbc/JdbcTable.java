@@ -300,7 +300,7 @@ public class JdbcTable extends DataOutput{
 	}
 
 	@Override
-	public List<Map<String, String>> select(int maxToRead)
+	protected List<Map<String, String>> readRecord(int maxToRead)
 			throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		List<String> lines = js.select(getPath(), "\001" ,maxToRead);
@@ -399,9 +399,11 @@ public class JdbcTable extends DataOutput{
 				}
 				
 				if(FieldType.STRING.equals(type) &&
+						valForCategory.get(i) != null &&
 						valForCategory.get(i).size() < 6){
 					type = FieldType.CATEGORY;
 				}else if(FieldType.DOUBLE.equals(type)&&
+						fieldTypeDetection.get(i) != null &&
 						fieldTypeDetection.get(i).equals("INT")){
 					type = FieldType.INT;
 				}

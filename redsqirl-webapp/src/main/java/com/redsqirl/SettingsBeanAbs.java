@@ -100,12 +100,55 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	}
 	
 
+	protected void storeNewSettingsLang(Map<String,String[]> langSettings){
+		try {
+			Properties langProp = WorkflowPrefManager.getProps().getLangProperties();
+
+			Iterator<String> langKey = langSettings.keySet().iterator();
+			while(langKey.hasNext()){
+				String cur = langKey.next();
+				String[] msg = langSettings.get(cur);
+				langProp.put(cur+"_desc",msg[0]);
+				langProp.put(cur+"_label",msg[1]);
+			}
+
+			WorkflowPrefManager.getProps().storeLangProperties(langProp);
+
+		} catch (IOException e) {
+			logger.error("Error " + e,e);
+		}
+	}
+
+	public void mountPath(String name) throws RemoteException{
+
+		if(path.contains(name)){
+			boolean removeValue = false;
+			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
+				String value = (String) iterator.next();
+				if(value.equals(name)){
+					removeValue = true;
+					continue;
+				}
+				if(removeValue){
+					iterator.remove();
+				}
+			}
+		}else{
+			path.add(name);
+		}
+		
+		refreshPath();
+	}
 	
-	public abstract void mountPath(String name) throws RemoteException;
+	public abstract void refreshPath() throws RemoteException;
 	
 	public abstract void storeNewSettings();
 	
 	public abstract void readCurMap() throws RemoteException;
+	
+	public abstract void addNewTemplate() throws RemoteException;
+	
+	public abstract void removeTemplate() throws RemoteException;
 
 	public SettingMenuInt mountPackageSettings(List<String> path) throws RemoteException{
 		SettingMenuInt cur = curMap;

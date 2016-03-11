@@ -64,9 +64,16 @@ public class HdfsBrowserBean extends HdfsBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 		String userName = (String) session.getAttribute("username");
+
+		setAllowDirectories(false);
+		setAllowOnlyDirectories(false);
 		
 		setPathImport("/user/" + userName + "/redsqirl-save");
 		setPathExport("/user/" + userName + "/redsqirl-save");
+	}
+	
+	protected void updateTable(boolean refresh) throws RemoteException{
+		super.updateTable(true);
 	}
 	
 	public void setupRSExtension(){
@@ -119,12 +126,12 @@ public class HdfsBrowserBean extends HdfsBean {
 		if (getDataStore().goTo(newPath)) {
 			logger.info("createSaveFolder path is ok");
 			setPath(null);
-			updateTable();
+			updateTable(false);
 		} else {
 			getDataStore().create(newPath, new LinkedHashMap<String, String>());
 			if (getDataStore().goTo(newPath)) {
 				logger.info("createSaveFolder create new path");
-				updateTable();
+				updateTable(false);
 			} else {
 				logger.info("createSaveFolder path error");
 				getBundleMessage("error.invalid.path");

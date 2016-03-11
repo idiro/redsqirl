@@ -52,7 +52,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author keith
  * 
  */
-public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
+public class SSHInterface extends Storage implements SSHDataStore {
 
 	/**
 	 * 
@@ -84,24 +84,11 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 			key_owner = "owner", key_group = "group",
 					/** Type Key */
 					key_type = "type";
-	/**
-	 * Default path for remote servers to use
-	 */
-	protected Preference<String> pathDataDefault;
+	
 	/**
 	 * Channel for Sftp
 	 */
 	protected ChannelSftp channel;
-	/**
-	 * History of paths
-	 */
-	protected List<String> history = new LinkedList<String>();
-	/** Current position in the history of paths */
-	protected int cur = -1;
-	/**
-	 * Max History size
-	 */
-	public static final int historyMax = 50;
 	
 	protected Session session;
 
@@ -116,8 +103,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 	 */
 	public SSHInterface(String host, int port) throws Exception {
 		super();
-		pathDataDefault = new Preference<String>(prefs,
-				"Default path of ssh for the host " + host, "");
 		String privateKey = WorkflowPrefManager.getRsaPrivate();
 
 		if (paramProp.isEmpty()) {
@@ -155,9 +140,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 	 */
 	public SSHInterface(String host, int port, String password) throws Exception {
 		super();
-		pathDataDefault = new Preference<String>(prefs,
-				"Default path of ssh for the host " + host, "");
-		String privateKey = WorkflowPrefManager.getRsaPrivate();
 
 		if (paramProp.isEmpty()) {
 			paramProp.put(key_type, new DSParamProperty(
@@ -325,15 +307,7 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 		try {
 			logger.debug("open connection...");
 			channel.connect();
-			logger.debug("add " + pathDataDefault.get()
-					+ " as current position...");
-			if (!pathDataDefault.get().isEmpty()) {
-				if (!goTo(pathDataDefault.get())) {
-					goTo(channel.getHome());
-				}
-			} else {
-				goTo(channel.getHome());
-			}
+			history.add(channel.getHome());
 		} catch (JSchException e) {
 			error = LanguageManagerWF.getText(
 					"sshinterface.connectchannelfail",
@@ -352,107 +326,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 	public String close() throws RemoteException {
 		channel.disconnect();
 		return null;
-	}
-
-	/**
-	 * Get the current Path
-	 * 
-	 * @return path
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getPath() throws RemoteException {
-		return history.get(cur);
-	}
-
-	/**
-	 * Set Default Path
-	 * 
-	 * @param path
-	 * @throws RemoteException
-	 */
-	@Override
-	public void setDefaultPath(String path) throws RemoteException {
-		if (exists(path)) {
-			pathDataDefault.put(path);
-		}
-	}
-
-	/**
-	 * Go to a path
-	 * 
-	 * @param path
-	 * @return <code>true</code> the current path was changed else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean goTo(String path) throws RemoteException {
-		logger.debug("Attempt to go to " + path);
-		boolean ok = false;
-		if (exists(path)) {
-			while (history.size() - 1 > cur) {
-				history.remove(history.size() - 1);
-			}
-			history.add(path);
-			++cur;
-			while (history.size() > historyMax) {
-				history.remove(0);
-				--cur;
-			}
-			ok = true;
-			logger.debug("new current path: " + getPath());
-		}
-
-		return ok;
-	}
-
-	/**
-	 * True if there is at least one previous path
-	 * 
-	 * @return <code>true</code> if there is a previous path else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 * */
-	@Override
-	public boolean havePrevious() throws RemoteException {
-		return cur > 0;
-	}
-
-	/**
-	 * Go to the previous selected path
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goPrevious() throws RemoteException {
-		if (havePrevious()) {
-			--cur;
-		}
-	}
-
-	/**
-	 * True if there is at least one next path
-	 * 
-	 * @return @return <code>true</code> if there is a next path else
-	 *         <code>false</code>
-	 * @throws RemoteException
-	 */
-	@Override
-	public boolean haveNext() throws RemoteException {
-		return cur < history.size() - 1;
-	}
-
-	/**
-	 * Go to the next selected path
-	 * 
-	 * @throws RemoteException
-	 */
-	@Override
-	public void goNext() throws RemoteException {
-		if (haveNext()) {
-			++cur;
-		}
 	}
 
 	/**
@@ -554,14 +427,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 	}
 	
 	/**
-	 * Not supported
-	 */
-	@Override
-	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
-		return select(history.get(cur), maxToRead);
-	}
-	
-	/**
 	 * Get the properties of a specified path
 	 * @param path
 	 * @return Map of properties
@@ -601,10 +466,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 		return ans;
 	}
 
-	@Override
-	public Map<String, String> getProperties() throws RemoteException {
-		return getProperties(history.get(cur));
-	}
 	/**
 	 * Get the properties of a path and its children
 	 * @param path
@@ -638,16 +499,7 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 		}
 		return ans;
 	}
-	/**
-	 * Get properies for the current path
-	 * @return Map of Propertoes
-	 * @throws RemoteException
-	 */
-	@Override
-	public Map<String, Map<String, String>> getChildrenProperties()
-			throws RemoteException {
-		return getChildrenProperties(history.get(cur));
-	}
+
 	/**
 	 * Not supported
 	 */
@@ -754,11 +606,6 @@ public class SSHInterface extends UnicastRemoteObject implements SSHDataStore {
 	@Override
 	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
 		return select(path, maxToRead);
-	}
-
-	@Override
-	public List<String> displaySelect(int maxToRead) throws RemoteException {
-		return select(history.get(cur), maxToRead);
 	}
 
 	@Override

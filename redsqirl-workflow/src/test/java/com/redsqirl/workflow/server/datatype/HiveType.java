@@ -170,7 +170,7 @@ public class HiveType extends DataOutput{
 	 * @return data
 	 */
 	@Override
-	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+	protected List<Map<String,String>> readRecord(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		Iterator<String> it = hInt.select(getPath(), "'\001'" ,maxToRead).iterator();
 		while(it.hasNext()){

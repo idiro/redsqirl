@@ -71,6 +71,7 @@ public class JdbcShellAction  extends ShellAction {
 		content += "if [ \"$JAVA_HOME\" != \"\" ]; then\n";
 		content += "   JAVA_PATH=$JAVA_HOME/bin/java\n";
 		content += "fi\n";
+		content += "set -e\n";
 		content += "exec $JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS"
 				+" \"$CLASS\""
 				+" \"$URL\""

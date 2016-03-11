@@ -189,7 +189,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 	
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
-		if(getPath() != null){
+		if(isPathExist()){
 			try {
 				FileSystem fs = NameNodeVar.getFS();
 

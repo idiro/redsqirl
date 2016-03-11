@@ -124,7 +124,7 @@ public class OutputActionTest extends DataOutput{
 
 
 	@Override
-	public List<Map<String, String>> select(int maxToRead) throws RemoteException {
+	protected List<Map<String, String>> readRecord(int maxToRead) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

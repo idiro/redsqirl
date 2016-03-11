@@ -29,7 +29,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,12 +43,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -83,15 +83,12 @@ import com.redsqirl.workflow.server.action.superaction.SuperAction;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
-import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
+import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
-import com.redsqirl.workflow.utils.ModelManager;
-import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.RedSqirlModel;
 
 /**
  * Class that manages a workflow.
@@ -687,6 +684,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(file);
 				logger.debug(4);
@@ -1121,11 +1119,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			try{
 				FileStream.decryptFile(xmlFile,tmpFile);
 				doc = dBuilder.parse(tmpFile);
-				doc.getDocumentElement().normalize();
 			}catch(Exception e){
 				logger.warn("Error while decrypting file, attempting to read the file as text");
 				doc = dBuilder.parse(xmlFile);
-				doc.getDocumentElement().normalize();
 			}
 
 			error = readFromXml(doc);
@@ -1235,8 +1231,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					.getOutputComponent();
 
 			logger.debug(compId + ": input...");
-			NodeList inList = ((Element) compCur)
-					.getElementsByTagName("inputs").item(0).getChildNodes();
+			NodeList inList = ((Element) ((Element) compCur)
+					.getElementsByTagName("inputs").item(0)).getElementsByTagName("input");
 			if (inList != null) {
 				for (int index = 0; index < inList.getLength() && error == null; index++) {
 					logger.debug(compId + ": input index " + index);
@@ -1294,8 +1290,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 
 			logger.debug(compId + ": output...");
-			NodeList outList = ((Element) compCur)
-					.getElementsByTagName("outputs").item(0).getChildNodes();
+			NodeList outList = ((Element) ((Element) compCur)
+					.getElementsByTagName("outputs").item(0)).getElementsByTagName("output");
 			if (outList != null) {
 				for (int index = 0; index < outList.getLength()
 						&& error == null; index++) {
@@ -1324,7 +1320,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					} catch (Exception e) {
 						error = LanguageManagerWF
 								.getText("workflow.read_failLoadOut");
-						logger.error(error);
+						logger.error(error,e);
 					}
 				}
 			}

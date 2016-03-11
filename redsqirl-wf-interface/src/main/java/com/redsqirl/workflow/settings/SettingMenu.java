@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.settings.SettingInt.Scope;
 
 public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 
@@ -67,6 +68,28 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 	
 	public boolean isTemplate(){
 		return false;
+	}
+	
+	public boolean isUserOnly() throws RemoteException{
+		boolean ans = isSettingsUserOnly();
+		if(ans && menu != null){
+			Iterator<SettingMenuInt> it = menu.values().iterator();
+			while(it.hasNext() && ans){
+				SettingMenuInt cur = it.next();
+				ans = cur.isUserOnly();
+			}
+		}
+		return ans;
+	}
+	
+	protected boolean isSettingsUserOnly() throws RemoteException{
+		Iterator<SettingInt> it = properties.values().iterator();
+		boolean userOnly = true;
+		while(it.hasNext() && userOnly){
+			SettingInt cur = it.next();
+			userOnly = Scope.USER.equals(cur.getScope());
+		}
+		return userOnly;
 	}
 	
 	public void read(String path,JSONObject json){

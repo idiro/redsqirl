@@ -21,10 +21,10 @@ public class OracleConfFile extends DbConfFile{
 		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} ({1})";
 		ans +=JdbcQueryManager.Query.INSERT_VALUES.toString()+":INSERT INTO {0} ({1}) VALUES ({2})\n";
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":"
-		+"select owner||'.'||table_name AS TABLE_NAME from user_tab_privs where privilege='SELECT' "
+		+"select owner||'.'||table_name AS TABLE_NAME from user_tab_privs where privilege='SELECT' AND owner != user "
 		+" union " 
 		+" select rtp.owner||'.'||rtp.table_name  AS TABLE_NAME from user_role_privs urp, role_tab_privs rtp "
-		+" where urp.granted_role = rtp.role and rtp.privilege='SELECT' "
+		+" where urp.granted_role = rtp.role and rtp.privilege='SELECT' AND owner != user "
 		+" union "
 		+" select table_name from user_tables "
 		+" ORDER BY TABLE_NAME\n";
@@ -55,11 +55,16 @@ public class OracleConfFile extends DbConfFile{
 	protected String getRsTypeFileContent() {
 		String ans = "";
 		ans +="NUMBER:DOUBLE\n";
+		ans +="NUMBER\\(\\d+,0\\):INT\n";
+		ans +="NUMBER\\(\\*,0\\):INT\n";
+		ans +="INT:INT\n";
+		ans +="NUMBER\\(\\d+,\\d+\\):FLOAT\n";
+		ans +="NUMBER\\(\\*,\\d+\\):FLOAT\n";
 		ans +="CHAR\\(\\d+\\):STRING\n";
 		ans +="VARCHAR2\\(\\d+\\):STRING\n";
 		ans +="TIMESTAMP:TIMESTAMP\n";
 		ans +="DATE:DATETIME\n";
-		ans += "VARCHAR2:STRING\n";
+		ans +="VARCHAR2:STRING\n";
 		return ans;
 	}
 	

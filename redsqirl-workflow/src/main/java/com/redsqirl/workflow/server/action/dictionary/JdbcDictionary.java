@@ -42,11 +42,12 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 
 	protected String dictionaryName;
 
-	public JdbcDictionary(){
-	}
-	
 	public JdbcDictionary(String dictionaryName){
+		super(false);
 		this.dictionaryName = dictionaryName;
+		if(this.dictionaryName != null){
+			init();
+		}
 	}
 	
 	/**
@@ -213,11 +214,6 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 								"STRING",
 								"@function:REGEX_REPLACE( MYSTRING , OLDSTRING , NEWSTRING )@short:Performs regular expression matching and replaces the matched group defined by an index parameter@param:MYSTRING string to search@param:OLDSTRING The regular expression to find@param:NEWSTRING The replacement string@description:Use the REGEX_REPLACE function to perform regular expression matching and to REPLACE the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form. The function returns a string that corresponds to the matched group in the position specified by the index. @example:REGEX_REPLACE(\"helloworld\", \"ello|orld\", \"\") returns \"hw\"" },
 						new String[] {
-								"TO_DATE()",
-								"STRING",
-								"STRING",
-								"@function:TO_DATE( STRING ):Converts String timestamps to dates@param:STRING the string that contains a date@description:Returns the date part of a timestamp string@example: TO_DATE(\"1970-01-01 \") returns \"1970-01-01\"" },
-						new String[] {
 								"CONCAT()",
 								"STRING,STRING...",
 								"STRING",
@@ -304,6 +300,14 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 										"ANY",
 								"@function:DISTINCT()@short: Get the distinct value of a column.@description:This function can be used with a COUNT." }});
 
+		
+		String[][] extraRelationalOperators = new String[][] {
+			new String[] { "LIKE", "STRING,STRING", "BOOLEAN",
+			"@function:LIKE@short:Boolean LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns true." },
+			new String[] { "NOT LIKE", "STRING,STRING", "BOOLEAN",
+			"@function:LIKE@short:Boolean NOT LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns false." }
+		};
+		addToFunctionsMap(relationalOperators,extraRelationalOperators);
 	}
 
 	
@@ -475,7 +479,8 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		return (cleanUp.startsWith("CASE") && cleanUp.endsWith("END"))
 				|| (cleanUp.startsWith("NTILE(") &&  cleanUp.indexOf(")") != -1)
 				|| cleanUp.startsWith("DENSE_RANK()") 
-				|| cleanUp.startsWith("RANK()");
+				|| cleanUp.startsWith("RANK()")
+				|| cleanUp.startsWith("ROW_NUMBER()");
 	}
 
 

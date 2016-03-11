@@ -502,7 +502,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 					parameters[2] = absCur[2];
 					newActionList.add(parameters);
 				} catch (Exception e) {
-					logger.error(e.getMessage());
+					logger.error(e.getMessage(),e);
 					logger.error("Error Getting relative paths for Image");
 				}
 

@@ -85,7 +85,7 @@ public class HiveTypePartitionTests {
 			String newPart1 = new_path1+"/"+getParts();
 			hInt.create(newPart1, getPartitions());
 			hInt.goTo(new_path1);
-			Map<String, Map<String, String>> results = hInt.getChildrenProperties();
+			Map<String, Map<String, String>> results = hInt.getChildrenProperties(true);
 			logger.info("results "+results.toString());
 			int size = results.size();
 			assertTrue("test 1 size : "+size , size == 2);
@@ -95,13 +95,13 @@ public class HiveTypePartitionTests {
 			
 			hInt.goTo(new_path1+"/country=Ireland");
 			logger.info("current path "+hInt.getPath());
-			results = hInt.getChildrenProperties();
+			results = hInt.getChildrenProperties(true);
 			logger.info("results "+results.toString());
 			size = results.size();
 			assertTrue("test 2 size : "+size , size == 1);
 			
 			hInt.goTo(new_path1+"/dt=20120201");
-			results = hInt.getChildrenProperties();
+			results = hInt.getChildrenProperties(true);
 			logger.info("results "+results.toString());
 			size = results.size();
 			assertTrue("test 3 size : "+size , size == 1);

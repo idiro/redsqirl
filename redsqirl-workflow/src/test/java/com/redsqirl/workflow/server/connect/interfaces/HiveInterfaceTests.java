@@ -231,7 +231,7 @@ public class HiveInterfaceTests {
 		hInt.goTo(path1);
 		logger.info(hInt.getPath());
 		assertTrue(hInt.getPath() != "/");
-		Map<String, Map<String, String>> map = hInt.getChildrenProperties();
+		Map<String, Map<String, String>> map = hInt.getChildrenProperties(true);
 		Iterator<String> it = map.keySet().iterator();
 
 		while (it.hasNext()) {

@@ -34,9 +34,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -845,29 +847,30 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 	}
 
-	public void mountPath(String name) throws RemoteException{
 
-		if(path.contains(name)){
-			boolean removeValue = false;
-			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
-				String value = (String) iterator.next();
-				if(value.equals(name)){
-					removeValue = true;
-					continue;
-				}
-				if(removeValue){
-					iterator.remove();
-				}
-			}
-		}else{
-			path.add(name);
-		}
-
+	public void refreshPath() throws RemoteException{
+		logger.info("refresh path");
 		s = mountPackageSettings(path);
+
+		if(s.isTemplate()){
+			setTemplate("Y");
+		}else{
+			setTemplate("N");
+		}
 
 		listSubMenu = new ArrayList<SettingsControl>();
 		for (Entry<String, SettingMenuInt> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
+			
+			if(settingsMenu.getValue().isUserOnly()){
+				continue;
+			}
+			
+			if(s.isTemplate()){
+				sc.setTemplate("Y");
+			}else{
+				sc.setTemplate("N");
+			}
 
 			String n = null;
 			if(settingsMenu.getKey().contains(".")){
@@ -882,16 +885,16 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 		listSetting = new ArrayList<String>();
 
-		for (Entry<String, SettingInt> settings : s.getProperties().entrySet()) {
-			listSetting.add(settings.getKey());
+		Map<String,SettingInt> props = s.getProperties();
+		for (Entry<String, SettingInt> settings : props.entrySet()) {
 			SettingInt setting = settings.getValue();
-			if(!setting.getScope().equals(Setting.Scope.USER)){
-
-				if(setting.getSysPropetyValue() != null){
-					setting.setSysValue(setting.getSysPropetyValue());
+			if(!SettingInt.Scope.USER.equals(setting.getScope())){
+				listSetting.add(settings.getKey());
+				String propValue = s.getSysValue(settings.getKey());
+				if(propValue != null){
+					setting.setSysValue(propValue);
 					setting.setExistSysProperty(true);
 				}else{
-					setting.setSysValue(null);
 					setting.setExistSysProperty(false);
 				}
 
@@ -899,6 +902,82 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 
 		}
 
+	}
+	
+	public void addNewTemplate() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+		String error = null;
+
+		StringBuffer newPath = new StringBuffer();
+		for (String value : getPath()) {
+			newPath.append(value+".");
+		}
+		newPath.append(name);
+		String path = newPath.toString();
+		
+		
+		Map<String,SettingInt> templateSetting = new LinkedHashMap<String,SettingInt>();
+		Map<String,String[]> langMsg = new LinkedHashMap<String,String[]>();
+		for (Entry<String, SettingInt> setting : s.getProperties().entrySet()) {
+			if(!setting.getValue().getScope().equals(SettingInt.Scope.USER) ){
+				templateSetting.put(setting.getKey(), new Setting(setting.getValue()));
+				templateSetting.get(setting.getKey()).setSysValue(setting.getValue().getDefaultValue());
+			}
+			String[] msg = {setting.getValue().getDescription(),setting.getValue().getLabel()};
+			langMsg.put(path+"."+setting.getKey(),msg);
+		}
+		
+		if(error == null){
+			try{
+				if(!templateSetting.isEmpty()){
+					Properties sysProp = WorkflowPrefManager.getSysProperties();
+					sysProp = updateProperty(sysProp,path,templateSetting, Setting.Scope.SYSTEM);
+					WorkflowPrefManager.storeSysProperties(sysProp);
+				}
+				storeNewSettingsLang(langMsg);
+			}catch(Exception e){
+				logger.error(e,e);
+				error = "Fail to write settings";
+			}
+			readCurMap();
+			refreshPath();
+		}
+		
+		displayErrorMessage("ADDTEMPLATE", error);
+
+	}
+	
+	public void removeTemplate() throws RemoteException{
+		String error = null;
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		StringBuffer pathToDelete = new StringBuffer();
+		for (String value : getPath()) {
+			pathToDelete.append(value+".");
+		}
+		pathToDelete.append(name);
+		String path = pathToDelete.toString();
+		Properties sysProp = WorkflowPrefManager.getSysProperties();
+		
+		for (Entry<String, SettingInt> setting : s.getProperties().entrySet()) {
+			String key = path +"."+setting.getKey();
+			sysProp.remove(key);
+		}
+		
+		if(error == null){
+			try{
+				WorkflowPrefManager.storeSysProperties(sysProp);
+				readCurMap();
+				refreshPath();
+			}catch(Exception e){
+				logger.error(e,e);
+				error = e.getMessage();
+			}
+		}
+		
 	}
 
 	

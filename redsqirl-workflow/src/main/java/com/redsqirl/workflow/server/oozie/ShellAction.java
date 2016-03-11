@@ -131,18 +131,14 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "echo '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'"+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
-			
-		}
 		
-		if(extraFile){
 			if(getFileExtensions()[1].endsWith(".sh")){
-				toWrite += "\tchmod +x *.sh"+System.getProperty("line.separator");
+				toWrite += "chmod +x *.sh"+System.getProperty("line.separator");
 			}
+			toWrite += "EXEC_FILE=$FILE_NAME"+System.getProperty("line.separator");
 		}
-		if(extraFile){
-			toWrite += "\tEXEC_FILE=$FILE_NAME"+System.getProperty("line.separator");
-		}
-		toWrite += "\t"+oneCommandToExecute+ System.getProperty("line.separator");
+		toWrite += "set -e"+ System.getProperty("line.separator");
+		toWrite += oneCommandToExecute+ System.getProperty("line.separator");
 		return toWrite;
 	}
 	

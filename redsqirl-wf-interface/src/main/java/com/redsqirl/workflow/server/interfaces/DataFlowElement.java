@@ -366,5 +366,19 @@ public interface DataFlowElement extends Remote{
 	 */
 	void cleanThisAndAllElementAfter() throws RemoteException;
 
+	/**
+	 * Last time the element run. If the element didin't run during this session returns null.
+	 * @return
+	 * @throws RemoteException
+	 */
+	Long getLastTimeRun() throws RemoteException;
+
+	/**
+	 * Last time any input element run, null if none run so far.
+	 * @return
+	 * @throws RemoteException
+	 */
+	Long getLastTimeInputComponentRun() throws RemoteException;
+
 
 }

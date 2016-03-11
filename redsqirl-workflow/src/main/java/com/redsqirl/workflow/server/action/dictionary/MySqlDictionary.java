@@ -46,12 +46,6 @@ public class MySqlDictionary extends JdbcDictionary{
 	protected void loadDefaultFunctions() {
 		super.loadDefaultFunctions();
 		
-		String[][] extraRelationalOperators = new String[][] {
-			new String[] { "RLIKE", "STRING,STRING", "BOOLEAN",
-			"@function:LIKE@short:Boolean LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns true." },
-		};
-		addToFunctionsMap(relationalOperators,extraRelationalOperators);
-		
 		functionsMap
 				.put(castMethods,
 						new String[][] { 

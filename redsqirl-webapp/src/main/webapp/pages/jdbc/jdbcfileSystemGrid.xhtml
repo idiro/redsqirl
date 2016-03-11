@@ -10,21 +10,6 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-<head>
-	<script>
-	    
-	    function selectFileJdbc(isFile, nameFile){
-	    	if (isFile == "true"){
-	    		openFileJdbc(nameFile);
-	    	}
-	    	else{
-	    		updateTableJdbc(nameFile);
-	    	}
-	    }
-		
-	</script>
-</head>
-
 <body>
 
 	<a4j:keepAlive beanName = "jdbcBean"/>
@@ -73,6 +58,11 @@
 					rendered="#{not empty jdbcBean.tableGrid.rows}" >
 					<h:graphicImage id="jdbcgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
+				
+				<a4j:commandLink id="jdbcfsRefreshBtn" action="#{jdbcBean.refreshPath}" reRender="jdbcfs"
+					oncomplete="resizeTables();" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
+				</a4j:commandLink>
 			</div>
 
 			<rich:extendedDataTable id="jdbcfs" value="#{jdbcBean.tableGrid.rows}"
@@ -96,10 +86,10 @@
 					<f:facet name="header">
 						<h:outputText value="" />
 					</f:facet>
-					<h:graphicImage value="../image/icons/button-directory-property.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
-					<h:graphicImage value="../image/icons/button-file-property.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+					<h:graphicImage value="../image/icons/icon-connection.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
 						<f:param name="indexFileEdit" value="#{indexTable}" />
 				</rich:column>
 				
@@ -108,12 +98,20 @@
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_name}" />
 					</f:facet>
+					<a4j:commandLink value="#{jdbcBean.allProps[indexTable]['name']}"
+						title="#{jdbcBean.allProps[indexTable]['name']}"
+						rendered="#{jdbcBean.allProps[indexTable]['can_have_children'] == 'true'}"
+						action="#{jdbcBean.selectFile}" reRender="jdbcfs,jdbcpath"
+						oncomplete="resizeTables();">
+						<a4j:actionparam name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}" />
+					</a4j:commandLink>
 					<a4j:commandLink 
 					    value="#{jdbcBean.allProps[indexTable]['name']}"
-					    title="#{jdbcBean.allProps[indexTable]['name']}" 
-					    action="#{jdbcBean.verifyIfIsFile}"
-     					oncomplete="selectFileJdbc('#{jdbcBean.file}', '#{jdbcBean.allProps[indexTable]['name']}')">
-     						<f:param name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}" />
+					    title="#{jdbcBean.allProps[indexTable]['name']}"
+					    rendered="#{jdbcBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					    action="#{jdbcBean.openFile}"
+					    oncomplete="#{rich:component('jdbcOpenFileModalPanel')}.show();" >
+							<a4j:actionparam name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}"/>
      				</a4j:commandLink>
 				</rich:column>
 

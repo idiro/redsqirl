@@ -29,9 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
+import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.utils.SqlLanguageManager;
@@ -43,7 +46,9 @@ import com.redsqirl.workflow.utils.SqlLanguageManager;
  * @author marcos
  * 
  */
-public abstract class SqlJoinRelationInteraction extends TableInteraction {
+public abstract class SqlJoinRelationInteraction extends SqlOperationTableInter {
+
+	static private Logger logger = Logger.getLogger(SqlJoinRelationInteraction.class);
 
 	/**
 	 * 
@@ -95,15 +100,19 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		List<Map<String, String>> lRow = getValues();
 		Set<String> relations = hj.getJoinAliases().keySet();
 		if (relations.size() != lRow.size()) {
-			logger.info("Number of relations: "+relations.size());
-			logger.info("Number of rows: "+lRow.size());
-			logger.info("Relations: "+relations.toString());
+			if(logger.isDebugEnabled()){
+				logger.debug("Number of relations: "+relations.size());
+				logger.debug("Number of rows: "+lRow.size());
+				logger.debug("Relations: "+relations.toString());
+			}
 			msg = SqlLanguageManager
 					.getText("sql.join_relationship_interaction.checkrownb");
 		} else {
 			String commonType = null;
 			FieldList inFeats = hj.getInFields();
-			logger.debug(inFeats.getFieldNames());
+			if(logger.isDebugEnabled()){
+				logger.debug(inFeats.getFieldNames());
+			}
 			Iterator<Map<String, String>> rows = lRow.iterator();
 			int rowNb = 0;
 			while (rows.hasNext() && msg == null) {
@@ -112,9 +121,12 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 				try {
 					String relation = row.get(table_table_title);
 					String rel = row.get(table_feat_title);
-					String type = getDictionary().getReturnType(
-							rel, hj.getInFields(relation));
-
+					String type = dictionaryCach.get(relation+":"+rel);
+					if(type == null){
+							type= getDictionary().getReturnType(
+											rel, hj.getInFields(relation));
+						dictionaryCach.put(relation+":"+rel,type);
+					}
 					if (type == null) {
 						msg = SqlLanguageManager
 								.getText(
@@ -139,6 +151,11 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		return msg;
 	}
 
+	protected EditorInteraction generateEditor(FieldList feats) throws RemoteException{
+		return getDictionary().generateEditor(
+				getDictionary().createDefaultSelectHelpMenu(),
+				feats);
+	}
 	/**
 	 * Update the interaction
 	 * 
@@ -152,10 +169,25 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		updateColumnConstraint(table_table_title, null, 1, tablesIn);
 
 		updateColumnConstraint(table_feat_title, null, null, null);
-		updateEditor(table_feat_title, getDictionary().generateEditor(
-				getDictionary().createDefaultSelectHelpMenu(),
-				hj.getInFields()));
-
+		
+		boolean gen = false;
+		FieldList inF = hj.getInFields();
+		if(isDifferentDictionary(table_feat_title)){
+			updateEditor(table_feat_title, generateEditor(inF));
+			gen = true;
+		}else if(changeKeyWords(table_feat_title, inF)){
+			gen = true;
+		}
+		if(gen){
+			dictionaryCach.clear();
+		}else{
+			try{
+				if(getTree()
+						.getFirstChild("table").getChildren("row").size()*2 > dictionaryCach.size()){
+					dictionaryCach.clear();
+				}
+			}catch(Exception e){}
+		}
 		if (getValues().isEmpty()) {
 			List<Map<String, String>> lrows = new LinkedList<Map<String, String>>();
 			Iterator<String> tableIn = tablesIn.iterator();
@@ -163,7 +195,7 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 				Map<String, String> curMap = new LinkedHashMap<String, String>();
 				curMap.put(table_table_title, tableIn.next());
 				curMap.put(table_feat_title, "");
-				logger.info("row : " + curMap);
+				logger.debug("row : " + curMap);
 				lrows.add(curMap);
 			}
 			setValues(lrows);
@@ -212,6 +244,4 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		}
 		return error;
 	}
-
-	protected abstract SqlDictionary getDictionary() throws RemoteException;
 }

@@ -14,14 +14,6 @@
 
 <script>
     
-    function selectFileHdfs(isFile, nameFile){
-    	if (isFile == "true"){
-    		openFileHdfs(nameFile);
-    	} else{
-    		updateTableHdfsGrid(nameFile);
-    	}
-    }
-    
     function validateSrc(){
     
          if(!jQuery('#fileSysGridForm input[type="checkbox"]').is(':checked')){
@@ -54,15 +46,6 @@
 		<rich:dragIndicator id="indicator" />
 
 		<h:form id="fileSysGridForm">
-		
-			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}"
-				oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();">
-				<a4j:actionparam name="nameFile" />
-			</a4j:jsFunction>
-
-			<a4j:jsFunction name="updateTableHdfsGrid" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath" oncomplete="resizeTables();" >
-				<a4j:actionparam name="nameFile" />
-			</a4j:jsFunction>
 			
 			<a4j:jsFunction name="unselectAll" action="#{hdfsBean.tableGrid.unselectAll}" />
 			
@@ -139,6 +122,12 @@
 				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hdfgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
+				
+				<a4j:commandLink id="hdfsfsRefreshBtn" action="#{hdfsBean.refreshPath}" reRender="hdfsfs" 
+					oncomplete="resizeTables();" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
+				</a4j:commandLink>
+				
 			</div>
 
 			<div class="fileSystem">
@@ -183,10 +172,31 @@
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
-							title="#{hdfsBean.allProps[indexTable]['name']}" action="#{hdfsBean.verifyIfIsFile}"
-							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
-							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
+					<h:graphicImage value="../image/icons/icon-connection.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{hdfsBean.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.JdbcInterface_properties_help}"
+						rendered="#{hdfsBean.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
+						<f:param name="indexFileEdit" value="#{indexTable}" />
+						
+					<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
+						title="#{hdfsBean.allProps[indexTable]['name']}"
+						rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] == 'true'}"
+						action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath"
+						oncomplete="resizeTables();">
+						<a4j:actionparam name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
+							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
+							</rich:dragSupport>
+					</a4j:commandLink>
+					<a4j:commandLink 
+					    value="#{hdfsBean.allProps[indexTable]['name']}"
+					    title="#{hdfsBean.allProps[indexTable]['name']}"
+					    rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					    action="#{hdfsBean.openFile}"
+					    oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
+							<a4j:actionparam name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}"/>
 							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
 								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />

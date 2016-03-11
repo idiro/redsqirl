@@ -126,7 +126,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 	}
 
 	@Override
-	public List<Map<String, String>> select(int maxToRead)
+	protected List<Map<String, String>> readRecord(int maxToRead)
 			throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		String patternStr = Pattern.quote(delimiter);

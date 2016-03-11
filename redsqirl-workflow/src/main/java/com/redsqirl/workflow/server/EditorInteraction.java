@@ -22,6 +22,9 @@ package com.redsqirl.workflow.server;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -138,18 +141,7 @@ public class EditorInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void addField(FieldList fl) throws RemoteException{
-		Iterator<String> it = fl.getFieldNames().iterator();
-		Tree<String> fields = tree.getFirstChild("editor").getFirstChild("keywords");
-		if(fields == null){
-			fields = tree.getFirstChild("editor").add("keywords");
-		}
-		while(it.hasNext()){
-			String name = it.next();
-			String type = fl.getFieldType(name).name();
-			Tree<String> field = fields.add("word");
-			field.add("name").add(name);
-			field.add("info").add(type);
-		}
+		addFields(fl.getMap());
 	}
 	
 	/**
@@ -158,6 +150,11 @@ public class EditorInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void addFields(Map<String,String> fl) throws RemoteException{
+		addFields(fl,null);
+	}
+	
+	public void addFields(Map<String,String> fl, Map<String,List<String>> extras) throws RemoteException{
+
 		Iterator<String> it = fl.keySet().iterator();
 		Tree<String> fields = tree.getFirstChild("editor").getFirstChild("keywords");
 		if(fields == null){
@@ -170,8 +167,38 @@ public class EditorInteraction extends UserInteraction{
 			field.add("name").add(name);
 			field.add("info").add(type);
 		}
-		
+		if(extras != null){
+			it = extras.keySet().iterator();
+			while(it.hasNext()){
+				String name = it.next();
+				Iterator<String> itL = extras.get(name).iterator();
+				while(itL.hasNext()){
+					String cur = itL.next();
+					Tree<String> field = fields.add("word");
+					field.add("name").add(name);
+					field.add("info").add(cur);
+				}
+			}
+		}
 	}
+	
+	public Map<String,List<String>> getFields() throws RemoteException{
+		Map<String, List<String>> ans = new LinkedHashMap<String,List<String>>();
+		Iterator<Tree<String>> it = tree.getFirstChild("editor").getFirstChild("keywords").getChildren("word").iterator();
+		while(it.hasNext()){
+			Tree<String> cur = it.next();
+			String name = cur.getFirstChild("name").getFirstChild().getHead();
+			String info = cur.getFirstChild("info").getFirstChild().getHead();
+			List<String> l = ans.get(name);
+			if(l== null){
+				l = new LinkedList<String>();
+				ans.put(name,l);
+			}
+			l.add(info);
+		}
+		return ans;
+	}
+	
 	/**
 	 * Remove the fields of the Interaction
 	 * @throws RemoteException
@@ -197,6 +224,23 @@ public class EditorInteraction extends UserInteraction{
 	 */
 	public void removeHelpMenu() throws RemoteException{
 		tree.getFirstChild("editor").remove("help");
+	}
+	
+	public void setDicId(String dicId) throws RemoteException{
+		try{
+			tree.getFirstChild("editor").remove("dictionary");
+		}catch(Exception e){}
+		try{
+			tree.getFirstChild("editor").add("dictionary").add(dicId);
+		}catch(Exception e){}
+	}
+	
+	public String getDicId(){
+		String ans = null;
+		try{
+			ans = tree.getFirstChild("editor").getFirstChild("dictionary").getFirstChild().getHead();
+		}catch(Exception e){}
+		return ans;
 	}
 
 }

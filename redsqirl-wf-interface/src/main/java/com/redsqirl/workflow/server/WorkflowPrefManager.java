@@ -516,6 +516,8 @@ public class WorkflowPrefManager extends BlockManager {
 			Properties prop = new Properties();
 			try {
 				prop.store(new FileWriter(userProp), "");
+				userProp.setWritable(false, false);
+				userProp.setReadable(false, false);
 				userProp.setWritable(true, true);
 				userProp.setReadable(true, true);
 			} catch (IOException e) {

@@ -102,10 +102,20 @@
 				<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton" />
 			</a4j:commandLink>
 			
-			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" 
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" 
+			    oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" 
 				reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError">
 				<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
 			</a4j:commandLink>
+				
+				<a4j:commandLink id="jdbcfsRefreshBtn" 
+					action="#{canvasModalBean.outputTab.fileSystem.refreshPath}" 
+					reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="refreshButton"/>
+				</a4j:commandLink>
+			
+			
 		</div>
 		
 		<table width="100%">
@@ -162,6 +172,10 @@
 									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
 									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+								<h:graphicImage value="../image/icons/icon-connection.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+								<h:graphicImage value="../image/icons/icon-table.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
 							</rich:column>
 					
 							<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
@@ -169,14 +183,19 @@
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_name}" />
 								</f:facet>
+								
 								<a4j:commandLink 
 								    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
 								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
 								    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+					    			rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['can_have_children'] == 'true'}"
 									reRender="pathDataOutputBrowser,dataOutputBrowser,comboboxExtensionsFilesystem, errorTable, msnError" 
 									oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
 									<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
 								</a4j:commandLink>
+								<h:outputText value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+					    			rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['can_have_children'] != 'true'}"/>
 							</rich:column>
 					
 							<rich:columns value="#{canvasModalBean.outputTab.fileSystem.tableGrid.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.tableGrid.titles}" 

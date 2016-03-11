@@ -21,12 +21,13 @@ package com.redsqirl.workflow.server.action.utils;
 
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.EditorInteraction;
-import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Utilities for writing SQL operations. The class can: - generate a help for
@@ -37,6 +38,11 @@ import com.redsqirl.workflow.server.enumeration.FieldType;
  */
 public interface SqlDictionary {
 	
+	/**
+	 * Id of the dictionary
+	 * @return
+	 */
+	public String getId();
 	
 	public String getReturnType(String expr, FieldList fields,
 			Set<String> nonAggregFeats) throws Exception;
@@ -76,7 +82,17 @@ public interface SqlDictionary {
 	 */
 	public EditorInteraction generateEditor(Tree<String> help,
 			FieldList inFeat) throws RemoteException;
-
+	/**
+	 * Generate an EditorInteraction from a FieldList and extra words
+	 * 
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public EditorInteraction generateEditor(Tree<String> help,
+			FieldList inFeat,Map<String,List<String>> extras) throws RemoteException;
+	
 	/**
 	 * Create a Menu for Conditional Operations
 	 * 

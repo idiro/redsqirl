@@ -63,6 +63,34 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	protected static Logger logger = Logger.getLogger(UserInteraction.class);
 
+	private static final String whitespace_chars =  ""       /* dummy empty string for homogeneity */
+            + "\\u0009" // CHARACTER TABULATION
+            + "\\u000A" // LINE FEED (LF)
+            + "\\u000B" // LINE TABULATION
+            + "\\u000C" // FORM FEED (FF)
+            + "\\u000D" // CARRIAGE RETURN (CR)
+            + "\\u0020" // SPACE
+            + "\\u0085" // NEXT LINE (NEL) 
+            + "\\u00A0" // NO-BREAK SPACE
+            + "\\u1680" // OGHAM SPACE MARK
+            + "\\u180E" // MONGOLIAN VOWEL SEPARATOR
+            + "\\u2000" // EN QUAD 
+            + "\\u2001" // EM QUAD 
+            + "\\u2002" // EN SPACE
+            + "\\u2003" // EM SPACE
+            + "\\u2004" // THREE-PER-EM SPACE
+            + "\\u2005" // FOUR-PER-EM SPACE
+            + "\\u2006" // SIX-PER-EM SPACE
+            + "\\u2007" // FIGURE SPACE
+            + "\\u2008" // PUNCTUATION SPACE
+            + "\\u2009" // THIN SPACE
+            + "\\u200A" // HAIR SPACE
+            + "\\u2028" // LINE SEPARATOR
+            + "\\u2029" // PARAGRAPH SEPARATOR
+            + "\\u202F" // NARROW NO-BREAK SPACE
+            + "\\u205F" // MEDIUM MATHEMATICAL SPACE
+            + "\\u3000" // IDEOGRAPHIC SPACE
+            ;     
 	/**
 	 * The type of display
 	 */
@@ -183,7 +211,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 */
 	@Override
 	public void writeXml(Document doc, Node n) throws DOMException, RemoteException {
-		Node child = writeXml(doc,getTree());
+		Node child = writeXml(doc,getTree(),false);
 		if(child != null){
 			n.appendChild(child);
 		}
@@ -196,20 +224,31 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * @throws RemoteException
 	 * @throws DOMException
 	 */
-	protected Node writeXml(Document doc, Tree<String> t) throws RemoteException, DOMException {
+	protected Node writeXml(Document doc, Tree<String> t,boolean hasSibling) throws RemoteException, DOMException {
 		Node elHead = null;
 
 		if(t.isEmpty()){
 			if(t.getHead() != null && !t.getHead().isEmpty()){
-				logger.debug("to write text: "+t.getHead());
-				elHead = doc.createTextNode(t.getHead());
+
+				logger.debug("to write leaf: "+t.getHead());
+				if(hasSibling){
+					if(t.getHead().matches("[a-zA-Z][a-zA-Z1-9\\-_]*")){
+						elHead = doc.createElement(t.getHead().toString());						
+					}else{
+						elHead = doc.createElement("escape_value");
+						elHead.appendChild(doc.createTextNode(t.getHead()));
+					}
+				}else{
+					elHead = doc.createTextNode(t.getHead());
+				}
 			}
 		}else{
 			logger.debug("to write element: "+t.getHead());
 			elHead = doc.createElement(t.getHead().toString());
 			Iterator<Tree<String>> it = t.getSubTreeList().iterator();
+			int nbChildren = t.getSubTreeList().size();
 			while(it.hasNext()){
-				Node child = writeXml(doc,it.next());
+				Node child = writeXml(doc,it.next(),nbChildren != 1);
 				if(child != null){
 					elHead.appendChild(child);
 				}
@@ -230,11 +269,16 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 				for(int i = 0; i < nl.getLength();++i){
 					Node cur = nl.item(i);
-
-					if(cur.getNodeType() == Node.TEXT_NODE){
-						tree.add(cur.getNodeName());
-					}else if(cur.getNodeType() == Node.ELEMENT_NODE){
-						readXml(cur,tree.add(cur.getNodeName()));
+					if(cur != null){
+						if(cur.getNodeType() == Node.ELEMENT_NODE){
+							if(cur.getNodeName().equals("escape_value")){
+								tree.add(cur.getChildNodes().item(0).getNodeValue());
+							}else{
+								readXml(cur,tree.add(cur.getNodeName()));
+							}
+						}else if(cur.getNodeType() == Node.TEXT_NODE){
+							tree.add(cur.getNodeValue());
+						}
 					}
 				}
 			}
@@ -255,11 +299,22 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	protected void readXml(Node n,Tree<String> curTree) throws RemoteException, DOMException{
 		NodeList nl = n.getChildNodes();
 		for(int i = 0; i < nl.getLength();++i){
-			Node curNode = nl.item(i);
-			if(curNode.getNodeType() == Node.TEXT_NODE){
-				curTree.add(curNode.getNodeValue());
-			}else if(curNode.getNodeType() == Node.ELEMENT_NODE){
-				readXml(curNode,curTree.add(curNode.getNodeName()));
+			Node cur = nl.item(i);
+			if(cur != null){
+				if(cur.getNodeType() == Node.ELEMENT_NODE){
+					if(cur.getNodeName().equals("escape_value")){
+						curTree.add(cur.getChildNodes().item(0).getNodeValue());
+					}else{
+						readXml(cur,curTree.add(cur.getNodeName()));
+					}
+				}else if(cur.getNodeType() == Node.TEXT_NODE){
+					if(nl.getLength()==1){
+						curTree.add(cur.getNodeValue());
+					}else if(!cur.getNodeValue().matches("["+whitespace_chars+"]*")){
+						//Try to match old format
+						curTree.add(cur.getNodeValue());
+					}
+				}
 			}
 		}
 	}
@@ -493,7 +548,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 			}catch(Exception e){
 				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
-				logger.error(error);
+				logger.error(error,e);
 			}
 		}
 		return error;

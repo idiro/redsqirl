@@ -577,14 +577,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public String getPath() throws RemoteException {
 		return history.get(cur);
 	}
-
-	@Override
-	public void setDefaultPath(String path) throws RemoteException {
-		if (exists(path)) {
-			pathDataDefault.put(path);
-		}
-	}
-
 	/**
 	 * Go to a path in history or add it to history
 	 * 
@@ -1130,7 +1122,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	 * @throws RemoteException
 	 */
 	@Override
-	public Map<String, Map<String, String>> getChildrenProperties()
+	public Map<String, Map<String, String>> getChildrenProperties(boolean refresh)
 			throws RemoteException {
 		return getChildrenProperties(history.get(cur));
 	}
