@@ -2,8 +2,15 @@
 <head>
 
 <script src="javascript/jquery.min.js"></script>
+<script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
+<script src="javascript/jquery.jqGrid.min.js"></script>
+<script src="javascript/grid.locale-en.js"></script>
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/analytics.css" type="text/css" />
+<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
 
 </head>
 
@@ -12,8 +19,14 @@
 <script>
 
 jQuery(document).ready(function () {
+	
+	$('#menudiv').load('menu.html');
+
 	doSearch(JSON.stringify({id: getUrlParameter('id')}), true);
-	sessionRead();
+
+	setTimeout(function(){
+		checkMenu();
+	},200);
 });
 
 
@@ -31,7 +44,7 @@ function doSearch(val, version) {
 		method: "POST",
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
-		url: "http://localhost:9090/analytics-store/rest/allpackages",
+		url: getPropreties.url+"allpackages",
 		data: val 
 	}).then(function(data) {
 
@@ -51,7 +64,7 @@ function doSearch(val, version) {
 
 			jQuery("#desc").append(data[i].htmlDescription);
 
-			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br><input type='submit' class='contentbutton' value='Request Key' >");
+			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br>"+ (getsessionToken() !== null ? "<input type='submit' value='Request Key' data-toggle='modal' class='contentbutton dropdown-toggle' data-target='#modalModuleDetail' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' >" : "") );
 
 		});
 
@@ -93,11 +106,32 @@ function reload(val) {
 	doSearch(JSON.stringify({id: getUrlParameter('id'), version: val}) , false);
 }
 
+function installationPopUp(moduleID, moduleVersionID) {
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"moduleDetail",
+		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() })
+	}).then(function(data) {
+
+		jQuery.each(data, function(i,v) {
+			jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
+		});
+
+		$("#requestModuleKeyPop").on("click", function(){ window.location.href = 'requestModuleKey.html?idk='+jQuery("#selectInstallation").val()+'&idm='+moduleVersionID });
+
+
+
+	})
+
+}
 
 </script>
- 
 
-			
+<div id="menudiv"></div>
+
 <div id="moduleDetailDiv">
 
 
@@ -143,6 +177,48 @@ function reload(val) {
 </form>
 
 
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalModuleDetail" role="dialog" style="height:340px;width:650px;overflow:hidden;">
+  <div class="modal-dialog">
+
+	<form>
+    
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Request Key</h4>
+	      </div>
+	      <div class="modal-body">
+		<p>
+			<label>Installation:</label>
+			<select style="margin-left:5px;" size="1" id="selectInstallation">
+			</select>
+			
+		</p>
+	      </div>
+	      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" id="requestModuleKeyPop" >OK</button>
+	      </div>
+	    </div>
+
+
+	</form>
+    
+  </div>
+</div>
+
+</div>
+
+<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
 
 </body>
 </html>

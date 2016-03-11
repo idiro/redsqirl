@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
+<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
 
 </head>
 
@@ -19,28 +20,33 @@
 
 jQuery(document).ready(function () {
 
-sessionStorage();
+$('#menudiv').load('menu.html');
+
+//sessionStorage();
 softwareKey();
 
+	setTimeout(function(){
+		checkMenu();
+	},300);
 
 });
 
 function softwareKey() {
 
 	$("#myGrid").jqGrid({
-	    url: 'http://localhost:9090/analytics-store/rest/softwarekey',
+	    url: getPropreties.url+'softwarekey',
 	    postData: JSON.stringify({userEmail: getsessionEmail(), softwareName: "Redsqirl"}),
 	    datatype: "json",
 	    mtype: 'POST',
 	    colNames: ['Date', 'Name', 'Owner', 'Version'],
 	    colModel: [
-		{ name: 'date', index: 'date', width: 70, align: 'left' },
-		{ name: 'installationName', index: 'installationName', width: 150, align: 'left', formatter: function (a) {
-		        return "<a href='#' class='labelLinkTable'>"+a+"</a>";
+		{ name: 'date', index: 'date', width: 40, align: 'left' },
+		{ name: 'installationName', index: 'installationName', width: 150, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='installations.html?id="+ rowObject.id +"' class='labelLinkTable'>"+cellvalue+"</a>";
 		    }
 		},
 		{ name: 'ownerName', index: 'ownerName', width: 150, align: 'left' },
-		{ name: 'softwareVersionName', index: 'softwareVersionName', width: 50, align: 'left' }
+		{ name: 'softwareVersionName', index: 'softwareVersionName', width: 40, align: 'left' }
 	    ],
 	    rowNum: 10,
 	    rowList: [10, 20, 30],
@@ -52,6 +58,8 @@ function softwareKey() {
 	    ajaxGridOptions: { contentType: "application/json" },
 	    headertitles: true,
 	    sortable: true,
+	    autowidth: true,
+            shrinkToFit: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -60,34 +68,41 @@ function softwareKey() {
 		records: function(obj) { return obj.ItemCount; },
 		id: "id"
 	    },
-	    loadComplete: function() {
+	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
+		$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", getsessionToken());
 	    }
 	});
 	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
-	
+
 }
 
 </script>
 
+<div id="menudiv"></div>
 
 <div class="mainContent" id="mainPanel">
+
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Software key</p>
+
 
 <div class="divTab">
 
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href=""><img class="iconBT" src="images/new_key.gif"></a>
+<a href="requestApplicationKey.html" id="linkApplicationKey"><img class="iconBT" src="images/new_key.gif"></a>
 
 
 </div>
 
 </div>
 
+<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
 
 </body>
 </html>

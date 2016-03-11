@@ -5,7 +5,7 @@ html,body{
 	margin-top:0px;
 	padding-top:5px;
 	padding-bottom:0px;
-    background-color:white;
+	background-color:white;
 }
 
 #website{
@@ -96,10 +96,10 @@ input {
 }
 
 .mainContent{
-	float:left;
 	box-shadow: 3px 3px 3px #888888;
-	width:800px;
-    margin-right:5px;
+	width: calc(90% - 170px);
+	margin-left: 180px;
+	margin-top: 31px;
 	height: calc(100% - 110px);
 	background-color:#fef5f5;
 	overflow:auto;
@@ -150,14 +150,6 @@ h1{
 
 h2,h3,h4,h5{
 	color: #cc1b1a;
-	font-family: verdana  !important;
-}
-
-a{
-	font-size: 16px !important;
-}
-
-p,tr,td,table,tbody,thead {
 	font-family: verdana  !important;
 }
 
@@ -380,4 +372,18 @@ hr{
 	left: 20% !important;
 }
 
+label {
+    display: inline !important;
+    margin-bottom: 5px;
+}
+
+.navbar-fixed-top, .navbar-fixed-bottom {
+    height: 50px;
+    left: 0;
+    margin-bottom: 0;
+    position: fixed;
+    right: 0;
+    z-index: 1030;
+    height: 50px !important;
+}
 

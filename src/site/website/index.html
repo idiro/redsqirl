@@ -40,9 +40,9 @@
 
 </head>
 
-<body> 
+<body>
 
-	
+
 <script>
 
 $(document).ready(function() {
@@ -52,30 +52,22 @@ $(document).ready(function() {
 		$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
 	});
 
-	errorAjax();
-
 	$('#home').load('menu.html');
+
+	setTimeout(function(){
+		checkMenu();
+	},100);
 
 });
 
-function login() {
+$(document.body).on('hidden.bs.modal', function () {
+	cleamForm();
+});
 
-sessionStorageEmail(jQuery("#email").val());
 
-jQuery.ajax({
-		method: "POST",
-		dataType: "json",
-		contentType: "application/json; charset=utf-8",
-		url: "http://localhost:9090/analytics-store/rest/authentication",
-		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', makeBaseAuth(jQuery("#email").val(), jQuery("#password").val()));
-		},
-		complete: function(xhr, textStatus) {
-        		console.log(xhr.responseText);
-			sessionStorageToken(xhr.responseText);
-		} 
-	});
-
+function doSearchIndex(){
+	localStorage.setItem("textToSearch", $("#textToSearch").val());
+	window.location.href = "search.html";
 }
 
 </script>
@@ -83,33 +75,23 @@ jQuery.ajax({
 <div class="menu" id="home">
 
 
-
-
-
-
 </div>
-
 
 
 	<div class="header">
 
 <video autoplay  poster="" id="bgvid" loop>
-  <!-- WCAG general accessibility recommendation is that media such as background video play through only once. Loop turned on for the purposes of illustration; if removed, the end of the video will fade in the same way created by pressing the "Pause" button  -->
+<!-- WCAG general accessibility recommendation is that media such as background video play through only once. Loop turned on for the purposes of illustration; if removed, the end of the video will fade in the same way created by pressing the "Pause" button  -->
 <source src="vid.webm" type="video/webm">
 <source src="vid.mp4" type="video/mp4">
 </video>
 
-
-
 		<div class="container">
-			
-
-
 			<div class="header-matter">
-			
 				<h2>MAKE BIG DATA <span>EASY</span></h2>
 				<p><span>RED SQIRL </span> IS A DRAG & DROP DATA MINING TOOL FOR <span>HADOOP</span></p>
-			
+				<input type="text" placeholder="What are the technologies you use today?" style="width:400px;position:relative;" id="textToSearch" onkeypress="return enableEnterKey(event, 'btSearchIndex');">
+				<input type="submit" id="btSearchIndex" class="contentButtonSearch" value="Search" style="position:relative;" onclick="event.preventDefault();doSearchIndex();" >
 			</div>
 		</div>
 	</div>
@@ -120,17 +102,35 @@ jQuery.ajax({
 
 			<div class="about" id="about">
 				<h3>WHAT IS <span>RED</span> SQIRL?</h3>
-				<div class="about-left left-about">
-					
-					<p>Red Sqirl is a web-based big data application that simplifies the analysis of large data sets. With Red Sqirl, you can quickly and cost-effectively access the power of the Hadoop eco-system, enhancing the productivity of data scientists and analysts.<br><br>
-If you want to analyse large data sets in the most efficient way possible, Red Sqirl is the answer.<br><br>
-Sign up below for the Red Sqirl beta program. Numbers are limited so hurry...</p>
+
+
+<table style="position:relative;top:-80px;">
+<tr>
+<td style="position: relative; right: 80px;">
+<img alt="Red Sqirl" class="img-responsive" src="images/sqirl.png" id="icons" style="width: 600px;">
+</td>
+
+<td style="position: relative; top: 30px;">
+
+<ul style="text-align:left;font-size:1.7em;">
+<li style="padding: 0px 0px 20px;">
+Red Sqirl is a web-based big data application that simplifies the analysis of large data sets. With Red Sqirl, you can quickly and cost-effectively access the power of the Hadoop eco-system, enhancing the productivity of data scientists and analysts.
+</li>
+<li style="padding: 0px 0px 20px;">
+If you want to analyse large data sets in the most efficient way possible, Red Sqirl is the answer.
+</li>
+</ul>
+
+</td>
+</tr>
+</table>
+
+
 				
-				<img id="icons" src="images/sqirl.png" class="img-responsive" alt="Red Sqirl" />
-				</div>
 				
-			
-				<div class="clearfix"> </div>	
+				
+				
+				</div>		
 				</div>		
 </div>
 							
@@ -139,15 +139,37 @@ Sign up below for the Red Sqirl beta program. Numbers are limited so hurry...</p
 <div class="clients">
 			 <div class="container">
 					<h3>What can <span>Red</span> Sqirl do?</h3>
-					<img id="hadoop" class="img-responsive" src="images/hadoopeco.png" alt="Hadoop Ecosystem" />
-				<p>&#149;	Analyze massive amounts of data rapidly<br>and cost effectively.<br>
-				<br>&#149;	Also available on the cloud so no need<br>to outlay budget for hardware.<br>
-				<br>&#149;	Provides additional processing horsepower at<br>the press of a button.<br>
-				<br>&#149;	Open platform that users can extend.<br>
-				<br>&#149;	Simplifies the Hadoop eco-system (Hadoop,<br>
-						Hive, Pig, HBase, Oozie, etc) so you don't <br>
-						have to master each of those underlying<br>
-						technologies.</p>
+
+
+<table style="position:relative;top:-80px;">
+<tr>
+<td style="position: relative; right: 80px;">
+<img id="hadoop" class="img-responsive" src="images/hadoopeco.png" alt="Hadoop Ecosystem" />
+</td>
+
+<td style="position: relative; top: 20px;">
+
+
+<ul style="text-align:left;font-size:1.7em;">
+<li style="padding: 0px 0px 20px;">
+Analyze massive amounts of data rapidly and cost effectively.
+</li>
+<li style="padding: 0px 0px 20px;">
+Open platform that users can extend.
+</li>
+<li style="padding: 0px 0px 20px;">
+Simplifies the Hadoop eco-system (Hadoop, Hive, Pig, HBase, Oozie, etc) so you don't have to master each of those underlying technologies.
+</li>
+<li style="padding: 0px 0px 20px;">
+For RedSqirl on the cloud <a href="mailsupport.html">contact us</a>
+</li>
+</ul>
+
+</td>
+</tr>
+</table>
+
+
 						</div>
 					</div>
 				
@@ -163,49 +185,49 @@ Sign up below for the Red Sqirl beta program. Numbers are limited so hurry...</p
    
     <iframe width="960" height="540" src="https://www.youtube.com/embed/ymnXQsZ0B7Y?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 </div>
-			</div>	
-					                
-			</div>	
-
+			</div>
+			</div>
 
 		<div class="contact" id="contact">
 			 <div class="container">
 				 <div class="contact-grid">
-					
-
-<h3>GETTING STARTED</h3>
-
-Red Sqirl can be installed easily on top of a Hadoop cluster
-<a href="gettingstarted.html">Getting started</a>
-<br/><br/>
-<br/><br/>
-
-<h3>USER TUTORIAL</h3>
-
-You can find user tutorials in the User Guide,
-<a href="userguide.html">canvas section</a>
-<br/><br/>
-<br/><br/>
-
-<h3>SUBMITTING A PACKAGE TO THE COMMUNITY</h3>
-
-  If you have a package that you would like to share with the community, this can be easily done! 
-<br/><br/>
-<br/><br/>
 
 
-					
-				</div>
-				
-						
-						<div class="clearfix"> </div>	
+
+<h3><span>NEXT</span> STEPS</h3>
+
+<table style="position:relative;top:-80px;">
+<tr>
+<td style="position: relative; right: 80px;">
+<img alt="Hadoop Ecosystem" src="images/workingcanvas.png" class="img-responsive" id="hadoop" style="width: 600px;">
+</td>
+
+<td style="position: relative; top: 90px;">
+
+<ul style="text-align:left;font-size:1.7em;">
+<li style="padding: 0px 0px 20px;"><b>Screenshots: </b>You can find some Red Sqirl screenshots <a href="screenshots.html">here</a> to have an idea of what it will look like on your screen.</li>
+<li style="padding: 0px 0px 20px;"><b>Getting Started: </b>Red Sqirl can be installed easily on top of a Hadoop cluster. Please follow our <a href="gettingstarted.html">Getting started</a> guide.</li>
+<li style="padding: 0px 0px 20px;"><b>User Tutorial: </b>You can find user tutorials <a href="userguide.html">here</a>, once Red Sqirl is successfuly installed.</li>
+<li style="padding: 0px 0px 20px;"><b>Creating a package: </b>If you want to create a package, find more information <a href="pckdev.html">here</a></li>
+</ul>
+
+
+
+</td>
+</tr>
+</table>
+
+
+
+		</div>
 
 			 </div>
 		<!--footer-->
 	<div class="footer">
 		<div class="container">
 				<div class="footer-class">
-					 <p class="footer-grid">&copy; Copyright Red Sqirl</p>
+					 <p class="pull-right">Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+
 					 <ul class="social-ic-icons">
 						<li class="twitter"><a href="https://twitter.com/RedSqirl"><span> </span></a></li>
 						<li class="inline"><a href="https://www.linkedin.com/company/red-sqirl"><span> </span></a></li>
@@ -217,41 +239,6 @@ You can find user tutorials in the User Guide,
 					<span id="toTopHover" style="opacity: 1;"></span>
 				</a>
 		</div>
-
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog" style="height:340px;width:650px;overflow:hidden;">
-  <div class="modal-dialog">
-
-	<form>
-    
-	    <!-- Modal content-->
-	    <div class="modal-content">
-	      <div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">LogIn</h4>
-	      </div>
-	      <div class="modal-body">
-		<p>
-			<label>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-			<input type="text" placeholder="Email" style="width:420px;" id="email" ></br>
-			<label>Password:</label>
-			<input type="password" placeholder="Password" style="width:420px;" id="password" >
-		</p>
-	      </div>
-	      <div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();login();" >LogIn</button>
-	      </div>
-	    </div>
-
-
-	</form>
-    
-  </div>
-</div>
 
 
 </body>

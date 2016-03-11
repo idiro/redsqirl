@@ -1,0 +1,118 @@
+<html>
+<head>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/bootstrap.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<script src="javascript/jquery.jqGrid.min.js"></script>
+<script src="javascript/grid.locale-en.js"></script>
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/analytics.css" type="text/css" />
+<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+</head>
+
+<body>
+
+<script>
+
+jQuery(document).ready(function () {
+
+	//sessionStorage();
+
+	$('#menudiv').load('menu.html');
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"requestModuleKey",
+		data: JSON.stringify({ idk: getUrlParameter('idk'), idm: getUrlParameter('idm'), email: getsessionEmail() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', getsessionToken());
+		}
+	}).then(function(data) {
+
+		var obj = jQuery.parseJSON(data.jsonArrayModuleVersion);
+		jQuery.each(obj, function(i,v) {
+			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.value +"</option>");
+		});
+		
+		$("#selectVersion option[value='"+ getUrlParameter('idm') +"']").prop('selected', true);
+
+		if(getUrlParameter('idm') !== undefined){
+			$("#selectVersion").prop('disabled', true);
+		}
+
+	});
+
+	setTimeout(function(){
+		checkMenu();
+	},100);
+
+});
+
+function hideShowElement(hide, component){
+	if (hide){
+		for (c in component){
+			$(component[c]).fadeIn("fast");
+		}
+	} else{
+		for (c in component){
+			$(component[c]).fadeOut("fast");
+		}
+	}
+}
+
+function backInstallations(){
+	window.location.href = "installations.html?id="+getUrlParameter('idk');
+}
+
+</script>
+
+<div id="menudiv"></div>
+
+
+
+
+<div class="mainContent" id="mainPanel">
+
+
+
+<form style="width:570px;" id="requestModuleKeyForm" >
+
+<a href="#" onclick="backInstallations();" >Back</a>
+
+<br>
+<span style="display:block;width:150px;float:left;text-align:right;">Module</span>
+<select style="width:400px;float:left;margin-left:5px;" size="1" id="selectVersion">
+</select>
+<br>
+<span style="display:block;width:150px;float:left;text-align:right;">Scope</span>
+<table id="idFormRequestModuleKey:multiUserRadio">
+<tbody><tr><td>
+<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="USER" id="idFormRequestModuleKey:multiUserRadio:0" name="idFormRequestModuleKey:multiUserRadio">
+<label for="idFormRequestModuleKey:multiUserRadio:0"> USER</label>
+</td>
+<td>
+<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="SYSTEM" id="idFormRequestModuleKey:multiUserRadio:1" name="idFormRequestModuleKey:multiUserRadio">
+<label for="idFormRequestModuleKey:multiUserRadio:1"> SYSTEM</label>
+</td>
+</tr>
+</tbody></table>
+<br>
+<span style="width: 150px; float: left; text-align: right; display: block;display:none;" id="idFormRequestModuleKey:idRequestModuleKeyUserTitle">User Name</span>
+<input type="text" placeholder="User Name" style="width: 400px; float: left; display: block;display:none;" id="idFormRequestModuleKey:idRequestModuleKeyUserField">
+<br>
+<br>
+<input type="submit" class="contentbutton" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val(), $('input:radio:checked').val(), $('#idFormRequestModuleKey\\:idRequestModuleKeyUserField').val());" >
+</form>
+
+</div>
+
+<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+
+</body>
+</html>

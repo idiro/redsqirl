@@ -1,21 +1,37 @@
 <html>
 <head>
 
-<script src="javascript/jquery.min.js"></script>
-<script src="javascript/analytics.js"></script>
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/bootstrap.min.js"></script>
+<script src="javascript/analytics.js"></script>
 
 </head>
 <body>
 
 <script>
 
-jQuery(document).ready(function () {
-	doSearch();
-	sessionStorage();
+$(document).ready(function() {
+
+	$('#menudiv').load('menu.html');
+
+	if(localStorage.getItem("textToSearch") !== null){
+		doSearch(JSON.stringify({software: 'Redsqirl', filter: localStorage.getItem("textToSearch") }));
+		$("#filterSearch").val(localStorage.getItem("textToSearch"));
+		localStorage.removeItem("textToSearch");
+	}else{
+		doSearch(JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] !== undefined ? a[x.name] = '' : a[x.name] = x.value; return a; }, {})));
+	}
+
+	setTimeout(function(){
+		checkMenu();
+	},200);
 });
 
-function doSearch() {
+function doSearch(value) {
 
 //console.log(JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {})));
 
@@ -23,8 +39,8 @@ function doSearch() {
 		method: "POST",
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
-		url: "http://localhost:9090/analytics-store/rest/allpackages",
-		data: JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {}))
+		url: getPropreties.url+"allpackages",
+		data: value
 	}).then(function(data) {
 
 		data = removeDuplicate(data, 'name');
@@ -40,7 +56,7 @@ function doSearch() {
 
 function reload() {
 	jQuery(".packageList").empty();
-	doSearch();
+	doSearch(JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] !== undefined ? a[x.name] = '' : a[x.name] = x.value; return a; }, {})));
 }
 
 function goToUrl(event, component){
@@ -52,21 +68,9 @@ function goToUrl(event, component){
 	return false;
 }
 
-
-function removeDuplicate(items,propertyName){
-	var newArr = [];
-	var lookup = {};
-	for (var i in items) {
-	    lookup[items[i][propertyName]] = items[i];
-	}
-	for (i in lookup) {
-	    newArr.push(lookup[i]);
-	}
-	return newArr;
-}
-
 </script>
 
+<div id="menudiv"></div>
 
 <div class="mainContent" id="mainPanel">
 
@@ -76,10 +80,10 @@ function removeDuplicate(items,propertyName){
 
 <div class="searchBar">
 
-<input type="text" placeholder="Search" style="width:420px;" name="filter">
+<input type="text" placeholder="Search" style="width:420px;" name="filter" id="filterSearch" >
 
-<input type="radio" name="type" value="package" id="r1" onclick="reload();" /><label for="r1">Package</label>
-<input type="radio" name="type" value="model" id="r2" onclick="reload();" /><label for="r2">Model</label>
+<input type="checkbox" name="type" value="package" id="r1" onclick="reload();" /><label for="r1">Package</label>
+<input type="checkbox" name="type" value="model" id="r2" onclick="reload();" /><label for="r2">Model</label>
 
 
 <input type="submit" class="contentbutton" value="Search" onclick="event.preventDefault();reload();" >
@@ -92,6 +96,9 @@ function removeDuplicate(items,propertyName){
 <span id="out">
 </span>
 </div>
+
+</div>
+<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
 
 </body>
 </html>

@@ -1,9 +1,5 @@
 <project name="Red Sqirl">
-	<!-- <skin> <groupId>org.apache.maven.skins</groupId> <artifactId>maven-application-skin</artifactId> 
-		<version>1.0</version> </skin> <skin> <groupId>org.apache.maven.skins</groupId> 
-		<artifactId>maven-classic-skin</artifactId> <version>1.1</version> </skin> 
-		<skin> <groupId>org.apache.maven.skins</groupId> <artifactId>maven-stylus-skin</artifactId> 
-		<version>1.5</version> </skin> -->
+
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
 		<artifactId>maven-fluido-skin</artifactId>
@@ -57,7 +53,7 @@
 		<menu name="Support">
 			<item name="Contact Us" href="mailsupport.html" />
 			<item name="Forum" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user" />
-			<item name="Analytics Store" href="http://95.45.250.249:8091/analytics-store/" />		
+			<item name="Analytics Store" href="http://95.45.250.249:8091/analytics-store/" />
 		</menu>
 
 		<menu name="Related Projects">
@@ -77,6 +73,9 @@
 		</menu>
 		<menu name="Login">
 		</menu>
+
+
+		
 
 	</body>
 
