@@ -1764,17 +1764,14 @@ function mountObj(canvasName) {
 			
 			stageTab.add(layerTab);
 
+			stageArrayTab[stageArrayTab.length] = stageTab;
+			
 		}// END IF
         
-        if(nameDiv != undefined){
-        	stageArrayTab[stageArrayTab.length] = stageTab;
-        }
-
 	});
 	// END for divs
 
 	changeFooter(canvasName);
-	
 }
 
 function changeFooter(canvasName) {
@@ -1813,7 +1810,22 @@ function changeFooter(canvasName) {
 		
 		stageArrayTab[int].draw();
 	}
+	
+	removeEmpytyCanvas();
 	 
+}
+
+function removeEmpytyCanvas() {
+	
+	jQuery(".kineticjs-content").each(function(index) {
+		
+		console.log(jQuery(this).children("canvas").length);
+		if(jQuery(this).children("canvas").length == 0){
+			jQuery(this).remove();
+		}
+		
+	});
+	
 }
 
 function clearCanvas() {

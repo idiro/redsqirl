@@ -38,48 +38,49 @@
 
 	function mountComboboxExtensionsFilesystem(){
 
-    	jQuery("[id$='comboboxExtensionsFilesystem']").textext({
-	    	plugins : 'arrow autocomplete'
-	    }).bind('getSuggestions', function(e, data){
-
-		try{
-		        	
-			var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString == null ? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
-		    	textext = jQuery(e.target).textext()[0],
-		        query = (data ? data.query : '') || '' ;
+		if(jQuery("[id$='comboboxExtensionsFilesystem']").parent().attr('class') != "text-wrap"){
 		
-		        jQuery(this).trigger('setSuggestions', {
-			    	result : textext.itemManager().filter(list, query)
-			    	}
-		        );
-
-			}catch(exception){
-				alert(exception);
-			}
-	            
-		});
-
-    	jQuery("[id$='comboboxExtensionsFilesystem']").bind('setFormData', function(e, data, isEmpty){
-    		changePathModalOutput();
-    	});
+	    	jQuery("[id$='comboboxExtensionsFilesystem']").textext({
+		    	plugins : 'arrow autocomplete'
+		    }).bind('getSuggestions', function(e, data){
+	
+			try{
+			        	
+				var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString == null ? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
+			    	textext = jQuery(e.target).textext()[0],
+			        query = (data ? data.query : '') || '' ;
+			
+			        jQuery(this).trigger('setSuggestions', {
+				    	result : textext.itemManager().filter(list, query)
+				    	}
+			        );
+	
+				}catch(exception){
+					alert(exception);
+				}
+		            
+			});
+	
+	    	jQuery("[id$='comboboxExtensionsFilesystem']").bind('setFormData', function(e, data, isEmpty){
+	    		changePathModalOutput();
+	    	});
+    	
+		}
 		
 	}
 	
 //]]>
 </script>
 	<div style="padding:0px;">
-	
-	    <a4j:region>
 	    	
-	    	<a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
-        		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
+	    <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+        	onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
 	    
-	       <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
+	    <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
 			reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserPropLabel, browserPropValue, browserPath" 
 			oncomplete="jQuery('#canvasModalDiv').unblock();reLoadTabs();" />
-	    </a4j:region>
 	
-		<a4j:jsFunction name="changePathModalOutput" reRender="errorTable, msnError" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
+		<a4j:jsFunction name="changePathModalOutput" reRender="errorTable, msnError, dataOutputBrowser" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
 			oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" />
 		
 		<div class="pathHeader">
@@ -108,12 +109,12 @@
 				<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
 			</a4j:commandLink>
 				
-				<a4j:commandLink id="jdbcfsRefreshBtn" 
-					action="#{canvasModalBean.outputTab.fileSystem.refreshPath}" 
-					reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError"
-					oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
-					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="refreshButton"/>
-				</a4j:commandLink>
+			<a4j:commandLink id="jdbcfsRefreshBtn" 
+				action="#{canvasModalBean.outputTab.fileSystem.refreshPath}" 
+				reRender="pathDataOutputBrowser,dataOutputBrowser, errorTable, msnError"
+				oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
+				<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="refreshButton"/>
+			</a4j:commandLink>
 			
 			
 		</div>
