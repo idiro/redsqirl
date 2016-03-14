@@ -156,8 +156,8 @@
 						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();selectRadio();" />
 						
 					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
-					    styleClass="greenButton" value="#{messages.button_ok}"
-						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
+					    styleClass="greenButton" value="#{messages.button_ok}" onclick="blockSourceModalHeaderEditor();"
+						oncomplete="if(#{requestScope['msnError'] == null} ){canvasModalApply();}"
 						reRender="browserTableData, msnError, errorTable" />
 					
 				</div>
