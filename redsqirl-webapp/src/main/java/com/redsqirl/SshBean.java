@@ -265,7 +265,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		try{
 			getHDFS().copyToRemote(path+"/"+file, getPath()+"/"+file, getSelectedTab());
-			mountTable();
+			updateTable(true);
 		}
 		catch(Exception e){
 			logger.info("", e);

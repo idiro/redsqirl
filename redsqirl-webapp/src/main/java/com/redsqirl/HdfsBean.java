@@ -103,7 +103,7 @@ public class HdfsBean extends FileSystemBean {
 		try{
 			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, 
 					server);
-			mountTable();
+			updateTable(true);
 		}
 		catch(Exception e){
 			logger.info("", e);
