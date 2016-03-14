@@ -2503,20 +2503,25 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
     
     polygon.on('mouseout', function(e) {
-    	
+    	//console.log("mouseout");
     	mouseIn = false;
-    	
-        var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
-        var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
+
         if(this && this.getParent()){
-        	if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){
-                jQuery(".tooltipCanvas").remove();
-                curToolTip = null;
-            }
-            if(this.getParent().getPosition().y-scrollTop+160 > e.pageY){
-                jQuery(".tooltipCanvas").remove();
-                curToolTip = null;
-            }
+        	//console.log("Position mouse: ("+e.pageX+","+e.pageY+")");
+        	var toolTipOffset = jQuery(".tooltipCanvas").first().offset();
+        	//if tooltip exists
+        	if(undefined != toolTipOffset && "left" in toolTipOffset){
+            	var curCanvas = jQuery("#flowchart-"+canvasName);
+        		//console.log("Position tooltip: ("+toolTipOffset.left+", "+toolTipOffset.top+")");
+        		//if not in tooltip remove it.
+        		if(toolTipOffset.left - curCanvas.scrollLeft() > e.pageX ||
+        				toolTipOffset.top - curCanvas.scrollTop() > e.pageY){
+        			jQuery(".tooltipCanvas").remove();
+                    curToolTip = null;
+        		}
+        	}else{
+        		//console.log("no tooltip");
+        	}
         }
         
     });
