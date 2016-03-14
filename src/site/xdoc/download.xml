@@ -24,6 +24,9 @@ support@redsqirl.com
   <body>
                              
         <div>
+		<h2>Source code</h2>
+		<p><a href="https://github.com/idiro" target="_blank" >here</a></p>
+	
 		<h2>Download</h2>
 		<p>Email the team to receive the latest Red Sqirl installable version 
 		<a href="mailsupport.html?p=download">here</a>
@@ -40,7 +43,7 @@ support@redsqirl.com
 	</tr>
 	
 	<tr>
-	<td align="left"><a href="#">1.0.9</a></td>
+	<td align="left"><a href="../../redsqirl-install/target/redsqirl-2.4.0-0.1-tomcat.tar.gz">1.0.9</a></td>
 	<td align="left">12 Jul 2015</td>
 	<td align="left">binary *.zip</td>
 	<td align="left">123321123456</td>

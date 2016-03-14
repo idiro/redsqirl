@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
+<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
 
 </head>
 
@@ -19,9 +20,14 @@
 
 jQuery(document).ready(function () {
 
-sessionStorage();
+$('#menudiv').load('menu.html');
+
+//sessionStorage();
 softwareKey();
 
+	setTimeout(function(){
+		checkMenu();
+	},100);
 
 });
 
@@ -34,16 +40,16 @@ function softwareKey() {
 	    mtype: 'POST',
 	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
 	    colModel: [
-		{ name: 'id', index: 'id', width: 20, align: 'left', formatter: function () {
-		        return "<a href=''><img src='images/transfer_key.gif' alt='my image' /></a>";
+		{ name: 'id', index: 'id', width: 13, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='#' onclick=\"downloadModule("+rowObject.idModuleVersion+");\" ><img src='images/download_module.gif' alt='my image' /></a>";
 		    }
 		},
-		{ name: 'date', index: 'date', width: 70, align: 'left' },
+		{ name: 'date', index: 'date', width: 50, align: 'left' },
 		{ name: 'softwareModulestype', index: 'softwareModulestype', width: 80, align: 'left' },
 		{ name: 'module', index: 'module', width: 150, align: 'left' },		
 		{ name: 'moduleVersion', index: 'moduleVersion', width: 30, align: 'left' },
 		{ name: 'owner', index: 'owner', width: 100, align: 'left' },
-		{ name: 'userName', index: 'userName', width: 50, align: 'left' }
+		{ name: 'userName', index: 'userName', width: 100, align: 'left' }
 	    ],
 	    rowNum: 10,
 	    rowList: [10, 20, 30],
@@ -55,6 +61,8 @@ function softwareKey() {
 	    ajaxGridOptions: { contentType: "application/json" },
 	    headertitles: true,
 	    sortable: true,
+	    autowidth: true,
+            shrinkToFit: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -63,8 +71,10 @@ function softwareKey() {
 		records: function(obj) { return obj.ItemCount; },
 		id: "id"
 	    },
-	    loadComplete: function() {
+	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
+		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+a[0].softwareKeyID);
+		$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", getsessionToken());
@@ -76,21 +86,26 @@ function softwareKey() {
 
 </script>
 
+<div id="menudiv"></div>
 
 <div class="mainContent" id="mainPanel">
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Module key</p>
 
 <div class="divTab">
 
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href=""><img class="iconBT" src="images/new_key.gif"></a>
+<a href="requestModuleKey.html" id="linkModuleKey"><img class="iconBT" src="images/new_key.gif"></a>
+<a href="#" id="downloadModuleKey"><img class="iconBT" src="images/download_keys.gif"></a>
 
 
 </div>
 
 </div>
 
+<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
 
 </body>
 </html>

@@ -1,5 +1,6 @@
 .rf-edt {
-    background-color: #ffffff;
-    border: 1px solid #c4c0c9;
-    overflow: hidden;
+	background-color: #ffffff;
+	border: 1px solid #c4c0c9;
+	overflow: hidden;
+	height: calc(100% - 100px);
 }
