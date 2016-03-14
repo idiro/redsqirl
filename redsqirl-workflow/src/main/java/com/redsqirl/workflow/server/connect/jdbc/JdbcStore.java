@@ -304,7 +304,7 @@ public class JdbcStore extends Storage {
 			String[] connectionAndTable = getConnectionAndTable(path);
 			try {
 				getConnection(connectionAndTable[0]).deleteTable(connectionAndTable[1]);
-				getConnection(connectionAndTable[0]).resetUpdateTables();
+				getConnection(connectionAndTable[0]).listTables().remove(connectionAndTable[1]);
 			} catch (Exception e) {
 				ok = false;
 				error = LanguageManagerWF.getText("jdbcstore.changetable",
