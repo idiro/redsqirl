@@ -1158,11 +1158,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void stopRunningWorkflow() throws RemoteException, Exception {
 
 		logger.info("stopRunningWorkflow ");
-
-		DataFlow df = getDf();
-		if (df != null && df.getOozieJobId() != null) {
-			getOozie().kill(df.getOozieJobId());
+		String error = null;
+		try{
+			DataFlow df = getDf();
+			if (df != null && df.getOozieJobId() != null) {
+				getOozie().kill(df.getOozieJobId());
+			}
+		}catch(Exception e){
+			error = getMessageResources("msg_error_oops");
 		}
+		
+		displayErrorMessage(error, "KILLWORKFLOW");
 	}
 
 	public void calcWorkflowElementUrl() {

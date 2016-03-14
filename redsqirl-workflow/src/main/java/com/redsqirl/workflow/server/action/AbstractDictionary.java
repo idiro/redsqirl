@@ -288,6 +288,7 @@ public abstract class AbstractDictionary {
 					} else {
 						loadDefaultFunctions();
 						try{
+							file.getParentFile().mkdirs();
 							saveXml(file);
 						}catch(Exception e){
 							logger.warn("Fail saving dictionary for "+xmlFile,e);

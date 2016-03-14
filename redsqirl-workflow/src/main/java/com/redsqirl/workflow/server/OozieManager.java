@@ -147,22 +147,32 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * Kill a job that is in not Terminated in Oozie
 	 * 
 	 * @param jobId
-	 * @throws OozieClientException
+	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#kill(java.lang.String)
 	 */
-	public void kill(String jobId) throws OozieClientException {
-		oc.kill(jobId);
+	public void kill(String jobId) throws Exception {
+		try{
+			oc.kill(jobId);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new Exception(e);
+		}
 	}
 
 	/**
 	 * Resume a suspended job that is in Oozie
 	 * 
 	 * @param jobId
-	 * @throws OozieClientException
+	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#resume(java.lang.String)
 	 */
-	public void resume(String jobId) throws OozieClientException {
-		oc.resume(jobId);
+	public void resume(String jobId) throws Exception {
+		try{
+			oc.resume(jobId);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new Exception(e);
+		}
 	}
 
 	/**
@@ -171,11 +181,16 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @param conf
 	 *            properties for the job
 	 * @return ID of the job that is running
-	 * @throws OozieClientException
+	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#run(java.util.Properties)
 	 */
-	public String run(Properties conf) throws OozieClientException {
-		return oc.run(conf);
+	public String run(Properties conf) throws Exception {
+		try{
+			return oc.run(conf);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new Exception(e);
+		}
 	}
 
 	/**
@@ -184,11 +199,16 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @param conf
 	 *            properties of the Job to be submitted
 	 * @return Id of the Job
-	 * @throws OozieClientException
+	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#submit(java.util.Properties)
 	 */
-	public String submit(Properties conf) throws OozieClientException {
-		return oc.submit(conf);
+	public String submit(Properties conf) throws Exception {
+		try{
+			return oc.submit(conf);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new Exception(e);
+		}
 	}
 
 	/**
@@ -196,11 +216,16 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * 
 	 * @param jobId
 	 *            of job to suspend
-	 * @throws OozieClientException
+	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#suspend(java.lang.String)
 	 */
-	public void suspend(String jobId) throws OozieClientException {
-		oc.suspend(jobId);
+	public void suspend(String jobId) throws Exception {
+		try{
+			oc.suspend(jobId);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new Exception(e);
+		}
 	}
 
 	public String run(DataFlow df) throws Exception {

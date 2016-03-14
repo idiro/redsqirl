@@ -249,8 +249,9 @@ public class JdbcStore extends Storage {
 	 * 
 	 * @param path
 	 * @return Map of properties
+	 * @throws RemoteException 
 	 */
-	public Map<String, String> getMapofProperties(String path) {
+	public Map<String, String> getMapofProperties(String path) throws RemoteException {
 		Map<String, String> tableProps = new HashMap<String, String>();
 		String[] connectionAndTable = getConnectionAndTable(path);
 		String desc = getDescription(connectionAndTable[0],connectionAndTable[1]).get(key_describe);
@@ -614,13 +615,14 @@ public class JdbcStore extends Storage {
 	 * 
 	 * @param table
 	 * @return description
+	 * @throws RemoteException 
 	 */
-	public Map<String, String> getDescription(String connection, String table) {
+	public Map<String, String> getDescription(String connection, String table) throws RemoteException {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
 		String fieldsStr = null;
 		Object[] obj = cachDesc.get(connection+"/"+table);
 		if(obj == null || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
-			fieldsStr = execDesc(connection,table);
+			fieldsStr = getConnection(connection).execDesc(table);
 			cachDesc.put(connection+"/"+table, new Object[]{System.currentTimeMillis(),fieldsStr});
 		}else{
 			fieldsStr = (String) obj[1];
@@ -630,55 +632,7 @@ public class JdbcStore extends Storage {
 		return ans;
 	}
 	
-	private String execDesc(String connection, String table){
-		String fieldsStr = null;
-		try {
-			
-			ResultSet rs = getConnection(connection).showFeaturesFrom(table);
-			int i = 0;
-			Integer parts = 0;
-			boolean fieldPart = true;
-			while (rs.next()) {
-				boolean ok = true;
-				String name = rs.getString(1).toUpperCase();
-				String type = rs.getString(2).toUpperCase();
-				if (name == null || name.isEmpty() || name.contains("#")
-						|| type == null) {
-					logger.debug("name is null " + name == null + ", " + name);
-					logger.debug("name is empty " + name.isEmpty());
-					logger.debug("type is null " + type == null + " , " + type);
-					ok = false;
-					fieldPart = false;
-				}
-				if (ok) {
-					if (type.equalsIgnoreCase("null")) {
-						ok = false;
-					}
-				}
-				if (ok) {
-					if (fieldPart) {
-						if (i == 0) {
-							fieldsStr = "";
-							fieldsStr += name.trim() + "," + type.trim();
-						} else {
-							fieldsStr += ";" + name.trim() + "," + type.trim();
-						}
-					} else {
-						if (name != null && !name.isEmpty()
-								&& !name.contains("#") && type != null) {
-							++parts;
-						}
-					}
-					++i;
-				}
-			}
-			rs.close();
-
-		} catch (Exception e) {
-			logger.error("Fail to check the existence " + table,e);
-		}
-		return fieldsStr;
-	}
+	
 
 	/**
 	 * Rename a path

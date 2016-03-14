@@ -18,7 +18,7 @@ public class OracleConfFile extends DbConfFile{
 		ans +=JdbcQueryManager.Query.CREATE.toString()+":CREATE TABLE {0} ({1})\n";
 		ans +=JdbcQueryManager.Query.DESCRIBE.toString()+":SELECT COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE OWNER||'.'||TABLE_NAME = '{0}' OR TABLE_NAME = '{0}' ORDER BY COLUMN_ID\n";
 		ans +=JdbcQueryManager.Query.DROP.toString()+":DROP TABLE {0}\n";
-		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} ({1})";
+		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} ({1})\n";
 		ans +=JdbcQueryManager.Query.INSERT_VALUES.toString()+":INSERT INTO {0} ({1}) VALUES ({2})\n";
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":"
 		+"select owner||'.'||table_name AS TABLE_NAME from user_tab_privs where privilege='SELECT' AND owner != user "

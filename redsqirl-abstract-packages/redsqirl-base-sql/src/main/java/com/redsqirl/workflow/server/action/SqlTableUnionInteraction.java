@@ -136,33 +136,39 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 					Map<String, String> row = rows.next();
 					try {
 						String expression = row.get(table_op_title);
-						String typeRetuned = dictionaryCach.get(expression);
-						if(typeRetuned == null){
-								typeRetuned = getDictionary()
-								.getReturnType(expression,inFields);
-							dictionaryCach.put(expression,typeRetuned);
-						}
 						String type = row.get(table_type_title); 
 						String fieldName = row.get(table_feat_title);
-						if (!getDictionary().check(
-								type,
-								typeRetuned)) {
+						if (!getDictionary().isVariableName(fieldName)) {
 							msg = SqlLanguageManager.getText(
-									"sql.select_fields_interaction.checkreturntype",
-									new Object[] {rowNb,
-											fieldName, typeRetuned,
-											type });
+									"sql.join_fields_interaction.fieldinvalid",
+									new Object[] { rowNb, fieldName });
 						} else {
-							logger.debug("is it contained in map : "	+ fieldName);
-							if (!mapFeatType.containsField(fieldName)) {
-								msg = SqlLanguageManager.getText("sql.union_fields_interaction.checkfeatimplemented");
+							String typeRetuned = dictionaryCach.get(expression);
+							if(typeRetuned == null){
+								typeRetuned = getDictionary()
+										.getReturnType(expression,inFields);
+								dictionaryCach.put(expression,typeRetuned);
+							}
+							if (!getDictionary().check(
+									type,
+									typeRetuned)) {
+								msg = SqlLanguageManager.getText(
+										"sql.select_fields_interaction.checkreturntype",
+										new Object[] {rowNb,
+												fieldName, typeRetuned,
+												type });
 							} else {
-								fieldsTitle.add(fieldName);
-								if (!type
-										.equals(mapFeatType
-												.getFieldType(fieldName).toString())) {
-									msg = SqlLanguageManager
-											.getText("sql.union_fields_interaction.checktype", new Object[]{rowNb});
+								logger.debug("is it contained in map : "	+ fieldName);
+								if (!mapFeatType.containsField(fieldName)) {
+									msg = SqlLanguageManager.getText("sql.union_fields_interaction.checkfeatimplemented");
+								} else {
+									fieldsTitle.add(fieldName);
+									if (!type
+											.equals(mapFeatType
+													.getFieldType(fieldName).toString())) {
+										msg = SqlLanguageManager
+												.getText("sql.union_fields_interaction.checktype", new Object[]{rowNb});
+									}
 								}
 							}
 						}

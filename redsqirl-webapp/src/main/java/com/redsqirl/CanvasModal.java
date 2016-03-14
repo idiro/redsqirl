@@ -726,27 +726,31 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("openHelpTextEditorModal");
 		String error = null;
 		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
-		if(idInteraction != null){
-			logger.info("interaction: " + idInteraction);
-			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
-			CanvasModalInteraction cmInt = inters.get(indexOf);
-			if (cmInt instanceof TableInteraction) {
-				logger.info("Table interaction");
-				Integer rowKey = Integer.valueOf(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rowKey"));
-				String column = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("column");
-				logger.info("row: " + rowKey);
-				logger.info("column: " + column);
-				selEditor = new SelectedEditor((TableInteraction) cmInt, column, rowKey);
-			} else if (cmInt instanceof EditorInteraction) {
-				logger.info("Editor interaction");
-				selEditor = new SelectedEditor((EditorInteraction) cmInt);
-			} else {
-				logger.info("openHelpTextEditorModal error ");
-				error = getMessageResources("msg_error_selEditor");
+		try{
+			if(idInteraction != null){
+				logger.info("interaction: " + idInteraction);
+				int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+				CanvasModalInteraction cmInt = inters.get(indexOf);
+				if (cmInt instanceof TableInteraction) {
+					logger.info("Table interaction");
+					Integer rowKey = Integer.valueOf(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rowKey"));
+					String column = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("column");
+					logger.info("row: " + rowKey);
+					logger.info("column: " + column);
+					selEditor = new SelectedEditor((TableInteraction) cmInt, column, rowKey);
+				} else if (cmInt instanceof EditorInteraction) {
+					logger.info("Editor interaction");
+					selEditor = new SelectedEditor((EditorInteraction) cmInt);
+				} else {
+					logger.info("openHelpTextEditorModal error ");
+					error = getMessageResources("msg_error_selEditor");
+				}
+			}else{
+				error = getMessageResources("msg_error_oops");
+				logger.info("openHelpTextEditorModal error idInteraction = NULL ");
 			}
-		}else{
+		}catch(Exception e){
 			error = getMessageResources("msg_error_oops");
-			logger.info("openHelpTextEditorModal error idInteraction = NULL ");
 		}
 		
 		displayErrorMessage(error, "TEXTEDITOR");

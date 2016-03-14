@@ -68,13 +68,78 @@ public class JdbcStoreConnection extends JdbcConnection{
 	protected final List<String> execListTables() throws SQLException, RemoteException {
 		
 		List<String> results = new ArrayList<String>();
-		ResultSet rs = executeQuery(getBs().showAllTables());
+		String query = getBs().showAllTables();
+		ResultSet rs = null;
+		if(query ==  null || query.isEmpty()){
+			rs = connection.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+		}else{
+			rs = executeQuery(query);
+		}
 		while (rs.next()) {
 			results.add(rs.getString(1).trim().toUpperCase());
 		}
 		rs.close();
 		
 		return results;
+	}
+	
+	protected String execDesc(String table){
+		String fieldsStr = null;
+		try {
+			String query = getBs().showFeaturesFrom(table);
+			ResultSet rs = null;
+			int nameIdx = 1;
+			int typeIdx = 2;
+			if(query == null || query.isEmpty()){
+				rs = connection.getMetaData().getColumns(null, null, table, null);
+				nameIdx = 4;
+				typeIdx = 6;
+			}else{
+				rs = executeQuery(query);
+			}
+			int i = 0;
+			Integer parts = 0;
+			boolean fieldPart = true;
+			while (rs.next()) {
+				boolean ok = true;
+				String name = rs.getString(nameIdx).toUpperCase();
+				String type = rs.getString(typeIdx).toUpperCase();
+				if (name == null || name.isEmpty() || name.contains("#")
+						|| type == null) {
+					logger.debug("name is null " + name == null + ", " + name);
+					logger.debug("name is empty " + name.isEmpty());
+					logger.debug("type is null " + type == null + " , " + type);
+					ok = false;
+					fieldPart = false;
+				}
+				if (ok) {
+					if (type.equalsIgnoreCase("null")) {
+						ok = false;
+					}
+				}
+				if (ok) {
+					if (fieldPart) {
+						if (i == 0) {
+							fieldsStr = "";
+							fieldsStr += name.trim() + "," + type.trim();
+						} else {
+							fieldsStr += ";" + name.trim() + "," + type.trim();
+						}
+					} else {
+						if (name != null && !name.isEmpty()
+								&& !name.contains("#") && type != null) {
+							++parts;
+						}
+					}
+					++i;
+				}
+			}
+			rs.close();
+
+		} catch (Exception e) {
+			logger.error("Fail to check the existence " + table,e);
+		}
+		return fieldsStr;
 	}
 	
 	public void resetUpdateTables(){
