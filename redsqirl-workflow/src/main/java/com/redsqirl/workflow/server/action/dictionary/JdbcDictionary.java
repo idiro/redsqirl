@@ -2,8 +2,10 @@ package com.redsqirl.workflow.server.action.dictionary;
 
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -28,17 +30,17 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	private static Logger logger = Logger.getLogger(JdbcDictionary.class);
 	
 	/** Key for a cast operator */
-	protected static final String castMethods = "castMethods";
+	public static final String castMethods = "castMethods";
 	/** Key for utils methods */
-	protected static final String utilsMethods = "utilsMethods";
+	public static final String utilsMethods = "utilsMethods";
 	/** Key for math methods */
-	protected static final String mathMethods = "mathMethods";
+	public static final String mathMethods = "mathMethods";
 	/** Key for string Methods */
-	protected static final String stringMethods = "stringMethods";
+	public static final String stringMethods = "stringMethods";
 	/** Key for date methods */
-	protected static final String dateMethods = "dateMethods";
+	public static final String dateMethods = "dateMethods";
 	/** Key for aggregation methods */
-	protected static final String agregationMethods = "agregationMethods";
+	public static final String agregationMethods = "agregationMethods";
 
 	protected String dictionaryName;
 
@@ -48,6 +50,50 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		if(this.dictionaryName != null){
 			init();
 		}
+	}
+	
+	public JdbcDictionary(String dictionaryName, Map<String,List<String[]>> fctL){
+		super(false);
+		this.dictionaryName = dictionaryName;
+		loadDefaultFunctions();
+		Iterator<String> it = fctL.keySet().iterator();
+		while(it.hasNext()){
+			String menu = it.next();
+			functionsMap.put(menu, merge(functionsMap.get(menu),fctL.get(menu)));
+		}
+		if(this.dictionaryName != null){
+			init();
+		}
+	}
+	
+	protected String[][] merge(String[][] def, List<String[]> fctL){
+		List<String[]> tmpAns = null;
+		if(def == null || def.length == 0){
+			tmpAns = fctL;
+		}else{
+			tmpAns = new LinkedList<String[]>();
+			tmpAns.addAll(fctL);
+			for(int i =0; i < def.length;++i){
+				String[] cur = def[i];
+				Iterator<String[]> it = fctL.iterator();
+				boolean found = false;
+				while(it.hasNext()&& !found){
+					String[] fctCur = it.next();
+					found = fctCur[0].equals(cur[0]);
+				}
+				if(!found){
+					tmpAns.add(cur);
+				}
+			}
+		}
+		String[][] ans = new String[tmpAns.size()][];
+		Iterator<String[]> it = tmpAns.iterator();
+		int i = 0;
+		while(it.hasNext()){
+			ans[i] = it.next();
+			++i;
+		}
+		return ans;
 	}
 	
 	/**
@@ -398,6 +444,11 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		return help;
 	}
 
+	public boolean isVariableName(String name) {
+		String regex = "[A-Z]+[A-Z0-9_]*";
+		return name.matches(regex);
+	}
+	
 	/**
 	 * Check if an expression is a cast operation
 	 * 

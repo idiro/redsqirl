@@ -41,6 +41,7 @@ import com.redsqirl.workflow.server.action.superaction.SuperActionTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
+import com.redsqirl.workflow.utils.jdbc.GenericConfFileTests;
 
 
 @RunWith(Suite.class)
@@ -78,8 +79,9 @@ import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
 //	AbstractDictionaryTests.class,
 //	SendEmailTests.class,
 //	WorkflowInterfaceTests.class,
-	SubWorkflowTests.class,
+//	SubWorkflowTests.class,
 //	SuperActionTests.class
+	GenericConfFileTests.class
 })
 public class SetupEnvironmentTest {
 

@@ -143,24 +143,30 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 					logger.debug("checking : " + featoperation + " "
 							+ feattitle + " ");
 					try {
-						String typeRetuned = dictionaryCach.get(featoperation);
-						if(typeRetuned == null){
-							typeRetuned = getDictionary()
-									.getReturnType(featoperation, fl, featGrouped);
-							dictionaryCach.put(featoperation,typeRetuned);
+						if (!getDictionary().isVariableName(feattitle)) {
+							msg = SqlLanguageManager.getText(
+									"sql.join_fields_interaction.fieldinvalid",
+									new Object[] { rowNb, feattitle });
+						}else{
+							String typeRetuned = dictionaryCach.get(featoperation);
+							if(typeRetuned == null){
+								typeRetuned = getDictionary()
+										.getReturnType(featoperation, fl, featGrouped);
+								dictionaryCach.put(featoperation,typeRetuned);
+							}
+
+							logger.debug("type returned : " + typeRetuned);
+							if (!getDictionary().check(feattype, typeRetuned)) {
+								msg = SqlLanguageManager
+										.getText(
+												"sql.select_fields_interaction.checkreturntype",
+												new Object[] { rowNb,
+														featoperation, typeRetuned,
+														feattype });
+							}
+							logger.debug("added : " + featoperation
+									+ " to fields type list");
 						}
-								
-						logger.debug("type returned : " + typeRetuned);
-						if (!getDictionary().check(feattype, typeRetuned)) {
-							msg = SqlLanguageManager
-									.getText(
-											"sql.select_fields_interaction.checkreturntype",
-											new Object[] { rowNb,
-													featoperation, typeRetuned,
-													feattype });
-						}
-						logger.debug("added : " + featoperation
-								+ " to fields type list");
 					} catch (Exception e) {
 						msg = SqlLanguageManager
 								.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
