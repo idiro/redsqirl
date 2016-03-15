@@ -144,7 +144,7 @@ public class HiveDictionary extends JdbcDictionary{
 		addToFunctionsMap(dateMethods,hiveDateMethods);
 		
 		String[][] hiveUtilMethods = new String[][] {
-			new String[] { "DECODE()", "STRING,STRING,STRING...", "STRING",
+			new String[] { "DECODE()", "STRING,STRING,STRING,STRING...", "STRING",
 			"@function:DECODE@param: expression@param:search@param: result@param: default@short:returns a value if a match is found."+
 			"@description: Search in expression a value, if the value is found the corresponding result is given. You can give as "+
 					"many as search and result you like. Optionally if none of them match, you can return a default value. If no default is given the function returns null.",

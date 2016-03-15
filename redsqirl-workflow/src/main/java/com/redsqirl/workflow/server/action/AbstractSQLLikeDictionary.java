@@ -95,10 +95,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
 		functionsMap.put(arithmeticOperators,
 				new String[][] { new String[] { "+", "NUMBER,NUMBER...", "NUMBER" },
-						new String[] { "-", "NUMBER,NUMBER...", "NUMBER" },
-						new String[] { "*", "NUMBER,NUMBER...", "NUMBER" },
-						new String[] { "/", "NUMBER,NUMBER...", "NUMBER" },
-						new String[] { "%", "NUMBER,NUMBER...", "NUMBER" } });
+						new String[] { "-", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "*", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "/", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "%", "NUMBER,NUMBER,NUMBER...", "NUMBER" } });
 	}
 
 	public String[][] concat(String[][] array1,String[][] array2){
@@ -745,7 +745,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					} else {
 						int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
 
-						if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched > methodArgs)) {
+						if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched+1 >= methodArgs)) {
 							method = null;
 						}
 					}
@@ -869,7 +869,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
 				ok &= check(argsTypeExpected[i], getReturnType(args[i], fields));
 			}
-		} else if (argsTypeExpected.length == args.length || (args.length > argsTypeExpected.length
+		} else if (argsTypeExpected.length == args.length || (args.length+1 >= argsTypeExpected.length
 				&& argsTypeExpected[argsTypeExpected.length - 1].endsWith("..."))) {
 			ok = true;
 			for (int i = 0; i < args.length; ++i) {

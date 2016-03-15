@@ -225,6 +225,7 @@ public class GenericConfFile  extends DbConfFile {
 	
 	private Map<String,List<String[]>> getJdbcDictionay(){
 		Map<String,List<String[]>> dictionaryFunctionMap = new LinkedHashMap<String,List<String[]>>();
+		String help = "@short:No information@description: For more information please consult the database documentation.";
 		String stringFct = null;
 		try{
 			stringFct = databaseMetaData.getStringFunctions();
@@ -232,8 +233,8 @@ public class GenericConfFile  extends DbConfFile {
 			String[] fcts = stringFct.split(",");
 			dictionaryFunctionMap.put(JdbcDictionary.stringMethods, new LinkedList<String[]>());
 			for(int i=0; i< fcts.length;++i){
-				String fct = fcts[i];
-				String[] details = new String[]{fct,"STRING","ANY...",""};
+				String fct = fcts[i]+"()";
+				String[] details = new String[]{fct,"ANY...","ANY","@function:"+fct+help};
 				dictionaryFunctionMap.get(JdbcDictionary.stringMethods).add(details);
 			}
 		}catch(Exception e){
@@ -243,11 +244,11 @@ public class GenericConfFile  extends DbConfFile {
 		try{
 			numFct = databaseMetaData.getNumericFunctions();
 			logger.info("Numeric functions: "+numFct);
-			String[] fcts = stringFct.split(",");
+			String[] fcts = numFct.split(",");
 			dictionaryFunctionMap.put(JdbcDictionary.mathMethods, new LinkedList<String[]>());
 			for(int i=0; i< fcts.length;++i){
-				String fct = fcts[i];
-				String[] details = new String[]{fct,"NUMBER","ANY...",null};
+				String fct = fcts[i]+"()";
+				String[] details = new String[]{fct,"ANY...","NUMBER","@function:"+fct+help};
 				dictionaryFunctionMap.get(JdbcDictionary.mathMethods).add(details);
 			}
 		}catch(Exception e){
@@ -257,11 +258,11 @@ public class GenericConfFile  extends DbConfFile {
 		try{
 			sysFct = databaseMetaData.getSystemFunctions();
 			logger.info("Sys functions: "+sysFct);
-			String[] fcts = stringFct.split(",");
+			String[] fcts = sysFct.split(",");
 			dictionaryFunctionMap.put(JdbcDictionary.utilsMethods, new LinkedList<String[]>());
 			for(int i=0; i< fcts.length;++i){
-				String fct = fcts[i];
-				String[] details = new String[]{fct,"ANY","ANY...",null};
+				String fct = fcts[i]+"()";
+				String[] details = new String[]{fct,"ANY...","ANY","@function:"+fct+help};
 				dictionaryFunctionMap.get(JdbcDictionary.utilsMethods).add(details);
 			}
 		}catch(Exception e){
@@ -271,11 +272,11 @@ public class GenericConfFile  extends DbConfFile {
 		try{
 			timeFct = databaseMetaData.getTimeDateFunctions();
 			logger.info("Time functions: "+timeFct);
-			String[] fcts = stringFct.split(",");
+			String[] fcts = timeFct.split(",");
 			dictionaryFunctionMap.put(JdbcDictionary.dateMethods, new LinkedList<String[]>());
 			for(int i=0; i< fcts.length;++i){
-				String fct = fcts[i];
-				String[] details = new String[]{fct,"TIMESTAMP","ANY...",null};
+				String fct = fcts[i]+"()";
+				String[] details = new String[]{fct,"ANY...","TIMESTAMP","@function:"+fct+help};
 				dictionaryFunctionMap.get(JdbcDictionary.dateMethods).add(details);
 			}
 		}catch(Exception e){
