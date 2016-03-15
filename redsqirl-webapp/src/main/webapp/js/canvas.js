@@ -1401,6 +1401,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     arc1.on('mouseout', function(e) {
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
     });
     
     arc2.on('mouseover', function(e) {
@@ -1419,6 +1420,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     arc2.on('mouseout', function(e) {
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
     });
     
     arc3.on('mouseover', function(e) {
@@ -1433,6 +1435,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     arc3.on('mouseout', function(e) {
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
     });
     
 
@@ -1692,6 +1695,7 @@ function mountObj(canvasName) {
                 
                 polygonTabFake.on('mouseout', function(e) {
                     jQuery(".tooltipCanvas").remove();
+                    curToolTip = null;
                 });
                 
                 polygonTabFake.on('dragend',function() {
@@ -1739,6 +1743,7 @@ function mountObj(canvasName) {
 				
 				polygonTabFake.on('mouseout', function(e) {
 					jQuery(".tooltipCanvas").remove();
+					curToolTip = null;
 				});
 
 				
@@ -1983,6 +1988,7 @@ function save(path) {
     setPathFile(selectedCanvas, path);
     saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited(), getWorkflowType(selectedCanvas));
     jQuery(".tooltipCanvas").remove();
+    curToolTip = null;
 }
 
 function configureCircle(canvasName, circle1) {
@@ -2125,6 +2131,7 @@ function configureGroupListeners(canvasName, group) {
         canvasArray[canvasName].dragDropGroup = true;
         canvasArray[canvasName].rectSelect.destroy();
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
         dragAndDropGroup(canvasName, this, e);
         //group.getChildren()[2].off('click');
     });
@@ -2136,6 +2143,7 @@ function configureGroupListeners(canvasName, group) {
         console.log()
         canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
         canvasArray[canvasName].savePositions = null;
         canvasArray[canvasName].dragDropGroup = false;
     });
@@ -2145,6 +2153,7 @@ function configureGroupListeners(canvasName, group) {
     	//alert(e.button);
         
         jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
         if(e.button != 2){
         
           group.getChildren()[2].on('click', function(e) {
