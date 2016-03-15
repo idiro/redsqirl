@@ -25,6 +25,11 @@
 	}
 	
 	function getPathOutPut(p){
+		
+		p = jQuery('[id$="pathDataOutputBrowser"]').val();
+		
+		console.log(p + " - " + outputBroswerfile);
+		
 		if (!outputBroswerfile){
 			return p;
 		}
@@ -85,7 +90,7 @@
 		
 		<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
+			<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
 				maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 			
 			<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" 
