@@ -285,12 +285,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				SelectItem s = new SelectItem(name, name);
 				listPackages.add(s);
 			}
-			
+
 			for (ModelInt modelInt : getModelManager().getAvailableModels(user)) {
 				SelectItem s = new SelectItem(modelInt.getName(), modelInt.getName());
 				listPackages.add(s);
 			}
-			
+
 			if(listPackages != null && !listPackages.isEmpty()){
 				setSelectedPackage(listPackages.get(0).getLabel());
 				retrieveActions(getSelectedPackage());
@@ -414,14 +414,20 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void cancelActions() throws RemoteException {
-		SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
-		List<String[]> l = getTabsMap().get(s.getNameTab());
-		List<SelectHeaderType> ans = new ArrayList<SelectHeaderType>();
-		for (String[] value : l) {
-			SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
-			ans.add(sht);
+		if(getSelectedTab()!= null){
+			SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
+			if(s != null){
+				List<String[]> l = getTabsMap().get(s.getNameTab());
+				if(l != null){
+					List<SelectHeaderType> ans = new ArrayList<SelectHeaderType>();
+					for (String[] value : l) {
+						SelectHeaderType sht = new SelectHeaderType(mapActionPackage.get(value[0]) , value[0]);
+						ans.add(sht);
+					}
+					s.setSelectedActions(ans);
+				}
+			}
 		}
-		s.setSelectedActions(ans);
 		setSelectedTab(null);
 	}
 
