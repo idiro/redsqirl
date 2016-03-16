@@ -733,14 +733,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	protected void addComponent(Map<String, List<DataFlowElement>> map,
 			String name, DataFlowElement wa) throws RemoteException {
-		waLogger.debug("link '" + wa.getComponentId() + "' to '" + componentId
-				+ "'");
-		List<DataFlowElement> lwa = map.get(name);
-		if (lwa == null) {
-			lwa = new LinkedList<DataFlowElement>();
-			map.put(name, lwa);
+		if(wa != null){
+			waLogger.debug("link '" + wa.getComponentId() + "' to '" + componentId
+					+ "'");
+			List<DataFlowElement> lwa = map.get(name);
+			if (lwa == null) {
+				lwa = new LinkedList<DataFlowElement>();
+				map.put(name, lwa);
+			}
+			lwa.add(wa);
 		}
-		lwa.add(wa);
 	}
 
 	/**
