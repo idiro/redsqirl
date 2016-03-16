@@ -38,6 +38,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.jdbc.DbConfFile;
+import com.redsqirl.workflow.utils.jdbc.GenericConfFile;
 
 /**
  * Interface for browsing HDFS.
@@ -159,6 +160,7 @@ public class JdbcStore extends Storage {
 			String driverpath = WorkflowPrefManager.getProperty(property_other_drivers+techName+property_path_driver);
 			if(className != null && driverpath != null){
 				ans = new JdbcStoreConnection(new URL("jar:file:"+driverpath+"!/"),className,details, bs);
+				new GenericConfFile(ans.getConnType(), ans.getConnection()).writeConfFiles();
 			}
 			
 		}
