@@ -1182,6 +1182,9 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 
 	@Override
 	public boolean exists(String path) throws RemoteException {
+		if(path.isEmpty()){
+			return false;
+		}
 		HdfsFileChecker fCh = new HdfsFileChecker(path);
 		return fCh.exists();
 	}
