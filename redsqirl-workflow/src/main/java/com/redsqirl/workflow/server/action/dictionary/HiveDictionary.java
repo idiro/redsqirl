@@ -158,32 +158,36 @@ public class HiveDictionary extends JdbcDictionary{
 			new String[] { "ISNOTNULL()", "ANY", "BOOLEAN",
 					"@function:ISNOTNULL@param:a@short:Returns true if a is not NULL and false otherwise.",
 					},
-			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT,EXPRESSION", "INT",
+		};
+		addToFunctionsMap(utilsMethods,hiveUtilMethods);
+		
+		String[][] hiveAnalyticMethods = new String[][] {
+			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "DENSE_RANK() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "DENSE_RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "ROW_NUMBER() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "ROW_NUMBER() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the row number.",
 			},
-			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT,EXPRESSION,EXPRESSION", "INT",
+			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION,EXPRESSION", "INT",
+			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "DENSE_RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION,EXPRESSION", "INT",
+			new String[] { "DENSE_RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "ROW_NUMBER() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "ROW_NUMBER() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the row number.",
 			},
 		};
-		addToFunctionsMap(utilsMethods,hiveUtilMethods);
+		addToFunctionsMap(analyticMethods,hiveAnalyticMethods);
 		
 		String[][] hiveAggregationsMethods = new String[][] {
 			new String[] { "CORR()", "NUMBER,NUMBER", "DOUBLE",

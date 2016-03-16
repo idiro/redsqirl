@@ -150,33 +150,37 @@ public class OracleDictionary extends JdbcDictionary{
 					},
 			new String[] { "NVL2()", "ANY,ANY,ANY", "ANY",
 					"@function:NVL@short:if the first value is not null, returns the second one else returns the third one.",
-					},
-			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT,EXPRESSION", "INT",
+					}
+		};
+		addToFunctionsMap(utilsMethods,oracleUtilMethods);
+		
+		String[][] oracleAnalyticMethods = new String[][] {
+			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "DENSE_RANK() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "DENSE_RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "ROW_NUMBER() OVER (ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "ROW_NUMBER() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the row number.",
 			},
-			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT,EXPRESSION,EXPRESSION", "INT",
+			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION,EXPRESSION", "INT",
+			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "DENSE_RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION,EXPRESSION", "INT",
+			new String[] { "DENSE_RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
 			},
-			new String[] { "ROW_NUMBER() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "EXPRESSION", "INT",
+			new String[] { "ROW_NUMBER() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the row number.",
 			},
 		};
-		addToFunctionsMap(utilsMethods,oracleUtilMethods);
+		addToFunctionsMap(analyticMethods,oracleAnalyticMethods);
 		
 		String[][] oracleAggregationsMethods = new String[][] {
 			new String[] { "CORR()", "NUMBER,NUMBER", "DOUBLE",

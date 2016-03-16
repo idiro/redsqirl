@@ -42,6 +42,8 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	public static final String dateMethods = "dateMethods";
 	/** Key for aggregation methods */
 	public static final String agregationMethods = "agregationMethods";
+	/** Key for aggregation methods */
+	public static final String analyticMethods = "analyticMethods";
 
 	protected String dictionaryName;
 	private Map<String,List<String[]>> jdbcDeclaredFcts = null;
@@ -443,6 +445,10 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		if(functionsMap.get(analyticMethods) != null && functionsMap.get(analyticMethods).length > 0){
+			help.add(createMenu(new TreeNonUnique<String>("analytics"),
+					functionsMap.get(analyticMethods)));
+		}
 		help.add(createMenu(new TreeNonUnique<String>("cast"),
 				functionsMap.get(castMethods)));
 		logger.debug("create Select Help Menu");
@@ -563,10 +569,20 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	protected boolean isConditionalOperation(String expr) {
 		String cleanUp = removeBracketContent(expr);
 		return (cleanUp.startsWith("CASE") && cleanUp.endsWith("END"))
-				|| (cleanUp.startsWith("NTILE(") &&  cleanUp.indexOf(")") != -1)
-				|| cleanUp.startsWith("DENSE_RANK()") 
-				|| cleanUp.startsWith("RANK()")
-				|| cleanUp.startsWith("ROW_NUMBER()");
+				|| isAnalyticOperation(expr);
+	}
+	
+	protected boolean isAnalyticOperation(String expr){
+		String[][] analyticFct = functionsMap.get(analyticMethods);
+		boolean found = false;
+		if(analyticFct != null && analyticFct.length > 0){
+			String cleanUp = removeBracketContent(expr);
+			for(int i =0; i < analyticFct.length && !found; ++i){
+				logger.debug("Compare "+cleanUp +" with "+analyticFct[i][0]);
+				found = cleanUp.startsWith(analyticFct[i][0]);
+			}
+		}
+		return found;
 	}
 
 
