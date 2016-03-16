@@ -63,7 +63,7 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 	@Override
 	public boolean goTo(String path) throws RemoteException {
 		boolean ok = false;
-		if (exists(path)) {
+		if (path != null && exists(path)) {
 			while (history.size() - 1 > cur) {
 				history.remove(history.size() - 1);
 			}

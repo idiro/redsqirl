@@ -253,33 +253,38 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		NodeList nl = n.getChildNodes();
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
+			if(cur.getNodeType() == Node.ELEMENT_NODE){
+				try {
+					Node outputNode = ((Element) cur).getElementsByTagName("output").item(0);					
+					if(outputNode != null && outputNode.getNodeType() == Node.ELEMENT_NODE){
+						Element outputEl = (Element) outputNode;
+						String outputType = outputEl.getAttributes().getNamedItem("typename").getNodeValue();
 
-			try {
-				
-				Element outputEl = (Element) ((Element) cur).getElementsByTagName("output").item(0);
-				String outputType = outputEl.getAttributes().getNamedItem("typename").getNodeValue();
+						DataOutput out = DataOutput.getOutput(outputType);
+						if(out == null){
+							error = LanguageManagerWF.getText("dataoutput.unknown", new Object[] { outputType });
+							break;
+						}
+						out.read(outputEl);
 
-				DataOutput out = DataOutput.getOutput(outputType);
-				if(out == null){
-					error = LanguageManagerWF.getText("dataoutput.unknown", new Object[] { outputType });
-					break;
-				}
-				out.read(outputEl);
 
-				try{
-					String queueStr = ((Element) cur).getElementsByTagName("stack").item(0).getChildNodes().item(0).getNodeValue();
-					String[] queueArr = queueStr.split(",");
-					LinkedList<String> queueCur = new LinkedList<String>();
-					for(int j = 0; j < queueArr.length;++j){
-						queueCur.add(queueArr[j]);
+						try{
+							String queueStr = ((Element) cur).getElementsByTagName("stack").item(0).getChildNodes().item(0).getNodeValue();
+							String[] queueArr = queueStr.split(",");
+							LinkedList<String> queueCur = new LinkedList<String>();
+							for(int j = 0; j < queueArr.length;++j){
+								queueCur.add(queueArr[j]);
+							}
+						}catch(Exception e){
+							logger.warn(e,e);
+						}
+
 					}
-				}catch(Exception e){
-					logger.warn(e,e);
-				}
 
-			} catch (Exception e) {
-				//error = LanguageManagerWF.getText("dataflowaction.readvaluesxml", new Object[] { componentId });
-				logger.warn("error "+e,e);
+				} catch (Exception e) {
+					//error = LanguageManagerWF.getText("dataflowaction.readvaluesxml", new Object[] { componentId });
+					logger.warn("error "+e,e);
+				}
 			}
 		}
 
