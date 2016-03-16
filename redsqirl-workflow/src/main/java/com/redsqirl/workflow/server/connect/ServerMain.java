@@ -213,23 +213,23 @@ public class ServerMain {
 	 * Remove all processes in the registry
 	 */
 	public static void shutdown() {
-		String[] threads;
-		try {
-			threads = registry.list();
-			for (String thread : threads) {
-				logger.debug("unbinding : " + thread);
-				registry.unbind(thread);
-			}
-		} catch (AccessException e) {
-			logger.debug("Access Exception : "+e.getMessage());
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			logger.debug("Remote Exception : "+e.getMessage());
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			logger.debug("NotBound Exception : "+e.getMessage());
-			e.printStackTrace();
-		}
-		System.exit(0);
-	}
+        String[] threads;
+        try {
+            threads = registry.list();
+            for (String thread : threads) {
+                logger.debug("unbinding : " + thread);
+                registry.unbind(thread);
+            }
+        } catch (AccessException e) {
+            logger.info("Access Exception : "+e.getMessage(),e);
+        } catch (RemoteException e) {
+            logger.info("Remote Exception : "+e.getMessage(),e);
+        } catch (NotBoundException e) {
+            logger.info("NotBound Exception : "+e.getMessage(),e);
+        } catch (Exception e) {
+            logger.info(e,e);
+        }
+        System.exit(0);
+    }
+	
 }

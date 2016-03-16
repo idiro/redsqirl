@@ -632,20 +632,32 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Shutdown the server
 	 */
 	public void shutdown() throws RemoteException{
-		try {
-			File[] clones = new File(WorkflowPrefManager.getPathClonefolder()).listFiles();
-			for(File clone:clones){
-				LocalFileSystem.delete(clone);
-			}
-			Iterator<DataStore> it = datastores.values().iterator();
-			while(it.hasNext()){
-				it.next().close();
-			}
-		} catch (IOException e) {
-			logger.error("Failed to remove Clones Folder ",e);
-		}
-		ServerMain.shutdown();
-	}
+        try {
+            File[] clones = new File(WorkflowPrefManager.getPathClonefolder()).listFiles();
+            for(File clone:clones){
+                try{
+                    LocalFileSystem.delete(clone);
+                }catch(Exception e){
+                    logger.info("Fail to clean clone temporary files.");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fail to clean temporary files.",e);
+        }
+        try{
+            Iterator<DataStore> it = datastores.values().iterator();
+            while(it.hasNext()){
+                try{
+                    it.next().close();
+                }catch(Exception e){
+                    logger.info("Fail to close a datastore: "+e,e);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fail to close datastores.",e);
+        }
+        ServerMain.shutdown();
+    }
 
 	/**
 	 * @return the datastores

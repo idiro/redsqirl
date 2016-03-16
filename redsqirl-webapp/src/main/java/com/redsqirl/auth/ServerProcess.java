@@ -45,8 +45,6 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.redsqirl.BaseBean;
-import com.redsqirl.CanvasBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.BaseCommand;
 import com.redsqirl.workflow.server.ProcessesManager;
@@ -97,7 +95,7 @@ public class ServerProcess {
 					killOldProcess(pm, user);
 					logger.info("ProjectID " + ProjectID.get());
 					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get()) + " 1>/dev/null & echo $! 1> "+pm.getPath();
-					
+
 					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
@@ -114,13 +112,13 @@ public class ServerProcess {
 
 					channel.getInputStream().close();
 					channel.disconnect();
-					
+
 					StringBuffer error = new StringBuffer();
-					
+
 					Properties properties = new Properties();
 					File licenseFile = new File(WorkflowPrefManager.getPathSystemLicence());
 					properties.load(new FileInputStream(licenseFile));
-					
+
 					for (String msg : BaseCommand.getLicenseErrorMsg(
 							WorkflowPrefManager.getPathUserPackagePref(user),
 							WorkflowPrefManager.getPathsyspackagepref(),
@@ -137,7 +135,7 @@ public class ServerProcess {
 						request.setAttribute("msnError", "msnError");
 						MessageUseful.addErrorMessage(error.toString());
 					}
-					
+
 					/*for (String errorJar : BaseCommand.getNotIncludedJars()){
 						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 						request.setAttribute("msnError", "msnError");
@@ -253,25 +251,35 @@ public class ServerProcess {
 		logger.info("kill attempt");
 		if (session != null && run) {
 			logger.info(1);
+
 			try {
 				DataFlowInterface dataFlowInterface = (DataFlowInterface) httpSession
 						.getAttribute("wfm");
+				logger.info("Clean and close all the open worfklows");
 				try {
-					logger.info("Clean and close all the open worfklows");
 					dataFlowInterface.backupAll();
+				} catch (RemoteException e) {
+					logger.warn("Fail closing workflows", e);
+				}
+				try{
 					dataFlowInterface.autoCleanAll();
+				} catch (RemoteException e) {
+					logger.warn("Fail cleaning workflows", e);
+				}
+				try{
 					dataFlowInterface.shutdown();
 				} catch (RemoteException e) {
-					logger.warn("Failed closing workflows");
+					logger.warn("Fail shutting down", e);
 				}
 			} catch (Exception e) {
 				logger.error("Failed getting 'wfm'");
-				logger.error(e.getMessage());
+				logger.error(e.getMessage(), e);
 			}
+
 			try{
 				kill(new WorkflowProcessesManager(user).getPid());
 			}catch(Exception e){
-				logger.info("Exception: "+e.getMessage());
+				logger.info("Exception: "+e.getMessage(), e);
 			}
 			list.remove(this);
 			run = false;
