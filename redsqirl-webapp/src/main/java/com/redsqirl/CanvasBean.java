@@ -558,7 +558,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow) {
 
-		logger.info("loadWorkFlow " + path);
+		logger.warn("loadWorkFlow " + path);
+		logger.warn("newWfName " + newWfName);
+		logger.warn("workflow " + workflow);
+		logger.warn("setWorkflow " + setWorkflow);
 
 		DataFlowInterface dfi;
 		String error = null;
@@ -588,12 +591,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (error == null) {
 				dfi.setWorkflowPath(newWfName, path);
 				df = dfi.getWorkflow(newWfName);
-				logger.info("read " + path);
+				logger.warn("read " + path);
 				error = df.read(path);
 			}
 
 			if (error == null) {
-				logger.info("set current worflow to " + newWfName);
+				logger.warn("set current worflow to " + newWfName);
 
 				if(setWorkflow){
 					setNameWorkflow(newWfName);
@@ -606,19 +609,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 
-				logger.info("Load element ids for front-end " + newWfName);
+				logger.warn("Load element ids for front-end " + newWfName);
 				workflowMap.put(newWfName, df);
-				getIdMap()
-				.put(newWfName, new HashMap<String, String>());
-				logger.info("Nb elements: " + df.getElement().size());
+				getIdMap().put(newWfName, new HashMap<String, String>());
+				logger.warn("Nb elements: " + df.getElement().size());
 
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
 				while (itCompIds.hasNext()) {
 					String cur = itCompIds.next();
 					getIdMap().get(newWfName).put(cur, cur);
 				}
-				logger.info("Nb element loaded: "
-						+ getIdMap().get(newWfName).size());
+				logger.warn("Nb element loaded: " + getIdMap().get(newWfName).size());
 
 				if(workflow){
 					mapWorkflowType.put(newWfName, "W");
@@ -626,7 +627,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					mapWorkflowType.put(newWfName, "S");
 				}
 
-				logger.info("Load workflow type " + mapWorkflowType.get(newWfName));
+				logger.warn("Load workflow type " + mapWorkflowType.get(newWfName));
 
 			}
 
@@ -890,7 +891,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	protected void closeWorkflow(String workflowName) {
-		logger.info("closeWorkflow:" + workflowName);
+		logger.warn("closeWorkflow:" + workflowName);
 		String msg = null;
 		try {
 			DataFlow dfCur = workflowMap.get(workflowName);
@@ -1496,7 +1497,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void closeAll() {
-		logger.info("closeAll");
+		logger.warn("closeAll");
 		int size = workflowMap.size();
 		int iterMax = size + 2;
 		int iter = 0;
@@ -1505,6 +1506,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				closeWorkflow(workflowMap.keySet().iterator().next());
 				size = workflowMap.size();
 			} while (size > 0 && ++iter < iterMax);
+		}else{
+			logger.warn("closeAll SIZE");
 		}
 		setDf(null);
 
@@ -2129,12 +2132,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public String[] getPositions() throws Exception {
-		logger.info("getPositions");
+		logger.warn("getPositions");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
-		logger.info("getPositions " + selecteds);
+		
+		logger.warn("getPositions " + selecteds);
+		
+		if(getDf() != null){
+			logger.warn('a');
+		}else{
+			logger.warn('b');
+		}
 
 		return getPositions(getDf(), getNameWorkflow(), selecteds);
 	}
@@ -2210,11 +2220,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.warn("Error getPositions getDf NULL or empty");
 			}
 
-			logger.info("getPositions getNameWorkflow " + workflowName);
-			logger.info("getPositions getPath " + df.getPath());
-			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
-			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
-			logger.info("getPositions getWorkflowType " + getMapWorkflowType().get(workflowName));
+			logger.warn("getPositions getNameWorkflow " + workflowName);
+			logger.warn("getPositions getPath " + df.getPath());
+			logger.warn("getPositions jsonElements.toString " + jsonElements.toString());
+			logger.warn("getPositions jsonLinks.toString " + jsonLinks.toString());
+			logger.warn("getPositions getWorkflowType " + getMapWorkflowType().get(workflowName));
 
 			return new String[] { workflowName, df.getPath(),
 					jsonElements.toString(), jsonLinks.toString(), selecteds,
