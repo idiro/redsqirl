@@ -578,8 +578,9 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		if(analyticFct != null && analyticFct.length > 0){
 			String cleanUp = removeBracketContent(expr);
 			for(int i =0; i < analyticFct.length && !found; ++i){
-				logger.debug("Compare "+cleanUp +" with "+analyticFct[i][0]);
-				found = cleanUp.startsWith(analyticFct[i][0]);
+				String cur = removeBracketContent(analyticFct[i][0]);
+				logger.debug("Compare "+cleanUp +" with "+cur);
+				found = cleanUp.startsWith(cur);
 			}
 		}
 		return found;
@@ -594,22 +595,37 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			return runCaseWhen(expr, fields, fieldAggreg);
 		}
 		
-		if(cleanUp.startsWith("NTILE(")){
-			String arg = expr.substring(expr.indexOf("(") + 1, expr.indexOf(")"));
-			try{
-				Integer.valueOf(arg);
-			}catch(Exception e){
-				throw new Exception("NTILE function takes a constant number of tile as argument");
+		int i =0;
+		String[] fct = null;
+		String[][] analyticFct = functionsMap.get(analyticMethods);
+		boolean found = false;
+		for(; i < analyticFct.length && !found; ++i){
+			String cur = removeBracketContent(analyticFct[i][0]);
+			logger.debug("Compare "+cleanUp +" with "+cur);
+			found = cleanUp.startsWith(cur);
+			if(found){
+				fct = new String[3];
+				fct[0] = new String(analyticFct[i][0]);
+				fct[1] = analyticFct[i][1];
+				fct[2] = analyticFct[i][2];
+				fct[0] = removeBracketContent(fct[0].substring(0,fct[0].indexOf("OVER")));
 			}
 		}
-		String overExpr = expr.substring(expr.indexOf(")")+1).trim();
+		String arg = getFirstBracketContent(expr);
+		if(fct[2].isEmpty() && !arg.isEmpty()){
+			throw new Exception("Function "+fct[0]+" expects arguments");
+		}else if(!fct[2].isEmpty() && !arg.isEmpty() && !check(fct, getArguments(arg,","), fields)){
+			throw new Exception("Expression "+expr+" unrecognized function arguments");
+		}
+		String tmpExpr = expr.replaceFirst(escapeString(arg), "");
+		String overExpr = tmpExpr.substring(tmpExpr.indexOf(")")+1).trim();
 		if(!overExpr.toUpperCase().startsWith("OVER")){
 			throw new Exception("This function should be followed by a 'OVER' clause.");
 		}
 		
 		String orderByExpr = overExpr.substring(4).trim();
 		if(! (orderByExpr.startsWith("(") && orderByExpr.endsWith(")"))){
-			throw new Exception("An OVER clause should be contained within brackets and start with a PARTITION BY or an ORDER BY.");
+			throw new Exception("An OVER clause should be contained within brackets.");
 		}
 		orderByExpr = orderByExpr.substring(1,orderByExpr.lastIndexOf(")")).trim();
 		String partitionExpr = null;
@@ -617,26 +633,36 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			partitionExpr = orderByExpr.substring("PARTITION BY ".length(), orderByExpr.indexOf("ORDER BY")).trim();
 			orderByExpr = orderByExpr.substring(orderByExpr.indexOf("ORDER BY")).trim();
 		}
-		
-		if(!orderByExpr.toUpperCase().startsWith("ORDER BY ")){
-			throw new Exception("An OVER clause should be contained within brackets and start with a PARTITION BY or an ORDER BY.");
-		}
-		orderByExpr = orderByExpr.substring("ORDER BY ".length());
-		if(orderByExpr.endsWith(" DESC")){
-			orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" DESC"));
-		}
-		if(orderByExpr.endsWith("ASC")){
-			orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" ASC"));
-		}
-		if(getReturnType(orderByExpr, fields, fieldAggreg) == null){
-			throw new Exception("Error in expression "+orderByExpr);
+		logger.debug(orderByExpr);
+		if(orderByExpr.toUpperCase().startsWith("ORDER BY ")){
+			orderByExpr = orderByExpr.substring("ORDER BY ".length());
+			if(orderByExpr.endsWith(" DESC")){
+				orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" DESC"));
+			}
+			if(orderByExpr.endsWith("ASC")){
+				orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" ASC"));
+			}
 		}
 		
-		if(partitionExpr != null && getReturnType(partitionExpr, fields, fieldAggreg) == null){
-			throw new Exception("Error in expression "+partitionExpr);
+		if(orderByExpr != null && !orderByExpr.isEmpty()){
+			String[] args = orderByExpr.split(",");
+			for(int j =0; j < args.length;++j){
+				if(getReturnType(args[j], fields, fieldAggreg) == null){
+					throw new Exception("Error in expression "+args[j]);
+				}
+			}
 		}
 		
-		return "INT";
+		if(partitionExpr != null && !partitionExpr.isEmpty()){
+			String[] args = partitionExpr.split(",");
+			for(int j =0; j < args.length;++j){
+				if(getReturnType(args[j], fields, fieldAggreg) == null){
+					throw new Exception("Error in expression "+args[j]);
+				}
+			}
+		}
+		
+		return fct[2];
 	}
 	
 }
