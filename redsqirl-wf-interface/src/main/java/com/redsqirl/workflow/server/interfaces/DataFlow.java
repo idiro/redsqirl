@@ -77,7 +77,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return List the elements to run
 	 * @throws Exception
 	 */
-	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception;
+	public List<RunnableElement> subsetToRun(List<String> dataFlowElements) throws Exception;
 	
 	/**
 	 * Check if workflow is running

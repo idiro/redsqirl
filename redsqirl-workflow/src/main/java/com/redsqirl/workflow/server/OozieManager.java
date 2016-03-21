@@ -60,6 +60,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.OozieXmlCreator;
+import com.redsqirl.workflow.server.interfaces.RunnableElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -228,10 +229,6 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 	}
 
-	public String run(DataFlow df) throws Exception {
-		return run(df, df.getElement());
-	}
-
 	/**
 	 * Clean the directory where the Job details are stored
 	 * 
@@ -332,7 +329,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @return ID of the Job
 	 * @throws Exception
 	 */
-	public String run(DataFlow df, List<DataFlowElement> list) throws Exception {
+	public String run(DataFlow df, List<RunnableElement> list) throws Exception {
 
 		logger.debug("run");
 
@@ -468,7 +465,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		if (jobId != null) {
 			try{
 				for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-					String actionName = "act_" + dfe.getComponentId();
+					String actionName = "act_" + dfe.getOozieActionId();
 					if (actionName.equals(wfa.getName())) {
 						status = wfa.getStatus().toString();
 						logger.info("getElementStatus  " + status);

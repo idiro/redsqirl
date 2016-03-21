@@ -67,14 +67,6 @@ public interface JobManager extends Remote{
 	 */
 	public void suspend(String jobId) throws RemoteException, Exception;
 	/**
-	 * Run a job with a specified DataFlow
-	 * @param w
-	 * @return job ID
-	 * @throws RemoteException
-	 * @throws Exception
-	 */
-	public String run(DataFlow w)throws RemoteException, Exception;
-	/**
 	 * Run a job with specified DataFlow and List of DataFlowElements
 	 * @param df
 	 * @param list
@@ -82,7 +74,7 @@ public interface JobManager extends Remote{
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
-	public String run(DataFlow df, List<DataFlowElement> list) throws RemoteException, Exception;
+	public String run(DataFlow df, List<RunnableElement> list) throws RemoteException, Exception;
 	/**
 	 * Get the URL for the Console
 	 * @param df

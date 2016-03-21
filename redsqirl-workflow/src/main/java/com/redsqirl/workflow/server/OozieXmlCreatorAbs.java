@@ -31,6 +31,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.interfaces.RunnableElement;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieXmlCreator;
 
@@ -132,19 +133,19 @@ implements OozieXmlCreator{
 	 * @return List of elements that are roots in the DAG
 	 * @throws RemoteException
 	 */
-	protected List<DataFlowElement> getRootElements(
-			List<DataFlowElement> list) throws RemoteException{
-		List<DataFlowElement> lDf = new LinkedList<DataFlowElement>();
-		Iterator<DataFlowElement> itDFE = list.iterator();
+	protected List<RunnableElement> getRootElements(
+			List<RunnableElement> list) throws RemoteException{
+		List<RunnableElement> lDf = new LinkedList<RunnableElement>();
+		Iterator<RunnableElement> itDFE = list.iterator();
 		while(itDFE.hasNext()){
-			DataFlowElement dfe = itDFE.next();
+			RunnableElement dfe = itDFE.next();
 			Iterator<DataFlowElement> inIt = dfe.getAllInputComponent().iterator();
 			boolean noDep = true;
 			if(dfe.getOozieAction() == null){
 				noDep = false;
 			}
 			while(inIt.hasNext() && noDep){
-				DataFlowElement curIn = inIt.next();
+				RunnableElement curIn = inIt.next();
 				if(curIn.getOozieAction() != null){
 					noDep = !list.contains(curIn);
 				}
@@ -161,12 +162,12 @@ implements OozieXmlCreator{
 	 * @return List of elements that are part of a Leaf
 	 * @throws RemoteException
 	 */
-	protected List<DataFlowElement> getLeafElements(
-			List<DataFlowElement> list) throws RemoteException{
-		List<DataFlowElement> lDf = new LinkedList<DataFlowElement>();
-		Iterator<DataFlowElement> itDFE = list.iterator();
+	protected List<RunnableElement> getLeafElements(
+			List<RunnableElement> list) throws RemoteException{
+		List<RunnableElement> lDf = new LinkedList<RunnableElement>();
+		Iterator<RunnableElement> itDFE = list.iterator();
 		while(itDFE.hasNext()){
-			DataFlowElement dfe = itDFE.next();
+			RunnableElement dfe = itDFE.next();
 			if(dfe.getAllOutputComponent().isEmpty()){
 				lDf.add(dfe);
 			}
@@ -175,15 +176,15 @@ implements OozieXmlCreator{
 	}
 	/**
 	 * Get List of action names
-	 * @param list of {@link com.redsqirl.workflow.server.interfaces.DataFlowElement} that
+	 * @param list of {@link com.redsqirl.workflow.server.interfaces.RunnableElement} that
 	 * @return list of actions names
 	 * @throws RemoteException 
 	 */
 	@Override
-	public List<String> getNameActions(List<DataFlowElement> list)
+	public List<String> getNameActions(List<RunnableElement> list)
 			throws RemoteException{
 		List<String> lName = new LinkedList<String>();
-		Iterator<DataFlowElement> itDFE = list.iterator();
+		Iterator<RunnableElement> itDFE = list.iterator();
 		while(itDFE.hasNext()){
 			lName.add(getNameAction(itDFE.next()));
 		}
@@ -196,7 +197,7 @@ implements OozieXmlCreator{
 	 * @throws RemoteException
 	 */
 	@Override
-	public String getNameAction(DataFlowElement e) throws RemoteException{
+	public String getNameAction(RunnableElement e) throws RemoteException{
 		return "act_"+e.getComponentId();
 	}
 

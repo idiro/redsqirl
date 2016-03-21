@@ -81,10 +81,12 @@ import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.action.superaction.SuperAction;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
+import com.redsqirl.workflow.server.interfaces.RunnableElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
@@ -333,7 +335,88 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return run(elToRun);
 	}
 
-	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements)
+	public List<RunnableElement> subsetToRun(List<String> dataFlowElements)
+			throws Exception {
+
+		List<DataFlowElement> elementToRun = null;
+		List<RunnableElement> toRun = null;
+		
+		elementToRun = subsetElementToRun(dataFlowElements);
+		
+		if(elementToRun != null && !elementToRun.isEmpty()) {
+			
+			String error = check(elementToRun);
+			if(error != null){
+				throw new Exception(error);
+			}
+			
+			toRun = new ArrayList<RunnableElement>(elementToRun.size());
+			Iterator<DataFlowElement> it = elementToRun.iterator();
+			Map<String,Boolean> endOfThread = new HashMap<String,Boolean>(elementToRun.size());
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				//0. Get the thread optimiser if it exists
+				//1. Check if it is the end of a thread
+				//2. If the optimiser exists
+				//2.a. Either add to the new optimiser or write the old optimiser and 2.b
+				//2.b  Either create a new optimiser or add the action
+				//3. If it is an optimiser and it is the end of a thread, write it.
+				DFEOptimiser oldOpt = null;
+				DFEOptimiser newOpt = null;
+				
+				if(cur.getAllInputComponent().size() == 1){
+					DataFlowElement prev = cur.getAllInputComponent().get(0);
+					if(endOfThread.containsKey(prev.getComponentId()) && endOfThread.get(prev.getComponentId())){
+						oldOpt = prev.getDFEOptimiser();
+					}
+				}
+				boolean stopOptimiser = cur.getDFEOutput().size() > 1 ||
+						cur.getAllOutputComponent().size() != 1 ||
+						cur.getAllOutputComponent().get(0).getAllInputComponent().size() != 1;
+				
+				
+				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
+				while(itOut.hasNext()){
+					String outName = itOut.next();
+					DFEOutput outCur =  cur.getDFEOutput().get(outName);
+					if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
+						outCur.generatePath(cur.getComponentId(), outName);
+					}
+					if(!SavingState.TEMPORARY.equals(outCur.getSavingState())){
+						stopOptimiser = true;
+					}
+				}
+				endOfThread.put(cur.getComponentId(), stopOptimiser);
+				
+				newOpt = cur.getDFEOptimiser();
+				if(newOpt != null){
+					newOpt.resetElementList();
+				}
+				if(oldOpt != null && (newOpt == null || !newOpt.addAllElement(oldOpt.getElements()))){
+					if(oldOpt.getElements().size() > 1){
+						toRun.add(oldOpt);
+					}else{
+						toRun.add(oldOpt.getElements().get(0));
+					}
+				}else if(oldOpt == null && newOpt != null){
+					newOpt.addElement(cur);
+				}else if(oldOpt == null && newOpt == null){
+					toRun.add(cur);
+				}
+				
+				if(newOpt != null && stopOptimiser){
+					if(newOpt.getElements().size() > 1){
+						toRun.add(newOpt);
+					}else{
+						toRun.add(newOpt.getElements().get(0));
+					}
+				}
+			}
+		}
+		return toRun;
+	}
+	
+	protected List<DataFlowElement> subsetElementToRun(List<String> dataFlowElements)
 			throws Exception {
 
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
@@ -443,7 +526,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		logger.debug("runWF ");
 
 		String error = null;
-		List<DataFlowElement> toRun = null;
+		List<RunnableElement> toRun = null;
 
 		try {
 			toRun = subsetToRun(dataFlowElement);
@@ -457,25 +540,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		
 		if (error == null && toRun.isEmpty()) {
 			error = LanguageManagerWF.getText("workflow.torun_uptodate");
-		}
-		
-		if(error == null){
-			Iterator<DataFlowElement> it = toRun.iterator();
-			while(it.hasNext()){
-				DataFlowElement cur = it.next();
-				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
-				while(itOut.hasNext()){
-					String outName = itOut.next();
-					DFEOutput outCur =  cur.getDFEOutput().get(outName);
-					if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
-						outCur.generatePath(cur.getComponentId(), outName);
-					}
-				}
-			}
-		}
-		
-		if(error == null){
-			error = check(toRun);
 		}
 
 
@@ -502,18 +566,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				DataFlowElement cur = it.next();
 				cur.setRunningStatus("UNKNOWN");
 			}
-			it = toRun.iterator();
-			while(it.hasNext()){
-				DataFlowElement cur = it.next();
-				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
-				while(itOut.hasNext()){
-					String outName = itOut.next();
-					DFEOutput outCur =  cur.getDFEOutput().get(outName);
-					if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
-						outCur.clearCache();
-					}
-				}
-				cur.setRunningStatus(null);
+			Iterator<RunnableElement> itRun = toRun.iterator();
+			while(itRun.hasNext()){
+				itRun.next().resetCache();
 			}
 		}
 
@@ -783,6 +838,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			commentEl.appendChild(doc.createTextNode(cur.getComment()));
 			component.appendChild(commentEl);
 
+			//Oozie Action Id
+			Element oozieActionIdEl = doc.createElement("oozeactionid");
+			oozieActionIdEl.appendChild(doc.createTextNode(cur.getOozieActionId()));
+			component.appendChild(oozieActionIdEl);
+			
 			// Position
 			logger.debug("add positions...");
 			Element position = doc.createElement("position");
@@ -1195,6 +1255,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.getChildNodes().item(0).getNodeValue();
 			} catch (Exception e) {
 			}
+			
+			String compOozeactionid = null;
+			try {
+				compOozeactionid = ((Element) compCur)
+						.getElementsByTagName("oozeactionid").item(0)
+						.getChildNodes().item(0).getNodeValue();
+			} catch (Exception e) {
+			}
 
 			int x = Integer.valueOf(((Element) (((Element) compCur)
 					.getElementsByTagName("position").item(0)))
@@ -1210,6 +1278,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			getElement(id).setPosition(x, y);
 			getElement(id).setComment(compComment);
+			getElement(id).setOozieActionId(compOozeactionid);
 			error = getElement(id).readValuesXml(
 					((Element) compCur).getElementsByTagName("interactions")
 							.item(0));

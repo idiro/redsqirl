@@ -39,7 +39,7 @@ public interface OozieXmlCreator  extends Remote{
 	 * @throws RemoteException
 	 */
 	String createXml(DataFlow df, 
-			List<DataFlowElement> list,
+			List<RunnableElement> list,
 			File directory) throws RemoteException;
 	/**
 	 * Get a list of output action names
@@ -47,7 +47,7 @@ public interface OozieXmlCreator  extends Remote{
 	 * @return List of output names
 	 * @throws RemoteException
 	 */
-	List<String> getNameActions(List<DataFlowElement> list)
+	List<String> getNameActions(List<RunnableElement> list)
 			throws RemoteException;
 	/**
 	 * Get an action name for the Element
@@ -55,6 +55,6 @@ public interface OozieXmlCreator  extends Remote{
 	 * @return name of action
 	 * @throws RemoteException
 	 */
-	String getNameAction(DataFlowElement e) throws RemoteException;
+	String getNameAction(RunnableElement e) throws RemoteException;
 	
 }

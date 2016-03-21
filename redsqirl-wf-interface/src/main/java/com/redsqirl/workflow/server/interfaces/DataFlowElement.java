@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
  * @author keith
  *
  */
-public interface DataFlowElement extends Remote{
+public interface DataFlowElement extends RunnableElement{
 
 	//Static method
 
@@ -63,11 +63,11 @@ public interface DataFlowElement extends Remote{
 	//Normal Methods
 	
 	/**
-	 * Static methods, get the node type.
-	 * @return Oozie Action
+	 * 
+	 * @return The optimiser element
 	 * @throws RemoteException
 	 */
-	OozieAction getOozieAction() throws RemoteException;
+	DFEOptimiser getDFEOptimiser() throws RemoteException;
 
 	/**
 	 * Get the input names and properties accepted for each
@@ -75,13 +75,6 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	Map<String, DFELinkProperty> getInput() throws RemoteException;
-
-	/**
-	 * Calculates for each output what will be the result (field names and types)
-	 * @return output for action
-	 * @throws RemoteException
-	 */
-	Map<String, DFEOutput> getDFEOutput() throws RemoteException;
 
 	/**
 	 * Update all the interactions of one page.
@@ -168,13 +161,6 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	String writeValuesXml(Document doc, Node parent) throws RemoteException;
-	
-	/**
-	 * Get the data inputed in the node
-	 * @return a map with the data sorted by data name
-	 * @throws RemoteException
-	 */
-	Map<String, List<DFEOutput>> getDFEInput() throws RemoteException;
 
 	/**
 	 * Get the DFEOutput needed per component id
@@ -268,14 +254,6 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	List<DFEPage> getPageList() throws RemoteException;
-	
-
-	/**
-	 * Get the component ID
-	 * @return the componentId
-	 * @throws RemoteException
-	 */
-	String getComponentId() throws RemoteException;
 
 	/**
 	 * Set the component ID of an element
@@ -307,42 +285,6 @@ public interface DataFlowElement extends Remote{
 	void setPosition(int x, int y) throws RemoteException;
 
 	/**
-	 * @return the inputComponent
-	 */
-	Map<String, List<DataFlowElement>>  getInputComponent() throws RemoteException;
-
-	/**
-	 * @return the outputComponent
-	 */
-	Map<String, List<DataFlowElement>> getOutputComponent() throws RemoteException;
-
-	/**
-	 * Get all input components
-	 * @return List of Input components
-	 * @throws RemoteException
-	 */
-	List<DataFlowElement> getAllInputComponent() throws RemoteException;
-	/**
-	 *  Get all output components
-	 * @return get a List of all output components
-	 * @throws RemoteException
-	 */
-	List<DataFlowElement> getAllOutputComponent() throws RemoteException; 
-
-
-	/**
-	 * Write the properties , oozie xml , and the procces for the action
-	 * @param oozieXmlDoc
-	 * @param action
-	 * @param localDirectoryToWrite
-	 * @param pathFromOozieDir
-	 * @param fileNameWithoutExtension
-	 * @throws RemoteException
-	 */
-	void writeProcess(Document oozieXmlDoc, Element action,
-			File localDirectoryToWrite, String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException;
-	/**
 	 * Update the output of the element
 	 * @return Error message
 	 * @throws RemoteException
@@ -372,6 +314,13 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	Long getLastTimeRun() throws RemoteException;
+	
+	/**
+	 * Set the last time the element run.
+	 * @param lastTimeRun
+	 * @throws RemoteException
+	 */
+	void setLastTimeRun(Long lastTimeRun) throws RemoteException;
 
 	/**
 	 * Last time any input element run, null if none run so far.

@@ -38,6 +38,7 @@ import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.OozieActionAbs;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -72,18 +73,16 @@ public abstract class SqlElement extends DataflowAction {
 	 */
 	protected SqlGroupInteraction groupingInt;
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param minNbOfPage
-	 * @param nbInMin
-	 * @param nbInMax
-	 * @throws RemoteException
-	 */
+	
 	public SqlElement(OozieActionAbs action)
 			throws RemoteException {
 		super(action);
 
+	}
+	
+	public SqlElement(OozieActionAbs action,DFEOptimiser optimiser)
+			throws RemoteException {
+		super(action,optimiser);
 	}
 
 	/**

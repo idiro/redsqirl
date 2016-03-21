@@ -46,6 +46,7 @@ import com.idiro.check.FileChecker;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
+import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -71,12 +72,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	protected OozieAction oozieAction = null;
 
+	protected DFEOptimiser optimiser = null;
+	
 	/**
 	 * The id of the component
 	 */
 	protected String componentId;
 
 	protected String comment = "";
+	
+	protected String oozieActionId = null;
 	
 	/**
 	 * The position of the component in the workflow
@@ -122,6 +127,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		super();
 		position = new Point(0, 0);
 		this.oozieAction = oozieAction;
+	}
+	
+	public DataflowAction(OozieAction oozieAction,DFEOptimiser optimiser) throws RemoteException {
+		super();
+		position = new Point(0, 0);
+		this.oozieAction = oozieAction;
+		this.optimiser = optimiser;
 	}
 
 	/**
@@ -998,7 +1010,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public OozieAction getOozieType() {
 		return oozieAction;
 	}
-
+	
+	public DFEOptimiser getDFEOptimiser(){
+		return optimiser;
+	}
 	/**
 	 * @return the componentId
 	 */
@@ -1209,6 +1224,19 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return err;
 	}
+	
+	@Override
+	public void resetCache() throws RemoteException{
+		Iterator<String> itOut = getDFEOutput().keySet().iterator();
+		while(itOut.hasNext()){
+			String outName = itOut.next();
+			DFEOutput outCur =  getDFEOutput().get(outName);
+			if(!SavingState.RECORDED.equals(outCur.getSavingState()) && !outCur.isPathExist()){
+				outCur.clearCache();
+			}
+		}
+		setRunningStatus(null);
+	}
 
 	@Override
 	public void cleanThisAndAllElementAfter() throws RemoteException {
@@ -1260,5 +1288,18 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public Long getLastTimeRun() {
 		return lastTimeRun;
 	}
+	
+	public void setLastTimeRun(Long lastTimeRun){
+		this.lastTimeRun = lastTimeRun;
+	}
 
+	@Override
+	public String getOozieActionId(){
+		return oozieActionId == null? getComponentId():oozieActionId;
+	}
+	
+	@Override
+	public void setOozieActionId(String oozieActionId){
+		this.oozieActionId = oozieActionId;
+	}
 }

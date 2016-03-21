@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
+import com.redsqirl.workflow.server.interfaces.RunnableElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -85,7 +87,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * @throws RemoteException
 	 */
 	@Override
-	public String createXml(DataFlow df, List<DataFlowElement> list,
+	public String createXml(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		String error = createMainXml(df, list,directory);
 		
@@ -102,12 +104,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		return error;
 	}
 	
-	public String createSubXmls(DataFlow df, List<DataFlowElement> list,
+	public String createSubXmls(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		String error = null;
-		Iterator<DataFlowElement> it = list.iterator();
+		Iterator<RunnableElement> it = list.iterator();
 		while(it.hasNext() && error == null){
-			DataFlowElement cur = it.next();
+			RunnableElement cur = it.next();
 			if(cur.getOozieAction() instanceof OozieSubWorkflowAction){
 				OozieSubWorkflowAction oswa = (OozieSubWorkflowAction) cur.getOozieAction();
 				try{
@@ -116,7 +118,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					error = e.getMessage();
 				}
 				if(error == null){
-					error = createSubXmls(oswa.getSubWf(),oswa.getSubWf().getElement(),directory);
+					List<RunnableElement> l = new LinkedList<RunnableElement>();
+					l.addAll(oswa.getSubWf().getElement());
+					error = createSubXmls(oswa.getSubWf(),l,directory);
 				}
 			}
 		}
@@ -125,18 +129,18 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		}
 		return error;
 	}
-	public String createSubXml(String dfId, DataFlow df, List<DataFlowElement> list,
+	public String createSubXml(String dfId, DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		df.cleanProject();
 		return createXml(dfId,df, list,new File(directory,dfId),true);
 	}
 	
-	public String createMainXml(DataFlow df, List<DataFlowElement> list,
+	public String createMainXml(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		return createXml(df.getName(),df, list,directory,false);
 	}
 	
-	public String createXml(String wfId,DataFlow df, List<DataFlowElement> list,
+	public String createXml(String wfId,DataFlow df, List<RunnableElement> list,
 			File directory,
 			boolean ignoreBuffered) throws RemoteException {
 		
@@ -314,7 +318,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * @throws RemoteException
 	 */
 	protected List<String> createDelete(Document doc, String error,
-			String endElement, File directoryToWrite, List<DataFlowElement> list,
+			String endElement, File directoryToWrite, List<RunnableElement> list,
 			boolean ignoreBuffered)
 			throws RemoteException {
 
@@ -322,10 +326,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 		List<String> deleteList = new ArrayList<String>(list.size());
 		// Do action
-		Iterator<DataFlowElement> it = list.iterator();
+		Iterator<RunnableElement> it = list.iterator();
 		while (it.hasNext()) {
-			DataFlowElement cur = it.next();
-			logger.debug("Delete action " + cur.getName() + " " + cur.getComponentId());
+			RunnableElement cur = it.next();
+			logger.debug("Delete action " + " " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
 				logger.debug("Have to delete it...");
 				Iterator<String> itS = cur.getDFEOutput().keySet().iterator();
@@ -391,7 +395,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * @throws RemoteException
 	 */
 	protected void createOozieJob(Document doc, String error,
-			String endElement, File directoryToWrite, List<DataFlowElement> list, boolean ignoreBuffered)
+			String endElement, File directoryToWrite, List<RunnableElement> list, boolean ignoreBuffered)
 			throws RemoteException {
 
 		logger.debug("createOozieJob");
@@ -402,10 +406,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		logger.debug("createDelete OK");
 		
 		// Do action
-		Iterator<DataFlowElement> it = list.iterator();
+		Iterator<RunnableElement> it = list.iterator();
 		while (it.hasNext()) {
-			DataFlowElement cur = it.next();
-			logger.debug("Create action " + cur.getName() + " " + cur.getComponentId());
+			RunnableElement cur = it.next();
+			logger.debug("Create action " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
 				logger.debug("Oozie action is not null");
 				String attrNameStr = getNameAction(cur);
@@ -424,6 +428,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				logger.debug("Plug with delete of previous actions...");
 
 				// Get What is after
+				//TODO
 				Set<String> out = new HashSet<String>(cur.getAllInputComponent().size()	+ cur.getAllOutputComponent().size());
 				Iterator<DataFlowElement> itIn = cur.getAllInputComponent().iterator();
 				while (itIn.hasNext()) {
