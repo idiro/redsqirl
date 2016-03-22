@@ -1236,6 +1236,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		}
 		setRunningStatus(null);
+		setOozieActionId(getComponentId());
 	}
 
 	@Override

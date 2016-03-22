@@ -337,6 +337,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	public List<RunnableElement> subsetToRun(List<String> dataFlowElements)
 			throws Exception {
+		logger.debug("subsetToRun "+getName());
 
 		List<DataFlowElement> elementToRun = null;
 		List<RunnableElement> toRun = null;
@@ -355,6 +356,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Map<String,Boolean> endOfThread = new HashMap<String,Boolean>(elementToRun.size());
 			while(it.hasNext()){
 				DataFlowElement cur = it.next();
+				logger.debug("Element "+cur.getComponentId());
 				//0. Get the thread optimiser if it exists
 				//1. Check if it is the end of a thread
 				//2. If the optimiser exists
@@ -366,14 +368,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				
 				if(cur.getAllInputComponent().size() == 1){
 					DataFlowElement prev = cur.getAllInputComponent().get(0);
-					if(endOfThread.containsKey(prev.getComponentId()) && endOfThread.get(prev.getComponentId())){
+					if(endOfThread.containsKey(prev.getComponentId()) && !endOfThread.get(prev.getComponentId())){
 						oldOpt = prev.getDFEOptimiser();
+					}
+				}else if(cur.getAllInputComponent().size() > 1){
+					List<DataFlowElement> prevs = new LinkedList<DataFlowElement>();
+					prevs.addAll(cur.getAllInputComponent());
+					prevs.retainAll(elementToRun);
+					if(prevs.size() == 1){
+						oldOpt = prevs.get(0).getDFEOptimiser();
 					}
 				}
 				boolean stopOptimiser = cur.getDFEOutput().size() > 1 ||
-						cur.getAllOutputComponent().size() != 1 ||
-						cur.getAllOutputComponent().get(0).getAllInputComponent().size() != 1;
-				
+						cur.getAllOutputComponent().size() == 0;
+				if(!stopOptimiser){
+					List<DataFlowElement> succs = new LinkedList<DataFlowElement>();
+					succs.addAll(cur.getAllOutputComponent());
+					succs.retainAll(elementToRun);
+					stopOptimiser = succs.size() != 1;
+				}
 				
 				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
 				while(itOut.hasNext()){
@@ -386,6 +399,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						stopOptimiser = true;
 					}
 				}
+				logger.debug("Stop Optimiser "+stopOptimiser);
 				endOfThread.put(cur.getComponentId(), stopOptimiser);
 				
 				newOpt = cur.getDFEOptimiser();
@@ -393,18 +407,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					newOpt.resetElementList();
 				}
 				if(oldOpt != null && (newOpt == null || !newOpt.addAllElement(oldOpt.getElements()))){
+					logger.debug("Cannot continue optimisation");
 					if(oldOpt.getElements().size() > 1){
 						toRun.add(oldOpt);
 					}else{
 						toRun.add(oldOpt.getElements().get(0));
 					}
+					if(newOpt == null){
+						logger.debug("Add Individual action");
+						toRun.add(cur);
+					}else{
+						newOpt.addElement(cur);
+					}
 				}else if(oldOpt == null && newOpt != null){
+					logger.debug("Start optimisation");
 					newOpt.addElement(cur);
 				}else if(oldOpt == null && newOpt == null){
+					logger.debug("Add Individual action");
 					toRun.add(cur);
+				}else{
+					newOpt.addElement(cur);
 				}
 				
 				if(newOpt != null && stopOptimiser){
+					logger.debug("End of thread");
 					if(newOpt.getElements().size() > 1){
 						toRun.add(newOpt);
 					}else{

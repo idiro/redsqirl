@@ -648,9 +648,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 						logger.debug("superAction " + className);
 					}
 				} catch (Exception e) {
-					logger.debug("error " + className);
 					logger.error("Error instanciating class : " + className);
-					logger.debug(e);
+					logger.debug(e,e);
 				}
 			}
 
