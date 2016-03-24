@@ -5,10 +5,10 @@ getPropreties = {
 
 function sessionStorage() {
 	if(typeof(Storage) !== "undefined") {
-		console.log("yes");
+		//console.log("yes");
 		localStorage.setItem("email", "igor.souza@idiro.com");
 	} else {
-		console.log("no");
+		//console.log("no");
 	}
 }
 
@@ -75,6 +75,7 @@ function login() {
 				sessionStorageToken(xhr.responseText);
 				$('#myModal').modal('hide');
 				checkMenu();
+				window.location.href = "softwareKeyInstall.html";
 			}
 		},
 		error: function (request, status, error) {
@@ -184,7 +185,7 @@ function signout() {
 			xhr.setRequestHeader('Authorization', getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
-        		console.log(xhr.responseText);
+        		//console.log(xhr.responseText);
 			localStorage.removeItem("token");
 			localStorage.removeItem("email");
 			window.location.href = "index.html";
@@ -310,7 +311,7 @@ function requestKey(version, installationName, mac, email){
 			xhr.setRequestHeader('Authorization', getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
-			console.log(xhr.responseText);
+			//console.log(xhr.responseText);
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
@@ -341,7 +342,7 @@ function requestModuleKey(idk, idm, type, name){
 			xhr.setRequestHeader('Authorization', getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
-			console.log(xhr.responseText);
+			//console.log(xhr.responseText);
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
@@ -358,17 +359,20 @@ function requestModuleKey(idk, idm, type, name){
 
 }
 
-function cleamForm(){
+function cleanForm(){
 
 	$('input').each(function(){
 
-		if($(this).attr("type") == "text" || $(this).attr("type") == "password"){
+		if( ($(this).attr("type") == "text" || $(this).attr("type") == "password") && $(this).attr("class") != "dontClean"){
+			//console.log("Clean " + $(this).val());
 			$(this).removeAttr('style');
 			$(this).attr('style', 'width: 420px;');
 			$(this).val("");
 			if($(this).next("span").hasClass("validForm")){
 				$(this).next("span").remove();
 			}
+		}else{
+			// console.log("dontClean");
 		}
 
 	});
@@ -456,4 +460,85 @@ function requestNewPasswordForm(email){
 		$('#requestNewPassword').modal('hide');
 	});
 
+}
+
+function getMyAccount() {
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"myAccount/getMyAccount",
+		data: JSON.stringify({ email: getsessionEmail() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+			}
+		}
+	}).then(function(data) {
+		
+		$("#editAccountFirstName").val(data.firstName);
+		$("#editAccountLastName").val(data.lastName);
+		$("#editAccountEmail").val(data.email);
+		$("#editAccountCompany").val(data.company);
+
+	});
+
+}
+
+function updateAccount() {
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"myAccount/updateAccount",
+		data: JSON.stringify({ userEmail: getsessionEmail(), firstName: $("#editAccountFirstName").val(), lastName: $("#editAccountLastName").val(), email: $("#editAccountEmail").val(), company: $("#editAccountCompany").val() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+			}
+		}
+		
+	}).then(function(data) {
+		sessionStorageEmail(data.email);
+		alert(data.error);
+	});
+
+}
+
+function changePassword() {
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"myAccount/changePassword",
+		data: JSON.stringify({ userEmail: getsessionEmail(), password: $("#editAccountPassword").val() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+			}
+		}
+	}).then(function(data) {
+		alert(data.error);
+		$('#modalChangePassword').modal('hide');
+	});
+
+}
+
+function DownloadProject(val) {
+	var a = document.createElement("a");
+	a.href = "zip/"+val;
+	document.body.appendChild(a);
+	a.click();
 }

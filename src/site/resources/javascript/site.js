@@ -26,6 +26,6 @@ $(document).ready(function() {
 		//$('html,body').animate({scrollTop:5000},1000);
 	//});
 
-	$(".container").prev().append("<img alt='Red Sqirl' src='images/logo_redsqirl.png' id='icons' width='180'/>");
+	//$(".container").prev().append("<img alt='Red Sqirl' src='images/logo_redsqirl.png' id='icons' width='180'/>");
 
 });

@@ -45,7 +45,7 @@ function doSearch(val, version) {
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"allpackages",
-		data: val 
+		data: val
 	}).then(function(data) {
 
 		var lVersion = listVersion(data, 'versionName');

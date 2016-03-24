@@ -47,7 +47,7 @@ function doSearch(value) {
 
 		jQuery.each(data, function(i) {
 
-			jQuery(".packageList").append("<div class='packageItem' onclick='goToUrl(event, this);'><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ data[i].type + "</div><div class='title'><a class='hiddenLink' href='moduleDetail.html?id="+ data[i].id +"'></a>" + data[i].name + " </div><div class='license'>" + data[i].tags + "</div></div>");
+			jQuery(".packageList").append("<div class='packageItem' onclick='goToUrl(event, this);'><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ data[i].type + "</div><div class='title'><a class='hiddenLink' href='moduleDetail.html?id="+ data[i].id +"'></a>" + data[i].name + " </div><div class='license'>" + data[i].tags + "</div> <div class='shortDescription'>"+ data[i].shortDescription +"</div></div>");
 
 		});
 	});
@@ -82,11 +82,11 @@ function goToUrl(event, component){
 
 <input type="text" placeholder="Search" style="width:420px;" name="filter" id="filterSearch" >
 
-<input type="checkbox" name="type" value="package" id="r1" onclick="reload();" /><label for="r1">Package</label>
-<input type="checkbox" name="type" value="model" id="r2" onclick="reload();" /><label for="r2">Model</label>
+<input type="checkbox" name="type" value="package" id="r1" onclick="reload();" style="margin-bottom: 8px;" /><label for="r1">Package</label>
+<input type="checkbox" name="type" value="model" id="r2" onclick="reload();" style="margin-bottom: 8px;" /><label for="r2">Model</label>
 
 
-<input type="submit" class="contentbutton" value="Search" onclick="event.preventDefault();reload();" >
+<input type="submit" class="contentbutton" value="Search" onclick="event.preventDefault();reload();" style="position:relative; bottom:5px;" >
 
 </div>
 

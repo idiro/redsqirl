@@ -18,7 +18,7 @@
 
 <script>
 
-jQuery(document).ready(function () {
+jQuery(document).ready(function() {
 
 	$('#menudiv').load('menu.html');
 
@@ -37,6 +37,7 @@ jQuery(document).ready(function () {
 		jQuery.each(obj, function(i,v) {
 			jQuery("#selectVersion").append("<option value='"+ v.version +"'>"+ v.version +"</option>");
 		});
+		$("#selectVersion option:last").attr("selected","selected");
 
 		var obj2 = jQuery.parseJSON(data.jsonSoftwareParameters);
 		jQuery.each(obj2, function(i,v) {
@@ -47,7 +48,6 @@ jQuery(document).ready(function () {
 		});
 
 	});
-
 
 	setTimeout(function(){
 		checkMenu();

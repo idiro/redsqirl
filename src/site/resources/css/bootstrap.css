@@ -1650,6 +1650,7 @@ label {
   display: inline-block;
   margin-bottom: 5px;
   font-weight: bold;
+  vertical-align: 3px;
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;
@@ -5783,3 +5784,7 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+
+.modal.fade2.in {
+    top: 16%;
+}

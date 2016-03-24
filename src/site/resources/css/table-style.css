@@ -107,8 +107,7 @@ input {
 	border: 1px solid #ab4341 !important;
 }
 
-
-.order-table{   
+.order-table{
 	border-collapse:collapse;
 	margin-top:20px;
 }
@@ -177,6 +176,7 @@ hr{
 	float:left;
 	left:auto;
 	font-size:20px;
+	height: 107px;
 }
 
 .packageItem:hover{
@@ -193,7 +193,7 @@ hr{
 .packageItem .title{
 	margin-top:0px;
 	margin-left:5px;
-	width:50%;
+	width:65%;
 	float:left;
 	font-size:25px;
 }
@@ -211,10 +211,12 @@ hr{
 .packageItem .license{
 	margin-top:10px;
 	margin-right:10px;
-	width:40%;
+	width:30%;
 	float:right;
 	text-align:right;
 	font-size:12px;
+	position: relative;
+	bottom: -35px;
 }
 
 .packageItem .dependency{
@@ -274,11 +276,10 @@ hr{
 }
 
 .asbutton{
-    background: linear-gradient(to right, #cc1b1a, #991916) !important; 
+    background: linear-gradient(to right, #cc1b1a, #991916) !important;
 	color:white !important;
-	font-weight: bold !important;	
-	font-family: verdana  !important; 
-	
+	font-weight: bold !important;
+	font-family: verdana  !important;
 }
 
 .contentbutton{
@@ -286,7 +287,7 @@ hr{
 	background-image: none !important;
 	border-radius: 7px !important;
 	color: #cc1b1a !important;
-	border: 1px solid #cc1b1a !important;	
+	border: 1px solid #cc1b1a !important;
 	font-family: verdana  !important;
 }
 
@@ -338,7 +339,6 @@ hr{
 	background-image: none !important;
 }
 
-
 .rf-msgs {
 	font-size: 12 px !important;
 	font-weight: bold !important;
@@ -385,5 +385,16 @@ label {
     right: 0;
     z-index: 1030;
     height: 50px !important;
+}
+
+.packageItem .shortDescription{
+	margin-top:10px;
+	margin-left:10px;
+	width:30%;
+	float: left;
+	text-align:left;
+	font-size:12px;
+	position: relative;
+	bottom: -35px;
 }
 
