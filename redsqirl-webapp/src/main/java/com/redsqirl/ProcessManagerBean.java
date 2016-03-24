@@ -86,7 +86,11 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 
 	public void killProcess() throws Exception{
 		String id = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("id");
-		getOozie().kill(id);
+		try{
+			getOozie().kill(id);
+		}catch(Exception e){
+			logger.error(e,e);
+		}
 	}
 	
 	public void suspendProcess() throws Exception{

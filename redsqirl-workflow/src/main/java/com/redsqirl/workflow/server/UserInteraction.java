@@ -264,7 +264,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public void readXml(Node n) throws Exception{
 		try{
 			this.tree = new TreeNonUnique<String>(getId());
-			if(n.getNodeType() == Node.ELEMENT_NODE){
+			if(n != null && n.getNodeType() == Node.ELEMENT_NODE){
 				NodeList nl = n.getChildNodes();
 
 				for(int i = 0; i < nl.getLength();++i){
