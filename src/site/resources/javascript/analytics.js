@@ -79,9 +79,7 @@ function login() {
 			}
 		},
 		error: function (request, status, error) {
-			if (request.status == 401) {
-				alert("Sorry, your session has expired. Please login again to continue");
-			}
+
 		}
 	});
 }
@@ -121,7 +119,7 @@ function download(url, data){
 		url: url,
 		data: data,
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		success: function (response, status, xhr) {
 
@@ -145,6 +143,9 @@ function download(url, data){
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 
@@ -182,7 +183,7 @@ function signout() {
 		url: getPropreties.url+"signout",
 		//data: ,
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
         		//console.log(xhr.responseText);
@@ -279,18 +280,21 @@ function validadeRequestKeyForm(version, installationName, mac, email){
 
 	var empty = true;
 	$('#requestKeyForm input').each(function(){
-		if ($(this).val() === ""){
-			if($(this).next("span").hasClass("validForm")){
+		if($(this).attr("type") == "text"){
+			if ($(this).val() === ""){
+				if($(this).next("span").hasClass("validForm")){
+					$(this).next("span").remove();
+				}
+				$(this).after("<span class='validForm' >&nbsp;&nbsp;This field is required</span>");
+				$(this).attr('style', 'border: 1px solid red;');
+				empty = false;
+			}else{
+				$(this).removeAttr('style');
+				$(this).attr('style', 'width: 420px;');
 				$(this).next("span").remove();
 			}
-			$(this).after("<span class='validForm' >&nbsp;&nbsp;This field is required</span>");
-			$(this).attr('style', 'border: 1px solid red;');
-			empty = false;
-		}else{
-			$(this).removeAttr('style');
-			$(this).attr('style', 'width: 420px;');
-			$(this).next("span").remove();
 		}
+
 	});
 
 	if(empty){
@@ -305,10 +309,10 @@ function requestKey(version, installationName, mac, email){
 		method: "POST",
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
-		url: getPropreties.url+"licensekey",
+		url: getPropreties.url+"licensekey/generateLicenseKey",
 		data: JSON.stringify({ version: version, mac: mac, installationName: installationName, email: email }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
 			//console.log(xhr.responseText);
@@ -316,6 +320,9 @@ function requestKey(version, installationName, mac, email){
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 	}).then(function(data) {
@@ -339,7 +346,7 @@ function requestModuleKey(idk, idm, type, name){
 		url: getPropreties.url+"createModuleKey",
 		data: JSON.stringify({ idk: idk, idm: idm, email: getsessionEmail(), type: type, name: name }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		complete: function(xhr, textStatus) {
 			//console.log(xhr.responseText);
@@ -347,6 +354,9 @@ function requestModuleKey(idk, idm, type, name){
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 	}).then(function(data) {
@@ -453,6 +463,9 @@ function requestNewPasswordForm(email){
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 	}).then(function(data) {
@@ -471,11 +484,14 @@ function getMyAccount() {
 		url: getPropreties.url+"myAccount/getMyAccount",
 		data: JSON.stringify({ email: getsessionEmail() }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 	}).then(function(data) {
@@ -498,11 +514,14 @@ function updateAccount() {
 		url: getPropreties.url+"myAccount/updateAccount",
 		data: JSON.stringify({ userEmail: getsessionEmail(), firstName: $("#editAccountFirstName").val(), lastName: $("#editAccountLastName").val(), email: $("#editAccountEmail").val(), company: $("#editAccountCompany").val() }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 		
@@ -522,11 +541,14 @@ function changePassword() {
 		url: getPropreties.url+"myAccount/changePassword",
 		data: JSON.stringify({ userEmail: getsessionEmail(), password: $("#editAccountPassword").val() }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
 				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
 			}
 		}
 	}).then(function(data) {

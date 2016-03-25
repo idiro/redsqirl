@@ -113,7 +113,18 @@ function installationPopUp(moduleID, moduleVersionID) {
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"moduleDetail",
-		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() })
+		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
+			}
+		}
 	}).then(function(data) {
 
 		jQuery.each(data, function(i,v) {

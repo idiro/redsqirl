@@ -41,7 +41,7 @@ function softwareKey() {
 	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
 	    colModel: [
 		{ name: 'id', index: 'id', width: 13, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='#' onclick=\"downloadModule("+rowObject.idModuleVersion+");\" ><img src='images/download_module.gif' alt='my image' /></a>";
+		        return "<a href='#' onclick='downloadModule("+rowObject.idModuleVersion+");' ><img src='images/download_module.gif' alt='my image' /></a>";
 		    }
 		},
 		{ name: 'date', index: 'date', width: 50, align: 'left' },
@@ -77,7 +77,15 @@ function softwareKey() {
 		$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
 	    },
 	    loadBeforeSend: function(jqXHR) {
-	    	jqXHR.setRequestHeader("Authorization", getsessionToken());
+	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
+	    },
+	    loadError : function(xhr,st,err) {
+	    	if (xhr.status == 401) {
+			alert("Sorry, your session has expired. Please login again to continue");
+			localStorage.removeItem("token");
+			localStorage.removeItem("email");
+			window.location.href = "index.html";
+		}
 	    }
 	});
 	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});

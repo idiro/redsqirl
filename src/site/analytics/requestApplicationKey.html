@@ -29,7 +29,15 @@ jQuery(document).ready(function() {
 		url: getPropreties.url+"requestApplicationKey",
 		data: JSON.stringify({ id: getUrlParameter('id')}),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
+			}
 		}
 	}).then(function(data) {
 

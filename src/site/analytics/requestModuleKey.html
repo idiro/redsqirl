@@ -31,7 +31,15 @@ jQuery(document).ready(function () {
 		url: getPropreties.url+"requestModuleKey",
 		data: JSON.stringify({ idk: getUrlParameter('idk'), idm: getUrlParameter('idm'), email: getsessionEmail() }),
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', getsessionToken());
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
+			}
 		}
 	}).then(function(data) {
 
