@@ -179,10 +179,6 @@ hr{
 	height: 107px;
 }
 
-.packageItem:hover{
-	cursor: pointer;
-}
-
 .packageItem .image{
 	margin-top:3px;
 	margin-left:5px;
@@ -191,16 +187,16 @@ hr{
 }
 
 .packageItem .title{
-	margin-top:0px;
-	margin-left:5px;
-	width:65%;
 	float:left;
 	font-size:25px;
+	margin-left:2px;
+	margin-top: -20px;
+	width:65%;
 }
 
 .packageItem .type{
 	margin-top:0px;
-	margin-right:10px;
+	margin-right:5px;
 	margin-bottom:0px;
 	width:20%;
 	float:right;
@@ -209,14 +205,14 @@ hr{
 }
 
 .packageItem .license{
-	margin-top:10px;
-	margin-right:10px;
-	width:30%;
+	bottom: -5px;
 	float:right;
-	text-align:right;
 	font-size:12px;
+	margin-right:10px;
+	margin-top:10px;
 	position: relative;
-	bottom: -35px;
+	text-align:right;
+	width:30%;
 }
 
 .packageItem .dependency{
@@ -388,13 +384,13 @@ label {
 }
 
 .packageItem .shortDescription{
-	margin-top:10px;
-	margin-left:10px;
-	width:30%;
+	bottom: -15px;
 	float: left;
-	text-align:left;
 	font-size:12px;
+	margin-left:3px;
+	margin-top:10px;
 	position: relative;
-	bottom: -35px;
+	text-align:left;
+	width:60%;
 }
 

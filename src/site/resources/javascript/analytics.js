@@ -564,3 +564,34 @@ function DownloadProject(val) {
 	document.body.appendChild(a);
 	a.click();
 }
+
+function installationPopUp(moduleID, moduleVersionID) {
+
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"moduleDetail",
+		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+				localStorage.removeItem("token");
+				localStorage.removeItem("email");
+				window.location.href = "index.html";
+			}
+		}
+	}).then(function(data) {
+
+		jQuery.each(data, function(i,v) {
+			jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
+		});
+
+		$("#requestModuleKeyPop").on("click", function(){ window.location.href = 'requestModuleKey.html?idk='+jQuery("#selectInstallation").val()+'&idm='+moduleVersionID });
+
+	})
+
+}
