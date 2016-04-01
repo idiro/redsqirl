@@ -401,7 +401,7 @@
                 <span id="tableInteractionRegion_#{interCurIdx}" >
                     <rich:panel style="border:none;" id="tablePanel">
         
-                        <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
+                        <h:panelGrid id="table" columns="5" rendered="#{!empty interCur.table.tableGeneratorMenu}">
                         	<h:outputText value="#{messages.label_generation}" />
 							
 							
@@ -444,11 +444,16 @@
 	                        	reRender="tableInteractionPanelPopUp" oncomplete="#{rich:component('tableInteractionPanel')}.show();" >
 	                        	<a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
 	                        </a4j:commandButton>
+	                        
                             
                         </h:panelGrid>
                         
                         <a4j:commandLink title="#{messages.label_add_new_line}" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
                             <img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+                        </a4j:commandLink>
+                        
+                        <a4j:commandLink title="#{messages.button_replace}" onclick="#{rich:component('replacePanel')}.show();" >
+                            <img src="../image/icons/button-search.gif" class="btConfigureFooter" />
                         </a4j:commandLink>
                         
                         <a4j:commandLink style="float:right;" title="Resize" onclick="toggleTableSize();">
@@ -497,7 +502,7 @@
 			                                        <h:outputText value="#{column}" />
 			                                    </f:facet>
 			        
-			                                    <h:inputText value="#{rowItem.row[ind]}" onchange="reLoadInputTextField();" id="textField#{ind}#{rowNb+1}"
+			                                    <h:inputText value="#{rowItem.row[ind]}" onchange="reLoadInputTextField();" onclick="changeFocusInput(this);" id="textField#{ind}#{rowNb+1}"
 			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
@@ -522,7 +527,7 @@
 													
 			        
 												<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" 
-												    styleClass="tableInteractionTextEditor" onchange="reLoadInputEditor();"
+												    styleClass="tableInteractionTextEditor" onchange="reLoadInputEditor();" onclick="changeFocusInput(this);"
 												    id="editor#{ind}#{rowNb+1}" >
 				                                   	<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');" >
 				                                   	    <h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />

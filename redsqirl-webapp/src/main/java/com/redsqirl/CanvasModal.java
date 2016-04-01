@@ -195,6 +195,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String elementComment;
 	
 	private List<SelectItem> reachablePages = null;
+	
+	private String stringToReplace;
+	private String replaceValue;
 
 	public CanvasModal() throws RemoteException{
 		
@@ -1125,6 +1128,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setCanvasModalInteractionHeaderEditor(
 			CanvasModalInteraction canvasModalInteractionHeaderEditor) {
 		this.canvasModalInteractionHeaderEditor = canvasModalInteractionHeaderEditor;
+	}
+
+	public String getStringToReplace() {
+		return stringToReplace;
+	}
+
+	public void setStringToReplace(String stringToReplace) {
+		this.stringToReplace = stringToReplace;
+	}
+
+	public String getReplaceValue() {
+		return replaceValue;
+	}
+
+	public void setReplaceValue(String replaceValue) {
+		this.replaceValue = replaceValue;
 	}
 
 }
