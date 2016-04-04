@@ -567,7 +567,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public List<SelectHeaderType> getTabSelectedActions(){
-		if(getSelectedTab() != null){
+		if(getSelectedTab() != null && getSelectedTab() < tableGrid.getRows().size()){
 			SelectableRowFooter s = (SelectableRowFooter) tableGrid.getRows().get(getSelectedTab());
 			return s.getSelectedActions();
 		}

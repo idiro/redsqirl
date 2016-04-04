@@ -112,7 +112,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	private List<SelectItem> maxNumberRows;
 	private List<String> maxNumberRowsString;
 
-	public String showGridDataOutput = "Y";
+	public String showGridDataOutput = "N";
 	
 	/**
 	 * Constructor. The constructor will automatically load the first name as
