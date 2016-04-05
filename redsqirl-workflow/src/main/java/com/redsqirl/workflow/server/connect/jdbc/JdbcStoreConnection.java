@@ -59,8 +59,8 @@ public class JdbcStoreConnection extends JdbcConnection{
 				}
 			}
 		}
-		if(tables != null){
-			logger.info("tables on "+connectionDetails.getDburl()+": "+tables.toString());
+		if(tables != null && logger.isDebugEnabled()){
+			logger.debug("tables on "+connectionDetails.getDburl()+": "+tables.toString());
 		}
 		return tables;
 	}
@@ -68,17 +68,21 @@ public class JdbcStoreConnection extends JdbcConnection{
 	protected final List<String> execListTables() throws SQLException, RemoteException {
 		
 		List<String> results = new ArrayList<String>();
-		String query = getBs().showAllTables();
-		ResultSet rs = null;
-		if(query ==  null || query.isEmpty()){
-			rs = connection.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
-		}else{
-			rs = executeQuery(query);
+		try{
+			String query = getBs().showAllTables();
+			ResultSet rs = null;
+			if(query ==  null || query.isEmpty()){
+				rs = connection.getMetaData().getTables(null, null, null, new String[] {"TABLE"});
+			}else{
+				rs = executeQuery(query);
+			}
+			while (rs.next()) {
+				results.add(rs.getString(1).trim().toUpperCase());
+			}
+			rs.close();
+		}catch(Exception e){
+			logger.error(e,e);
 		}
-		while (rs.next()) {
-			results.add(rs.getString(1).trim().toUpperCase());
-		}
-		rs.close();
 		
 		return results;
 	}
@@ -158,7 +162,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 		if("hive2".equals(ans)){
 			ans = "hive";
 		}
-		logger.info(ans);
+		logger.debug(ans);
 		return ans;
 	}
 	

@@ -417,7 +417,6 @@ public abstract class AbstractDictionary {
 					try{
 						Node otherEl = ((Element) functionCur)
 								.getElementsByTagName("other"+otherIdx).item(0);
-						logger.debug("read "+otherIdx);
 						if(otherEl != null && otherEl.getChildNodes().getLength() > 0){
 							other = otherEl.getChildNodes().item(0).getNodeValue();
 						}else if(otherEl != null){

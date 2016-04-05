@@ -79,7 +79,7 @@ public class JdbcStore extends Storage {
 	property_oracle_driver = "core.jdbc.jdbc_oracle_driver",
 	/** MySql Driver Path property name */
 	property_mysql_driver = "core.jdbc.jdbc_mysql_driver",
-	property_other_drivers = "core.jdbc.other_drivers",
+	property_other_drivers = "core.jdbc.other_drivers.",
 	property_class_name = ".class_name",
 	property_path_driver = ".path_driver";
 	/** jdbcstore IsInit */
@@ -88,12 +88,16 @@ public class JdbcStore extends Storage {
 	// Refresh every 5 seconds
 	/** Refresh count */
 	protected static final long refreshTimeOut = 10000;
+
+	/** Test connection not timeout every X milliseconds */
+	protected static final long checkConnectionTimeOut = 1000*60*20;
 	
 	/** Tables List */
 	static Set<String> connectionList = new LinkedHashSet<String>(); 
 	static Map<String,Object[]> cachDesc = new LinkedHashMap<String,Object[]>();
 	protected static Map<String,JdbcStoreConnection> connections = new LinkedHashMap<String, JdbcStoreConnection>();
 	protected static Map<String,Long> connectionFailure = new LinkedHashMap<String,Long>();
+	protected static Map<String,Long> lastGetConnection = new LinkedHashMap<String,Long>();
 	/***/
 	protected static long updateConnections = 0;
 
@@ -161,11 +165,27 @@ public class JdbcStore extends Storage {
 			if(className != null && driverpath != null){
 				ans = new JdbcStoreConnection(new URL("jar:file:"+driverpath+"!/"),className,details, bs);
 				new GenericConfFile(ans.getConnType(), ans.getConnection()).writeConfFiles();
+			}else{
+				logger.debug(property_other_drivers+techName+property_class_name+": "+className);
+				logger.debug(property_other_drivers+techName+property_path_driver+": "+driverpath);
+				logger.error("Connection not set up correctly: class or driver path null");
 			}
 			
 		}
 		if(defaultConnection){
 			ans = new JdbcStoreConnection(details, bs);
+		}
+		return ans;
+	}
+	
+	private static JdbcStoreConnection createConnectionAndUpdateMap(String connectionName) throws Exception{
+		JdbcDetails details = new JdbcPropertiesDetails(connectionName);
+		JdbcStoreConnection ans = initConnection(details);
+		if(ans != null){
+			connections.put(connectionName, ans);
+			connectionFailure.remove(connectionName);
+		}else{
+			connectionFailure.put(connectionName, System.currentTimeMillis());
 		}
 		return ans;
 	}
@@ -176,17 +196,26 @@ public class JdbcStore extends Storage {
 			if(ans == null && listConnections().contains(connectionName)){
 				if(!connectionFailure.containsKey(connectionName) || 
 						refreshTimeOut < System.currentTimeMillis() - connectionFailure.get(connectionName)){
-
-					JdbcDetails details = new JdbcPropertiesDetails(connectionName);
-					ans = initConnection(details);
-					if(ans != null){
-						connections.put(connectionName, ans);
-						connectionFailure.remove(connectionName);
-					}else{
-						connectionFailure.put(connectionName, System.currentTimeMillis());
+					ans = createConnectionAndUpdateMap(connectionName);
+				}
+			}else if(listConnections().contains(connectionName) &&
+					lastGetConnection.get(connectionName) != null &&
+							checkConnectionTimeOut < System.currentTimeMillis() - lastGetConnection.get(connectionName)){
+				boolean validConnection = true;
+				try{
+					validConnection = ans.getConnection().isValid(10);
+				}catch(Exception e){
+					validConnection = false;
+				}
+				if(!validConnection){
+					try{
+						ans.closeConnection();
+					}catch(Exception e){
 					}
+					ans = createConnectionAndUpdateMap(connectionName);
 				}
 			}
+			lastGetConnection.put(connectionName, System.currentTimeMillis());
 		}catch (Exception e){
 			logger.error(e,e);
 		}
@@ -219,7 +248,9 @@ public class JdbcStore extends Storage {
 				
 			updateConnections = System.currentTimeMillis();
 		}
-		logger.info(connectionList);
+		if(logger.isDebugEnabled()){
+			logger.debug(connectionList);
+		}
 		return connectionList;
 	}
 
@@ -503,7 +534,7 @@ public class JdbcStore extends Storage {
 	 */
 	public boolean exists(String path) {
 
-		logger.info("table : " + path);
+		logger.debug("table : " + path);
 		boolean ok = false;
 		if (path == null ||path.isEmpty())
 			return ok;

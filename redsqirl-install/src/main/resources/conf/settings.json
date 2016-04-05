@@ -149,30 +149,7 @@
 			"default": "password",
 			"type": "STRING"
 		    }
-		    ],
-			"tabs": [
-			{
-			    "template_name": "other_drivers",
-			    "settings": [
-
-			    {
-				"property": "class_name",
-				"scope": "any",
-				"optional": "false",
-				"default": "org.apache.mytech.jdbc.MyDriver",
-				"type": "STRING"
-			    },
-			    {
-				"property": "path_driver",
-				"scope": "any",
-				"optional": "true",
-				"default": "/opt/jdbcdriver/mydriver.jar",
-				"type": "STRING"
-			    }
-			    ]
-			}
 		    ]
-
 		},
 		{
 		    "template_name": "host",

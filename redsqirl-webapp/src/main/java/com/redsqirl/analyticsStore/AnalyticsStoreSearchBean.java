@@ -91,7 +91,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		try{
 			setAllPackageList(new ArrayList<RedSqirlModule>());
 		}catch (Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		try {
@@ -99,7 +99,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			setDefaultInstallation("Pig Package <br/>");
 
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		if(selectedTypes == null){
@@ -115,9 +115,9 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 	}
@@ -174,7 +174,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					.post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
 
-			System.out.println(ansServer);
+			logger.debug(ansServer);
 
 			Set<String> packagesAdded = new HashSet<String>();
 			try{
@@ -196,11 +196,11 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					}
 				}
 			} catch (JSONException e){
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		setAllPackageList(result);
@@ -252,7 +252,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		try {
 			analyticsBean.updateUninstalMenu();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		setShowDefaultInstallation("N");
@@ -306,11 +306,11 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
 				error = pckObj.getString("error");
 			} catch (JSONException e){
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		if(error != null && error.isEmpty()){

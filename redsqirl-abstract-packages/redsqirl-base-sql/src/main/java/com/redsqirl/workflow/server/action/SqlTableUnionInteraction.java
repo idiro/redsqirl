@@ -109,7 +109,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 			FieldList inFields = hu.getInFields();
 
 			// Check if we have the right number of list
-			if (mapRelationRow.keySet().size() != hu.getAliases().size()) {
+			if (mapRelationRow.keySet().size() != getAliases().size()) {
 				msg = SqlLanguageManager
 						.getText("sql.union_fields_interaction.checkrownb");
 			}
@@ -274,7 +274,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 						curMap.put(table_table_title, alias);
 						curMap.put(table_op_title, alias + "." + field);
-						curMap.put(table_feat_title, field);
+						curMap.put(table_feat_title, field.toUpperCase());
 						curMap.put(table_type_title,fieldType.toString());
 
 						copyRows.add(curMap);

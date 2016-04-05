@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server.oozie;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -13,6 +14,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcPropertiesDetails;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
+import com.redsqirl.workflow.server.connect.jdbc.JdbcStoreConnection;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.oozie.ShellAction;
 
@@ -51,8 +53,14 @@ public class JdbcShellAction  extends ShellAction {
 		content += "URL=\""+url+"\"\n";
 		if(url.startsWith("jdbc:oracle:")){
 			content += "CLASS=\"oracle.jdbc.OracleDriver\"\n";
-		}else{
+		}else if(url.startsWith("jdbc:mysql:")){
 			content += "CLASS=\"com.mysql.jdbc.Driver\"\n";
+		}else if(url.startsWith("jdbc:hive2:")){
+			content += "CLASS=\"org.apache.hive.jdbc.HiveDriver\"\n";
+		}else{
+			String techName = JdbcStoreConnection.getConnType(url);
+			String className = WorkflowPrefManager.getProperty(JdbcStore.property_other_drivers+techName+JdbcStore.property_class_name);
+			content += "CLASS=\""+className+"\"\n";
 		}
 		content += "FILE=\""+sqlFile.getName()+"\"\n";
 		content += "MAIN_CLASS=\"com.idiro.ScriptRunnerMain\"\n";
@@ -93,7 +101,8 @@ public class JdbcShellAction  extends ShellAction {
 				fs.mkdirs(scriptRunnerPath);
 			}
 			//Copy Run Jar
-			String scriptRunnerJarStr = "script-runner-1.0.jar";
+			String scriptRunnerVersion = "1.1";
+			String scriptRunnerJarStr = "script-runner-"+scriptRunnerVersion+".jar";
 			Path scriptRunnerJar = new Path(scriptRunnerPath,scriptRunnerJarStr);
 			if(!fs.exists(scriptRunnerJar)){
 				String classPath = System.getProperty("java.class.path");
@@ -109,18 +118,40 @@ public class JdbcShellAction  extends ShellAction {
 				}
 				
 			}
-			//Copy Oracle library
-			File oracleDriver = new File(WorkflowPrefManager.getProperty(JdbcStore.property_oracle_driver));
-			Path oracleDriverJar = new Path(scriptRunnerPath,oracleDriver.getName());
-			if(!fs.exists(oracleDriverJar)){
-				hInt.copyFromLocal(oracleDriver.getAbsolutePath(),oracleDriverJar.toString());
+			{
+				//Copy Oracle library
+				File oracleDriver = new File(WorkflowPrefManager.getProperty(JdbcStore.property_oracle_driver));
+				Path oracleDriverJar = new Path(scriptRunnerPath,oracleDriver.getName());
+				if(!fs.exists(oracleDriverJar)){
+					hInt.copyFromLocal(oracleDriver.getAbsolutePath(),oracleDriverJar.toString());
+				}
 			}
-			//Copy MySql library
-			File mysqlDriver = new File(WorkflowPrefManager.getProperty(JdbcStore.property_mysql_driver));
-			Path mysqlDriverJar = new Path(scriptRunnerPath,mysqlDriver.getName());
-			if(!fs.exists(mysqlDriverJar)){
-				hInt.copyFromLocal(mysqlDriver.getAbsolutePath(),mysqlDriverJar.toString());
-			}			
+			{
+				//Copy MySql library
+				File mysqlDriver = new File(WorkflowPrefManager.getProperty(JdbcStore.property_mysql_driver));
+				Path mysqlDriverJar = new Path(scriptRunnerPath,mysqlDriver.getName());
+				if(!fs.exists(mysqlDriverJar)){
+					hInt.copyFromLocal(mysqlDriver.getAbsolutePath(),mysqlDriverJar.toString());
+				}
+			}
+			
+			Iterator<String> it = JdbcStore.listConnections().iterator();
+			while(it.hasNext()){
+				String connectionName = it.next();
+				JdbcDetails details = new JdbcPropertiesDetails(connectionName);
+				String url = details.getDburl();
+				if( !url.startsWith("jdbc:oracle:")&&
+						!url.startsWith("jdbc:mysql:") &&
+						!url.startsWith("jdbc:hive2:")){
+					String techName = JdbcStoreConnection.getConnType(url);
+					File driverFile = new File(WorkflowPrefManager.getProperty(JdbcStore.property_other_drivers+techName+JdbcStore.property_path_driver));
+					Path driverJar = new Path(scriptRunnerPath,driverFile.getName());
+					if(!fs.exists(driverJar)){
+						hInt.copyFromLocal(driverFile.getAbsolutePath(),driverJar.toString());
+					}
+				}
+			}
+			
 		} catch (Exception e) {
 			logger.error(e);
 		}

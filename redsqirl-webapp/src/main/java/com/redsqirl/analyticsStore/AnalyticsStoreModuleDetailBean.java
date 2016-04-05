@@ -143,7 +143,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					}
 				}
 			} catch (JSONException e){
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 			if (moduleVersion == null && versionList != null && !versionList.isEmpty()){
@@ -189,7 +189,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				}
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
 
-			System.out.println(ansServer);
+			logger.debug(ansServer);
 
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
@@ -256,11 +256,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
 				error = pckObj.getString("error");
 			} catch (JSONException e){
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 			error = "msg_error_oops";
 		}
 
@@ -269,21 +269,21 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			String tmp = WorkflowPrefManager.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;
 
-			System.out.println("packagePath  " + packagePath);
+			logger.debug("packagePath  " + packagePath);
 
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
 
-				System.out.println(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
+				logger.debug(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
 
 				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 				FileOutputStream fos = new FileOutputStream(packagePath);
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 				fos.close();
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				logger.warn(e,e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.warn(e,e);
 			} 
 
 
@@ -300,7 +300,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					printWriter.print(licenseKeyProperties);
 					printWriter.close ();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.warn(e,e);
 				} finally {
 					try {
 						writer.close();
@@ -348,11 +348,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 
 			/*String extractedPackagePath = packagePath.substring(0, packagePath.length()-4);
-			System.out.println("extractedPackagePath  " + extractedPackagePath);
+			logger.debug("extractedPackagePath  " + extractedPackagePath);
 			zipFile.extractAll(extractedPackagePath);
 
 			File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
-			System.out.println("folder.getPath  " + folder.getPath());
+			logger.debug("folder.getPath  " + folder.getPath());
 
 			ModelManager saManager = new ModelManager();
 			DataFlowInterface dfi = getworkFlowInterface();
@@ -366,7 +366,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				nextSuperActions = new LinkedList<String>();
 				for (String file : curSuperActions){
 
-					System.out.println(file);
+					logger.debug(file);
 
 					if (file.startsWith("sa_") || file.endsWith(".srs")){
 
@@ -490,11 +490,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
 				error = pckObj.getString("error");
 			} catch (JSONException e){
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		if(error == null || error.isEmpty()){
@@ -502,7 +502,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			String tmp = WorkflowPrefManager.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;
 
-			System.out.println("packagePath " + packagePath);
+			logger.debug("packagePath " + packagePath);
 
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
@@ -511,9 +511,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 				fos.close();
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				logger.warn(e,e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.warn(e,e);
 			}
 
 			BufferedWriter writer = null;
@@ -527,7 +527,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				printWriter.print(licenseKeyProperties);
 				printWriter.close ();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.warn(e,e);
 			} finally {
 				try {
 					writer.close();
@@ -537,7 +537,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 			PackageManager pckMng = new PackageManager();
 			File file = new File(packagePath);
-			System.out.println("file packagePath " + file.getAbsolutePath() + " - " + file.exists()+ "'");
+			logger.debug("file packagePath " + file.getAbsolutePath() + " - " + file.exists()+ "'");
 
 			error = pckMng.addPackage(user, new String[]{packagePath});
 
@@ -610,7 +610,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			String ansServer = response.getEntity(String.class);
 
 		} catch (JSONException e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 	}

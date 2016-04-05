@@ -47,6 +47,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -115,6 +116,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				try{
 					error = createSubXml(oswa.getWfId(),oswa.getSubWf(),oswa.getSubWf().subsetToRun(oswa.getSubWf().getComponentIds()),directory);
 				}catch(Exception e){
+					logger.error(e,e);
 					error = e.getMessage();
 				}
 				if(error == null){
@@ -125,7 +127,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			}
 		}
 		if(error != null && df != null){
-			error = "."+df.getName()+error;
+			error = ".'"+df.getName()+"'"+error;
 		}
 		return error;
 	}
@@ -198,7 +200,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				firstElements.addAll(outEdges.keySet());
 				firstElements.removeAll(outNodes);
 				outEdges.put(startNode, firstElements);
-
+				logger.debug("Runnable DAG: "+outEdges.toString());
 				OozieDag od = new OozieDag();
 				od.initWithOutGraph(outEdges);
 				if(!od.transform()){
@@ -405,8 +407,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 		logger.debug("createDelete OK");
 		
-		// Do action
+		//Get the output Element for the given Dataflow Name
+		Map<String,RunnableElement> outputName = new HashMap<String,RunnableElement>(list.size());
 		Iterator<RunnableElement> it = list.iterator();
+		while (it.hasNext()) {
+			RunnableElement cur = it.next();
+			try{
+				outputName.put(((DFEOptimiser) cur).getFirst().getComponentId(), cur);
+			}catch(Exception e){
+				outputName.put(cur.getComponentId(),cur);
+			}
+		}
+		
+		// Do action
+		it = list.iterator();
 		while (it.hasNext()) {
 			RunnableElement cur = it.next();
 			logger.debug("Create action " + cur.getComponentId());
@@ -433,13 +447,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Iterator<DataFlowElement> itIn = cur.getAllInputComponent().iterator();
 				while (itIn.hasNext()) {
 					DataFlowElement in = itIn.next();
+					DFEOptimiser inOpt = in.getDFEOptimiser();
+					String elementName = null;
 					if (deleteList.contains(in.getComponentId())) {
-						if(elements.containsKey("delete_" + in.getComponentId())){
-							out.add("delete_" + in.getComponentId());
+						elementName = "delete_" + in.getComponentId();
+					}else if(inOpt != null && deleteList.contains(inOpt.getComponentId())){
+						elementName = "delete_" + inOpt.getComponentId();
+					}
+					if(elementName != null){
+						if(elements.containsKey(elementName)){
+							out.add(elementName);
 						}else{
 							int index = 0;
-							while(elements.containsKey("delete_" + in.getComponentId()+"_"+(++index))){
-								out.add("delete_" + in.getComponentId()+"_"+index);
+							while(elements.containsKey(elementName+"_"+(++index))){
+								out.add(elementName+"_"+index);
 							}
 						}
 					}
@@ -447,8 +468,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent().iterator();
 				while (itOut.hasNext()) {
 					DataFlowElement outEl = itOut.next();
-					if (list.contains(outEl)) {
-						out.add(getNameAction(outEl));
+					RunnableElement outRL = outputName.get(outEl.getComponentId());
+					if(outRL != null){
+						out.add(getNameAction(outRL));
 					}
 				}
 				if (out.isEmpty()) {

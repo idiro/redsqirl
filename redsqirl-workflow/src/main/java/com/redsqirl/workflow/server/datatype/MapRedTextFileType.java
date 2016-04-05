@@ -468,7 +468,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 				}
 			} catch (IOException e) {
 				String error = "Unexpected error: " + e.getMessage();
-				logger.error(error);
+				logger.error(error,e);
 				ans = null;
 			}
 		}

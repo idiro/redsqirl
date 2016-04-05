@@ -995,10 +995,9 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 			copyInHDFS(channel, rfile, lfile, remoteDS);
 			channel.disconnect();
 		}catch (Exception e) {
-			logger.debug("error", e);
-
 			error = LanguageManagerWF.getText("unexpectedexception",
 					new Object[] { e.getMessage() });
+			logger.debug(error, e);
 		}
 		return error;
 	}

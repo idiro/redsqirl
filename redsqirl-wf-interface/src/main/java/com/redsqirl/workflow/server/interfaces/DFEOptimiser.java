@@ -26,4 +26,7 @@ public interface DFEOptimiser extends RunnableElement {
 	
 	public List<DataFlowElement> getElements() throws RemoteException;
 	
+	public DataFlowElement getFirst() throws RemoteException;
+	
+	public DataFlowElement getLast() throws RemoteException;
 }

@@ -1132,16 +1132,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public String[] getRunningAndUpdate() throws RemoteException {
-
-		logger.info("isRunning");
-
 		DataFlow df = getDf();
 		String name = "";
 		boolean running = false;
 		if (df != null) {
 			name = df.getName();
 			running = df.isrunning();
-			logger.info(df.getName()+" running: "+running);
+			logger.debug(df.getName()+" running: "+running);
 			if(running){
 				try {
 					setTotalProgressBar(getOozie().getNbElement(getDf()));
@@ -1152,6 +1149,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					logger.error(e,e);
 				}
 			}
+		}else{
+			logger.debug("isRunning");
 		}
 		return new String[]{Boolean.toString(running),name};
 	}

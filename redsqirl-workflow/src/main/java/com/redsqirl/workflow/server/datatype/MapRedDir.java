@@ -102,7 +102,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
-		} else{
+		} else if(isPathExist()){
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();

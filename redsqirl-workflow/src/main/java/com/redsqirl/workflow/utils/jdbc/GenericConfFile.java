@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.workflow.server.action.dictionary.JdbcDictionary;
+import com.redsqirl.workflow.server.action.dictionary.OracleDictionary;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcQueryManager;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 
@@ -64,7 +65,7 @@ public class GenericConfFile  extends DbConfFile {
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":\n";
 		ans +=JdbcQueryManager.Query.SELECT.toString()+":SELECT * FROM {0}\n";
 		ans +=JdbcQueryManager.Query.TRUNCATE.toString()+":DELETE FROM {0}\n";
-		return null;
+		return ans;
 	}
 
 	@Override
@@ -115,13 +116,15 @@ public class GenericConfFile  extends DbConfFile {
 				}
 			}
 			rs.close();
+
+			Iterator<FieldType> it = types.keySet().iterator();
+			while(it.hasNext()){
+				FieldType cur = it.next();
+				ans += cur+":"+types.get(cur)+"\n";
+			}
 		}catch(Exception e){
 			logger.error(e,e);
-		}
-		Iterator<FieldType> it = types.keySet().iterator();
-		while(it.hasNext()){
-			FieldType cur = it.next();
-			ans += cur+":"+types.get(cur)+"\n";
+			ans = new HiveConfFile().getDbTypeFileContent();
 		}
 		
 		return ans;
@@ -200,6 +203,7 @@ public class GenericConfFile  extends DbConfFile {
 			}
 		}catch(Exception e){
 			logger.error(e,e);
+			ans = new HiveConfFile().getRsTypeFileContent();
 		}
 		
 		return ans;
@@ -278,6 +282,16 @@ public class GenericConfFile  extends DbConfFile {
 				String fct = fcts[i]+"()";
 				String[] details = new String[]{fct,"ANY...","TIMESTAMP","@function:"+fct+help};
 				dictionaryFunctionMap.get(JdbcDictionary.dateMethods).add(details);
+			}
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		
+		try{
+			String[][] fcts = OracleDictionary.getInstance().getFunctionsMap().get(OracleDictionary.analyticMethods);
+			dictionaryFunctionMap.put(JdbcDictionary.analyticMethods, new ArrayList<String[]>(fcts.length));
+			for(int i=0; i< fcts.length;++i){
+				dictionaryFunctionMap.get(JdbcDictionary.analyticMethods).add(fcts[i]);
 			}
 		}catch(Exception e){
 			logger.error(e,e);

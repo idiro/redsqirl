@@ -39,7 +39,7 @@ DFEOptimiser {
 	}
 
 	@Override
-	public boolean addElement(DataFlowElement dfe) {
+	public boolean addElement(DataFlowElement dfe) throws RemoteException{
 		boolean ans = isSupported(dfe);
 		if(ans){
 			elementList.add(dfe);
@@ -47,7 +47,7 @@ DFEOptimiser {
 		return ans;
 	}
 	
-	public boolean addAllElement(List<DataFlowElement> list){
+	public boolean addAllElement(List<DataFlowElement> list) throws RemoteException{
 		boolean ans = true;
 		for(DataFlowElement dfe : list){
 			ans &= isSupported(dfe);
@@ -58,7 +58,7 @@ DFEOptimiser {
 		return ans;
 	}
 	
-	public abstract boolean isSupported(DataFlowElement dfe);
+	public abstract boolean isSupported(DataFlowElement dfe) throws RemoteException;
 
 	@Override
 	public void writeProcess(Document oozieXmlDoc, Element action, File localDirectoryToWrite, String pathFromOozieDir,
@@ -105,11 +105,11 @@ DFEOptimiser {
 			throws RemoteException;
 	
 
-	protected DataFlowElement getFirst(){
+	public DataFlowElement getFirst(){
 		return elementList == null || elementList.size() == 0? null: elementList.get(0);
 	}
 	
-	protected DataFlowElement getLast(){
+	public DataFlowElement getLast(){
 		return elementList == null || elementList.size() == 0? null: elementList.get(elementList.size()-1);
 	}
 

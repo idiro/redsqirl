@@ -310,6 +310,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				// waLogger.info("page title : "+page.getTitle());
 				error = page.checkPage();
 			} catch (Exception e) {
+				waLogger.error(e,e);
 				error = e.getMessage();
 			}
 		}
@@ -611,7 +612,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * Get all Aliases
+	 * Get all input Aliases
 	 * 
 	 * @return Get aliases from the
 	 * @throws RemoteException
@@ -635,6 +636,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		}
 		return ans;
+	}
+	
+	/*
+	 * Get the output alias of the element
+	 */
+	public String getOutputAlias(String name) throws RemoteException {
+		if(name.isEmpty()){
+			return getComponentId();
+		}
+		return getComponentId() + "_" + name;
 	}
 
 	/**

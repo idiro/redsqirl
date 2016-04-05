@@ -236,12 +236,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	
 	protected String check(List<DataFlowElement> dfEl) throws RemoteException {
 		String error = "";
-		// Need to check that we have a DAG
-		try {
-			topoligicalSort();
-		} catch (Exception e) {
-			return e.getMessage();
-		}
 		
 		//Need to add the sources
 		List<DataFlowElement> elToCheck = new LinkedList<DataFlowElement>();
@@ -341,6 +335,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		List<DataFlowElement> elementToRun = null;
 		List<RunnableElement> toRun = null;
+
+		// Need to check that we have a DAG
+		try {
+			topoligicalSort();
+		} catch (Exception e) {
+			logger.error(e,e);
+			throw new Exception(e);
+		}
 		
 		elementToRun = subsetElementToRun(dataFlowElements);
 		
@@ -376,9 +378,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					prevs.addAll(cur.getAllInputComponent());
 					prevs.retainAll(elementToRun);
 					if(prevs.size() == 1){
-						oldOpt = prevs.get(0).getDFEOptimiser();
+						DataFlowElement prev = prevs.get(0);
+						if(endOfThread.containsKey(prev.getComponentId()) && !endOfThread.get(prev.getComponentId())){
+							oldOpt = prevs.get(0).getDFEOptimiser();
+						}
 					}
 				}
+				
 				boolean stopOptimiser = cur.getDFEOutput().size() > 1 ||
 						cur.getAllOutputComponent().size() == 0;
 				if(!stopOptimiser){
@@ -386,6 +392,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					succs.addAll(cur.getAllOutputComponent());
 					succs.retainAll(elementToRun);
 					stopOptimiser = succs.size() != 1;
+					if(!stopOptimiser){
+						List<DataFlowElement> descOfSuccs = new LinkedList<DataFlowElement>();
+						descOfSuccs.addAll(succs.get(0).getAllInputComponent());
+						descOfSuccs.retainAll(elementToRun);
+						stopOptimiser = descOfSuccs.size() != 1;
+					}
 				}
 				
 				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
@@ -460,7 +472,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		// Run only what have not been calculated in the workflow.
 		List<DataFlowElement> toRun = new LinkedList<DataFlowElement>();
-		Iterator<DataFlowElement> itE = elsIn.descendingIterator();
+		Iterator<DataFlowElement> itE = elsIn.iterator();
 		while (itE.hasNext()) {
 			DataFlowElement cur = itE.next();
 			// Never run an element that have no action
@@ -542,8 +554,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			}
 		}
-
-		return toRun;
+		
+		List<DataFlowElement> toRunSort = null;
+		if(toRun != null){
+			toRunSort = new LinkedList<DataFlowElement>();
+			Iterator<DataFlowElement> it = element.iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				if(toRun.contains(cur)){
+					toRunSort.add(cur);
+				}
+			}
+		}
+		
+		return toRunSort;
 
 	}
 
@@ -557,6 +581,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		try {
 			toRun = subsetToRun(dataFlowElement);
 		} catch (Exception e) {
+			logger.error(e,e);
 			error = e.getMessage();
 		}
 		

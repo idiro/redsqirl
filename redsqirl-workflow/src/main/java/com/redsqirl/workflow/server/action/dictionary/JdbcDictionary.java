@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
@@ -68,7 +69,9 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	protected String[][] merge(String[][] defaultFcts, String[][] oracleFcts,String[][] hiveFcts, String[][] mysqlFcts, List<String[]> fctL){
 		List<String[]> tmpAns = null;
 		tmpAns = new LinkedList<String[]>();
-		tmpAns.addAll(Arrays.asList(defaultFcts));
+		if(defaultFcts != null){
+			tmpAns.addAll(Arrays.asList(defaultFcts));
+		}
 		
 		Iterator<String[]> it = fctL.iterator();
 		while(it.hasNext()){
@@ -599,18 +602,38 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		String[] fct = null;
 		String[][] analyticFct = functionsMap.get(analyticMethods);
 		boolean found = false;
+		
+		String firstArgs = getFirstBracketContent(expr).trim();
+		logger.debug(firstArgs);
+		int nbArgGiven = 0;
+		if(firstArgs != null && !firstArgs.isEmpty()){
+			nbArgGiven = getArguments(firstArgs,",").length;
+		}
 		for(; i < analyticFct.length && !found; ++i){
 			String cur = removeBracketContent(analyticFct[i][0]);
 			logger.debug("Compare "+cleanUp +" with "+cur);
 			found = cleanUp.startsWith(cur);
 			if(found){
-				fct = new String[3];
-				fct[0] = new String(analyticFct[i][0]);
-				fct[1] = analyticFct[i][1];
-				fct[2] = analyticFct[i][2];
-				fct[0] = removeBracketContent(fct[0].substring(0,fct[0].indexOf("OVER")));
+				int nbArg = 0;
+				if(analyticFct[i][1] != null && !analyticFct[i][1].isEmpty()){
+					nbArg = StringUtils.countMatches(analyticFct[i][1],",")+1;
+				}
+				if(nbArgGiven != nbArg){
+					logger.debug("Argument number unexpected: "+nbArgGiven+" "+nbArg);
+					found = false;
+				}else{
+					fct = new String[3];
+					fct[0] = new String(analyticFct[i][0]);
+					fct[1] = analyticFct[i][1];
+					fct[2] = analyticFct[i][2];
+					fct[0] = removeBracketContent(fct[0].substring(0,fct[0].indexOf("OVER")));
+				}
 			}
 		}
+		if(!found){
+			return null;
+		}
+		
 		String arg = getFirstBracketContent(expr);
 		if(fct[2].isEmpty() && !arg.isEmpty()){
 			throw new Exception("Function "+fct[0]+" expects arguments");
