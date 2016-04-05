@@ -45,7 +45,7 @@ function doSearch(val, version) {
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"allpackages",
-		data: val 
+		data: val
 	}).then(function(data) {
 
 		var lVersion = listVersion(data, 'versionName');
@@ -70,7 +70,7 @@ function doSearch(val, version) {
 
 		if(version){
 			jQuery.each(lVersion, function(i) {
-				jQuery("#version").append("</br><a onclick='reload("+ lIdVersion[i] +");' href='#'>"+ lVersion[i] +"</a>");
+				jQuery("#version").append("<a onclick='reload("+ lIdVersion[i] +");' href='#'>"+ lVersion[i] +"</a></br>");
 			});
 		}
 
@@ -106,28 +106,6 @@ function reload(val) {
 	doSearch(JSON.stringify({id: getUrlParameter('id'), version: val}) , false);
 }
 
-function installationPopUp(moduleID, moduleVersionID) {
-
-	jQuery.ajax({
-		method: "POST",
-		dataType: "json",
-		contentType: "application/json; charset=utf-8",
-		url: getPropreties.url+"moduleDetail",
-		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() })
-	}).then(function(data) {
-
-		jQuery.each(data, function(i,v) {
-			jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
-		});
-
-		$("#requestModuleKeyPop").on("click", function(){ window.location.href = 'requestModuleKey.html?idk='+jQuery("#selectInstallation").val()+'&idm='+moduleVersionID });
-
-
-
-	})
-
-}
-
 </script>
 
 <div id="menudiv"></div>
@@ -149,9 +127,11 @@ function installationPopUp(moduleID, moduleVersionID) {
 <p id="desc"></p>
 
 
-<div class="rf-p-hdr ">Dependency<div id="dependency"></div></div>
+<div class="rf-p-hdr ">Dependency</div>
+<div id="dependency"></div>
 &nbsp;
-<div class="rf-p-hdr ">Versions<div id="version"></div></div>
+<div class="rf-p-hdr ">Versions</div>
+<div id="version"></div>
 
 
 
@@ -184,37 +164,7 @@ function installationPopUp(moduleID, moduleVersionID) {
 
 
 
-<!-- Modal -->
-<div class="modal fade" id="modalModuleDetail" role="dialog" style="height:340px;width:650px;overflow:hidden;">
-  <div class="modal-dialog">
 
-	<form>
-    
-	    <!-- Modal content-->
-	    <div class="modal-content">
-	      <div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">Request Key</h4>
-	      </div>
-	      <div class="modal-body">
-		<p>
-			<label>Installation:</label>
-			<select style="margin-left:5px;" size="1" id="selectInstallation">
-			</select>
-			
-		</p>
-	      </div>
-	      <div class="modal-footer">
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" id="requestModuleKeyPop" >OK</button>
-	      </div>
-	    </div>
-
-
-	</form>
-    
-  </div>
-</div>
 
 </div>
 

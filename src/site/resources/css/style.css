@@ -20,14 +20,13 @@ video {
   background-size: cover;
   transition: 1s opacity;
 }
-.stopfade { 
+.stopfade {
    opacity: .5;
 }
 @media screen and (max-device-width: 800px) {
   html { background: url(../images/vidstill.png) #000 no-repeat center center fixed; }
   #bgvid { display: none; }
 }
-
 
 .header{
 	width:100%;
@@ -176,6 +175,7 @@ label {
 	display:block;
 	background-size: cover;
 	position:relative;
+	height: 450px;
 }
 .about {
 	padding: 3em 0 3em;
@@ -315,11 +315,11 @@ img.five{
 .clients{
 	background: #fff;
 	width:100%;
-	min-height:700px;
+	height: 600px;
 	display:block;
 	background-size:cover;
 	text-align:center;
-	padding:5em 0;	
+	padding:5em 0;
 }
 
 #hadoop{
@@ -1062,6 +1062,6 @@ display: none;
     border: 1px solid #cc1b1a !important;
     border-radius: 7px !important;
     color: #cc1b1a !important;
-    font-family: verdana !important;
     margin-bottom: 9px;
+    height: 25px;
 }

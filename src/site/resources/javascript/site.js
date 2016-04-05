@@ -1,5 +1,14 @@
 $(document).ready(function() {
        
+	var p = location.search.split('p=')[1]
+	if(p != null){
+		$("#emailDownload").show();
+		$("#email").hide();
+	}else{
+		$("#emailDownload").hide();
+		$("#email").show();
+	}
+
 	$(".dropdown-toggle").each(function(index) {
 	  if($(this).text().indexOf("space") >=0 ){
 	     $(this).text('');
@@ -26,6 +35,6 @@ $(document).ready(function() {
 		//$('html,body').animate({scrollTop:5000},1000);
 	//});
 
-	$(".container").prev().append("<img alt='Red Sqirl' src='images/logo_redsqirl.png' id='icons' width='180'/>");
+	//$(".container").prev().append("<img alt='Red Sqirl' src='images/logo_redsqirl.png' id='icons' width='180'/>");
 
 });

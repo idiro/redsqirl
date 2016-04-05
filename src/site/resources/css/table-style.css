@@ -107,8 +107,7 @@ input {
 	border: 1px solid #ab4341 !important;
 }
 
-
-.order-table{   
+.order-table{
 	border-collapse:collapse;
 	margin-top:20px;
 }
@@ -177,10 +176,7 @@ hr{
 	float:left;
 	left:auto;
 	font-size:20px;
-}
-
-.packageItem:hover{
-	cursor: pointer;
+	height: 107px;
 }
 
 .packageItem .image{
@@ -191,16 +187,16 @@ hr{
 }
 
 .packageItem .title{
-	margin-top:0px;
-	margin-left:5px;
-	width:50%;
 	float:left;
 	font-size:25px;
+	margin-left:2px;
+	margin-top: -20px;
+	width:65%;
 }
 
 .packageItem .type{
 	margin-top:0px;
-	margin-right:10px;
+	margin-right:5px;
 	margin-bottom:0px;
 	width:20%;
 	float:right;
@@ -209,12 +205,14 @@ hr{
 }
 
 .packageItem .license{
-	margin-top:10px;
-	margin-right:10px;
-	width:40%;
+	bottom: -5px;
 	float:right;
-	text-align:right;
 	font-size:12px;
+	margin-right:10px;
+	margin-top:10px;
+	position: relative;
+	text-align:right;
+	width:30%;
 }
 
 .packageItem .dependency{
@@ -274,11 +272,10 @@ hr{
 }
 
 .asbutton{
-    background: linear-gradient(to right, #cc1b1a, #991916) !important; 
+    background: linear-gradient(to right, #cc1b1a, #991916) !important;
 	color:white !important;
-	font-weight: bold !important;	
-	font-family: verdana  !important; 
-	
+	font-weight: bold !important;
+	font-family: verdana  !important;
 }
 
 .contentbutton{
@@ -286,7 +283,7 @@ hr{
 	background-image: none !important;
 	border-radius: 7px !important;
 	color: #cc1b1a !important;
-	border: 1px solid #cc1b1a !important;	
+	border: 1px solid #cc1b1a !important;
 	font-family: verdana  !important;
 }
 
@@ -338,7 +335,6 @@ hr{
 	background-image: none !important;
 }
 
-
 .rf-msgs {
 	font-size: 12 px !important;
 	font-weight: bold !important;
@@ -385,5 +381,16 @@ label {
     right: 0;
     z-index: 1030;
     height: 50px !important;
+}
+
+.packageItem .shortDescription{
+	bottom: -15px;
+	float: left;
+	font-size:12px;
+	margin-left:3px;
+	margin-top:10px;
+	position: relative;
+	text-align:left;
+	width:60%;
 }
 

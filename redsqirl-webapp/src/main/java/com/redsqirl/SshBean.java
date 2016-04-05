@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.NumberUtils;
 import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
@@ -145,11 +146,20 @@ public class SshBean extends FileSystemBean implements Serializable{
 			logger.info("confirmNewSsh");
 
 			Map<String, String> values = new HashMap<String, String>();
-			values.put("host name", getHost());
-			values.put("port", getPort());
 
-			//logger.info("host name: "+getHost());
-			//logger.info("port: "+getPort());
+			if(getHost() != null && !"".equals(getHost())){
+				values.put("host name", getHost());
+			}else{
+				error = "Error trying to add store with empty Host Name";
+			}
+
+			if(getPort() != null && !"".equals(getPort())){
+				if(NumberUtils.isNumber(getPort())){
+					values.put("port", getPort());
+				}else{
+					error = "Error trying to add store with wrong Port number";
+				}
+			}
 
 			if(getPassword() != null && !"".equals(getPassword())){
 				values.put("password", getPassword());
@@ -165,19 +175,23 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 			}else{
 
-				if(isSelectedSaveSsh()){
-					error = dsa.addKnownStore(values);
-				}else{
-					try{
-						dsa.addStore(values);
-					}catch (Exception e){
-						error = "Error trying to add store "+e.getMessage();
-						logger.error(error);
+				if(error == null){
+
+					if(isSelectedSaveSsh()){
+						error = dsa.addKnownStore(values);
+					}else{
+						try{
+							dsa.addStore(values);
+						}catch (Exception e){
+							error = "Error trying to add store "+e.getMessage();
+							logger.error(error);
+						}
 					}
+
 				}
 
 			}
-			
+
 			setSelectedpassword(false);
 
 			if(error == null){

@@ -1,26 +1,24 @@
 <div class="navbar navbar-fixed-top" id="topbar">
+
       <div class="navbar-inner">
+
+<img width="170" id="icons" src="images/logo.png" alt="Red Sqirl" style="float: left;">
+
                                   <div class="container"><div class="nav-collapse">
-            
                 
                                 <ul class="nav">
                           <li class="dropdown">
         <a data-toggle="dropdown" class="dropdown-toggle" href="#">Home <b class="caret"></b></a>
         <ul class="dropdown-menu">
         
-                      <li>      <a title="Home" href="index.html#home" class="scroll">Home</a>
-</li>
-                  
-                      <li>      <a title="About" href="index.html#about" class="scroll">About</a>
-</li>
-                  
-                      <li>      <a title="Take a Look" href="index.html#services" class="scroll">Take a Look</a>
-</li>
-<li>      <a title="Next Steps" href="index.html#contact" class="scroll">Next Steps</a></li>
+                <li><a title="Home" href="index.html#home" class="scroll">Home</a></li>
+                <li><a title="About" href="index.html#about" class="scroll">About</a></li>
+                <li><a title="Take a Look" href="index.html#services" class="scroll">Take a Look</a></li>
+		<li><a title="Next Steps" href="index.html#contact" class="scroll">Next Steps</a></li>
 
                           </ul>
       </li>
-                <li class="dropdown">
+        <li class="dropdown">
         <a data-toggle="dropdown" class="dropdown-toggle" href="#">Product <b class="caret"></b></a>
         <ul class="dropdown-menu">
         
@@ -58,23 +56,12 @@
         <a data-toggle="dropdown" class="dropdown-toggle" href="#">Related Projects <b class="caret"></b></a>
         <ul class="dropdown-menu">
 
-                      <li>      <a title="Sqirl Nutcracker" target="_blank" href="http://www.redsqirl.com/sqirl-nutcracker">Sqirl Nutcracker</a>
-</li>
-
-                      <li>      <a title="Apache Hadoop" target="_blank" href="http://hadoop.apache.org/">Apache Hadoop</a>
-</li>
-
-                      <li>      <a title="Apache Oozie" target="_blank" href="http://oozie.apache.org/">Apache Oozie</a>
-</li>
-
-                      <li>      <a title="Apache Hive" target="_blank" href="http://hive.apache.org/">Apache Hive</a>
-</li>
-
-                      <li>      <a title="Apache Pig" target="_blank" href="http://pig.apache.org/">Apache Pig</a>
-</li>
-
-                      <li>      <a title="Apache Hama" target="_blank" href="http://hama.apache.org/">Apache Hama</a>
-</li>
+		<li><a title="Sqirl Nutcracker" target="_blank" href="http://www.redsqirl.com/sqirl-nutcracker">Sqirl Nutcracker</a></li>
+                <li><a title="Apache Hadoop" target="_blank" href="http://hadoop.apache.org/">Apache Hadoop</a></li>
+                <li><a title="Apache Oozie" target="_blank" href="http://oozie.apache.org/">Apache Oozie</a></li>
+                <li><a title="Apache Hive" target="_blank" href="http://hive.apache.org/">Apache Hive</a></li>
+                <li><a title="Apache Pig" target="_blank" href="http://pig.apache.org/">Apache Pig</a></li>
+                <li><a title="Apache Hama" target="_blank" href="http://hama.apache.org/">Apache Hama</a></li>
                           </ul>
       </li>
                 <li class="dropdown">
@@ -100,12 +87,13 @@
         <a title="signOut" href="#" onclick="event.preventDefault();signout();" >Sign Out</a>
 	</li>
 
-
 	<li class="dropdown" id="newLoginMenu" style="display:none;" >
         	<a data-toggle="dropdown" class="dropdown-toggle" href="#" id="userNameEmail"> <b class="caret"></b></a>
 		<ul class="dropdown-menu">
 			<li><a title="Search" href="search.html" >Search</a></li>
 			<li><a title="Software Key" href="softwareKeyInstall.html" >Software Key</a></li>
+			<li><a title="My Account" data-toggle="modal" class="dropdown-toggle" href="#" data-target="#myAccountModal" onclick="getMyAccount();" >My Account</a></li>
+
 		</ul>
         </li>
 
@@ -114,7 +102,7 @@
 
         </div>
       </div>
-    <img width="180" id="icons" src="images/logo_redsqirl.png" alt="Red Sqirl">
+
 </div>
 
 
@@ -221,3 +209,115 @@
 
   </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myAccountModal" role="dialog" style="height:360px;width:650px;overflow:hidden;">
+  <div class="modal-dialog">
+
+	<form>
+
+<!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">My Account</h4>
+	      </div>
+	      <div class="modal-body">
+
+		<p>
+
+			<label style="padding-right: 10px;" >First Name:</label>
+			<td><input type="text" style="width:400px;" id="editAccountFirstName" class="dontClean" ><br></td>
+			<label style="padding-right: 10px;" >Last Name:</label>
+			<td><input type="text" style="width:400px;" id="editAccountLastName" class="dontClean" ><br></td>
+			<label style="padding-right: 43px;" >Email:</label>
+			<td><input type="text" style="width:400px;" id="editAccountEmail" class="dontClean" ><br></td>
+			<label style="padding-right: 16px;" >Company:</label>
+			<td><input type="text" style="width:400px;" id="editAccountCompany" class="dontClean" ><br></td>
+
+
+		</p>
+		</div>
+
+	<div class="modal-footer">
+	<input type="submit" value="Change Password" data-dismiss="modal" data-toggle="modal" class="btn btn-default" data-target="#modalChangePassword" onclick="event.preventDefault();" >
+	<button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+	<button type="button" class="btn btn-default" id="btsaveMyAccount" onclick="event.preventDefault();updateAccount();" >Save</button>
+</div>
+
+</div>
+</div>
+
+	</form>
+
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalChangePassword" role="dialog" style="height:300px;width:650px;overflow:hidden;">
+  <div class="modal-dialog">
+
+	<form>
+    
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Change Password</h4>
+	      </div>
+	      <div class="modal-body">
+		<p>
+		
+		<label style="padding-right: 50px;" >Password:</label>
+		<input type="password" placeholder="Enter a password with at least 6 characters" style="width:420px;" id="editAccountPassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" ></br>
+		<label>Repeat Password:</label>
+		<input type="password" placeholder="Repeat the Password" style="width:420px;" id="editAccountRePassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" >
+
+		</p>
+	      </div>
+	      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" id="btChangePassword" onclick="event.preventDefault();changePassword();" >OK</button>
+	      </div>
+	    </div>
+
+	</form>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalModuleDetail" role="dialog" style="height:340px;width:650px;overflow:hidden;">
+  <div class="modal-dialog">
+
+	<form>
+    
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Request Key</h4>
+	      </div>
+	      <div class="modal-body">
+		<p>
+			<label>Installation:</label>
+			<select style="margin-left:5px;" size="1" id="selectInstallation">
+			</select>
+			
+		</p>
+	      </div>
+	      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" id="requestModuleKeyPop" >OK</button>
+	      </div>
+	    </div>
+
+
+	</form>
+    
+  </div>
+</div>
+
