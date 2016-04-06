@@ -49,8 +49,13 @@ public abstract class DbConfFile {
 	}
 	
 	protected File getConfFolder(){
-		logger.info(WorkflowPrefManager.getPathuserpref());
 		logger.info(dictionaryName);
+		File confHome = new File(WorkflowPrefManager.pathSystemPref);
+		File ans = new File(confHome,dictionaryName);
+		if(ans.exists()){
+			return ans;
+		}
+		
 		File userHome = new File(WorkflowPrefManager.getPathuserpref());
 		return new File(userHome,dictionaryName);
 	}

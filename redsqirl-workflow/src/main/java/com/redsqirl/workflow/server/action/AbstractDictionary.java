@@ -274,18 +274,23 @@ public abstract class AbstractDictionary {
 						.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-				File file = new File(WorkflowPrefManager.pathSystemPref + "/"
+				File file = new File(WorkflowPrefManager.getPathuserpref() + "/"
 						+ xmlFile);
 				if (file.exists()) {
+					//Read User
 					Document doc = dBuilder.parse(file);
 					functionsMap = readXml(doc);
-				} else {
-					file = new File(WorkflowPrefManager.getPathuserpref() + "/"
+				}else{
+					file = new File(WorkflowPrefManager.pathSystemPref + "/"
 							+ xmlFile);
 					if (file.exists()) {
+						//Read System
 						Document doc = dBuilder.parse(file);
 						functionsMap = readXml(doc);
 					} else {
+						//Write User
+						file = new File(WorkflowPrefManager.getPathuserpref() + "/"
+								+ xmlFile);
 						loadDefaultFunctions();
 						try{
 							file.getParentFile().mkdirs();

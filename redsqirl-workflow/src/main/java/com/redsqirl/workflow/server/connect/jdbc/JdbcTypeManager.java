@@ -25,6 +25,10 @@ public class JdbcTypeManager {
 	protected File getDbTypeFile(String dicName){
 		File dicFolder = new File(userHome,dicName);
 		File dbTypeFile = new File(dicFolder,dbTypeFileName);
+		if(!dbTypeFile.exists()){
+			dicFolder = new File(WorkflowPrefManager.pathSystemPref,dicName);
+			dbTypeFile = new File(dicFolder,dbTypeFileName);
+		}
 		logger.info("DB file for "+dicName+": "+dbTypeFile.getAbsolutePath());
 		return dbTypeFile;
 	}
@@ -32,6 +36,10 @@ public class JdbcTypeManager {
 	protected File getRsTypeFile(String dicName){
 		File dicFolder = new File(userHome,dicName);
 		File rsTypeFile = new File(dicFolder,rsTypeFileName);
+		if(!rsTypeFile.exists()){
+			dicFolder = new File(WorkflowPrefManager.pathSystemPref,dicName);
+			rsTypeFile = new File(dicFolder,rsTypeFileName);
+		}
 		logger.info("RS file for "+dicName+": "+rsTypeFile.getAbsolutePath());
 		return rsTypeFile;
 	}

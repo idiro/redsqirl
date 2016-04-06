@@ -29,9 +29,12 @@ public class JdbcQueryManager {
 	}
 	
 	protected  File getFile(String dictionary){
-		File userHome = new File(WorkflowPrefManager.getPathuserpref());
-		File dicFolder = new File(userHome,dictionary);
+		File dicFolder = new File(WorkflowPrefManager.getPathuserpref(),dictionary);
 		File dbTypeFile = new File(dicFolder,fileName);
+		if(!dbTypeFile.exists()){
+			dicFolder = new File(WorkflowPrefManager.pathSystemPref,dictionary);
+			dbTypeFile = new File(dicFolder,fileName);
+		}
 		logger.info(dbTypeFile.getAbsolutePath());
 		return dbTypeFile;
 	}

@@ -199,6 +199,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Set<String> firstElements = new LinkedHashSet<String>();
 				firstElements.addAll(outEdges.keySet());
 				firstElements.removeAll(outNodes);
+				Iterator<String> firstElementsIt = firstElements.iterator();
+				while(firstElementsIt.hasNext()){
+					String cur = firstElementsIt.next();
+					if(cur.startsWith("delete_")){
+						firstElementsIt.remove();
+						outEdges.remove(cur);
+					}
+				}
 				outEdges.put(startNode, firstElements);
 				logger.debug("Runnable DAG: "+outEdges.toString());
 				OozieDag od = new OozieDag();
