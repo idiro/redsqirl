@@ -178,7 +178,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		//Fill rows
 		try{
 			if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
-					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
+					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) || refresh ){
+				
 				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties(refresh);
 				if(mapSSH != null){
 					setAllProps(new LinkedList<Map<String,String>>());

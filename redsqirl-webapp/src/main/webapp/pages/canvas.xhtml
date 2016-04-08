@@ -500,12 +500,17 @@
 				for (var i = 0; i < status.length; i++) {
 					console.log("load: "+status[i][1]);
 					unblockRunningWorkflowJS();
-					if(i == status.length - 1){
+					
+					/* if(i == status.length - 1){
 					   console.log("last element");
 					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
 					}else{
 					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
-					}
+					   setSaved(status[i][0], false);
+					} */
+					
+					addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
+					setSaved(status[i][0], false);
 					
 				}
 				rerenderCanvasTab();
@@ -999,6 +1004,10 @@
 	   		var name = getSelectedByName();
 			if (isSaved(name)){
 				if(!isRunning(name)){
+					
+					console.log("menuSave path " + getPathFile(name));
+					console.log("menuSave name " + name);
+					
 					save(getPathFile(name));
 			   	}
 	   		} else{
@@ -2943,7 +2952,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
+		<rich:modalPanel id="modalInstallPackage" width="850" height="600"
 			resizeable="true">
 			<f:facet name="header">
 				<h:panelGroup>

@@ -35,6 +35,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -54,6 +55,7 @@ import com.redsqirl.BaseBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -80,6 +82,8 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	private String defaultInstallation;
 
 	private List<String> selectedTypes;
+	
+	private String showRestartMSG;
 
 	public AnalyticsStoreSearchBean() {
 
@@ -108,12 +112,12 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 
 		try {
-			
+
 			//check if there is internet connection
 			if(netIsAvailable()){
 				retrieveAllPackageList();
 			}
-			
+
 		} catch (SQLException e) {
 			logger.warn(e,e);
 		} catch (ClassNotFoundException e) {
@@ -140,7 +144,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String type = params.get("type");
 
-			String uri = getRepoServer()+"rest/allpackages";
+			String uri = getRepoServer()+"rest/searchmodel";
 
 			JSONObject object = new JSONObject();
 			object.put("software", "RedSqirl");
@@ -162,7 +166,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					object.put("type", selectedTypes.get(0));
 				}
 			}
-			
+
 			if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
 				object.put("user", analyticsStoreLoginBean.getEmail());
 			}
@@ -176,7 +180,6 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 			logger.debug(ansServer);
 
-			Set<String> packagesAdded = new HashSet<String>();
 			try{
 				JSONArray pckArray = new JSONArray(ansServer);
 				for(int i = 0; i < pckArray.length();++i){
@@ -189,11 +192,19 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					pck.setTags(pckObj.getString("tags"));
 					pck.setImage(getRepoServer() + pckObj.getString("image"));
 					pck.setType(pckObj.getString("type"));
+					pck.setPrice(pckObj.getString("price"));
 
-					if (!packagesAdded.contains(id)){
-						result.add(pck);
-						packagesAdded.add(id);
-					}
+					pck.setShortDescription(pckObj.getString("shortDescription"));
+					pck.setShortDescriptionFull(pckObj.getString("shortDescriptionFull"));
+					pck.setNameFull(pckObj.getString("nameFull"));
+					pck.setTagsFull(pckObj.getString("tagsFull"));
+
+					pck.setIdVersion(pckObj.getString("idVersion"));
+					pck.setVersionName(pckObj.getString("versionName"));
+					
+					pck.setCanInstall(canInstall(pckObj.getString("name"), pckObj.getString("versionName")));
+					result.add(pck);
+					
 				}
 			} catch (JSONException e){
 				logger.warn(e,e);
@@ -204,6 +215,33 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 
 		setAllPackageList(result);
+	}
+
+	public void removeResult(List<RedSqirlModule> result, int id){
+		for (Iterator<RedSqirlModule> iterator = result.iterator(); iterator.hasNext();) {
+			RedSqirlModule redSqirlModule = (RedSqirlModule) iterator.next();
+			if(redSqirlModule.getId() == id){
+				iterator.remove();
+				break;
+			}
+		}
+	}
+
+	public boolean canInstall(String name, String version){
+		try {
+			PackageManager pckMng = new PackageManager();
+			Set<String> packagesInstalled = pckMng.getSysPackageNames();
+			if (packagesInstalled.contains(name)){
+				RedSqirlPackage rs = pckMng.getSysPackage(name);
+				String versionPck = rs.getPackageProperty(RedSqirlPackage.property_version);
+				if (versionPck.equals(version)){
+					return false;
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	public String getRepoServer(){
@@ -225,7 +263,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		//FIXME change the number version
 		redSqirlInstallations.setModule("redsqirl-pig");
-		redSqirlInstallations.setModuleVersion("0.3");
+		redSqirlInstallations.setModuleVersion("0.4");
 
 		String error = null;
 
@@ -256,6 +294,62 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 
 		setShowDefaultInstallation("N");
+	}
+
+	public void installPackageFromSearch(){
+		RedSqirlInstallations redSqirlInstallations = new RedSqirlInstallations();
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String selectedVersion = params.get("selectedVersion");
+
+		for (RedSqirlModule redSqirlModule : allPackageList) {
+			if(redSqirlModule.getIdVersion().equals(selectedVersion)){
+				redSqirlInstallations.setInstallationType("system");
+				redSqirlInstallations.setSoftwareModulestype(redSqirlModule.getType());
+				redSqirlInstallations.setIdModuleVersion(redSqirlModule.getIdVersion());
+				redSqirlInstallations.setUserName("");
+				redSqirlInstallations.setModule(redSqirlModule.getName());
+				redSqirlInstallations.setModuleVersion(redSqirlModule.getVersionName());
+				break;
+			}
+		}
+
+		String error = null;
+
+		try {
+			error = installPackage(redSqirlInstallations);
+		} catch (RemoteException e) {
+			logger.error(e,e);
+		}
+
+		if(error != null){
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addErrorMessage("Error installing Default package: " + error);
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}else{
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addInfoMessage("Package Installed");
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}
+
+		try {
+			retrieveAllPackageList();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		String isADMPage = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("admPage");
+
+		if(isADMPage != null && isADMPage.equals("N")){
+			setShowRestartMSG("N");
+		}else{
+			if(error == null || error.isEmpty()){
+				setShowRestartMSG("Y");
+			}
+		}
+		
 	}
 
 	public String installPackage(RedSqirlInstallations redSqirlInstallations) throws RemoteException{
@@ -453,4 +547,12 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		this.selectedTypes = selectedTypes;
 	}
 
+	public String getShowRestartMSG() {
+		return showRestartMSG;
+	}
+
+	public void setShowRestartMSG(String showRestartMSG) {
+		this.showRestartMSG = showRestartMSG;
+	}
+	
 }

@@ -23,15 +23,16 @@ import java.io.Serializable;
 
 public class RedSqirlModule implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8664811047061760742L;
 	
 	private int id;
-	private int idVersion;
+	private String idVersion;
 	private String name;
 	private String tags;
+	private String shortDescription;
+	private String nameFull;
+	private String tagsFull;
+	private String shortDescriptionFull;
 	private String image;
 	private String versionNote;
 	private String htmlDescription;
@@ -45,6 +46,7 @@ public class RedSqirlModule implements Serializable{
 	private String json;
 	private boolean editable;
 	private boolean settings;
+	private boolean canInstall;
 	
 	public int getId() {
 		return id;
@@ -54,11 +56,11 @@ public class RedSqirlModule implements Serializable{
 		this.id = id;
 	}
 	
-	public int getIdVersion() {
+	public String getIdVersion() {
 		return idVersion;
 	}
 	
-	public void setIdVersion(int idVersion) {
+	public void setIdVersion(String idVersion) {
 		this.idVersion = idVersion;
 	}
 	
@@ -186,6 +188,46 @@ public class RedSqirlModule implements Serializable{
 
 	public void setSettings(boolean settings) {
 		this.settings = settings;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	public String getNameFull() {
+		return nameFull;
+	}
+
+	public void setNameFull(String nameFull) {
+		this.nameFull = nameFull;
+	}
+
+	public String getTagsFull() {
+		return tagsFull;
+	}
+
+	public void setTagsFull(String tagsFull) {
+		this.tagsFull = tagsFull;
+	}
+
+	public String getShortDescriptionFull() {
+		return shortDescriptionFull;
+	}
+
+	public void setShortDescriptionFull(String shortDescriptionFull) {
+		this.shortDescriptionFull = shortDescriptionFull;
+	}
+
+	public boolean isCanInstall() {
+		return canInstall;
+	}
+
+	public void setCanInstall(boolean canInstall) {
+		this.canInstall = canInstall;
 	}
 	
 }

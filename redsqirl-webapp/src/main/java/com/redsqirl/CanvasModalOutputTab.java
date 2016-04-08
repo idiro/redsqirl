@@ -231,7 +231,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
-		if (showOutputForm.equals("Y")) {
+		
+		if(showOutputForm != null && showOutputForm.equals("Y")) {
 			for (OutputForm f : getOutputFormList()) {
 				if (f.getName().equals(getNameOutput())) {
 					f.setPath(path);

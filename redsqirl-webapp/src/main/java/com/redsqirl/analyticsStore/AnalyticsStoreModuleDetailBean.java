@@ -121,7 +121,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					JSONObject pckObj = pckArray.getJSONObject(i);
 					RedSqirlModule pck = new RedSqirlModule();
 					pck.setId(Integer.valueOf(getString(pckObj, "id")));
-					pck.setIdVersion(Integer.valueOf(getString(pckObj, "idVersion")));
+					pck.setIdVersion(getString(pckObj, "idVersion"));
 					pck.setName(getString(pckObj, "name"));
 					pck.setTags(getString(pckObj, "tags"));
 					pck.setImage(getRepoServer() + getString(pckObj, "image"));
@@ -198,7 +198,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String version = params.get("version");
 		for (RedSqirlModule redSqirlModule : versionList) {
-			if(redSqirlModule.getIdVersion() == Integer.parseInt(version)){
+			if(redSqirlModule.getIdVersion().equals(version)){
 				moduleVersion = redSqirlModule;
 			}
 		}
