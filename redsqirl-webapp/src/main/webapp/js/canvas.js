@@ -1684,7 +1684,7 @@ function mountObj(canvasName) {
                 });
                 
                 polygonTabFake.on('mouseover',function(e) {
-                	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+                	if(canvasArray[canvasName] != undefined && !canvasArray[canvasName].dragDropGroup && !canvasArray[canvasName].moving){
                 		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
                 		help.css("top",(e.pageY)+"px" );
                 		help.css("left",(e.pageX)+"px" );
