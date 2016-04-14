@@ -1008,7 +1008,7 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 		FileSystem fs = NameNodeVar.getFS();
 
 		Map<String,String> p = remoteServer.getProperties(rfile);
-		if(p.get("type").equals("file")){
+		if(p.get(SSHInterface.key_type).equals("file")){
 
 			String nameRdm = RandomString.getRandomName(20);
 			String tmpFileStr = System.getProperty("java.io.tmpdir")+"/"+nameRdm;

@@ -99,7 +99,7 @@ public class HdfsBean extends FileSystemBean {
 		String path = context.getExternalContext().getRequestParameterMap().get("path");
 		String server = context.getExternalContext().getRequestParameterMap().get("server");
 		
-		logger.warn("copy from "+server+":"+getPath()+"/"+file+" to "+path+"/"+file);
+		logger.warn("copy from "+server+":"+path+"/"+file+" to "+getPath()+"/"+file);
 		try{
 			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
 			updateTable(true);
