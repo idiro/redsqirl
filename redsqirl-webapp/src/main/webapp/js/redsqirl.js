@@ -90,6 +90,8 @@ function resizeTables(){
 	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
 
 	jQuery("#jdbcFileSystem .extdt-content").style("height", jQuery("#tabs-5").height()-160+"px", "important");
+	
+	jQuery("#hcatFileSystem .extdt-content").style("height", jQuery("#tabs-6").height()-160+"px", "important");
 
 	jQuery("#tabRemote .extdt-content").css("height", jQuery("#tabs-8").height()-205+"px", "important");
 
@@ -348,7 +350,7 @@ function resizeTabs(){
 		jQuery("#tabs-5").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 
-	/*if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+	if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
 		jQuery("#tabs-6").css("height", jQuery("#tabs1").height()-border+'px');
 	}else if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-border+'px');
@@ -356,6 +358,7 @@ function resizeTabs(){
 		jQuery("#tabs-6").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 
+	/*
 	if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
 		jQuery("#tabs-7").css("height", jQuery("#tabs1").height()-border+'px');
 	}else if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs2").attr('id')){

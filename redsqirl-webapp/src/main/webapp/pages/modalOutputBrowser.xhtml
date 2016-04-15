@@ -180,8 +180,10 @@
 									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-connection.gif" title='#{messages.HdfsInterface_properties_help}' 
 									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+								<h:graphicImage value="../image/icons/icon-db.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'database'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-table.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'table' || canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'partition'}" styleClass="btfileSystem" />
 							</rich:column>
 					
 							<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"

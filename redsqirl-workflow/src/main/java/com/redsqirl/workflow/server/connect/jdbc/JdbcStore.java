@@ -73,6 +73,7 @@ public class JdbcStore extends Storage {
 	// properties key
 	/** description key */
 	key_describe = "describe",
+	key_partition = "partition",
 	/** Type Key */
 	key_type = "type",
 	/** Oracle Driver Path property name */
@@ -135,6 +136,10 @@ public class JdbcStore extends Storage {
 	}
 	
 	protected static JdbcStoreConnection initConnection(JdbcDetails details) throws Exception{
+		if(details.getDburl() == null){
+			return null;
+		}
+		
 		String oracleDriver = WorkflowPrefManager.getProperty(property_oracle_driver);
 		String mysqlDriver = WorkflowPrefManager.getProperty(property_mysql_driver);
 		JdbcStoreConnection ans = null;
@@ -650,17 +655,29 @@ public class JdbcStore extends Storage {
 	 * @return description
 	 * @throws RemoteException 
 	 */
-	public Map<String, String> getDescription(String connection, String table) throws RemoteException {
+	public static Map<String, String> getDescription(String connection, String table) throws RemoteException {
+		return getDescription(getConnection(connection), connection,table);
+	}
+	
+	protected static Map<String, String> getDescription(JdbcStoreConnection storeConnection,
+			String connectionName,
+			String table)
+			throws RemoteException {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
-		String fieldsStr = null;
-		Object[] obj = cachDesc.get(connection+"/"+table);
+		String[] fields = null;
+		Object[] obj = cachDesc.get(connectionName+"/"+table);
 		if(obj == null || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
-			fieldsStr = getConnection(connection).execDesc(table);
-			cachDesc.put(connection+"/"+table, new Object[]{System.currentTimeMillis(),fieldsStr});
+			fields = storeConnection.execDesc(table);
+			if(fields != null){
+				cachDesc.put(connectionName+"/"+table, new Object[]{System.currentTimeMillis(),fields});
+			}
 		}else{
-			fieldsStr = (String) obj[1];
+			fields = ((String[]) obj[1]);
 		}
-		ans.put(key_describe, fieldsStr);
+		if(fields != null){
+			ans.put(key_describe, fields[0]);
+			ans.put(key_partition, fields[1]);
+		}
 		logger.debug("desc : " + ans);
 		return ans;
 	}
@@ -802,8 +819,6 @@ public class JdbcStore extends Storage {
 	public List<String> displaySelect(String path, int maxToRead)
 			throws RemoteException {
 
-		String delimOut = "|";
-
 		List<String> ans = null;
 		if(path == null){
 			return ans;
@@ -813,67 +828,11 @@ public class JdbcStore extends Storage {
 		if (exists(path) && connectionAndTable.length == 2) {
 
 			String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],maxToRead);
-
-			int colNb = 0;
-			List<Integer> sizes = new LinkedList<Integer>();
-			List<List<String>> cells = new LinkedList<List<String>>();
-			int sizeCol = 0;
 			try {
-				ResultSet rs = getConnection(connectionAndTable[0]).executeQuery(statement);
-				colNb = rs.getMetaData().getColumnCount();
-				{
-					// Set column names
-					List<String> row = new LinkedList<String>();
-					for (int i = 1; i <= colNb; ++i) {
-						row.add(rs.getMetaData().getColumnName(i));
-						sizeCol = rs.getMetaData().getColumnName(i).length();
-						sizes.add(sizeCol);
-					}
-					cells.add(row);
-				}
-				while (rs.next()) {
-					List<String> row = new LinkedList<String>();
-					for (int i = 1; i <= colNb; ++i) {
-						row.add(rs.getString(i));
-						sizeCol = rs.getString(i).length();
-						if(sizes.get(i-1) < sizeCol){
-							sizes.set(i-1, sizeCol);
-						}
-					}
-					cells.add(row);
-				}
-				rs.close();
-
+				ans = JdbcStoreConnection.displaySelect(getConnection(connectionAndTable[0]).executeQuery(statement),maxToRead);
 			} catch (Exception e) {
 				logger.error("Fail to select the table " + connectionAndTable[0]);
 				logger.error(e.getMessage(),e);
-			}
-
-			// logger.info("displaySelect list size" + sizes.size() + " " +
-			// ans.size());
-			ans = new LinkedList<String>();
-			for (int i = 0; i < cells.size(); i++) {
-				List<String> row = cells.get(i);
-				String rowStr = "|";
-				for (int j = 0; j < row.size(); j++) {
-					rowStr += StringUtils.rightPad(row.get(j), sizes.get(j))+"|";
-				}
-				// logger.info("displaySelect -" + newLine + "-");
-				ans.add(rowStr);
-			}
-			
-			String tableLine = "+";
-			for (int j = 0; j < sizes.size(); j++) {
-				tableLine+= StringUtils.rightPad("",sizes.get(j),"-")+"+";
-				
-			}
-
-			if (ans.size() > 0) {
-				ans.add(1, tableLine);
-			}
-			ans.add(0,tableLine);
-			if (ans.size() < maxToRead) {
-				ans.add(ans.size(),tableLine);
 			}
 
 		}

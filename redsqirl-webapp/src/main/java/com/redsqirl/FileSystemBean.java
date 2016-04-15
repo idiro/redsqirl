@@ -117,26 +117,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	}
 
-	/**
-	 * mountTable
-	 * 
-	 * Method to mount the file system grid
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void mountTable() throws RemoteException {
+	public void updateParamProperties() throws RemoteException{
 		DataStore hInt = getDataStore();
-		logger.info("Started mounting table");
-
-		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		logger.info("update progressbar");
-		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
-
 		setPropsParam(hInt.getParamProperties());
 
 		//Set list field
@@ -159,6 +141,26 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		setTableGrid(new SelectableTable(titles));
 		setEditProps(editProps);
 		setCreateProps(createProps);
+	}
+	/**
+	 * mountTable
+	 * 
+	 * Method to mount the file system grid
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void mountTable() throws RemoteException {
+		logger.info("Started mounting table");
+
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+
+		logger.info("update progressbar");
+		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
+
 
 		updateTable(false);
 
@@ -173,7 +175,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String oldPath = getPath();
 		String error = null;
 		setPath(getDataStore().getPath());
-		
+		updateParamProperties();
 		
 		//Fill rows
 		try{

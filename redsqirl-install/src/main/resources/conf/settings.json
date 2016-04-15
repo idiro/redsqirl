@@ -113,6 +113,53 @@
 	    ]
 	},
 	{
+	    "name":"hcatalog",
+	    "settings": [
+	    {
+		"property": "hive_url",
+		"scope": "any",
+		"optional": "false",
+		"default": "jdbc:hive2://myserver:10000",
+		"type": "STRING"
+	    },
+	    {
+		"property": "hive_password",
+		"scope": "user",
+		"optional": "true",
+		"default": "password",
+		"type": "STRING"
+	    },
+	    {
+		"property": "hdfs_path_default",
+		"scope": "any",
+		"optional": "true",
+		"default": "",
+		"type": "STRING"
+	    },
+	    {
+		"property": "db_default",
+		"scope": "any",
+		"optional": "true",
+		"default": "DEFAULT",
+		"type": "STRING"
+	    }
+	    ],
+		"tabs": [
+		{
+		    "template_name": "db",
+		    "settings": [
+		    {
+			"property": "hdfs_path",
+			"scope": "any",
+			"optional": "false",
+			"default": "/apps/hive/warehouse/redsqirl.dbs",
+			"type": "STRING"
+		    }
+		    ]
+		}
+	    ]
+	},
+	{
 	    "name":"jdbc",
 	    "settings": [
 	    {
@@ -131,26 +178,6 @@
 	    }
 	    ],
 		"tabs": [
-		{
-		    "name": "hive",
-		    "settings": [
-
-		    {
-			"property": "jdbc_url",
-			"scope": "any",
-			"optional": "false",
-			"default": "jdbc:hive2://myserver:10000",
-			"type": "STRING"
-		    },
-		    {
-			"property": "jdbc_password",
-			"scope": "user",
-			"optional": "true",
-			"default": "password",
-			"type": "STRING"
-		    }
-		    ]
-		},
 		{
 		    "template_name": "host",
 		    "settings": [

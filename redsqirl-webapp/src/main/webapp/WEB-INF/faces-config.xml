@@ -51,6 +51,11 @@ support@redsqirl.com
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
+		<managed-bean-name>hcatBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.HCatBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
 		<managed-bean-name>sshBean</managed-bean-name>
 		<managed-bean-class>com.redsqirl.SshBean</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>

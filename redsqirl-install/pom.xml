@@ -46,7 +46,7 @@ support@redsqirl.com
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.8</version>
+		<version>0.10</version>
 	</parent>
 
 
@@ -54,7 +54,7 @@ support@redsqirl.com
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-install</artifactId>
 	<packaging>pom</packaging>
-	<version>${hadoop.version}-0.8</version>
+	<version>${hadoop.version}-0.10</version>
 	<name>Red Sqirl - Install</name>
 	<description>Create an installer</description>
 	<url>http://ns.local.net/dev/idiro-wf-interface</url>
