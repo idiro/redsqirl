@@ -314,15 +314,18 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	@Override
 	public void setPath(String path) throws RemoteException {
+		logger.debug("setPath");
+		
 		String oldPath = getPath();
 
 		if (path == null) {
+			logger.debug("Path null");
 			super.setPath(path);
 			setFields(null);
 			return;
 		}
 
-		if (!path.equalsIgnoreCase(oldPath)) {
+		if (oldPath != null && !path.equalsIgnoreCase(oldPath)) {
 
 			super.setPath(path);
 

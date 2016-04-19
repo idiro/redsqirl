@@ -442,9 +442,6 @@ public abstract class AbstractSource extends DataflowAction {
 					// Check path
 					if (error == null) {
 						try {
-							
-							logger.debug("Check path ");
-							
 							if (!out.isPathExist()) {
 								error = LanguageManagerWF
 										.getText("source.pathnotexist");

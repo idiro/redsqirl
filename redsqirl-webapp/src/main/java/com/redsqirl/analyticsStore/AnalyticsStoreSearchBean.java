@@ -324,29 +324,40 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		if(error != null){
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			MessageUseful.addErrorMessage("Error installing Default package: " + error);
+			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}else{
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			MessageUseful.addInfoMessage("Package Installed");
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}
-
-		try {
-			retrieveAllPackageList();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		
 		
 		String isADMPage = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("admPage");
 
 		if(isADMPage != null && isADMPage.equals("N")){
 			setShowRestartMSG("N");
+			
+			try {
+				retrieveAllPackageList();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
 		}else{
 			if(error == null || error.isEmpty()){
 				setShowRestartMSG("Y");
+				
+				try {
+					retrieveAllPackageList();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		
