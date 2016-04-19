@@ -725,11 +725,11 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 		}
 
 		if (error == null && !prop.isEmpty()) {
-			error = LanguageManagerWF
-					.getText("HdfsInterface.changeprop.permissionerror");
+			logger.debug(prop);
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.permissionerror");
 		}
 		if (error != null) {
-			logger.debug(error);
+			logger.error(error);
 		}
 		return error;
 	}

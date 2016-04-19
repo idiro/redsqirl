@@ -623,18 +623,18 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String newName = allProps.get(getCurrentFileIndex()).get("name");
 
 		try {
-			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), 
-					prop);
+			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), prop);
 			logger.info("change properties error : " + error);
 		} catch (Exception e) {
 			logger.error("Error change properties : " + e.getMessage());
 			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + newName + " to " + getName());
-
 		}
 		if(!newName.equals(name)){
 			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + newName);
 			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + newName);
 		}
+		
+		updateTable(true);
 
 	}
 
