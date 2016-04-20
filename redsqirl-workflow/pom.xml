@@ -34,7 +34,7 @@ support@redsqirl.com
     <parent>
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.8</version>
+	<version>0.9</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -44,7 +44,7 @@ support@redsqirl.com
     <name>Red Sqirl - Workflow</name>
     <description>Programme to interact with a Hadoop cluster</description>
     <url>http://ns.local.net/dev/redsqirl-workflow</url>
-    <version>${hadoop.version}-0.8</version>
+    <version>${hadoop.version}-0.9</version>
 
     <distributionManagement>
 	<repository>

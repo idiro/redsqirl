@@ -71,7 +71,7 @@ support@redsqirl.com
 
     <groupId>idiro</groupId>
     <artifactId>redsqirl</artifactId>
-    <version>0.8</version>
+    <version>0.9</version>
     <name>Red Sqirl</name>
     <packaging>pom</packaging>
     <description>${project.name} is a platform</description>
