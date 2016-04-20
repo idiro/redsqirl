@@ -20,7 +20,10 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 	private static Logger logger = Logger.getLogger(JdbcPropertiesDetails.class);
 	
 	public static final String template = "core.jdbc.host.",
-			template_hive = "core.jdbc.hive.";
+			template_hive = "core.hcatalog.";
+	
+	public static final String url_key_hive_root = "hive_url",
+			password_key_hive_root = "hive_password";
 	
 	public static final String url_key_root = "jdbc_url",
 			user_key_root = "jdbc_user",
@@ -39,9 +42,9 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 	public JdbcPropertiesDetails(String name){
 		this.setName(name);
 		if("hive".equals(name)){
-			url_key = template_hive+ url_key_root;
-			username_key = System.getProperty("user.name");
-			password_key = template_hive + password_key_root;
+			url_key = template_hive+ url_key_hive_root;
+			username_key = null;
+			password_key = template_hive + password_key_hive_root;
 		}else{
 			url_key = template + name + "." + url_key_root;
 			username_key = template + name + "." + user_key_root;
@@ -56,7 +59,11 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 		}catch(Exception e){
 			this.url = WorkflowPrefManager.getUserProperty(url_key);
 		}
-		this.username = WorkflowPrefManager.getUserProperty(username_key);
+		if(username_key == null){
+			this.username = System.getProperty("user.name");
+		}else{
+			this.username = WorkflowPrefManager.getUserProperty(username_key);
+		}
 		this.password = WorkflowPrefManager.getUserProperty(password_key);
 	}
 	
@@ -98,13 +105,6 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 						}
 					}
 				}catch(Exception e){}
-			}else if(keyStr.equals(template_hive+url_key_root)){
-				ans.add("hive");
-			}
-		}
-		if(!ans.contains("hive")){
-			if(WorkflowPrefManager.getSysProperty(template_hive+url_key_root) != null){
-				ans.add("hive");
 			}
 		}
 		Iterator<String> namesIt = allOK.keySet().iterator();

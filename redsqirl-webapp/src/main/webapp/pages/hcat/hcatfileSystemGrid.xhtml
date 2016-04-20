@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+<body>
+
+	<a4j:keepAlive beanName = "hcatBean"/>
+	<div id="hcatFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	
+		<h:form id="fileSysGridFormHcat">
+		
+			<a4j:jsFunction name="openFileHcat" action="#{hcatBean.openFile}" oncomplete="#{rich:component('hcatOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateTableHcat" action="#{hcatBean.selectFile}" reRender="hcatfs,hcatpath" oncomplete="resizeTables();">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+
+			<div class="pathHeader">
+				<h:outputText value="#{messages.label_path}" />
+				<h:inputText id="hcatpath" label="Path" styleClass="mainPageTextField" value="#{hcatBean.path}" maxlength="255" style="width:395px; margin-left:5px; background:white" 
+					onkeypress="return enableEnterKey(event, 'hcatfsPathBtn');"/>
+				
+				<a4j:commandLink id="hcatfsPathBtn" action="#{hcatBean.changePath}" reRender="hcatfs" style="color:#FFFFFF" 
+					oncomplete="resizeTables();" >
+					<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
+				</a4j:commandLink>
+			</div>
+			
+			<div class="divMenu">
+	
+				<a4j:commandLink action="#{hcatBean.deleteFile}" reRender="hcatfs" 
+					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
+					rendered="#{hcatBean.canDelete != null &amp;&amp; hcatBean.canDelete != 'NULL' &amp;&amp; not empty hcatBean.tableGrid.rows }" oncomplete="jQuery('#tabs-5').unblock();">
+					<h:graphicImage id="hcatbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HcatInterface_delete_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hcatBean.goPrevious}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+					rendered="#{not empty hcatBean.tableGrid.rows}" >
+					<h:graphicImage id="hcatbtUndo" value="../image/icons/button-previous.gif" title="#{messages.HcatInterface_previous_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hcatBean.goNext}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+					rendered="#{not empty hcatBean.tableGrid.rows}" >
+					<h:graphicImage id="hcatbtRedo" value="../image/icons/button-next.gif" title="#{messages.HcatInterface_next_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+				
+				<a4j:commandLink action="#{hcatBean.goUp}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+					rendered="#{not empty hcatBean.tableGrid.rows}" >
+					<h:graphicImage id="hcatgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+				
+				<a4j:commandLink id="hcatfsRefreshBtn" action="#{hcatBean.refreshPath}" reRender="hcatfs"
+					oncomplete="resizeTables();" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
+				</a4j:commandLink>
+			</div>
+
+			<rich:extendedDataTable id="hcatfs" value="#{hcatBean.tableGrid.rows}"
+				var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{hcatBean.tableState}" >
+
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="50px;">
+					<f:facet name="header">
+						<h:selectBooleanCheckbox onclick="selectAll(this, /hcatselect$/);"/>
+					</f:facet>
+					<h:selectBooleanCheckbox id="hcatselect" value="#{item.selected}" />
+				</rich:column>
+				
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="50px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<h:graphicImage value="../image/icons/icon-db.gif" title="#{messages.HcatInterface_properties_help}"
+						rendered="#{hcatBean.allProps[indexTable]['type'] == 'database'}" styleClass="btfileSystem" />
+					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.HcatInterface_properties_help}"
+						rendered="#{hcatBean.allProps[indexTable]['type'] == 'table' || hcatBean.allProps[indexTable]['type'] == 'partition'}" styleClass="btfileSystem" />
+						<f:param name="indexFileEdit" value="#{indexTable}" />
+				</rich:column>
+				
+				<rich:column sortBy="#{hcatBean.allProps[indexTable]['name']}" filterBy="#{hcatBean.allProps[indexTable]['name']}" 
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_name}" />
+					</f:facet>
+					<a4j:commandLink value="#{hcatBean.allProps[indexTable]['name']}"
+						title="#{hcatBean.allProps[indexTable]['name']}"
+						rendered="#{hcatBean.allProps[indexTable]['can_have_children'] == 'true'}"
+						action="#{hcatBean.selectFile}" reRender="hcatfs,hcatpath"
+						oncomplete="resizeTables();">
+						<a4j:actionparam name="nameFile" value="#{hcatBean.allProps[indexTable]['name']}" />
+					</a4j:commandLink>
+					<a4j:commandLink 
+					    value="#{hcatBean.allProps[indexTable]['name']}"
+					    title="#{hcatBean.allProps[indexTable]['name']}"
+					    rendered="#{hcatBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					    action="#{hcatBean.openFile}"
+					    oncomplete="#{rich:component('hcatOpenFileModalPanel')}.show();" >
+							<a4j:actionparam name="nameFile" value="#{hcatBean.allProps[indexTable]['name']}"/>
+     				</a4j:commandLink>
+				</rich:column>
+
+				<rich:columns value="#{hcatBean.tableGrid.titles == null? canvasBean.emptyList : hcatBean.tableGrid.titles}" var="column" index="ind" begin="1"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{column}" />
+					</f:facet>
+					<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
+				</rich:columns>
+
+			</rich:extendedDataTable>
+		</h:form>
+	</div>
+	
+	<a4j:region>	
+		<rich:modalPanel id="hcatOpenFileModalPanel" width="600" height="400"
+			style="overflow:auto;" >
+	
+			<f:facet name="header">Preview Table</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('hcatOpenFileModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hcatform6">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hcat/openFileHcat.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+
+</body>
+</html>

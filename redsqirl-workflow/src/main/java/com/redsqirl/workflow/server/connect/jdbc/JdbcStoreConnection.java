@@ -5,8 +5,10 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.idiro.utils.db.BasicStatement;
@@ -87,8 +89,68 @@ public class JdbcStoreConnection extends JdbcConnection{
 		return results;
 	}
 	
-	protected String execDesc(String table){
+	public static List<String> displaySelect(ResultSet rs,int maxToRead) throws SQLException{
+		int colNb = 0;
+		List<Integer> sizes = new LinkedList<Integer>();
+		List<List<String>> cells = new LinkedList<List<String>>();
+		int sizeCol = 0;
+		colNb = rs.getMetaData().getColumnCount();
+		{
+			// Set column names
+			List<String> row = new LinkedList<String>();
+			for (int i = 1; i <= colNb; ++i) {
+				row.add(rs.getMetaData().getColumnName(i));
+				sizeCol = rs.getMetaData().getColumnName(i).length();
+				sizes.add(sizeCol);
+			}
+			cells.add(row);
+		}
+		while (rs.next()) {
+			List<String> row = new LinkedList<String>();
+			for (int i = 1; i <= colNb; ++i) {
+				row.add(rs.getString(i));
+				sizeCol = rs.getString(i).length();
+				if(sizes.get(i-1) < sizeCol){
+					sizes.set(i-1, sizeCol);
+				}
+			}
+			cells.add(row);
+		}
+		rs.close();
+
+		// logger.info("displaySelect list size" + sizes.size() + " " +
+		// ans.size());
+		List<String> ans = new LinkedList<String>();
+		for (int i = 0; i < cells.size(); i++) {
+			List<String> row = cells.get(i);
+			String rowStr = "|";
+			for (int j = 0; j < row.size(); j++) {
+				rowStr += StringUtils.rightPad(row.get(j), sizes.get(j))+"|";
+			}
+			// logger.info("displaySelect -" + newLine + "-");
+			ans.add(rowStr);
+		}
+		
+		String tableLine = "+";
+		for (int j = 0; j < sizes.size(); j++) {
+			tableLine+= StringUtils.rightPad("",sizes.get(j),"-")+"+";
+			
+		}
+
+		if (ans.size() > 0) {
+			ans.add(1, tableLine);
+		}
+		ans.add(0,tableLine);
+		if (ans.size() < maxToRead) {
+			ans.add(ans.size(),tableLine);
+		}
+		
+		return ans;
+	}
+	
+	protected String[] execDesc(String table){
 		String fieldsStr = null;
+		String partsStr = "";
 		try {
 			String query = getBs().showFeaturesFrom(table);
 			ResultSet rs = null;
@@ -106,8 +168,12 @@ public class JdbcStoreConnection extends JdbcConnection{
 			boolean fieldPart = true;
 			while (rs.next()) {
 				boolean ok = true;
-				String name = rs.getString(nameIdx).toUpperCase();
-				String type = rs.getString(typeIdx).toUpperCase();
+				String name = null;
+				String type = null;
+				try{
+					name = rs.getString(nameIdx);
+					type = rs.getString(typeIdx);
+				}catch(Exception e){}
 				if (name == null || name.isEmpty() || name.contains("#")
 						|| type == null) {
 					logger.debug("name is null " + name == null + ", " + name);
@@ -133,6 +199,12 @@ public class JdbcStoreConnection extends JdbcConnection{
 						if (name != null && !name.isEmpty()
 								&& !name.contains("#") && type != null) {
 							++parts;
+							fieldsStr += ";" + name.trim() + "," + type.trim();
+							if(partsStr.isEmpty()){
+								partsStr += name.trim();
+							} else {
+								partsStr += "," + name.trim();
+							}
 						}
 					}
 					++i;
@@ -143,7 +215,11 @@ public class JdbcStoreConnection extends JdbcConnection{
 		} catch (Exception e) {
 			logger.error("Fail to check the existence " + table,e);
 		}
-		return fieldsStr;
+		if(logger.isDebugEnabled()){
+			logger.debug("desc "+table+": "+ fieldsStr);
+			logger.debug("partition "+table+": "+ partsStr);
+		}
+		return fieldsStr == null ? null: new String[]{fieldsStr,partsStr};
 	}
 	
 	public void resetUpdateTables(){

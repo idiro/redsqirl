@@ -126,6 +126,7 @@
 
 	    	  jQuery("[id$='openCanvasScreenHdfs']").click();
 	    	  jQuery("[id$='openCanvasScreenJdbc']").click();
+	    	  jQuery("[id$='openCanvasScreenHcat']").click();
 	    	  jQuery("[id$='openCanvasScreenSsh']").click();
 	    	  jQuery("[id$='openCanvasScreenHdfsBrowser']").click();
 
@@ -2070,19 +2071,25 @@
 					action="#{hdfsBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridForm"
 					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-					oncomplete="console.log('openCanvasScreenHdfs'); jQuery('#tabs-4').unblock();resiziFileSystem();" />
+					oncomplete="console.log('openCanvasScreenHdfs'); jQuery('#tabs-4').unblock();resizeFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenJdbc"
 					action="#{jdbcBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridFormJdbc"
 					onclick="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
-					oncomplete="console.log('openCanvasScreenJdbc'); jQuery('#tabs-5').unblock();resiziFileSystem();" />
+					oncomplete="console.log('openCanvasScreenJdbc'); jQuery('#tabs-5').unblock();resizeFileSystem();" />
+					
+				<a4j:commandLink id="openCanvasScreenHcat"
+					action="#{hcatBean.openCanvasScreen}" style="display:none;"
+					reRender="fileSysGridFormHcat"
+					onclick="jQuery('#tabs-6').block({ message: jQuery('#domMessageDiv9') });"
+					oncomplete="console.log('openCanvasScreenHcat'); jQuery('#tabs-6').unblock();resizeFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenSsh"
 					action="#{sshBean.openCanvasScreen}" style="display:none;"
 					reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
 					onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
-					oncomplete="console.log('openCanvasScreenSsh'); jQuery('#tabs-8').unblock();resiziRemoteFileSystem();" />
+					oncomplete="console.log('openCanvasScreenSsh'); jQuery('#tabs-8').unblock();resizeRemoteFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser"
 					action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
@@ -2684,6 +2691,10 @@
 							onclick="jQuery('#helpmain_jdbc').click();return false;"> <h:outputText
 									value="#{messages.label_tab_jdbcview}" />
 						</a></li>
+						<li><a href="#tabs-6"
+							onclick="jQuery('#helpmain_hcat').click();return false;"> <h:outputText
+									value="#{messages.label_tab_hcatview}" />
+						</a></li>
 
 
 						<button id="changeTabTabs2" style="border: hidden;">&#9660;</button>
@@ -2734,6 +2745,24 @@
 
 							<h:panelGroup>
 								<ui:include src="/pages/jdbc/jdbcfileSystemGrid.xhtml" />
+							</h:panelGroup>
+						</a4j:region>
+					</div>
+					<div id="tabs-6" class="tabBorder" style="overflow: hidden;">
+						<a4j:region>
+
+							<a4j:status
+								onstart="jQuery('#tabs-6').block({ message: jQuery('#domMessageDiv4') });"
+								onerror="jQuery('#tabs-6').unblock();"
+								onsuccess="jQuery('#tabs-6').unblock();"
+								onstop="jQuery('#tabs-6').unblock();" />
+
+							<div id="domMessageDiv4" style="display: none;">
+								<img src="../image/icons/waiting.gif" />
+							</div>
+
+							<h:panelGroup>
+								<ui:include src="/pages/hcat/hcatfileSystemGrid.xhtml" />
 							</h:panelGroup>
 						</a4j:region>
 					</div>

@@ -490,15 +490,14 @@ public class WorkflowPrefManager extends BlockManager {
 
 				PrintWriter s = new PrintWriter(file);
 
-				//default values
-
 				s.println("menu:Utils");
 				s.println("source");
-				s.println("send_email");
+				s.println("hcatalog_source");
 				s.println("file_text_source");
-				s.println("convert_file_text");
 				s.println("superactioninput");
 				s.println("superactionoutput");
+				s.println("convert_file_text");
+				s.println("send_email");
 				s.close();
 
 			} catch (Exception e) {

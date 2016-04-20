@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:outputText value="Content:" />
+	
+	<br />
+	<h:inputTextarea value="#{hcatBean.fileContent}" rows="500" cols="500"
+		style="border:1px solid;width:550px;height:278px;white-space: pre;overflow-wrap: normal;" disabled="true" />
+	
+	<br />
+
+	<h:panelGrid columns="1" id="prevHcatlBt" style="border:none; float:right;">
+	<a4j:commandButton value="#{messages.button_ok}"
+		styleClass="greenButton"
+		onclick="#{rich:component('hcatOpenFileModalPanel')}.hide();" />
+	</h:panelGrid>
+
+</ui:composition>

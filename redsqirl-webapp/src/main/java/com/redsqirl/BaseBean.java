@@ -171,6 +171,14 @@ public class BaseBean {
 
 		return (DataStore) session.getAttribute("jdbc");
 	}
+	
+	public DataStore getHCatInterface() throws RemoteException{
+
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+
+		return (DataStore) session.getAttribute("hcat");
+	}
 
 	/** getDataStoreArray
 	 * 

@@ -377,7 +377,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 				logger.info(fileName);
 
-				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
+				String regex = "[a-zA-Z]([^/ ]*)";
 				if (!fileName.matches(regex)) {
 					error = getMessageResources("msg_error_save");
 				}

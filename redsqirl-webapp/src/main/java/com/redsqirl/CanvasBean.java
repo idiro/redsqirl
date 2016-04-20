@@ -769,7 +769,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("checkName: "+getPath());
 
 		String msg = null;
-		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
+		String regex = "[a-zA-Z]([^/ ]*)";
 		String name[] = getPath().split("/");
 		if (name != null && !checkString(regex, name[name.length - 1])) {
 			msg = getMessageResources("msg_error_save");

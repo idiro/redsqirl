@@ -77,7 +77,7 @@ public class MapRedCompressedType extends MapRedTextType {
 	
 	@Override
 	public String[] getExtensions() throws RemoteException {
-		return new String[]{"*.bz2","*.bz"};
+		return new String[]{"*.bz2","*.bz","*.gz"};
 	}
 
 	/**
@@ -91,6 +91,7 @@ public class MapRedCompressedType extends MapRedTextType {
 		List<String> shouldHaveExt = new LinkedList<String>();
 		shouldHaveExt.add(".bz");
 		shouldHaveExt.add(".bz2");
+		shouldHaveExt.add(".gz");
 		return isPathValid(path,null,shouldHaveExt,true);
 	}
 	

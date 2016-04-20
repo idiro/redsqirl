@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -418,10 +419,13 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 			} else if (fCh.isFile()) {
 				InputStream inS = fs.open(p);
 				InputStream in = null;
-				BZip2CompressorInputStream bzipReader = null;
+				InputStream compressedReader = null;
 				if (path.endsWith(".bz2") || path.endsWith(".bz")){
-					bzipReader = new BZip2CompressorInputStream(inS);
-					in = bzipReader;
+					compressedReader = new BZip2CompressorInputStream(inS);
+					in = compressedReader;
+				}else if (path.endsWith(".gz")){
+					compressedReader = new GZIPInputStream(inS);
+					in = compressedReader;
 				}else{
 					in = inS;
 				}
@@ -434,8 +438,8 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 					ans.add(line.toString());
 					++lineNb;
 				}
-				if(bzipReader != null){
-					bzipReader.close();
+				if(compressedReader != null){
+					compressedReader.close();
 				}
 				inS.close();
 			}

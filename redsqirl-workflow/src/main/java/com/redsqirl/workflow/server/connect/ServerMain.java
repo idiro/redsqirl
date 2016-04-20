@@ -37,6 +37,7 @@ import org.apache.log4j.PatternLayout;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
@@ -111,11 +112,14 @@ public class ServerMain {
 				logger.debug("start server main");
 
 				String nameWorkflow = System.getProperty("user.name")+"@wfm";
-				String nameJdbc = System.getProperty("user.name")+"@jdbc";
-				String nameSshArray = System.getProperty("user.name")+"@ssharray";
-				String nameOozie = System.getProperty("user.name")+"@oozie";
+				
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
 				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
+				String nameHcat = System.getProperty("user.name")+"@hcat";
+				String nameJdbc = System.getProperty("user.name")+"@jdbc";
+				String nameSshArray = System.getProperty("user.name")+"@ssharray";
+				
+				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String namePrefs = System.getProperty("user.name")+"@prefs";
 				String nameSuperActionManager = System.getProperty("user.name")+"@samanager";
 
@@ -144,10 +148,16 @@ public class ServerMain {
 
 				logger.debug("nameWorkflow: "+nameWorkflow);
 				
-				
 				registry.rebind(
 						nameJdbc,
 						(DataStore) new JdbcStore()
+						);
+
+				logger.debug("nameJdbc: "+nameJdbc);
+				
+				registry.rebind(
+						nameHcat,
+						(DataStore) new HCatStore()
 						);
 
 				logger.debug("nameJdbc: "+nameJdbc);
