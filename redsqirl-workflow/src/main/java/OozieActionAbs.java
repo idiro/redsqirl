@@ -1,4 +1,3 @@
-package com.redsqirl.workflow.server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

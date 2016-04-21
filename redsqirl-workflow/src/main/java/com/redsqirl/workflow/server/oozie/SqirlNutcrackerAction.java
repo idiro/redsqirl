@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.idiro.hadoop.NameNodeVar;
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
@@ -44,7 +44,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * @author etienne
  * 
  */
-public class SqirlNutcrackerAction extends OozieActionAbs {
+public class SqirlNutcrackerAction extends OozieUniqueActionAbs {
 
 	/**
 	 * 

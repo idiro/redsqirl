@@ -36,7 +36,7 @@ import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.DataflowAction;
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -74,13 +74,13 @@ public abstract class SqlElement extends DataflowAction {
 	protected SqlGroupInteraction groupingInt;
 	
 	
-	public SqlElement(OozieActionAbs action)
+	public SqlElement(OozieUniqueActionAbs action)
 			throws RemoteException {
 		super(action);
 
 	}
 	
-	public SqlElement(OozieActionAbs action,DFEOptimiser optimiser)
+	public SqlElement(OozieUniqueActionAbs action,DFEOptimiser optimiser)
 			throws RemoteException {
 		super(action,optimiser);
 	}

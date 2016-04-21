@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
@@ -37,7 +37,7 @@ import com.redsqirl.workflow.server.interfaces.SuperElement;
  * @author etienne
  *
  */
-public class SubWorkflowAction extends OozieActionAbs implements OozieSubWorkflowAction{
+public class SubWorkflowAction extends OozieUniqueActionAbs implements OozieSubWorkflowAction{
 
 	/**
 	 * 

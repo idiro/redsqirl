@@ -17,9 +17,9 @@
  *  support@redsqirl.com
  */
 
-package com.redsqirl.workflow.server.interfaces;
+package com.redsqirl.workflow.server;
 
-import java.rmi.Remote;
+
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -32,22 +32,43 @@ import org.w3c.dom.Element;
  * @author etienne
  *
  */
-public interface OozieAction extends Remote{
-
+public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 	
-	Map<String,String> createOozieElements(
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4050182914018968247L;
+
+	/**
+	 * Default Conception
+	 * @throws RemoteException
+	 */
+	protected OozieUniqueActionAbs() throws RemoteException {
+		super();
+	}
+	
+	/**
+	 * Create an Oozie Element
+	 * @param oozieXmlDoc oozie xml document
+	 * @param action the action, parent element
+	 * @param fileNames the file names with path
+	 * @throws RemoteException
+	 */
+	public abstract void createOozieElement(
+			Document oozieXmlDoc, 
+			Element action, 
+			String[] fileNames)
+					throws RemoteException;
+	
+	
+	public Map<String,String> createOozieElements(
 			Document oozieXmlDoc, 
 			Element wf,
 			String actionName,
 			String[] fileNames)
-					throws RemoteException;
-	
-	/**
-	 * Get the extensions of the different files,
-	 * every extension have to be different.
-	 * @return Extensions of files
-	 * @throws RemoteException
-	 */
-	String[] getFileExtensions() throws RemoteException;
+					throws RemoteException{
+		
+		return null;
+	}
 	
 }

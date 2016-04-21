@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 import com.redsqirl.workflow.server.oozie.HiveAction;
 
-public class JdbcAction extends OozieActionAbs {
+public class JdbcAction extends OozieUniqueActionAbs {
 
 	/**
 	 * 

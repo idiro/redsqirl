@@ -25,10 +25,10 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 
 
-public class EmailAction extends OozieActionAbs{
+public class EmailAction extends OozieUniqueActionAbs{
 	
 	/**
 	 * 

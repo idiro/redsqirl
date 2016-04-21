@@ -26,7 +26,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 /**
@@ -35,7 +35,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * @author etienne
  *
  */
-public class HiveAction extends OozieActionAbs{
+public class HiveAction extends OozieUniqueActionAbs{
 
 	/**
 	 * 
