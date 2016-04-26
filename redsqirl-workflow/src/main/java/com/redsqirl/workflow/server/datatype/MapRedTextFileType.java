@@ -127,58 +127,23 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	@Override
 	public String isPathValid(String path) throws RemoteException {
-		List<String> shouldNotHaveExt = new LinkedList<String>();
-		shouldNotHaveExt.add(".bz");
-		shouldNotHaveExt.add(".bz2");
-		return isPathValid(path, shouldNotHaveExt,null);
-	}
-
-	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
-		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(path);
-		if(path != null){
-			if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
-				boolean found = false;
-				for(String extCur: shouldHaveExt){
-					found |= path.endsWith(extCur);
-				}
-				if(!found){
-					error = LanguageManagerWF.getText(
-							"mapredtexttype.shouldhaveext",
-							new Object[] { path,shouldHaveExt });
-
-				}
-			}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
-				boolean found = false;
-				for(String extCur: shouldNotHaveExt){
-					found |= path.endsWith(extCur);
-				}
-				if(found){
-					
-					if(shouldNotHaveExt != null && (shouldNotHaveExt.contains(".bz") || shouldNotHaveExt.contains(".bz2"))){
-						error = LanguageManagerWF.getText(
-								"mapredtexttype.shouldnothaveextcompresssile",
-								new Object[] { path,shouldNotHaveExt });
-					}else{
-						error = LanguageManagerWF.getText(
-								"mapredtexttype.shouldnothaveext",
-								new Object[] { path,shouldNotHaveExt });
-					}
-					
-				}
-			}
-			if (!hCh.isInitialized()) {
-				error = "internal error";
-			} else {
-				if (hCh.exists() && !hCh.isFile()) {
-					error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{path});
-				}
-
-			}
+		String ans = null;
+		if(path == null){
+			return null;
 		}
-		return error;
+		HdfsFileChecker hCh = new HdfsFileChecker(path);
+		HdfsFileChecker hChParent = new HdfsFileChecker(new Path(path).getParent());
+		if(!hCh.exists()){
+			if(!hChParent.exists()){
+				ans = "Parent folder "+new Path(path).getParent().toString()+" should exist.";
+			}
+		}else if(hCh.isDirectory()){
+			ans = path+" should be a file";
+		}
+		
+		return ans;
 	}
-	
+
 	/**
 	 * I
 	 */
@@ -325,7 +290,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 			return;
 		}
 
-		if (oldPath != null && !path.equalsIgnoreCase(oldPath)) {
+		if (!path.equalsIgnoreCase(oldPath)) {
 
 			super.setPath(path);
 
@@ -451,29 +416,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 		if (isPathValid() == null && isPathExist()) {
-			try {
-				FileSystem fs = NameNodeVar.getFS();
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
-						new PathFilter() {
-
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
-					}
-				});
-				if(stat.length > 0){
-					ans = new ArrayList<String>(maxToRead);
-					for (int i = 0; i < stat.length; ++i) {
-						ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
-								",",
-								(maxToRead / stat.length) + 1));
-					}
-				}
-			} catch (IOException e) {
-				String error = "Unexpected error: " + e.getMessage();
-				logger.error(error,e);
-				ans = null;
-			}
+			ans = hdfsInt.select(getPath(),getDelimiterOrOctal(),maxToRead);
 		}
 		return ans;
 	}
