@@ -5,7 +5,9 @@ h1 {
 }
 
 h2 {
-    color: #333
+    color: #333;
+    font-size: 70px;
+    text-align: center;
 }
 
 h3 {
@@ -34,8 +36,6 @@ h5 {
     font-weight:bold;
 }    
 
-
-
 .nav-list>li>a:hover{
     background-color:#c62127;
     color:white;
@@ -55,5 +55,17 @@ label {
     right: 0;
     z-index: 1030;
     height: 50px !important;
+}
+
+.container {
+	width: 100% !important;
+}
+
+.customfooter{
+	display: none;
+}
+
+.poweredBy{
+	display: none !important;
 }
 

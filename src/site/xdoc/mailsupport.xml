@@ -1,22 +1,4 @@
-<!-- 
-Copyright © 2016 Red Sqirl, Ltd. All rights reserved.
-Red Sqirl, Clarendon House, 34 Clarendon St., Dublin 2. Ireland
-
-This file is part of Red Sqirl
-
-User agrees that use of this software is governed by: 
-(1) the applicable user limitations and specified terms and conditions of 
-   the license agreement which has been entered into with Red Sqirl; and 
-(2) the proprietary and restricted rights notices included in this software.
-
-WARNING: THE PROPRIETARY INFORMATION OF Red Sqirl IS PROTECTED BY IRISH AND 
-INTERNATIONAL LAW.  UNAUTHORISED REPRODUCTION, DISTRIBUTION OR ANY PORTION
-OF IT, MAY RESULT IN CIVIL AND/OR CRIMINAL PENALTIES.
-
-If you have received this software in error please contact Red Sqirl at 
-support@redsqirl.com
--->
-
+<?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://maven.apache.org/XDOC/2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
@@ -25,20 +7,20 @@ support@redsqirl.com
   <body>
 
 
-<div>
-<h2>Contact Us</h2>
-<div>
-<h3>Public Channel</h3>
+<center>
+<span style="color:#333;font-size:70px;text-align:center;">Contact Us</span>
+</center>
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Public Channel</span>
+
 <p>Post your question on our 
 <a class="externalLink" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user">forum</a> or our public 
 <a class="externalLink" href="mailto:.user@redsqirl.com">mailing list</a>. </p>
-</div>
-<div class="section">
-<h3>Private Channel</h3>
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Private Channel</span>
+
 <p>Alternatively, you can reach us on a more private channel 
 <a class="externalLink" href="mailto:info@redsqirl.com">here</a>.</p>
-</div>
-</div>
 
 <input id="aux" type="hidden" ></input>
 

@@ -175,11 +175,9 @@ label {
 	display:block;
 	background-size: cover;
 	position:relative;
-	height: 450px;
 }
 .about {
 	padding: 3em 0 3em;
-	min-height:700px;
 	margin: 0 auto;
 }
 .about01 {
@@ -192,6 +190,7 @@ label {
 	font-size:3.5em;
 	color:#333;
 	font-weight:300;
+	text-transform: uppercase;
 }
 .about01 h3 span{
 	color: #c4161c;
@@ -315,11 +314,10 @@ img.five{
 .clients{
 	background: #fff;
 	width:100%;
-	height: 600px;
 	display:block;
 	background-size:cover;
 	text-align:center;
-	padding:5em 0;
+	padding:2em 0;
 }
 
 #hadoop{
@@ -354,10 +352,8 @@ img.five{
 .section05 {
 	background: #fff;
 	display: block;
-	padding-bottom: 100px;
-	padding-top: 100px;
-	min-height: 600px;
-	max-width: 750px;
+	padding-bottom: 40px;
+	padding-top: 10px;
 	margin: 0 auto;
 }
 .section05 h2{
@@ -376,7 +372,6 @@ img.five{
 	color:#222;
 	text-transform:uppercase;
 	font-weight:300;
-	margin-top: 80px;
 }
 .section05 p{
 	text-align: center;
@@ -413,7 +408,6 @@ img.five{
 .services{
 	background: #eee;
 	text-align:center;
-	min-height: 700px;
 	padding: 3em 0 1em;
 }
 .videoWrapper {
@@ -562,12 +556,10 @@ p.your-para span,p.message-para span{
 }
 .footer p{
 	margin:0;
-	font-size: 1.2em;
 	color:#848383;	
-	padding: 1.5em 0em 0 0;
 }
 p.footer-grid{
-	float: left;
+	text-align: center;
 }
 .footer a{
 	color:#b2b2b2;

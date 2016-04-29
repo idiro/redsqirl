@@ -1,6 +1,7 @@
 getPropreties = {
-	url: "http://localhost:9090/analytics-store/rest/"
-	//url: "http://dev:8091/analytics-store/rest/"
+	//url: "http://localhost:9090/analytics-store/rest/"
+        //url: "http://dev:8091/analytics-store/rest/"
+        url: "http://192.168.23.4:8091/analytics-store/rest/"
 }
 
 function sessionStorage() {
@@ -75,7 +76,7 @@ function login() {
 				sessionStorageToken(xhr.responseText);
 				$('#myModal').modal('hide');
 				checkMenu();
-				window.location.href = "softwareKeyInstall.html";
+				window.location.href = returnCorrectPath("softwareKeyInstall.html");
 			}
 		},
 		error: function (request, status, error) {
@@ -145,7 +146,7 @@ function download(url, data){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 
@@ -189,7 +190,7 @@ function signout() {
         		//console.log(xhr.responseText);
 			localStorage.removeItem("token");
 			localStorage.removeItem("email");
-			window.location.href = "index.html";
+			window.location.href = returnCorrectPath("index.html");
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
@@ -322,7 +323,7 @@ function requestKey(version, installationName, mac, email){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -356,7 +357,7 @@ function requestModuleKey(idk, idm, type, name){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -465,7 +466,7 @@ function requestNewPasswordForm(email){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -491,7 +492,7 @@ function getMyAccount() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -521,7 +522,7 @@ function updateAccount() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 		
@@ -548,7 +549,7 @@ function changePassword() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -581,7 +582,7 @@ function installationPopUp(moduleID, moduleVersionID) {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -595,3 +596,12 @@ function installationPopUp(moduleID, moduleVersionID) {
 	})
 
 }
+
+
+function returnCorrectPath(path) {
+	if (this.location.pathname.indexOf("/help/") !=-1) {
+		return "../"+path
+	}
+	return path;
+}
+

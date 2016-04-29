@@ -6,11 +6,25 @@
 <script src="javascript/analytics.js"></script>
 <script src="javascript/jquery.jqGrid.min.js"></script>
 <script src="javascript/grid.locale-en.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
-<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+<!--//google-analytics-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63375912-1', 'auto');
+  ga('send', 'pageview');
+</script>
 
 </head>
 
@@ -168,7 +182,34 @@ function reload(val) {
 
 </div>
 
-<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" >
+			<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" >
+			<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		</p>
+
+	 </div>
+
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+
+<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
+
 
 </body>
 </html>

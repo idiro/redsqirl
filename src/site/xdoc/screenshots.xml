@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+
+  <body>
+
+
+<center>
+<span style="color:#333;font-size:70px;text-align:center;">Screenshots</span>
+</center>
+
+<p>Here are a few screenshots showcasing some of Red Sqirl's features.</p>
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Empty Canvas</span>
+
+<p>This scheenshot has been taken just after sign in, it displays a blank canvas that is ready to be used for creating workflows.</p>
+
+<img class="img-responsive" src="images/emptycanvas.png" alt="Empty Canvas" />
+
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Working Canvas</span>
+
+<p>An example of workflow that is populated and ready to be run.</p>
+
+<img class="img-responsive" src="images/workingcanvas.png" alt="Working Canvas" />
+
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Popups</span>
+
+<p>An example of browser popup is shown below.</p>
+
+<img class="img-responsive" src="images/popups.png" alt="Popups" />
+
+
+<span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Help</span>
+
+<p>The dynamic 'help' contains the documentation a user needs for getting started and advanced settings.</p>
+
+<img class="img-responsive" src="images/help.png" alt="Help" />
+
+
+  </body>
+
+</document>

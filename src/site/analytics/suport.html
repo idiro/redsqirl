@@ -15,7 +15,6 @@ Big Data Hadoop Analytics Software</title>
 
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/jquery.validate.js"></script>
-<script src="javascript/vid.js"></script>
 <script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
 
@@ -38,7 +37,7 @@ Big Data Hadoop Analytics Software</title>
 
 </head>
 
-<body>
+<body> 
 
 
 <script>
@@ -56,6 +55,7 @@ $(document).ready(function() {
 		checkMenu();
 	},100);
 
+
 });
 
 $(document.body).on('hidden.bs.modal', function() {
@@ -70,10 +70,15 @@ function doSearchIndex(){
 
 
 
+
+
+
 $("span.menu").click(function(){
-	$(".top-nav ul").slideToggle(500, function(){
-	});
-});
+				$(".top-nav ul").slideToggle(500, function(){
+				});
+			});
+
+
 
 </script>
 
@@ -84,42 +89,25 @@ $("span.menu").click(function(){
 
 </div>
 
-
-
-	<div class="header">
-
-<video autoplay loop  poster="vid.jpg" id="bgvid" >
-<source src="vid.webm" type="video/webm">
-<source src="vid.mp4" type="video/mp4">
-</video>
+	
 
 
 
-		<div class="container">
 
-			<div class="header-matter">
-			
-				<h2>MAKE BIG DATA <span>EASY</span></h2>
-				<p><span>RED SQIRL </span> IS A DRAG & DROP DATA MINING TOOL FOR <span>HADOOP</span></p>
-				<input type="text" placeholder="What are the technologies you use today?" style="width:400px;position:relative;" id="textToSearch" onkeypress="return enableEnterKey(event, 'btSearchIndex');">
-				<input type="submit" id="btSearchIndex" class="contentButtonSearch" value="Search" style="position:relative;" onclick="event.preventDefault();doSearchIndex();" >
-			
-			</div>
-		</div>
-	</div>
 
+	
 	<!--content-->
 	<div class="content">
 		<div class="container01">
 			<div class="about01">
 
 			<div class="about" id="about">
-				<h3>WHAT IS <span>RED</span> SQIRL?</h3>
+				<h3><span>Search</span></h3>
 
 <div class="row">
 
 <div class="col-md-6">
-				<img id="icons" src="images/sqirl.png" class="img-responsive" alt="Red Sqirl" />
+<a href="search.html"><img id="icons" src="images/search.png" class="img-responsive" alt="Red Sqirl" width="200px" /></a>
 				</div>
 
 	<div class="col-md-6" style="position: relative; font-size: 1.4em; margin-top:20px; text-align: start;">
@@ -138,24 +126,25 @@ If you want to analyse large data sets in the most efficient way possible, Red S
 		</div>		
 			
 				
-				</div>		
+				</div>
+<a href="search.html"><img id="icons" src="images/linkicon.png" class="img-responsive" alt="link" width="60px" /></a>
 </div>
 							
 		</div>
 		<!---->
 <div class="clients">
 			 <div class="container">
-					<h3>What can <span>Red</span> Sqirl do?</h3>
+					<h3><span>Contact</span></h3>
 
 <div class="row">
 
 <div class="col-md-6">
 
-<img class="img-responsive" src="images/hadoopeco.png" alt="Hadoop Ecosystem" />
+<a href="mailsupport.html"><img id="icons" src="images/contact.png" class="img-responsive" alt="Red Sqirl" width="200px" /></a>
 
 </div>
 
-<div class="col-md-6" style="position:relative;font-size:1.4em;margin-top:100px;text-align:start;">
+<div class="col-md-6" style="position: relative; font-size: 1.4em; margin-top: 50px; text-align: start;">
 
 Analyze massive amounts of data rapidly and cost effectively.
 
@@ -170,64 +159,88 @@ For RedSqirl on the cloud <a href="mailsupport.html">contact us</a>
 
 						</div>
 					</div>
+<a href="mailsupport.html"><img id="icons" src="images/linkicon.png" class="img-responsive" alt="link" width="60px" /></a>
 				</div>
 <!---->
-			<div class="services" id="takelook">
-			 <div class="container">
-				 <div class="services-grid">
-					<h3><span>take</span> a look</h3>
-				</div>
-				
-				<div class="videoWrapper">
-   
-    <iframe width="960" height="540" src="https://www.youtube.com/embed/ymnXQsZ0B7Y?rel=0&amp;&amp;showinfo=0" style="border:0;" allowfullscreen></iframe>
+					</div>
 
-</div>
-			</div>	
-					                
-			</div>	
-	
 
-	<div class="sec5">
-<div class="section05" id="nextsteps" >
-			 </a><h3>Next <span>Steps</span></h3>
 
+<!--content-->
+	<div class="content">
+		<div class="container01">
+			<div class="about01">
+
+			<div class="about" id="about">
+				<h3><span>Forum</span></h3>
 
 <div class="row">
 
+<div class="col-md-6">
+<a href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user" target="_blank" ><img id="icons" src="images/forum.png" class="img-responsive" alt="Red Sqirl" width="200px" /></a>
+				</div>
+
+	<div class="col-md-6" style="position: relative; font-size: 1.4em; margin-top:20px; text-align: start;">
+					
+
+
+Red Sqirl is a web-based big data application that simplifies the analysis of large data sets. With Red Sqirl, you can quickly and cost-effectively access the power of the Hadoop eco-system, enhancing the productivity of data scientists and analysts.
+
+If you want to analyse large data sets in the most efficient way possible, Red Sqirl is the answer.
+
+
+				
+
+				</div>
+				
+		</div>		
+			
+				
+				</div>
+<a href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user" target="_blank" ><img id="icons" src="images/linkicon.png" class="img-responsive" alt="link" width="60px" /></a>
+</div>
+							
+		</div>
+		<!---->
+
+
+
+<!---->
+<div class="clients">
+			 <div class="container">
+					<h3><span>YouTube</span> Channel</h3>
+
+<div class="row">
 
 <div class="col-md-6">
 
-<img alt="Hadoop Ecosystem" src="images/workingcanvas.png" style="width:600px;float: right;" class="img-responsive" >
-</div>
-
-<div class="col-md-6" style="position: relative; font-size: 1.4em; text-align: start;">
-
-<div style="width: 75%;">
-
-<b>Screenshots: </b>You can find some Red Sqirl screenshots <a href="screenshots.html">here</a> to have an idea of what it will look like on your screen.
-<br/><br/>
-
-<b>Getting Started: </b>Red Sqirl can be installed easily on top of a Hadoop cluster. Please follow our <a href="gettingstarted.html">Getting started</a> guide.
-<br/><br/>
-
-<b>User Tutorial: </b>You can find user tutorials <a href="userguide.html">here</a>, once Red Sqirl is successfuly installed.
-<br/><br/>
-
-<b>Creating a package: </b>If you want to create a package, find more information <a href="pckdev.html">here</a>
+<a href="https://www.youtube.com/channel/UCXSM2JzoMjC9ayGHWna8rPQ" target="_blank" ><img id="icons" src="images/youtube.png" class="img-responsive" alt="Red Sqirl" width="200px" /></a>
 
 </div>
 
-</div>
+<div class="col-md-6" style="position: relative; font-size: 1.4em; margin-top: 50px; text-align: start;">
+
+Analyze massive amounts of data rapidly and cost effectively.
+
+Open platform that users can extend.
+
+Simplifies the Hadoop eco-system (Hadoop, Hive, Pig, HBase, Oozie, etc) so you don't have to master each of those underlying technologies.
+
+For RedSqirl on the cloud <a href="mailsupport.html">contact us</a>
 
 </div>
 
 
-</div>
-
+						</div>
+					</div>
+<a href="https://www.youtube.com/channel/UCXSM2JzoMjC9ayGHWna8rPQ" target="_blank" ><img id="icons" src="images/linkicon.png" class="img-responsive" alt="link" width="60px" /></a>
+				</div>
+<!---->
 					</div>
 
-					</div>
+
+
+	
 	
 	<div class="footer">
 		<div class="container">
