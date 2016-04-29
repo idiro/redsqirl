@@ -5837,3 +5837,7 @@ button.close {
     border-radius: 6px 0 6px 6px;
 }
 
+.footer > .container{
+	width: 100% !important;
+}
+

@@ -563,7 +563,6 @@ p.footer-grid{
 }
 .footer a{
 	color:#b2b2b2;
-	text-decoration:none;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-o-transition: 0.5s all;
