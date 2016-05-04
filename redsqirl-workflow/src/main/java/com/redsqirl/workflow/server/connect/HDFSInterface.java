@@ -989,15 +989,16 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 	public String copyFromRemote(String rfile, String lfile, String remoteServer) {
 		String error = null;
 		try {
-
+			logger.info("Copy "+remoteServer+":"+rfile+" to "+lfile);
 			SSHDataStore remoteDS = SSHInterfaceArray.getInstance().getStore(remoteServer);
-			Channel channel = remoteDS.getSession().openChannel("exec");
-			copyInHDFS(channel, rfile, lfile, remoteDS);
+			Channel channel = remoteDS.getSession().openChannel("sftp");
+			channel.connect();
+			error = copyInHDFS(channel, rfile, lfile, remoteDS);
 			channel.disconnect();
 		}catch (Exception e) {
 			error = LanguageManagerWF.getText("unexpectedexception",
 					new Object[] { e.getMessage() });
-			logger.debug(error, e);
+			logger.error(error, e);
 		}
 		return error;
 	}
@@ -1012,14 +1013,13 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 
 			String nameRdm = RandomString.getRandomName(20);
 			String tmpFileStr = System.getProperty("java.io.tmpdir")+"/"+nameRdm;
-
-			channel = channel.getSession().openChannel("sftp");
-			channel.connect();
-			ChannelSftp sftpChannel = (ChannelSftp) channel;
-
-			sftpChannel.get(rfile, tmpFileStr);
-			sftpChannel.exit();
-
+			
+			if(channel.isClosed()){
+				channel.connect();
+			}
+			logger.info("Copy "+rfile +" to "+tmpFileStr);
+			((ChannelSftp) channel).get(rfile, tmpFileStr);
+			logger.info("Copy local "+tmpFileStr +" to HDFS "+lfile);
 			fs.copyFromLocalFile(new Path(tmpFileStr), new Path(lfile));
 			new File(tmpFileStr).delete();
 
@@ -1027,27 +1027,35 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 		}else{
 
 			if ( !fs.exists(new Path(lfile)) ) {
-				if ( !fs.mkdirs(new Path(lfile)) )  // create the directory
+				if ( !fs.mkdirs(new Path(lfile)) ){  
+					// create the directory
 					error = lfile + ": Cannot create such directory";
-			} else if ( !fs.isDirectory(new Path(lfile)) ) //already exists as a file
+				}
+			} else if ( !fs.isDirectory(new Path(lfile)) ){ 
+				//already exists as a file
 				error = lfile + ": Not a directory";
+			}
 
-			logger.debug("create the directory " + lfile);
+			if(error == null){
+				logger.info("Create the directory " + lfile);
 
-			Map<String,Map<String,String>> files = remoteServer.getChildrenProperties(rfile);
-			logger.debug(files);
+				Map<String,Map<String,String>> files = remoteServer.getChildrenProperties(rfile);
+				logger.debug(files);
 
-			for (String path : files.keySet()) {
-				Map<String,String> props = files.get(path);
+				for (String path : files.keySet()) {
+					Map<String,String> props = files.get(path);
 
-				logger.debug(props.get("type") + " " + path);
+					logger.debug(props.get("type") + " " + path);
 
-				String fileName = path.replaceFirst(rfile, "");
-				//String fileName = path.substring(path.lastIndexOf("/"));
-				logger.debug("fileName " + fileName);
+					String fileName = path.replaceFirst(rfile, "");
+					//String fileName = path.substring(path.lastIndexOf("/"));
+					logger.debug("fileName " + fileName);
 
-				copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
-
+					error = copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
+					if(error != null){
+						break;
+					}
+				}
 			}
 
 		}

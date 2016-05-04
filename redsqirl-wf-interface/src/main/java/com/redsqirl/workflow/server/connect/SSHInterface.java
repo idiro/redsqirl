@@ -154,7 +154,7 @@ public class SSHInterface extends Storage implements SSHDataStore {
 		}
 
 		JSch jsch = new JSch();
-		Session session = jsch.getSession(System.getProperty("user.name"), host, port);
+		session = jsch.getSession(System.getProperty("user.name"), host, port);
 		session.setPassword(password);
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.connect();
