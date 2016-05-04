@@ -3,8 +3,12 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
+<properties>
+	<title>Contact Us</title>
+</properties>
 
-  <body>
+
+<body>
 
 
 <center>
@@ -14,7 +18,7 @@
 <span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Forum</span>
 
 <p>Post your question on our 
-<a class="externalLink" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user">forum</a> or our public 
+<a class="externalLink" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user">forum</a> or  our public 
 <a class="externalLink" href="mailto:.user@redsqirl.com">mailing list</a>. </p>
 
 <span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">E-mail us</span>
@@ -29,6 +33,6 @@
 <iframe id="email" src="http://localhost/igor/email.php" frameborder="0" width="500" height="500"></iframe>
 
 
-  </body>
+</body>
 
 </document>

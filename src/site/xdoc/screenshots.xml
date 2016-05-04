@@ -4,7 +4,11 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
 
-  <body>
+<properties>
+	<title>screenshots</title>
+</properties>
+
+<body>
 
 
 <center>
@@ -17,30 +21,30 @@
 
 <p>This scheenshot has been taken just after sign in, it displays a blank canvas that is ready to be used for creating workflows.</p>
 
-<img class="img-responsive" src="images/emptycanvas.png" alt="Empty Canvas" />
+<img class="img-responsive" src="images/emptycanvas.png" alt="Empty Canvas" style="width: 90%;" />
 
 
 <span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Working Canvas</span>
 
 <p>An example of workflow that is populated and ready to be run.</p>
 
-<img class="img-responsive" src="images/workingcanvas.png" alt="Working Canvas" />
+<img class="img-responsive" src="images/workingcanvas.png" alt="Working Canvas" style="width: 90%;" />
 
 
 <span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Popups</span>
 
 <p>An example of browser popup is shown below.</p>
 
-<img class="img-responsive" src="images/popups.png" alt="Popups" />
+<img class="img-responsive" src="images/popups.png" alt="Popups" style="width: 90%;" />
 
 
 <span style="color:#333;font-family:arial;font-size:3em;font-weight:500;">Help</span>
 
 <p>The dynamic 'help' contains the documentation a user needs for getting started and advanced settings.</p>
 
-<img class="img-responsive" src="images/help.png" alt="Help" />
+<img class="img-responsive" src="images/help.png" alt="Help" style="width: 90%;" />
 
 
-  </body>
+</body>
 
 </document>
