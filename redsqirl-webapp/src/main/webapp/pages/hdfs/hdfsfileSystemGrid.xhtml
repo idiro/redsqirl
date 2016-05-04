@@ -50,7 +50,7 @@
 			<a4j:jsFunction name="unselectAll" action="#{hdfsBean.tableGrid.unselectAll}" />
 			
 			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="unselectAll();#{rich:component('modalCopyMoveHdfs')}.show();" >
-			 <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
+				<a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
 			</a4j:jsFunction>
 			
 
@@ -172,30 +172,30 @@
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-					<h:graphicImage value="../image/icons/icon-connection.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{hdfsBean.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
-					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{hdfsBean.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
-						<f:param name="indexFileEdit" value="#{indexTable}" />
-						
-					<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
-						title="#{hdfsBean.allProps[indexTable]['name']}"
-						rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] == 'true'}"
-						action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath"
-						oncomplete="resizeTables();">
-						<a4j:actionparam name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
-							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
-								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
-								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
-								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
-							</rich:dragSupport>
-					</a4j:commandLink>
-					<a4j:commandLink 
-					    value="#{hdfsBean.allProps[indexTable]['name']}"
-					    title="#{hdfsBean.allProps[indexTable]['name']}"
-					    rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"
-					    action="#{hdfsBean.openFile}"
-					    oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
+						<h:graphicImage value="../image/icons/icon-connection.gif" title="#{messages.JdbcInterface_properties_help}"
+							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+						<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.JdbcInterface_properties_help}"
+							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
+							<f:param name="indexFileEdit" value="#{indexTable}" />
+							
+						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
+							title="#{hdfsBean.allProps[indexTable]['name']}"
+							rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] == 'true'}"
+							action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath"
+							oncomplete="resizeTables();">
+							<a4j:actionparam name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+									<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
+									<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
+									<a4j:actionparam name="path" value="#{hdfsBean.path}" />
+								</rich:dragSupport>
+						</a4j:commandLink>
+						<a4j:commandLink 
+						    value="#{hdfsBean.allProps[indexTable]['name']}"
+						    title="#{hdfsBean.allProps[indexTable]['name']}"
+						    rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"
+						    action="#{hdfsBean.openFile}"
+						    oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
 							<a4j:actionparam name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}"/>
 							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
 								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />

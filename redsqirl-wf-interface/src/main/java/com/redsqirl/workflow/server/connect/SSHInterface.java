@@ -154,7 +154,7 @@ public class SSHInterface extends Storage implements SSHDataStore {
 		}
 
 		JSch jsch = new JSch();
-		Session session = jsch.getSession(System.getProperty("user.name"), host, port);
+		session = jsch.getSession(System.getProperty("user.name"), host, port);
 		session.setPassword(password);
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.connect();
@@ -437,10 +437,21 @@ public class SSHInterface extends Storage implements SSHDataStore {
 			throws RemoteException {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
 		try {
-			ans = getProperties(channel.lstat(path));
+			
+			if(channel.isConnected()){
+				ans = getProperties(channel.lstat(path));
+			}else{
+				try {
+					channel.connect();
+				} catch (JSchException e) {
+					e.printStackTrace();
+				}
+				ans = getProperties(channel.lstat(path));
+			}
+			
 		} catch (SftpException e) {
 			logger.warn("Fail to get the properties of " + path);
-			logger.warn(e.getMessage());
+			logger.warn(e.getMessage(),e);
 		}
 		return ans;
 	}
@@ -450,19 +461,27 @@ public class SSHInterface extends Storage implements SSHDataStore {
 	 * @return Map of properties
 	 * @throws RemoteException
 	 */
-	public Map<String, String> getProperties(SftpATTRS atr)
-			throws RemoteException {
+	public Map<String, String> getProperties(SftpATTRS atr) throws RemoteException {
+		logger.debug("getProperties");
+		
 		Map<String, String> ans = new LinkedHashMap<String, String>();
+		
+		logger.debug("toString " + atr.toString());
+		
 		String[] stats = atr.toString().split(" ");
+		
 		ans.put(key_permission, stats[0]);
 		ans.put(key_owner, stats[1]);
 		ans.put(key_group, stats[2]);
+		
 		if(atr.isDir()){
 			ans.put(key_type, "directory");
 		}else{
 			ans.put(key_type, "file");
 		}
+		
 		logger.debug(ans.toString());
+		
 		return ans;
 	}
 

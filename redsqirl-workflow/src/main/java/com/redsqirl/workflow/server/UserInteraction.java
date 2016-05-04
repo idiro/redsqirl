@@ -276,7 +276,8 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 							}else{
 								readXml(cur,tree.add(cur.getNodeName()));
 							}
-						}else if(cur.getNodeType() == Node.TEXT_NODE){
+						}else if(cur.getNodeType() == Node.TEXT_NODE && 
+								!cur.getNodeValue().matches("["+whitespace_chars+"]*")){
 							tree.add(cur.getNodeValue());
 						}
 					}

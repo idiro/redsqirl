@@ -14,4 +14,4 @@ redsqirl-webapp/src/main/webapp/WEB-INF/lib/
 redsqirl-webapp/src/main/webapp/WEB-INF/.faces-config.xml.jsfdia
 target/
 redsqirl-repo/src/main/webapp/pages/
-
+redsqirl-webapp/.tern-project

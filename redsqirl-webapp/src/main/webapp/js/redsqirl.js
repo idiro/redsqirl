@@ -582,7 +582,7 @@ function changeFocusInput(value){
 	inputLastPosition = inputFocus.selectionEnd;
 	console.log(inputLastPosition);
 
-	jQuery('#divTableInteraction input').each(function(idx){
+	jQuery('#divTableInteraction input:text').each(function(idx){
 		if(jQuery(this).attr('id') === jQuery(value).attr('id')){
 			inputIndex = idx;
 		}
@@ -599,16 +599,16 @@ function findTable(){
 
 	var check = false;
 	var next = true;
-	jQuery('#divTableInteraction input').each(function(idx){
-		if(jQuery(this).attr("type") == "text"){
+	var found = false;
+	jQuery('#divTableInteraction input:text').each(function(idx){
 
-			if(inputIndex != undefined && inputIndex > idx){
+			if(inputIndex != undefined && inputIndex != "" && inputIndex > idx){
 				return true;
 			}
-
+			
 			if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
-
-				if(jQuery(inputFocus).val() != undefined){
+				
+				if(jQuery(inputFocus).val() != undefined && inputFocus != ""){
 
 					if(jQuery(this).attr('id') === jQuery(inputFocus).attr('id')){
 
@@ -621,6 +621,8 @@ function findTable(){
 								var search_text = jQuery('[id$="stringToReplace"]').val();
 
 								if(s.match(search_text)){
+									
+									found = true;
 
 									var n = search_text.length;
 									var input = inputFocus;
@@ -635,7 +637,7 @@ function findTable(){
 									input.focus();
 									input.setSelectionRange(x, y);
 									inputLastPosition = inputFocus.selectionEnd;
-
+																		
 									inputIndex = idx;
 
 									return false;
@@ -657,6 +659,7 @@ function findTable(){
 
 					if(check){
 						console.log("f1" + jQuery(this).val());
+						found = true;
 						var search_text = jQuery('[id$="stringToReplace"]').val();
 						var n = search_text.length;
 						var input = this;
@@ -667,7 +670,7 @@ function findTable(){
 						input.setSelectionRange(x, y);
 						inputFocus = input;
 						inputLastPosition = inputFocus.selectionEnd;
-
+						
 						inputIndex = idx;
 
 						return false;
@@ -675,6 +678,7 @@ function findTable(){
 
 				}else{
 					console.log(console.log("f2" + jQuery(this).val()));
+					found = true;
 					var search_text = jQuery('[id$="stringToReplace"]').val();
 					var n = search_text.length;
 					var input = this;
@@ -693,10 +697,27 @@ function findTable(){
 
 			}
 
-
-
-		}
 	});
+	
+	if(!found){
+		inputFocus = "";
+		inputLastPosition = "";
+		inputIndex = "";
+		
+		var exist = false;
+		jQuery('#divTableInteraction input:text').each(function(idx){
+			if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
+				exist = true;
+				return false;
+			}
+		});
+		if(exist){
+			findTable();
+			return false;
+		}else{
+			alert('No value found.');
+		}
+	}
 
 }
 
@@ -708,8 +729,8 @@ function findReplaceTable(){
 	}
 
 	var check = false;
-	jQuery('#divTableInteraction input').each(function(idx){
-		if(jQuery(this).attr("type") == "text"){
+	var found = false;
+	jQuery('#divTableInteraction input:text').each(function(idx){
 
 			if(inputIndex != undefined && inputIndex > idx){
 				return true;
@@ -726,6 +747,7 @@ function findReplaceTable(){
 							
 							if(inputFocus.selectionStart == inputFocus.selectionEnd){
 								alert('Please select something after');
+								found = true;
 								return false;
 							}
 							
@@ -744,6 +766,7 @@ function findReplaceTable(){
 
 									if(s.match(search_text)){
 
+										found = true;
 										var n = search_text.length;
 										var input = inputFocus;
 										var input_text = s;
@@ -757,8 +780,9 @@ function findReplaceTable(){
 										input.focus();
 										input.setSelectionRange(x, y);
 										inputLastPosition = inputFocus.selectionEnd;
-										inputIndex = idx;
 
+										inputIndex = idx;
+										
 										return false;
 									}
 
@@ -778,6 +802,7 @@ function findReplaceTable(){
 					}
 
 					if(check){
+						found = true;
 						var search_text = jQuery('[id$="stringToReplace"]').val();
 						var n = search_text.length;
 						var input = this;
@@ -788,13 +813,15 @@ function findReplaceTable(){
 						input.setSelectionRange(x, y);
 						inputFocus = input;
 						inputLastPosition = inputFocus.selectionEnd;
-
+						
 						inputIndex = idx;
+						
 						return false;
 					}
 
 				}else{
 
+					found = true;
 					var search_text = jQuery('[id$="stringToReplace"]').val();
 					var n = search_text.length;
 					var input = this;
@@ -805,23 +832,43 @@ function findReplaceTable(){
 					input.setSelectionRange(x, y);
 					inputFocus = input;
 					inputLastPosition = inputFocus.selectionEnd;
+					
 					inputIndex = idx;
+					
 					return false;
 
 				}
 
 			}
 
-		}
 	});
+	
+	if(!found){
+		inputFocus = "";
+		inputLastPosition = "";
+		inputIndex = "";
+		
+		var exist = false;
+		jQuery('#divTableInteraction input:text').each(function(idx){
+			if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
+				exist = true;
+				return false;
+			}
+		});
+		if(exist){
+			findTable();
+			return false;
+		}else{
+			alert('No value found.');
+		}
+	}
 
 }
 
 function replaceTable(){
 
 	var check = false;
-	jQuery('#divTableInteraction input').each(function(idx){
-		if(jQuery(this).attr("type") == "text"){
+	jQuery('#divTableInteraction input:text').each(function(idx){
 
 			if(jQuery(inputFocus).val() != undefined){
 
@@ -881,7 +928,6 @@ function replaceTable(){
 				return false;
 			}
 
-		}
 	});
 
 }
@@ -893,12 +939,10 @@ function findReplaceAllTable(){
 		return false;
 	}
 
-	jQuery('#divTableInteraction input').each(function(){
+	jQuery('#divTableInteraction input:text').each(function(){
 
-		if( jQuery(this).attr("type") == "text"){
-			console.log(jQuery(this).val());
-			jQuery(this).val((jQuery(this).val().replace(jQuery('[id$="stringToReplace"]').val(), jQuery('[id$="replaceValue"]').val())));
-		}
+		console.log(jQuery(this).val());
+		jQuery(this).val((jQuery(this).val().replace(jQuery('[id$="stringToReplace"]').val(), jQuery('[id$="replaceValue"]').val())));
 
 	});
 

@@ -36,7 +36,9 @@
  		<div id="moduleDetailDiv">
 			<h:form>
 				<a4j:outputPanel id="panel" ajaxRendered="true">
-					<h:outputLink value="search.xhtml">Back</h:outputLink><br />	
+					<h:outputLink value="search.xhtml">Back
+						<f:param name="type" value="#{analyticsStoreModuleDetailBean.moduleVersion.type}" />
+					</h:outputLink><br />	
 					<table>
 						<tr>
 							<td style="width:80%">

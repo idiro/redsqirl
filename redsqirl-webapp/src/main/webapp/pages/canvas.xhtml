@@ -501,12 +501,17 @@
 				for (var i = 0; i < status.length; i++) {
 					console.log("load: "+status[i][1]);
 					unblockRunningWorkflowJS();
-					if(i == status.length - 1){
+					
+					/* if(i == status.length - 1){
 					   console.log("last element");
 					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
 					}else{
 					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
-					}
+					   setSaved(status[i][0], false);
+					} */
+					
+					addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
+					setSaved(status[i][0], false);
 					
 				}
 				rerenderCanvasTab();
@@ -566,7 +571,7 @@
 		 	  
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null || !canvasExist) {
-	    	      addWorkflowTab(canvasName,workflowType);
+	    	      addWorkflowTab(canvasName,workflowType, path);
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  forceRefresh = true;
 	          }
@@ -639,17 +644,21 @@
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
-	      function addWorkflowTab(tabName,type){
+	      function addWorkflowTab(tabName,type, path){
 
 	    	  console.log("addWorkflowTab");
 		      
 	    	//<![CDATA[
-	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif"  ;
+	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif";
 	    	  
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');return false;\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
+              if(path == undefined || path == null || path == '' || path == 'undefined'){
+            	  path = 'Not Saved';
+              }
+              
+              jQuery( "<li class='locked canvasTabsInactive' title='"+ path +"' ><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');return false;\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
             		  tabName +"</span></a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"'); return false;\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -1000,6 +1009,10 @@
 	   		var name = getSelectedByName();
 			if (isSaved(name)){
 				if(!isRunning(name)){
+					
+					console.log("menuSave path " + getPathFile(name));
+					console.log("menuSave name " + name);
+					
 					save(getPathFile(name));
 			   	}
 	   		} else{
@@ -1141,6 +1154,13 @@
 	    		jQuery('[id$="installModelMsg"]').show();
 	        }
 	    }
+	   	
+	   	
+	   	function checkPathRestoreToRun(path){
+	   		if (path.match("redsqirl-backup")) {
+	   			alert("This canvas is backed up in: " + path + ". Please, don't forget to save!");
+	   		}
+	   	}
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -1530,7 +1550,7 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
 				<a4j:jsFunction name="setWorkflow"
-					reRender="installSubWorkflow"
+					reRender="menuSoftware,installSubWorkflow"
 					action="#{canvasBean.changeWorkflow}"
 					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());"
 					>
@@ -1852,7 +1872,7 @@
 
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS();"
+					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
@@ -2262,7 +2282,7 @@
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
-										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
+										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()));"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
@@ -2278,7 +2298,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu itemClass="canvasMenu">
+								<rich:dropDownMenu itemClass="canvasMenu" id="menuSoftware">
 
 									<f:facet name="label">
 										<h:panelGroup>
@@ -2459,7 +2479,7 @@
 					<div id="canvas-tabs">
 						<ul class="ulCssCanvas removeDefaults topBanner"
 							style="width: 100%;">
-							<li class="locked canvasTabsInactive">
+							<li class="locked canvasTabsInactive" title="Not Saved" >
 								<a href="#flowchart-canvas-1" class="canvasTab"
 									onclick="setWorkflow('canvas-1');">
 									<img src="../image/workflow_tab.gif" style="width:15px;padding-right:5px;position:relative;top:3px;"/>
@@ -2972,7 +2992,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
+		<rich:modalPanel id="modalInstallPackage" width="850" height="600"
 			resizeable="true">
 			<f:facet name="header">
 				<h:panelGroup>
