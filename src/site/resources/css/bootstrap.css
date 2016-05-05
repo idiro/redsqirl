@@ -140,8 +140,15 @@ input::-moz-focus-inner {
   border: 0;
 }
 input {
-  line-height: normal;
+ line-height: normal;
+
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ margin-bottom: 2px;
+ padding: 0 5px;
+ transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 }
+
 input[type="checkbox"],
 input[type="radio"] {
   box-sizing: border-box;

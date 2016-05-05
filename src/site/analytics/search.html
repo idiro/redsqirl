@@ -62,9 +62,15 @@ function doSearch(value) {
 
 		jQuery.each(data, function(i) {
 
-			jQuery(".packageList").append("<div class='packageItem' ><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ (data[i].type == 'package' ? "<img src='images/verified_package.png' style='height:20px;margin-top:10px;' title='package' />" : "<img src='images/new_module.gif' style='height:20px;margin-top:10px;' title='model' />")  + "</div><div class='title'>" + data[i].name + " </div>"+ (getsessionToken() !== null ? "<input type='submit' class='contentbutton' value='Request Key' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' style='position:relative;margin-left:5px;top:40px;z-index:2;' data-toggle='modal' data-target='#modalModuleDetail' >" : "<input type='submit' class='contentbutton' value='Request Key' style='position:relative;margin-left:5px;top:40px;z-index:2;opacity:0.4;' disabled>") +" <div class='license'>" + data[i].tags + "</div> <div class='license' style='margin-right:0px;'>" + data[i].price + "</div> <div class='shortDescription'>"+ data[i].shortDescription +"</div> <div><a href='moduleDetail.html?id="+ data[i].id +"'><img src='images/more_details.png' style='position:relative;float:right;bottom:-20px;height:20px;padding-right:5px;' title='More details' /></a></div> </div>");
+			jQuery(".packageList").append("<div class='packageItem' ><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ (data[i].type == 'package' ? "<img src='images/verified_package.png' style='height:20px;margin-top:10px;' title='package' />" : "<img src='images/new_module.gif' style='height:20px;margin-top:10px;' title='model' />")  + "</div><div class='title'>" + data[i].name + " </div> <input type='submit' class='contentbutton' value='Request Key' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' style='position:relative;margin-left:5px;top:40px;z-index:2;' > <div class='license'>" + data[i].tags + "</div> <div class='license' style='margin-right:0px;'>" + data[i].price + "</div> <div class='shortDescription'>"+ data[i].shortDescription +"</div> <div><a href='moduleDetail.html?id="+ data[i].id +"'><img src='images/more_details.png' style='position:relative;float:right;bottom:-20px;height:20px;padding-right:5px;' title='More details' /></a></div> </div>");
+			
 
 		});
+
+		if(getsessionToken() == null){
+			jQuery("#notSingIn").append("<a href='#' onclick='msg();' ><img src='images/questionmark.png' width='25px' class='img-responsive' /></a>");
+		}
+
 	});
 
 }
@@ -74,6 +80,9 @@ function reload() {
 	doSearch(JSON.stringify(jQuery('#search').serializeArray().reduce(function(a, x) { a[x.name] !== undefined ? a[x.name] = '' : a[x.name] = x.value; return a; }, {})));
 }
 
+function msg() {
+	alert("To download one of these packages or models, in order to use them in your Red Sqirl environment, you will need to register or sign in to the App Store first.");
+}
 
 </script>
 
@@ -96,6 +105,11 @@ function reload() {
 
 
 <input type="submit" class="contentbutton" value="Search" onclick="event.preventDefault();reload();" >
+
+
+<div id="notSingIn" style="display:ruby;" ></div>
+
+
 
 </div>
 
