@@ -890,9 +890,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			component.appendChild(commentEl);
 
 			//Oozie Action Id
-			Element oozieActionIdEl = doc.createElement("oozeactionid");
-			oozieActionIdEl.appendChild(doc.createTextNode(cur.getOozieActionId()));
-			component.appendChild(oozieActionIdEl);
+			Element oozieActionNamesEl = doc.createElement("oozeactionnames");
+			Iterator<String> itOozieElements = cur.getLastRunOozieElementNames().iterator();
+			while(itOozieElements.hasNext()){
+				String curOozieElement = itOozieElements.next();
+				Element oozieActionNameEl = doc.createElement("oozeactionname");
+				oozieActionNameEl.appendChild(doc.createTextNode(curOozieElement));
+				oozieActionNamesEl.appendChild(oozieActionNameEl);
+			}
+			component.appendChild(oozieActionNamesEl);
 			
 			// Position
 			logger.debug("add positions...");
@@ -1307,13 +1313,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			} catch (Exception e) {
 			}
 			
-			String compOozeactionid = null;
-			try {
-				compOozeactionid = ((Element) compCur)
-						.getElementsByTagName("oozeactionid").item(0)
-						.getChildNodes().item(0).getNodeValue();
-			} catch (Exception e) {
-			}
 
 			int x = Integer.valueOf(((Element) (((Element) compCur)
 					.getElementsByTagName("position").item(0)))
@@ -1329,7 +1328,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			getElement(id).setPosition(x, y);
 			getElement(id).setComment(compComment);
-			getElement(id).setOozieActionId(compOozeactionid);
+			
+			Set<String> lastRunOozieElements = new LinkedHashSet<String>();
+			try{
+				NodeList compOozieElements= ((Element) ((Element) compCur).getElementsByTagName("oozeactionnames").item(0))
+						.getElementsByTagName("oozeactionname");
+				for (int oozieElIdx = 0; oozieElIdx < compOozieElements.getLength() && error == null; ++oozieElIdx) {
+					Node compOozieCur = compOozieElements.item(oozieElIdx);
+					lastRunOozieElements.add(compOozieCur.getChildNodes().item(0).getNodeValue());
+				}
+			}catch(Exception e){
+				try {
+					lastRunOozieElements.add(((Element) compCur)
+							.getElementsByTagName("oozeactionid").item(0)
+							.getChildNodes().item(0).getNodeValue());
+				} catch (Exception e2) {
+				}
+			}
+			getElement(id).setLastRunOozieElementNames(lastRunOozieElements);
+			
 			error = getElement(id).readValuesXml(
 					((Element) compCur).getElementsByTagName("interactions")
 							.item(0));

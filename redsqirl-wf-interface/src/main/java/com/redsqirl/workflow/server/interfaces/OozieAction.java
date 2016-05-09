@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -35,9 +36,8 @@ import org.w3c.dom.Element;
 public interface OozieAction extends Remote{
 
 	
-	Map<String,String> createOozieElements(
+	Map<String,Element> createOozieElements(
 			Document oozieXmlDoc, 
-			Element wf,
 			String actionName,
 			String[] fileNames)
 					throws RemoteException;

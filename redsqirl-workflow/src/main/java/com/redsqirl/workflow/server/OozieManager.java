@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -463,16 +464,24 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String jobId = df.getOozieJobId();
 
 		if (jobId != null) {
-			try{
+			
+			Set<String> actionNames = dfe.getLastRunOozieElementNames();
+			int found = 0;
+			Iterator<String> it = actionNames.iterator();
+			boolean curFound = true;
+			while(it.hasNext() && curFound){
+				String cur = it.next();
+				curFound = false;
 				for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-					String actionName = "act_" + dfe.getOozieActionId();
-					if (actionName.equals(wfa.getName())) {
+					if (cur.equals(wfa.getName())) {
 						status = wfa.getStatus().toString();
-						logger.info("getElementStatus  " + status);
+						curFound = true;
+						++found;
+						break;
 					}
 				}
-			}catch(OozieClientException e){
-				logger.warn(e,e);
+			}
+			if(found == 0){
 				status = "UNKNOWN";
 			}
 		}
@@ -531,11 +540,18 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		if (jobId != null) {
 			Iterator<WorkflowAction> it = oc.getJobInfo(jobId).getActions()
 					.iterator();
-			OozieXmlCreator xmlC = new OozieXmlForkJoinPaired();
+			Set<String> actionEls = e.getLastRunOozieElementNames();
 			while (it.hasNext() && found == null) {
 				WorkflowAction cur = it.next();
-				if (xmlC.getNameAction(e).equals(cur.getName())) {
-					found = cur.getConsoleUrl();
+				
+				//TODO
+				if(actionEls.contains(cur.getName())){
+					if(actionEls.size() > 1){
+						found = getConsoleUrl(df);
+					}else{
+						found = cur.getConsoleUrl();
+					}
+					 
 				}
 			}
 		}

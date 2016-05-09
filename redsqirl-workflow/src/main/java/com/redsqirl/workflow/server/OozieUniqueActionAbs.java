@@ -21,8 +21,10 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -60,15 +62,30 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 			String[] fileNames)
 					throws RemoteException;
 	
-	
-	public Map<String,String> createOozieElements(
+	/**
+	 * List of Oozie element ordered, the last one have to be linked to the next action.
+	 */
+	@Override
+	public Map<String,Element> createOozieElements(
 			Document oozieXmlDoc, 
-			Element wf,
 			String actionName,
 			String[] fileNames)
 					throws RemoteException{
 		
-		return null;
+		Element action = oozieXmlDoc.createElement("action");
+		Attr attrName = oozieXmlDoc.createAttribute("name");
+		attrName.setValue(actionName);
+		
+		// Create a join node
+		action.setAttributeNode(attrName);
+		
+		createOozieElement(
+				oozieXmlDoc, 
+				action, 
+				fileNames);
+		Map<String,Element> ans = new HashMap<String,Element>(1);
+		ans.put(actionName,action);
+		return ans;
 	}
 	
 }

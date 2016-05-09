@@ -41,20 +41,5 @@ public interface OozieXmlCreator  extends Remote{
 	String createXml(DataFlow df, 
 			List<RunnableElement> list,
 			File directory) throws RemoteException;
-	/**
-	 * Get a list of output action names
-	 * @param list
-	 * @return List of output names
-	 * @throws RemoteException
-	 */
-	List<String> getNameActions(List<RunnableElement> list)
-			throws RemoteException;
-	/**
-	 * Get an action name for the Element
-	 * @param e
-	 * @return name of action
-	 * @throws RemoteException
-	 */
-	String getNameAction(RunnableElement e) throws RemoteException;
 	
 }

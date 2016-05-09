@@ -4,9 +4,11 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -27,6 +29,7 @@ DFEOptimiser {
 	private static final Logger logger = Logger.getLogger(ActionOptimiser.class);
 	protected List<DataFlowElement> elementList = new LinkedList<DataFlowElement>();
 	protected OozieAction oozieAction;
+	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();;
 	
 	protected ActionOptimiser(OozieAction oozieAction) throws RemoteException {
 		super();
@@ -34,7 +37,7 @@ DFEOptimiser {
 	}
 
 	@Override
-	public void resetElementList() {
+	public void resetElementList() throws RemoteException {
 		elementList.clear();
 	}
 
@@ -61,8 +64,9 @@ DFEOptimiser {
 	public abstract boolean isSupported(DataFlowElement dfe) throws RemoteException;
 
 	@Override
-	public void writeProcess(Document oozieXmlDoc, Element action, File localDirectoryToWrite, String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException {
+	public Map<String,Element> writeProcess(Document oozieXmlDoc,
+			File localDirectoryToWrite, String pathFromOozieDir) throws RemoteException {
+		String actionName = getComponentId();
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
 
@@ -70,8 +74,8 @@ DFEOptimiser {
 
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
-			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension + extensions[i];
-			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension	+ extensions[i]);
+			fileNames[i] = pathFromOozieDir + "/" + actionName + extensions[i];
+			files[i] = new File(localDirectoryToWrite, actionName	+ extensions[i]);
 			
 			logger.debug("writeProcess fileNames  " + fileNames[i].toString());
 			logger.debug("writeProcess files  " + files[i].toString());
@@ -79,8 +83,8 @@ DFEOptimiser {
 
 		logger.debug("writeProcess 1");
 
-		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
-
+		Map<String,Element>  ans = oozieAction.createOozieElements(oozieXmlDoc, actionName, fileNames);
+		
 		logger.debug("writeProcess 2");
 
 		writeOozieActionFiles(files,elementList);
@@ -89,6 +93,8 @@ DFEOptimiser {
 		for(DataFlowElement el:elementList){
 			el.setLastTimeRun(System.currentTimeMillis());
 		}
+		
+		return ans;
 	}
 
 
@@ -139,11 +145,11 @@ DFEOptimiser {
 	@Override
 	public void resetCache() throws RemoteException {
 		Iterator<DataFlowElement> it = elementList.iterator();
-		String oozieActionId = getOozieActionId();
+		Set<String> lastRunOozieELementNames = getLastRunOozieElementNames();
 		while(it.hasNext()){
 			DataFlowElement cur = it.next();
 			cur.resetCache();
-			cur.setOozieActionId(oozieActionId);
+			cur.setLastRunOozieElementNames(lastRunOozieELementNames);
 		}
 	}
 
@@ -178,12 +184,12 @@ DFEOptimiser {
 	}
 
 	@Override
-	public String getOozieActionId() throws RemoteException {
-		return getComponentId();
+	public Set<String> getLastRunOozieElementNames() throws RemoteException{
+		return lastRunOozieElementNames;
 	}
-
+	
 	@Override
-	public void setOozieActionId(String oozieActionId) throws RemoteException {
+	public void setLastRunOozieElementNames(Set<String> lastRunOozieElementNames) throws RemoteException{
+		this.lastRunOozieElementNames = lastRunOozieElementNames;
 	}
-
 }

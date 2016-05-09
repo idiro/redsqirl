@@ -19,15 +19,13 @@
 
 package com.redsqirl.workflow.server.interfaces;
 
-import java.io.File;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 /**
  * Element that will be used to perform actions
@@ -89,7 +87,6 @@ public interface DataFlowElement extends RunnableElement{
 	 * @throws RemoteException
 	 */
 	String getHelp() throws RemoteException;
-	
 	
 	/**
 	 * Replace in all interaction a string by another

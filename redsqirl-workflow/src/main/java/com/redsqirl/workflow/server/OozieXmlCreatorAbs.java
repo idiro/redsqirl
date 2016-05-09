@@ -180,7 +180,7 @@ implements OozieXmlCreator{
 	 * @return list of actions names
 	 * @throws RemoteException 
 	 */
-	@Override
+	/*@Override
 	public List<String> getNameActions(List<RunnableElement> list)
 			throws RemoteException{
 		List<String> lName = new LinkedList<String>();
@@ -189,16 +189,16 @@ implements OozieXmlCreator{
 			lName.add(getNameAction(itDFE.next()));
 		}
 		return lName;
-	}
+	}*/
 	/**
 	 * Get action name
 	 * @param e element to get action name of
 	 * @return action name
 	 * @throws RemoteException
 	 */
-	@Override
+	/*@Override
 	public String getNameAction(RunnableElement e) throws RemoteException{
 		return "act_"+e.getComponentId();
-	}
+	}*/
 
 }

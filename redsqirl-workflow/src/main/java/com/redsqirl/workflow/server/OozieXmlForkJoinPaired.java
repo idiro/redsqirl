@@ -408,6 +408,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			String endElement, File directoryToWrite, List<RunnableElement> list, boolean ignoreBuffered)
 			throws RemoteException {
 
+		class ElOozie{
+			protected RunnableElement rEl;
+			protected String oozieFirstEl;
+			protected String oozieLastEl;
+			
+			public ElOozie(){}
+		}
+		
 		logger.debug("createOozieJob");
 
 		// Get delete list
@@ -416,43 +424,51 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		logger.debug("createDelete OK");
 		
 		//Get the output Element for the given Dataflow Name
-		Map<String,RunnableElement> outputName = new HashMap<String,RunnableElement>(list.size());
+		Map<String,ElOozie> outputName = new HashMap<String,ElOozie>(list.size());
 		Iterator<RunnableElement> it = list.iterator();
 		while (it.hasNext()) {
 			RunnableElement cur = it.next();
-			try{
-				outputName.put(((DFEOptimiser) cur).getFirst().getComponentId(), cur);
-			}catch(Exception e){
-				outputName.put(cur.getComponentId(),cur);
+			ElOozie curOo = new ElOozie();
+			curOo.rEl = cur;
+			if (cur.getOozieAction() != null) {
+				logger.debug("Create action " + cur.getComponentId());
+				Map<String,Element> curOozieActions = cur.writeProcess(doc, directoryToWrite, directoryToWrite.getName());
+				String[] curStrArr = curOozieActions.keySet().toArray(new String[curOozieActions.size()]);
+				curOo.oozieFirstEl = curStrArr[0];
+				curOo.oozieLastEl = curStrArr[curOozieActions.size()-1];
+				if(curStrArr.length > 1){
+					Iterator<String> itOozieActions = curOozieActions.keySet().iterator();
+					String prev = null;
+					while(itOozieActions.hasNext()){
+						String oozieActionStr = itOozieActions.next();
+						if(prev != null){
+							Set<String> outS = new HashSet<String>();
+							outS.add(oozieActionStr);
+							outEdges.put(prev, outS);
+						}
+						prev = oozieActionStr;
+					}
+				}
 			}
+			try{
+				outputName.put(((DFEOptimiser) cur).getFirst().getComponentId(), curOo);
+			}catch(Exception e){
+				outputName.put(cur.getComponentId(),curOo);
+			}
+			
 		}
 		
 		// Do action
-		it = list.iterator();
-		while (it.hasNext()) {
-			RunnableElement cur = it.next();
-			logger.debug("Create action " + cur.getComponentId());
-			if (cur.getOozieAction() != null) {
-				logger.debug("Oozie action is not null");
-				String attrNameStr = getNameAction(cur);
-				logger.debug("attrNameStr " + attrNameStr);
-				// Implement the action
-				Element action = doc.createElement("action");
-				Attr attrName = doc.createAttribute("name");
-				attrName.setValue(attrNameStr);
-				// Create a join node
-				action.setAttributeNode(attrName);
-
-				// Create action node
-				logger.debug("write process...");
-				cur.writeProcess(doc, action, directoryToWrite, directoryToWrite.getName(), getNameAction(cur));
-
+		Iterator<ElOozie> elOozieIt = outputName.values().iterator();
+		while (elOozieIt.hasNext()) {
+			ElOozie cur = elOozieIt.next();
+			RunnableElement rEl = cur.rEl;
+			
+			if (rEl.getOozieAction() != null) {
 				logger.debug("Plug with delete of previous actions...");
 
-				// Get What is after
-				//TODO
-				Set<String> out = new HashSet<String>(cur.getAllInputComponent().size()	+ cur.getAllOutputComponent().size());
-				Iterator<DataFlowElement> itIn = cur.getAllInputComponent().iterator();
+				Set<String> out = new HashSet<String>(rEl.getAllInputComponent().size()	+ rEl.getAllOutputComponent().size());
+				Iterator<DataFlowElement> itIn = rEl.getAllInputComponent().iterator();
 				while (itIn.hasNext()) {
 					DataFlowElement in = itIn.next();
 					DFEOptimiser inOpt = in.getDFEOptimiser();
@@ -473,21 +489,19 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						}
 					}
 				}
-				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent().iterator();
+				Iterator<DataFlowElement> itOut = rEl.getAllOutputComponent().iterator();
 				while (itOut.hasNext()) {
 					DataFlowElement outEl = itOut.next();
-					RunnableElement outRL = outputName.get(outEl.getComponentId());
+					ElOozie outRL = outputName.get(outEl.getComponentId());
 					if(outRL != null){
-						out.add(getNameAction(outRL));
+						out.add(outRL.oozieFirstEl);
 					}
 				}
+				
 				if (out.isEmpty()) {
 					out.add(endElement);
 				}
-
-				elements.put(attrNameStr, action);
-				outEdges.put(attrNameStr, out);
-
+				outEdges.put(cur.oozieLastEl, out);
 			}
 		}
 	}

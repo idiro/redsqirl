@@ -29,10 +29,12 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
@@ -113,6 +115,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	private String runningStatus;
 	
 	private Long lastTimeRun;
+	
+	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();;
 
 	//private static Logger logger = Logger.getLogger(.class);
 
@@ -1116,10 +1120,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 
 	@Override
-	public void writeProcess(Document oozieXmlDoc, Element action,
-			File localDirectoryToWrite, String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException {
-
+	public Map<String,Element> writeProcess(Document oozieXmlDoc,
+			File localDirectoryToWrite, String pathFromOozieDir) throws RemoteException {
+		String actionName = getComponentId();
 		waLogger.debug("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
@@ -1129,8 +1132,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
-			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension + extensions[i];
-			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension	+ extensions[i]);
+			fileNames[i] = pathFromOozieDir + "/" + actionName + extensions[i];
+			files[i] = new File(localDirectoryToWrite, actionName	+ extensions[i]);
 			
 			waLogger.debug("writeProcess fileNames  " + fileNames[i].toString());
 			waLogger.debug("writeProcess files  " + files[i].toString());
@@ -1138,14 +1141,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		waLogger.debug("writeProcess 1");
 
-		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
-
+		Map<String,Element>  ans = oozieAction.createOozieElements(oozieXmlDoc, actionName, fileNames);
+		setLastRunOozieElementNames(ans.keySet());
 		waLogger.debug("writeProcess 2");
 
 		writeOozieActionFiles(files);
 
 		waLogger.debug("writeProcess 3");
 		lastTimeRun = System.currentTimeMillis();
+		return ans;
 	}
 	
 	@Override
@@ -1247,7 +1251,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		}
 		setRunningStatus(null);
-		setOozieActionId(getComponentId());
 	}
 
 	@Override
@@ -1304,14 +1307,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public void setLastTimeRun(Long lastTimeRun){
 		this.lastTimeRun = lastTimeRun;
 	}
-
+	
 	@Override
-	public String getOozieActionId(){
-		return oozieActionId == null? getComponentId():oozieActionId;
+	public Set<String> getLastRunOozieElementNames() throws RemoteException{
+		return lastRunOozieElementNames;
 	}
 	
 	@Override
-	public void setOozieActionId(String oozieActionId){
-		this.oozieActionId = oozieActionId;
+	public void setLastRunOozieElementNames(Set<String> lastRunOozieElementNames) throws RemoteException{
+		this.lastRunOozieElementNames = lastRunOozieElementNames;
 	}
 }

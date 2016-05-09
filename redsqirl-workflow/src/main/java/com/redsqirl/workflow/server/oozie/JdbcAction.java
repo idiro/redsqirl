@@ -16,7 +16,7 @@ public class JdbcAction extends OozieUniqueActionAbs {
 	 */
 	private static final long serialVersionUID = 7581034254093689611L;
 	protected boolean hiveAction;
-	protected OozieAction action;
+	protected OozieUniqueActionAbs action;
 	
 	public JdbcAction() throws RemoteException {
 		super();
