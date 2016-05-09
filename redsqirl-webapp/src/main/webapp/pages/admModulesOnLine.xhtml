@@ -48,7 +48,7 @@ function searchJS(){
 
 	<h:form>
 	
-	<a4j:jsFunction name="updateDefaultInstallation" action="#{analyticsStoreSearchBean.init}" />
+	<a4j:jsFunction name="updateDefaultInstallation" oncomplete="searchJS();" />
 		
 		<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:-1;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
 		<img src="./image/analytics_store_logo.gif" style="width:180px;" onError="this.onerror=null;this.src='../image/analytics_store_logo.gif';" />
@@ -124,7 +124,7 @@ function searchJS(){
 						
 						<br/><br/>
 					
-						<iframe id="moduleIframe" src="../pages/admSearch.xhtml?userInstall=false" width="780px" height="600px" style="border:none;" />
+						<iframe id="moduleIframe" src="../pages/admSearch.xhtml?userInstall=false" width="800px" height="600px" style="border:none;" />
     						
     				</center>
     				

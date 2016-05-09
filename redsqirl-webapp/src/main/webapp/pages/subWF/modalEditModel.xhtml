@@ -109,9 +109,10 @@
 		<table style="width: 100%; height: 100% !important; display: block;">
 			<tbody style="width: 100%">
 				<tr style="width: 100%; right: 0px; position: relative;">
-					<td style="width: 50px; padding: 0px; margin: 0px;"><img
-						id="modelImgOutput" src="#{modelBean.model.image}"
-						style="margin-right: -27px" /> <h:graphicImage
+					<td style="width: 50px; padding: 0px; margin: 0px;">
+						<img id="modelImgOutput" src="#{modelBean.model.image}" style="width:50px;
+}" />
+						<h:graphicImage
 							url="../image/icons/button-pencil02.gif" id="modelImgEdit"
 							onclick="showEditModelImg();" style="width:20px;"
 							title="#{messages.label_text_editor}" /> <rich:fileUpload

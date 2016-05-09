@@ -136,7 +136,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	protected int nbOozieRunningActions;
 	
-	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count");
+	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count", "right", "left", "sample");
 
 	protected String path;
 	
