@@ -1,7 +1,7 @@
 getPropreties = {
-	//url: "http://localhost:9090/analytics-store/rest/"
+	url: "http://localhost:9090/analytics-store/rest/"
         //url: "http://dev:8091/analytics-store/rest/"
-        url: "http://192.168.23.4:8091/analytics-store/rest/"
+        //url: "http://192.168.23.4:8091/analytics-store/rest/"
 }
 
 function sessionStorage() {
@@ -298,6 +298,12 @@ function validadeRequestKeyForm(version, installationName, mac, email){
 
 	});
 
+	var regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+	if(!regex.test(mac.toUpperCase())){
+		empty = false;
+		alert('Mac address is not valid.');
+	}
+
 	if(empty){
 		requestKey(version, installationName, mac, email);
 	}
@@ -329,6 +335,9 @@ function requestKey(version, installationName, mac, email){
 	}).then(function(data) {
 		if(data.error != ""){
 			alert(data.error);
+		}else{
+			alert('Your key have been created successfully');
+			window.location.href = returnCorrectPath("softwareKeyInstall.html");
 		}
 	});
 
@@ -364,7 +373,8 @@ function requestModuleKey(idk, idm, type, name){
 		if(data.error != ""){
 			alert(data.error);
 		}else{
-			alert('success');
+			alert('Your Model key have been created successfully');
+			window.location.href = returnCorrectPath("installations.html?id="+idk);
 		}
 	});
 

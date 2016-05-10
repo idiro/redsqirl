@@ -15,6 +15,7 @@
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
 
 <!--//google-analytics-->
@@ -78,6 +79,7 @@ function softwareKey() {
 	    sortable: true,
 	    autowidth: true,
             shrinkToFit: true,
+	    loadonce: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -88,8 +90,10 @@ function softwareKey() {
 	    },
 	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
-		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+a[0].softwareKeyID);
-		$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		if(a[0] !== undefined){
+			$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+a[0].softwareKeyID);
+			$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
@@ -103,7 +107,7 @@ function softwareKey() {
 		}
 	    }
 	});
-	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
+	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
 	
 }
 
@@ -115,8 +119,16 @@ function softwareKey() {
 
 <p style="text-align:center;font-size:30px;padding: 10px 0;">Request Module key</p>
 
-<div class="divTab">
 
+<p> 
+
+This page list the module installed into the Red Sqirl installation. From here you can Download a module or request a key for a module that you own.
+
+</p>
+
+
+
+<div class="divTab">
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>

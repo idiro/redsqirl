@@ -59,11 +59,11 @@ avoid permission conflicts.
 
   [[04]] Go http://localhost:<portNumber>/redsqirl and check.
 
-  [[05]] Choose between On-line - if the server can connect to the analytics-store server - (step 6) or Off-line(step 7) in the combobox.
+  [[05]] Choose between On-line - if the server can connect to the website - (step 6) or Off-line(step 7) in the combobox.
 
   [[06]] On-line
 
-     [[i]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
+     [[i]] At first, you will need to create an website user. Then, sign in with your new credentials.
 
      [[ii]] Install the recommended default package and any other package. Go to 8. 
 
@@ -71,7 +71,7 @@ avoid permission conflicts.
 
      [[i]] Sign in with your OS details. 
 
-     [[ii]] On the first page follow the Analytics Store link, register an account and sign in.
+     [[ii]] On the first page follow the website link, register an account and sign in.
 
      [[iii]] Go to Red Sqirl>>Installation, Click on the green button New licence key and fill the form. Be aware to choose the Red Sqirl version you downloaded.
 

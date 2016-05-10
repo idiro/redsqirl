@@ -4,20 +4,17 @@
             
 Package Management
             
-	Red Sqirl Packages are managed by another application called the
-{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+	Red Sqirl Packages are managed by the website.
 
 * Install New packages
 
   In order to gain accessibility or functionality you can install packages.
-Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the
-Analytics Store website. Once a package is installed users may have to configure
+Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the website. Once a package is installed users may have to configure
 settings, sign out and back in before using it. 
 
 ** Online installation
 
- If your Red Sqirl instance can reach the
-{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, packages can be
+ If your Red Sqirl instance can reach the website, packages can be
 installed by the users or through the registered email you use to generate the
 Red Sqirl license.
 
@@ -39,7 +36,7 @@ Red Sqirl license.
 
  * Go in Software > Install Package > Install.
 
- * Log in to the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, you can register a user if needs be.
+ * Log in to the website, you can register a user if needs be.
 
  * Choose the package and click install.
 
@@ -51,7 +48,7 @@ Red Sqirl license.
  In offline mode, only the administrator can sign in. You will need to add them
 manually in the system setting file first.
 
- * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+ * Log in on the website.
 
  * Go in Red Sqirl > Search, choose your package and click install.
 
@@ -71,7 +68,7 @@ manually in the system setting file first.
 * Upload a New Package
 
 
- * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+ * Log in on the website.
 
  * Go in Red Sqirl > Packages.
 

@@ -15,6 +15,7 @@
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
 
 <!--//google-analytics-->
@@ -57,7 +58,7 @@ function softwareKey() {
 	    colModel: [
 		{ name: 'date', index: 'date', width: 40, align: 'left' },
 		{ name: 'installationName', index: 'installationName', width: 150, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='installations.html?id="+ rowObject.id +"' class='labelLinkTable'>"+cellvalue+"</a>";
+		         return "<a href='installations.html?id="+ (rowObject.id !== undefined ? rowObject.id : rowObject._id_) +"' class='labelLinkTable'>"+cellvalue+"</a>";
 		    }
 		},
 		{ name: 'ownerName', index: 'ownerName', width: 150, align: 'left' },
@@ -70,11 +71,13 @@ function softwareKey() {
 	    width: '790',
 	    viewrecords: true,
 	    sortorder: "desc",
+	    firstsortorder: "desc", 
 	    ajaxGridOptions: { contentType: "application/json" },
 	    headertitles: true,
 	    sortable: true,
 	    autowidth: true,
             shrinkToFit: true,
+	    loadonce: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -85,12 +88,14 @@ function softwareKey() {
 	    },
 	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
-		$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
+		if(a[0] !== undefined){
+			$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
+		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
 	    },
-	loadError : function(xhr,st,err) {
+	    loadError : function(xhr,st,err) {
 		console.log(xhr);
 		console.log(st);
 		console.log(err);
@@ -100,10 +105,10 @@ function softwareKey() {
 			localStorage.removeItem("email");
 			window.location.href = "index.html";
 		}
-	}
+	    }
 
 	});
-	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
+	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
 
 }
 
@@ -115,6 +120,11 @@ function softwareKey() {
 
 
 <p style="text-align:center;font-size:30px;padding: 10px 0;">Request Software key</p>
+
+
+<p> This page list the RedSqirl installations that are available to you.
+</br>
+For creating and downloading a new installation, you need to request a key first. </p>
 
 
 <div class="divTab">
