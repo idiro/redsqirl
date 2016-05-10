@@ -352,6 +352,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if(error != null){
 				throw new Exception(error);
 			}
+			nbOozieRunningActions = elementToRun.size();
 			
 			toRun = new ArrayList<RunnableElement>(elementToRun.size());
 			Iterator<DataFlowElement> it = elementToRun.iterator();
@@ -597,7 +598,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		if (error == null) {
 			try {
 				setOozieJobId(OozieManager.getInstance().run(this, toRun));
-				nbOozieRunningActions = toRun.size();
 				logger.debug("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
 				error = "Unexpected error: " + e.getMessage();

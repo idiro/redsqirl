@@ -1144,7 +1144,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					setTotalProgressBar(getOozie().getNbElement(getDf()));
 					runningElements = getOozie().getElementsRunning(getDf());
 					doneElements = getOozie().getElementsDone(getDf());
-					setValueProgressBar(doneElements.size()*100/totalProgressBar);
+					setValueProgressBar( (long) ((0.1 * runningElements.size()+ doneElements.size())*100/totalProgressBar));
 				} catch (Exception e) {
 					logger.error(e,e);
 				}

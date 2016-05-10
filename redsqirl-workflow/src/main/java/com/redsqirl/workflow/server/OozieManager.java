@@ -57,6 +57,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
+import com.redsqirl.workflow.server.connect.WorkflowInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
@@ -496,10 +497,23 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		List<String> ans = new LinkedList<String>();
 		String jobId = df.getOozieJobId();
 		if (jobId != null) {
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				if(WorkflowAction.Status.RUNNING.equals(wfa.getStatus())
-						&& wfa.getName().startsWith("act_")){
-					ans.add(wfa.getName().substring(4));
+			Iterator<DataFlowElement> it = WorkflowInterface.getInstance().getWorkflow(df.getName()).getElement().iterator();
+			List<WorkflowAction> lWA = oc.getJobInfo(jobId).getActions();
+			while(it.hasNext()){
+				DataFlowElement curEl = it.next();
+				Iterator<String> itOozieAction = curEl.getLastRunOozieElementNames().iterator();
+				boolean end = false;
+				while(itOozieAction.hasNext() && !end){
+					String curOozieAct = itOozieAction.next();
+					for (WorkflowAction wfa : lWA){
+						if(wfa.getName().equals(curOozieAct)){ 
+							if(WorkflowAction.Status.RUNNING.equals(wfa.getStatus())){
+								ans.add(curEl.getComponentId());
+								end = true;
+							}
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -523,10 +537,32 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		List<String> ans = new LinkedList<String>();
 		String jobId = df.getOozieJobId();
 		if (jobId != null) {
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				if(WorkflowAction.Status.OK.equals(wfa.getStatus())
-						&& wfa.getName().startsWith("act_")){
-					ans.add(wfa.getName().substring(4));
+			Iterator<DataFlowElement> it = WorkflowInterface.getInstance().getWorkflow(df.getName()).getElement().iterator();
+			List<WorkflowAction> lWA = oc.getJobInfo(jobId).getActions();
+			while(it.hasNext()){
+				DataFlowElement curEl = it.next();
+				Set<String> lastrunOozieElementNames = curEl.getLastRunOozieElementNames();
+				int nbOkEl = 0;
+				boolean end = false;
+				if(lastrunOozieElementNames != null){
+					Iterator<String> itOozieAction = lastrunOozieElementNames.iterator();
+					while(itOozieAction.hasNext() && !end){
+						String curOozieAct = itOozieAction.next();
+						for (WorkflowAction wfa : lWA){
+							if(wfa.getName().equals(curOozieAct)){ 
+								if(WorkflowAction.Status.OK.equals(wfa.getStatus())){
+									++nbOkEl;
+								}else{
+									end = true;
+								}
+								break;
+							}
+						}
+					}
+				}
+				if(!end && nbOkEl > 0
+						&& nbOkEl == lastrunOozieElementNames.size()){
+					ans.add(curEl.getComponentId());
 				}
 			}
 		}
@@ -543,8 +579,6 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			Set<String> actionEls = e.getLastRunOozieElementNames();
 			while (it.hasNext() && found == null) {
 				WorkflowAction cur = it.next();
-				
-				//TODO
 				if(actionEls.contains(cur.getName())){
 					if(actionEls.size() > 1){
 						found = getConsoleUrl(df);

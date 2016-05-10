@@ -449,6 +449,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						prev = oozieActionStr;
 					}
 				}
+				elements.putAll(curOozieActions);
 			}
 			try{
 				outputName.put(((DFEOptimiser) cur).getFirst().getComponentId(), curOo);
