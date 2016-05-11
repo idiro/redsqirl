@@ -43,8 +43,8 @@ public class JdbcStoreConnection extends JdbcConnection{
 	// Refresh every 3 seconds
 	/** Refresh count */
 	protected static final long refreshTimeOut = 20000;
-	protected static long updateTables = 0;
-	protected static boolean listing = false;
+	protected long updateTables = 0;
+	protected boolean listing = false;
 	
 	public JdbcStoreConnection(JdbcDetails arg0, RedSqirlBasicStatement arg1)
 			throws Exception {
@@ -67,6 +67,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 	public final List<String> listTables() throws SQLException, RemoteException {
 		if(!listing){
 			if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
+				logger.debug("Refresh table list");
 				listing = true;
 				tables = execListTables();
 				updateTables = System.currentTimeMillis();

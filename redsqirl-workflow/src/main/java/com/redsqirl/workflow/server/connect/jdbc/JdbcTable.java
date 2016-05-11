@@ -228,13 +228,7 @@ public class JdbcTable extends DataOutput{
 			return exists;
 		}
 		
-		if(js.exists(getPath())){
-			List<String> firstLine = js.select(getPath(), "\001" ,1);
-			logger.debug("First line in "+getPath()+": "+firstLine);
-			exists = firstLine != null && !firstLine.isEmpty();
-		}
-		
-		return exists;
+		return js.exists(getPath());
 	}
 
 	@Override
