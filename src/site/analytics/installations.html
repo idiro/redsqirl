@@ -57,7 +57,7 @@ function softwareKey() {
 	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
 	    colModel: [
 		{ name: 'id', index: 'id', width: 13, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='#' onclick='downloadModule("+rowObject.idModuleVersion+");' ><img src='images/download_module.gif' alt='my image' /></a>";
+		        return "<a href='#' onclick='downloadModule("+rowObject.idModuleVersion+");' ><img src='images/download_module.gif' alt='my image' title='Download Module' /></a>";
 		    }
 		},
 		{ name: 'date', index: 'date', width: 50, align: 'left' },
@@ -90,9 +90,12 @@ function softwareKey() {
 	    },
 	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
+		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+getUrlParameter('id'));
 		if(a[0] !== undefined){
-			$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+a[0].softwareKeyID);
 			$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		}
+		if(a !== undefined && a == ''){
+			jQuery("#myGridDiv").append("<img src='images/arrowDown.gif' width='30px' height='30px'> Click here to create a new Module key");
 		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
@@ -117,7 +120,9 @@ function softwareKey() {
 
 <div class="mainContent" id="mainPanel">
 
-<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Module key</p>
+<a href="softwareKeyInstall.html" >Back</a>
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Module Key Manager</p>
 
 
 <p> 
@@ -132,8 +137,8 @@ This page list the module installed into the Red Sqirl installation. From here y
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestModuleKey.html" id="linkModuleKey"><img class="iconBT" src="images/new_key.gif"></a>
-<a href="#" id="downloadModuleKey"><img class="iconBT" src="images/download_keys.gif"></a>
+<a href="requestModuleKey.html" id="linkModuleKey"><img class="iconBT" src="images/new_key.gif" title="Install new Module key" ></a>
+<a href="#" id="downloadModuleKey"><img class="iconBT" src="images/download_keys.gif" title="Download licence key" ></a>
 
 
 </div>

@@ -90,24 +90,28 @@ jQuery(document).ready(function() {
 <div class="mainContent" id="mainPanel">
 
 
+<a href="softwareKeyInstall.html">Back</a>
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Generate Software Key</p>
+
+
 
 <form style="width:570px;" id="requestKeyForm" >
-
-<a href="softwareKeyInstall.html">Back</a>
 
 <br>
 <span style="display:block;width:150px;float:left;text-align:right;">Version</span>
 <select style="width:400px;float:left;margin-left:5px;" size="1" id="selectVersion">
 </select>
-<br>
+</br>
 <span style="display:block;width:150px;float:left;text-align:right;">Installation Name</span>
 <input type="text" placeholder="Name of the installation" style="width:400px;float:left;margin-left:5px;" id="installationName" >
-<br>
+</br>
 <span style="display:block;width:150px;float:left;text-align:right;" id="labelSoftwareParametersID"></span>
 <span id="valueSoftwareParametersID"></span>
-<br>
-<br>
-<input type="submit" class="contentbutton" value="Generate Key" onclick="event.preventDefault();validadeRequestKeyForm($('#selectVersion').val(), $('#installationName').val(), $('#valueSoftwareParametersID').children().val(), getsessionEmail() );" >
+</br>
+</br>
+</br>
+<input type="submit" class="contentButtonSubPages" value="Generate Key" onclick="event.preventDefault();validadeRequestKeyForm($('#selectVersion').val(), $('#installationName').val(), $('#valueSoftwareParametersID').children().val(), getsessionEmail() );" >
 </form>
 
 </div>

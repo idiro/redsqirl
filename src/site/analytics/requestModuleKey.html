@@ -63,6 +63,9 @@ jQuery(document).ready(function () {
 		jQuery.each(obj, function(i,v) {
 			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.value +"</option>");
 		});
+		if(Object.keys(obj).length == 0){
+			alert('You don\'t onw any Module');
+		}
 		
 		$("#selectVersion option[value='"+ getUrlParameter('idm') +"']").prop('selected', true);
 
@@ -103,11 +106,14 @@ function backInstallations(){
 
 <div class="mainContent" id="mainPanel">
 
+<a href="#" onclick="backInstallations();" >Back</a>
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Generate Module Key</p>
+
+<p>Module list contains just Modules that you own. If you want to generate a key for another module, please go in <a href="search.html">Search</a></p>
 
 
 <form style="width:570px;" id="requestModuleKeyForm" >
-
-<a href="#" onclick="backInstallations();" >Back</a>
 
 <br>
 <span style="display:block;width:150px;float:left;text-align:right;">Module</span>
@@ -131,7 +137,7 @@ function backInstallations(){
 <input type="text" placeholder="User Name" style="width:400px;float:left;display:block;display:none;margin-left:5px;" id="idFormRequestModuleKey:idRequestModuleKeyUserField">
 <br>
 <br>
-<input type="submit" class="contentbutton" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val(), $('input:radio:checked').val(), $('#idFormRequestModuleKey\\:idRequestModuleKeyUserField').val());" >
+<input type="submit" class="contentButtonSubPages" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val(), $('input:radio:checked').val(), $('#idFormRequestModuleKey\\:idRequestModuleKeyUserField').val());" >
 </form>
 
 </div>

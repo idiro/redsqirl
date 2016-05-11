@@ -91,6 +91,9 @@ function softwareKey() {
 		if(a[0] !== undefined){
 			$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
 		}
+		if(a !== undefined && a == ''){
+			jQuery("#myGridDiv").append("<img src='images/arrowDown.gif' width='30px' height='30px'> Click here to create a new Software key");
+		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
@@ -119,7 +122,7 @@ function softwareKey() {
 <div class="mainContent" id="mainPanel">
 
 
-<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Software key</p>
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Software Key Manager</p>
 
 
 <p> This page list the RedSqirl installations that are available to you.
@@ -132,7 +135,7 @@ For creating and downloading a new installation, you need to request a key first
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestApplicationKey.html" id="linkApplicationKey"><img class="iconBT" src="images/new_key.gif"></a>
+<a href="requestApplicationKey.html" id="linkApplicationKey" ><img class="iconBT" src="images/new_key.gif" title="Install new Software key" ></a>
 
 
 </div>

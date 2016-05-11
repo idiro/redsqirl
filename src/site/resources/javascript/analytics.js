@@ -92,7 +92,7 @@ function register() {
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"createnewuser",
-		data: JSON.stringify({ firstName: jQuery("#firstName").val(), lastName: jQuery("#lastName").val(), email: jQuery("#emailRegister").val(), company: jQuery("#company").val(), password: jQuery("#password").val() }),
+		data: JSON.stringify({ firstName: jQuery("#firstName").val(), lastName: jQuery("#lastName").val(), email: jQuery("#emailRegister").val(), company: jQuery("#company").val(), password: jQuery("#passwordRegister").val() }),
 		complete: function(xhr, textStatus) {
 			
 		},
@@ -344,7 +344,11 @@ function requestKey(version, installationName, mac, email){
 }
 
 function validadeRequestModuleKeyForm(idk, idm, type, name){
-	requestModuleKey(idk, idm, type, name);
+	if (idm !== "" && idm !== null && idm !== undefined && type !== "" && type !== null && type !== undefined){
+		requestModuleKey(idk, idm, type, name);
+	}else{
+		alert('Your need select one module and one scope to create Module key');
+	}
 }
 
 function requestModuleKey(idk, idm, type, name){
@@ -571,7 +575,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "zip/"+val;
+	a.href = "download/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
