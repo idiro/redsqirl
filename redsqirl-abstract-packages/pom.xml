@@ -36,7 +36,6 @@ support@redsqirl.com
     <packaging>pom</packaging>
     <version>${hadoop.version}-0.11</version>
 
-
     <modules>
 	<module>redsqirl-base-sql</module>
     </modules>

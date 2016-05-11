@@ -56,7 +56,7 @@ DFEOptimiser {
 	}
 
 	@Override
-	public void resetElementList() throws RemoteException {
+	public void resetElementList() throws RemoteException{
 		elementList.clear();
 	}
 

@@ -39,6 +39,7 @@ support@redsqirl.com
 
     <artifactId>redsqirl-base-sql</artifactId>
     <version>${hadoop.version}-0.11</version>
+
     <packaging>jar</packaging>
     <name>Red Sqirl - Sql Base Package</name>
     <description>Provide basic sql actions</description>
