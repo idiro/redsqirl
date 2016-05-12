@@ -113,6 +113,19 @@
 	    ]
 	},
 	{
+	    "name": "email",
+	    "settings": [
+	    {
+		"property": "user_email_address",
+		"scope": "user",
+		"optional": "true",
+		"default": "",
+		"type": "STRING"
+	    }
+	    ]
+	},
+
+	{
 	    "name":"hcatalog",
 	    "settings": [
 	    {

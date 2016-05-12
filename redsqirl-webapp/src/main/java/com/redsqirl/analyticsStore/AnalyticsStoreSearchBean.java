@@ -21,10 +21,8 @@ package com.redsqirl.analyticsStore;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -34,11 +32,11 @@ import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -50,7 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -68,6 +65,8 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	private static final long serialVersionUID = 5119862157796243985L;
 
 	private static Logger logger = Logger.getLogger(AnalyticsStoreSearchBean.class);
+	
+	private Map<String,String> modulesToInstall = new LinkedHashMap<String,String>();
 
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
 
@@ -101,6 +100,13 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		try {
 			updateShowDefaultInstallation();			
 			setDefaultInstallation("Pig Package <br/>");
+			setDefaultInstallation("Jdbc Package <br/>");
+			setDefaultInstallation("Spark ETL Package <br/>");
+			setDefaultInstallation("Spark ML Package <br/>");
+			modulesToInstall.put("redsqirl-pig", "0.7");
+			modulesToInstall.put("redsqirl-jdbc", "0.5");
+			modulesToInstall.put("redsqirl-spark-etl", "0.5");
+			modulesToInstall.put("redsqirl-spark-ml", "0.4");
 
 		} catch (RemoteException e) {
 			logger.warn(e,e);
@@ -254,25 +260,26 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 	public void installDefaultInstallation(){
 
-		RedSqirlInstallations redSqirlInstallations = new RedSqirlInstallations();
-
-		redSqirlInstallations.setInstallationType("system");
-		redSqirlInstallations.setSoftwareModulestype("package");
-		redSqirlInstallations.setIdModuleVersion("0");
-		redSqirlInstallations.setUserName("");
-
-		//FIXME change the number version
-		redSqirlInstallations.setModule("redsqirl-pig");
-		redSqirlInstallations.setModuleVersion("0.4");
-
 		String error = null;
+		Iterator<Entry<String,String>> it = modulesToInstall.entrySet().iterator();
+		while(it.hasNext() && error == null){
+			Entry<String,String> cur = it.next();
+			RedSqirlInstallations redSqirlInstallations = new RedSqirlInstallations();
 
-		try {
+			redSqirlInstallations.setInstallationType("system");
+			redSqirlInstallations.setSoftwareModulestype("package");
+			redSqirlInstallations.setIdModuleVersion("0");
+			redSqirlInstallations.setUserName("");
 
-			error = installPackage(redSqirlInstallations);
-
-		} catch (RemoteException e) {
-			logger.error(e,e);
+			redSqirlInstallations.setModule(cur.getKey());
+			redSqirlInstallations.setModuleVersion(cur.getValue());
+			
+			try {
+				error = installPackage(redSqirlInstallations);
+			} catch (RemoteException e) {
+				error = e.getMessage();
+				logger.error(e,e);
+			}
 		}
 
 		if(error != null){

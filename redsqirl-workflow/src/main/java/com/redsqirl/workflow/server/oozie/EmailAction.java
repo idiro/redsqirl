@@ -47,15 +47,25 @@ public class EmailAction extends OozieUniqueActionAbs{
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action,
 			String[] fileNames) throws RemoteException {
-		
-		
+		createOozieElement(oozieXmlDoc, action,
+				destinatary,
+				cc,
+				subjectText,
+				bodyText);
+	}
+	
+	public static void createOozieElement(Document oozieXmlDoc, Element action,
+			String to,
+			String cc,
+			String subject,
+			String body){
 		Element emailElement = oozieXmlDoc.createElement("email");
 		Attr attrXmlns = oozieXmlDoc.createAttribute("xmlns");
 		attrXmlns.setValue("uri:oozie:email-action:0.1");
 		emailElement.setAttributeNode(attrXmlns);
 		
 		Element toElement = oozieXmlDoc.createElement("to");
-		toElement.appendChild(oozieXmlDoc.createTextNode(destinatary));
+		toElement.appendChild(oozieXmlDoc.createTextNode(to));
 		emailElement.appendChild(toElement);
 		
 		if (cc != null && !cc.isEmpty()){
@@ -65,15 +75,14 @@ public class EmailAction extends OozieUniqueActionAbs{
 		}
 		
 		Element subjectElement = oozieXmlDoc.createElement("subject");
-		subjectElement.appendChild(oozieXmlDoc.createTextNode(subjectText));
+		subjectElement.appendChild(oozieXmlDoc.createTextNode(subject));
 		emailElement.appendChild(subjectElement);
 		
 		Element bodyElement = oozieXmlDoc.createElement("body");
-		bodyElement.appendChild(oozieXmlDoc.createTextNode(bodyText));
+		bodyElement.appendChild(oozieXmlDoc.createTextNode(body));
 		emailElement.appendChild(bodyElement);
 		
 		action.appendChild(emailElement);
-		
 	}
 
 	@Override

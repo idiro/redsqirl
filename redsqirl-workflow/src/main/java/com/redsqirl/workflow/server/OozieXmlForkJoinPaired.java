@@ -53,6 +53,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
 import com.redsqirl.workflow.server.interfaces.RunnableElement;
+import com.redsqirl.workflow.server.oozie.EmailAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -165,18 +166,29 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Element rootElement = doc.createElement("workflow-app");
 			doc.appendChild(rootElement);
 
-			Attr attrName = doc.createAttribute("name");
-			attrName.setValue(wfId);
-			rootElement.setAttributeNode(attrName);
-
+			{
+				Attr attrName = doc.createAttribute("name");
+				attrName.setValue(wfId);
+				rootElement.setAttributeNode(attrName);
+			}
 			Attr attrXmlns = doc.createAttribute("xmlns");
 			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
 			rootElement.setAttributeNode(attrXmlns);
-
+			
+			String email = WorkflowPrefManager.getProperty(WorkflowPrefManager.user_email);
+			logger.debug("User Email Address: '"+email+"'");
 			String startNode = "start";
-			String errorNodeName = "error";
-			String okEndNodeName = "end";
+			String errorEmailNodeName = "error_email";
+			String okEmailNodeName = "end_email";
+			String errorFinalNodeName = "error";
+			String okFinalNodeName = "end";
 
+			String errorNodeName = errorFinalNodeName;
+			String okEndNodeName = okFinalNodeName;
+			if(!email.isEmpty()){
+				errorNodeName = errorEmailNodeName;
+				okEndNodeName = okEmailNodeName;
+			}
 
 			if (error == null) {
 				logger.debug("Create workflow.xml...");
@@ -277,9 +289,48 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if (error == null) {
 				logger.debug("Finish up the xml generation...");
 				// Node kill
+				
+				if(!email.isEmpty()){
+					{
+						Element errorEmailAction = doc.createElement("action");
+						Attr attrErrorEmailName = doc.createAttribute("name");
+						attrErrorEmailName.setValue(errorEmailNodeName);
+						errorEmailAction.setAttributeNode(attrErrorEmailName);
+
+						EmailAction.createOozieElement(
+								doc, 
+								errorEmailAction,
+								email,
+								"",
+								LanguageManagerWF.getText("email.auto.error_title"),
+								LanguageManagerWF.getText("email.auto.error_body"));
+						createOKNode(doc, errorEmailAction, errorFinalNodeName);
+						createErrorNode(doc, errorEmailAction, errorFinalNodeName);
+						rootElement.appendChild(errorEmailAction);
+					}
+					{
+						Element okEmailAction = doc.createElement("action");
+						Attr attrOkEmailName = doc.createAttribute("name");
+						attrOkEmailName.setValue(okEmailNodeName);
+						okEmailAction.setAttributeNode(attrOkEmailName);
+
+						EmailAction.createOozieElement(
+								doc, 
+								okEmailAction,
+								email,
+								"",
+								LanguageManagerWF.getText("email.auto.ok_title"),
+								LanguageManagerWF.getText("email.auto.ok_body"));
+						createOKNode(doc, okEmailAction, okFinalNodeName);
+						createErrorNode(doc, okEmailAction, okFinalNodeName);
+						rootElement.appendChild(okEmailAction);
+					}
+				}
+				
+				
 				Element kill = doc.createElement("kill");
 				Attr attrKillName = doc.createAttribute("name");
-				attrKillName.setValue(errorNodeName);
+				attrKillName.setValue(errorFinalNodeName);
 				kill.setAttributeNode(attrKillName);
 				Element message = doc.createElement("message");
 				message.appendChild(doc
@@ -290,7 +341,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				// Node End
 				Element end = doc.createElement("end");
 				Attr attrEndName = doc.createAttribute("name");
-				attrEndName.setValue(okEndNodeName);
+				attrEndName.setValue(okFinalNodeName);
 				end.setAttributeNode(attrEndName);
 				rootElement.appendChild(end);
 

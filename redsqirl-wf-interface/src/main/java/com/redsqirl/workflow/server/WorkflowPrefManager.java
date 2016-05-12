@@ -276,7 +276,7 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Parallel clause for pig */
 			user_pig_parallel = "pig_parallel",
 			/** Address to be used on SendEmail action */
-			user_email = "mail_user";
+			user_email = "core.email.user_email_address";
 
 
 	//set defaultTomcat path
