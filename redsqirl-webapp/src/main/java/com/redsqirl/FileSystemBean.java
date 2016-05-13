@@ -682,7 +682,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void goUp() throws RemoteException {
 
-		logger.info("goUp: " + getPath());
+		logger.info("goUp: " + getDataStore().getPath());
 
 		if (getPath() != null) {
 			if (getPath().length() > 1) {
