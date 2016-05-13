@@ -321,7 +321,7 @@ public class HCatalogType extends DataOutput{
 					FieldType type = null;
 					try{
 						type = new JdbcTypeManager().getRsType(
-								JdbcStore.getConnType(JdbcStore.getConnectionAndTable(table)[0]),
+							    "hive",
 								field[1].trim());
 						if(type == null){
 							type = FieldType.STRING;

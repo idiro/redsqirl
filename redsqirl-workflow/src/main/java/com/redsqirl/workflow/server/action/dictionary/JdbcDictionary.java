@@ -508,8 +508,9 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	}
 
 	public boolean isVariableName(String name) {
-		String regex = "[A-Z]+[A-Z0-9_]*";
-		return name.matches(regex);
+		String regexUpper = "[A-Z]+[A-Z0-9_]*";
+		String regexLower = "[a-z]+[a-z0-9_]*";
+		return name.matches(regexUpper) || name.matches(regexLower);
 	}
 	
 	/**
