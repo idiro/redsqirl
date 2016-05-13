@@ -80,7 +80,7 @@ function doSearch(val, version) {
 
 			jQuery("#desc").append(data[i].htmlDescription);
 
-			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br>"+ (getsessionToken() !== null ? "<input type='submit' value='Request Key' data-toggle='modal' class='contentbutton dropdown-toggle' data-target='#modalModuleDetail' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' >" : "") );
+			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br>"+ (getsessionToken() !== null ? "<input type='submit' value='Request Key' class='contentbutton' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' >" : "") );
 
 		});
 

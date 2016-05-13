@@ -64,7 +64,7 @@ jQuery(document).ready(function () {
 			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.value +"</option>");
 		});
 		if(Object.keys(obj).length == 0){
-			alert('You don\'t onw any Module');
+			alert('You don\'t own any Module');
 		}
 		
 		$("#selectVersion option[value='"+ getUrlParameter('idm') +"']").prop('selected', true);

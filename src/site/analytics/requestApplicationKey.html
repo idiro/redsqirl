@@ -59,7 +59,9 @@ jQuery(document).ready(function() {
 
 		var obj = jQuery.parseJSON(data.jsonSoftwareVersion);
 		jQuery.each(obj, function(i,v) {
-			jQuery("#selectVersion").append("<option value='"+ v.version +"'>"+ v.version +"</option>");
+			if(v.old.toString() == "true"){
+				jQuery("#selectVersion").append("<option value='"+ v.version +"'>"+ v.version +"</option>");
+			}
 		});
 		$("#selectVersion option:last").attr("selected","selected");
 

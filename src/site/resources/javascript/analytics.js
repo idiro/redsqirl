@@ -240,6 +240,8 @@ var empty = true;
 function validadeRegisterForm(){
 
 	var empty = true;
+	var p1;
+
 	$('#registerForm input').each(function(){
 		if ($(this).val() === ""){
 			if($(this).next("span").hasClass("validForm")){
@@ -257,6 +259,43 @@ function validadeRegisterForm(){
 					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter a valid email</span>");
 					$(this).attr('style', 'border: 1px solid red;');
 					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
+				}
+			}else if($(this).attr("id") == "passwordRegister"){
+				p1 = $(this).val();
+				if(!isValidPassword($(this).val())){
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter a password with at least 8 characters</span>");
+					$(this).attr('style', 'border: 1px solid red;');
+					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
+				}
+			}else if($(this).attr("id") == "rePassword"){
+				if(p1 !== $(this).val() ){
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter the same password here</span>");
+					$(this).attr('style', 'border: 1px solid red;');
+					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
 				}
 			}else{
 				$(this).removeAttr( 'style' );
@@ -276,6 +315,12 @@ function isValidEmailAddress(emailAddress) {
 	var pattern = new RegExp(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/);
 	return pattern.test(emailAddress);
 }
+
+function isValidPassword(password) {
+	var pattern = new RegExp('[a-zA-Z0-9]{8,}');
+	return pattern.test(password);
+}
+
 
 function validadeRequestKeyForm(version, installationName, mac, email){
 
@@ -580,14 +625,16 @@ function DownloadProject(val) {
 	a.click();
 }
 
+var moduleVersionSelected;
 function installationPopUp(moduleID, moduleVersionID) {
 
 	if(getsessionToken() == null){
 		alert("In order to request the key to download a package or model, please register or sign in to the App Store.");
-
 	}else{
 
 		$('#modalModuleDetail').modal();
+
+		moduleVersionSelected = moduleVersionID;
 
 		jQuery.ajax({
 			method: "POST",
@@ -608,16 +655,29 @@ function installationPopUp(moduleID, moduleVersionID) {
 			}
 		}).then(function(data) {
 
+			if(data == ''){
+				if($("#divMsgnoSoftwareKey").next("span").hasClass("validForm")){
+					$("#divMsgnoSoftwareKey").next("span").remove();
+				}				
+				$("#divMsgnoSoftwareKey").after( "<span class='validForm' >&nbsp;&nbsp;To request a module key you need at least one <a href='requestApplicationKey.html'>software key</a></span>" );
+			}
+
 			jQuery.each(data, function(i,v) {
 				jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
 			});
-
-			$("#requestModuleKeyPop").on("click", function(){ window.location.href = 'requestModuleKey.html?idk='+jQuery("#selectInstallation").val()+'&idm='+moduleVersionID });
-
+			
 		})
 
 	}
 
+}
+
+function requestModuleKeyPop(value) {
+	if(value != null){
+		window.location.href = 'requestModuleKey.html?idk='+value+'&idm='+moduleVersionSelected;
+	}else{
+		alert("To request a module key you need at least one software key.");
+	}
 }
 
 

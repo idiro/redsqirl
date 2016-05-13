@@ -160,9 +160,9 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 
 		<p>
 			<label style="padding-right: 29px;" >Email:</label>
-			<input type="text" placeholder="Email" style="width:80%;" id="email" onkeypress="return enableEnterKey(event, 'btSignIn');" ></br>
+			<input type="text" placeholder="Email" style="width:80%;" id="email" onkeypress="return enableEnterKey(event, 'btSignIn');" maxlength="100" ></br>
 			<label>Password:</label>
-			<input type="password" placeholder="Password" style="width:80%;" id="password" onkeypress="return enableEnterKey(event, 'btSignIn');" >
+			<input type="password" placeholder="Password" style="width:80%;" id="password" onkeypress="return enableEnterKey(event, 'btSignIn');" maxlength="100" >
 		</p>
 	      </div>
 	      <div class="modal-footer">
@@ -199,7 +199,7 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 	      </div>
 	      <div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" id="btRequestNewPassword" onclick="event.preventDefault();validadeRequestNewPasswordForm();" >OK</button>
+		<button type="button" class="btn btn-default" id="btRequestNewPassword" onclick="event.preventDefault();validadeRequestNewPasswordForm();" maxlength="100" >OK</button>
 	      </div>
 	    </div>
 
@@ -212,7 +212,7 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 
 <!-- Modal -->
 <div class="modal fade" id="myModalNewUser" role="dialog" style="overflow:hidden;">
-  <div class="modal-dialog" style="width: 660px;" >
+  <div class="modal-dialog" style="width: 700px;" >
 
 	<form id="registerForm" >
 
@@ -225,17 +225,17 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 	      <div class="modal-body">
 		<p>
 			<label style="padding-right: 44px;" >First Name:</label>
-			<input type="text" placeholder="Your first name" style="width:75%;" id="firstName" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<input type="text" placeholder="Your first name" style="width:75%;" id="firstName" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label style="padding-right: 46px;" >Last Name:</label>
-			<input type="text" placeholder="Your last name" style="width:75%;" id="lastName" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<input type="text" placeholder="Your last name" style="width:75%;" id="lastName" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label style="padding-right: 82px;" >Email:</label>
-			<input type="text" placeholder="Your email address (E.G. name@domain.com)" style="width:75%;" id="emailRegister" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<input type="text" placeholder="Your email address (E.G. name@domain.com)" style="width:75%;" id="emailRegister" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label style="padding-right: 54px;" >Company:</label>
-			<input type="text" placeholder="Your company" style="width:75%;" id="company" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<input type="text" placeholder="Your company" style="width:75%;" id="company" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label style="padding-right: 53px;" >Password:</label>
-			<input type="password" placeholder="Enter a password with at least 6 characters" style="width:75%;" id="passwordRegister" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<input type="password" placeholder="Enter a password with at least 8 characters" style="width:75%;" id="passwordRegister" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label>Repeat Password:</label>
-			<input type="password" placeholder="Repeat the Password" style="width:75%;" id="rePassword" onkeypress="return enableEnterKey(event, 'btRegister');" >
+			<input type="password" placeholder="Repeat the Password" style="width:75%;" id="rePassword" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" >
 		</p>
 	      </div>
 	      <div class="modal-footer">
@@ -268,13 +268,13 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 		<p>
 
 			<label style="padding-right: 10px;" >First Name:</label>
-			<td><input type="text" style="width:80%;" id="editAccountFirstName" class="dontClean" ><br></td>
+			<td><input type="text" style="width:80%;" id="editAccountFirstName" class="dontClean" maxlength="100" ><br></td>
 			<label style="padding-right: 12px;" >Last Name:</label>
-			<td><input type="text" style="width:80%;" id="editAccountLastName" class="dontClean" ><br></td>
+			<td><input type="text" style="width:80%;" id="editAccountLastName" class="dontClean" maxlength="100" ><br></td>
 			<label style="padding-right: 48px;" >Email:</label>
-			<td><input type="text" style="width:80%;" id="editAccountEmail" class="dontClean" ><br></td>
+			<td><input type="text" style="width:80%;" id="editAccountEmail" class="dontClean" maxlength="100" ><br></td>
 			<label style="padding-right: 20px;" >Company:</label>
-			<td><input type="text" style="width:80%;" id="editAccountCompany" class="dontClean" ><br></td>
+			<td><input type="text" style="width:80%;" id="editAccountCompany" class="dontClean" maxlength="100" ><br></td>
 
 
 		</p>
@@ -311,9 +311,9 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 		<p>
 		
 		<label style="padding-right: 53px;" >Password:</label>
-		<input type="password" placeholder="Enter a password with at least 6 characters" style="width:70%;" id="editAccountPassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" ></br>
+		<input type="password" placeholder="Enter a password with at least 8 characters" style="width:70%;" id="editAccountPassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" maxlength="100" ></br>
 		<label>Repeat Password:</label>
-		<input type="password" placeholder="Repeat the Password" style="width:70%;" id="editAccountRePassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" >
+		<input type="password" placeholder="Repeat the Password" style="width:70%;" id="editAccountRePassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" maxlength="100" >
 
 		</p>
 	      </div>
@@ -345,12 +345,13 @@ $('ul a[href="' + path + '"]').parents('li').addClass('active');
 			<label>Installation:</label>
 			<select style="margin-left:5px;" size="1" id="selectInstallation">
 			</select>
+			<div id="divMsgnoSoftwareKey" ></div>
 			
 		</p>
 	      </div>
 	      <div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" id="requestModuleKeyPop" >OK</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();requestModuleKeyPop(jQuery('#selectInstallation').val());" >OK</button>
 	      </div>
 	    </div>
 
