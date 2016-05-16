@@ -64,6 +64,10 @@
         }
     }
     
+    function setFileNameModalFileHdfs(nameFile){
+    	jQuery("[id$='nameSaveFile']").val(nameFile);
+    }
+    
     function mountComboboxExtensionsFileSystemModalHDFS(){
 
     	jQuery("[id$='comboboxExtensionsFileSystemModalHDFS']").textext({
@@ -110,6 +114,7 @@
 	
 	<div class="pathHeader">
 	<h:outputText value="#{messages.label_path}" />
+	
 	<h:inputText id="pathOpenFile" styleClass="mainPageTextField" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
 		
@@ -177,10 +182,12 @@
 					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] == 'true'}">
 					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
-				<h:outputText
+				<a4j:commandLink
+				    style="text-decoration:none;"
 					value="#{browserHdfsBean.allProps[indexTable]['name']}"
 					title="#{browserHdfsBean.allProps[indexTable]['name']}"
-					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] != 'true'}" />
+					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					onclick="setFileNameModalFileHdfs('#{browserHdfsBean.allProps[indexTable]['name']}')" />
 
 			</rich:column>
     

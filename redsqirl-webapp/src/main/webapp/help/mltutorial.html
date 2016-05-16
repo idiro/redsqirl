@@ -42,6 +42,12 @@
   and the prediction dataset. That means that two source
   actions are needed.</p>
 
+  <p>The operations for the Red Sqirl Pig and Hama packages can be different. In
+  the following tutorial we have coloured in orange the <span style="background:
+      orange;">Spark</span> specific operations and in pink the <span
+      style="background: HotPink;">Pig</span> ones. Choose one or the other
+  depending of the package you use.</p>
+
   <p>The following will load or training and prediction data sets.</p>
   <ol>
       <li>Create a new canvas by clicking the
@@ -139,8 +145,9 @@
       <li>Open it and name it &ldquo;score_vs_value&rdquo;.</li>
       <li>Click next on the first page.</li>
       <li>On the second page create two new fields.
-      <table style="border: 1px solid black;border-collapse: collapse;">
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+      <table style="border: 1px solid black;border-collapse:
+	  collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">Operation</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -156,21 +163,32 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	  </tr>
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse:
+	      collapse;background: orange;">
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">IF(iris_predict.SPECIES = 'Iris-setosa',1,0) or CASE WHEN iris_predict.SPECIES ==
-	  'Iris-setosa' THEN 1 ELSE 0 END for Pig</td>
+		  collapse;">IF(iris_predict.SPECIES = 'Iris-setosa',1,0)</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">value</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">INT</td>
 	  </tr>
+	  <tr style="border: 1px solid black;border-collapse:
+	      collapse;background: HotPink;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">CASE WHEN iris_predict.SPECIES ==
+	  'Iris-setosa' THEN 1 ELSE 0 END</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">value</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">INT</td>
+	  </tr>
+
       </table>
       </li>
       <li>Click next.</li>
       <li>Join on ID and label. The table should look like
       <table style="border: 1px solid black;border-collapse: collapse;">
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">Relation</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -216,7 +234,7 @@
       <li>Click next.</li>
       <li>On the second page create two new fields
       <table style="border: 1px solid black;border-collapse: collapse;">
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">Operation</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -232,14 +250,25 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	  </tr>
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse:
+	      collapse;background:orange;">
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">SUM(value) or SUM(score_vs_value.value) for Pig</td>
+		  collapse;">SUM(value)</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">TOTAL_PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	      </tr>
+	      <tr style="border: 1px solid black;border-collapse:
+		  collapse;background:HotPink;">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(score_vs_value.value)</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">TOTAL_PREDICT</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	  </tr>
+
       </table>
       </li>
       <li>Click next.</li>
@@ -259,7 +288,7 @@
       <li>On the second page, use the &ldquo;Copy&rdquo; generator and create
       two additional fields.
       <table style="border: 1px solid black;border-collapse: collapse;">
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">Operation</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -275,14 +304,25 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	  </tr>
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse:
+	      collapse;background:orange">
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">SUM(value) or SUM(bin_score.value) for Pig</td>
+		  collapse;">SUM(value)</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">PREDICT</td>
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">FLOAT</td>
+	      </tr>
+	      <tr style="border: 1px solid black;border-collapse:
+		  collapse;background:HotPink">
+	      <td style="border: 1px solid black;border-collapse:
+		  collapse;">SUM(bin_score.value)</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">PREDICT</td>
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	  </tr>
+
       </table>
       </li>
       <li>Click next.</li>
@@ -304,7 +344,7 @@
       <li>On the second page create the following eight field, you can use the
       copy generator to help you. 
       <table style="border: 1px solid black;border-collapse: collapse;">
-	  <tr style="border: 1px solid black;border-collapse: collapse;">
+	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">Operation</td>
 	      <td style="border: 1px solid black;border-collapse:
