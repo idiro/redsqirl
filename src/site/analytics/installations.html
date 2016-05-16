@@ -93,10 +93,10 @@ function softwareKey() {
 		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+getUrlParameter('id'));
 		if(a[0] !== undefined){
 			$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		}else{
+			$("#downloadModuleKey").remove();
 		}
-		if(a !== undefined && a == ''){
-			jQuery("#myGridDiv").append("<img src='images/arrowDown.gif' width='30px' height='30px'> Click here to create a new Module key");
-		}
+		
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
@@ -127,7 +127,7 @@ function softwareKey() {
 
 <p>
 
-This page list the module installed into the Red Sqirl installation. From here you can Download a module or <a href="requestModuleKey.html" id="linkModuleKey" >request a key</a> for a module that you own.
+This page list the downloadable module installed into the Red Sqirl installation. From here you can request a key for <a href="search.html">a public module</a> or <a href="requestModuleKey.html" id="linkModuleKey" >a module that you own</a>.
 
 </p>
 

@@ -381,7 +381,7 @@ function requestKey(version, installationName, mac, email){
 		if(data.error != ""){
 			alert(data.error);
 		}else{
-			alert('Your key have been created successfully');
+			alert('Your key have been created successfully. Now you can add any module to your installation');
 			window.location.href = returnCorrectPath("search.html");
 		}
 	});

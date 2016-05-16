@@ -64,7 +64,10 @@ jQuery(document).ready(function () {
 			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.value +"</option>");
 		});
 		if(Object.keys(obj).length == 0){
+			jQuery("#msgRequestModuleKey").append("Module list contains only the modules that you own. If you want to generate a key for another module, please go in <a href='search.html'>Search</a>");
+
 			alert('You don\'t own any Module');
+
 		}
 		
 		$("#selectVersion option[value='"+ getUrlParameter('idm') +"']").prop('selected', true);
@@ -110,7 +113,7 @@ function backInstallations(){
 
 <p style="text-align:center;font-size:30px;padding: 10px 0;">Generate Module Key</p>
 
-<p>Module list contains just Modules that you own. If you want to generate a key for another module, please go in <a href="search.html">Search</a></p>
+<p id='msgRequestModuleKey' ></p>
 
 
 <form style="width:570px;" id="requestModuleKeyForm" >
