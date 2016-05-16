@@ -7,6 +7,17 @@
 	width="100%">
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
+	
+	
+	<script>
+	
+	jQuery(document).ready(function() {
+		setTimeout(function(){
+			jQuery('#hdfsform4 input[type=text]').focus();
+		},300);
+	});
+	
+	</script>
 
 	<h:outputText value="#{messages.label_name}" />
 	<h:inputText value="#{hdfsBean.newProp['name']}" onkeypress="return enableEnterKey(event, 'addHdfsBtn');" />
