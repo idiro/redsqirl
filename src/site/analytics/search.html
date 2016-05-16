@@ -67,8 +67,10 @@ function doSearch(value) {
 		});
 
 		if(getsessionToken() == null){
-			jQuery("#notSingIn").empty();
-			jQuery("#notSingIn").append("<a href='#' onclick='removeImageArrow();' ><img src='images/arrowRight.gif' width='40px' id='arrowRight' /></a><a href='#' onclick='msg();' ><img src='images/questionmark.png' width='25px' class='img-responsive' /></a>");
+			jQuery("#notSingInArrow").empty();
+			jQuery("#notSingInQM").empty();
+			jQuery("#notSingInArrow").append("<a href='#' onclick='removeImageArrow();' ><img src='images/arrowRight.gif' width='40px' id='arrowRight' title='help' />");
+			jQuery("#notSingInQM").append("<a href='#' onclick='msg();' ><img src='images/questionmark.png' width='25px' class='img-responsive' title='help' style='display:inline' /></a>");
 		}
 
 	});
@@ -102,7 +104,9 @@ function removeImageArrow() {
 <div class="searchBar">
 
 
-<div id="notSingIn" style="display:inline-flex;" ></div>
+<div id="notSingInArrow" style="display:inline-flex;" ></div>
+<div id="notSingInQM" style="display:inline-flex;" ></div>
+
 
 <input type="text" placeholder="Search" style="width:420px;" name="filter" id="filterSearch" >
 

@@ -92,7 +92,7 @@ function softwareKey() {
 			$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
 		}
 		if(a !== undefined && a == ''){
-			jQuery("#myGridDiv").append("<img src='images/arrowDown.gif' width='30px' height='30px'> Click here to create a new Software key");
+			window.location.href = "requestApplicationKey.html";
 		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
@@ -135,7 +135,10 @@ For creating and downloading a new installation, you need to request a key first
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestApplicationKey.html" id="linkApplicationKey" ><img class="iconBT" src="images/new_key.gif" title="Install new Software key" ></a>
+
+<a href="requestApplicationKey.html" id="linkApplicationKey" style="text-decoration: none;" >
+<input type="submit" class="contentButtonSubPages" value="Install new Software key" title="Install new Software key" >
+</a>
 
 
 </div>

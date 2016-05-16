@@ -56,14 +56,14 @@ function softwareKey() {
 	    mtype: 'POST',
 	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
 	    colModel: [
-		{ name: 'id', index: 'id', width: 13, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='#' onclick='downloadModule("+rowObject.idModuleVersion+");' ><img src='images/download_module.gif' alt='my image' title='Download Module' /></a>";
+		{ name: 'id', index: 'id', width: 70, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='#' style='text-decoration: none;' onclick='downloadModule("+rowObject.idModuleVersion+");' ><input type='submit' class='contentButtonSubPages' value='Download Module' title='Download Module' ></a>";
 		    }
 		},
-		{ name: 'date', index: 'date', width: 50, align: 'left' },
+		{ name: 'date', index: 'date', width: 35, align: 'left' },
 		{ name: 'softwareModulestype', index: 'softwareModulestype', width: 80, align: 'left' },
 		{ name: 'module', index: 'module', width: 150, align: 'left' },		
-		{ name: 'moduleVersion', index: 'moduleVersion', width: 30, align: 'left' },
+		{ name: 'moduleVersion', index: 'moduleVersion', width: 25, align: 'left' },
 		{ name: 'owner', index: 'owner', width: 100, align: 'left' },
 		{ name: 'userName', index: 'userName', width: 100, align: 'left' }
 	    ],
@@ -111,7 +111,7 @@ function softwareKey() {
 	    }
 	});
 	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
-	
+
 }
 
 </script>
@@ -125,9 +125,9 @@ function softwareKey() {
 <p style="text-align:center;font-size:30px;padding: 10px 0;">Module Key Manager</p>
 
 
-<p> 
+<p>
 
-This page list the module installed into the Red Sqirl installation. From here you can Download a module or request a key for a module that you own.
+This page list the module installed into the Red Sqirl installation. From here you can Download a module or <a href="requestModuleKey.html" id="linkModuleKey" >request a key</a> for a module that you own.
 
 </p>
 
@@ -137,8 +137,11 @@ This page list the module installed into the Red Sqirl installation. From here y
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestModuleKey.html" id="linkModuleKey"><img class="iconBT" src="images/new_key.gif" title="Install new Module key" ></a>
-<a href="#" id="downloadModuleKey"><img class="iconBT" src="images/download_keys.gif" title="Download licence key" ></a>
+
+<a href="#" id="downloadModuleKey" style="text-decoration: none;" >
+<input type="submit" class="contentButtonSubPages" value="Download licence key" title="Download licence key" >
+</a>
+
 
 
 </div>

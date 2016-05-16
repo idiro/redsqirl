@@ -382,7 +382,7 @@ function requestKey(version, installationName, mac, email){
 			alert(data.error);
 		}else{
 			alert('Your key have been created successfully');
-			window.location.href = returnCorrectPath("softwareKeyInstall.html");
+			window.location.href = returnCorrectPath("search.html");
 		}
 	});
 

@@ -68,8 +68,12 @@ jQuery(document).ready(function() {
 		var obj2 = jQuery.parseJSON(data.jsonSoftwareParameters);
 		jQuery.each(obj2, function(i,v) {
 
+			if(v.label == "mac"){
+				v.label = "Mac Address"
+			}
+			
 			jQuery("#labelSoftwareParametersID").append(v.label);
-			jQuery("#valueSoftwareParametersID").append("<input type='text' placeholder='"+ v.value +"' style='width:400px;float:left;margin-left:5px;'>");
+			jQuery("#valueSoftwareParametersID").append("<input type='text' placeholder='"+ v.label +"' style='width:400px;float:left;margin-left:5px;'>");
 
 		});
 
