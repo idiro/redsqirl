@@ -35,7 +35,8 @@ import com.redsqirl.workflow.server.oozie.JdbcAction;
 public class HCatalogType extends DataOutput{
 
 	private static Logger logger = Logger.getLogger(HCatalogType.class);
-	private HCatStore hcatS = new HCatStore();
+	private static HCatStore hcatS;
+	
 	public final static String key_hcat_db_default = "core.hcatalog.db_default",
 			key_hcat_hdfs_path_default = "core.hcatalog.hdfs_path_default",
 			key_hcat_db = "core.hcatalog.db.",
@@ -45,6 +46,9 @@ public class HCatalogType extends DataOutput{
 	
 	public HCatalogType() throws RemoteException {
 		super();
+		if(hcatS == null){
+			hcatS = new HCatStore(); 
+		}
 	}
 	
 	public HCatalogType(FieldList fl) throws RemoteException {

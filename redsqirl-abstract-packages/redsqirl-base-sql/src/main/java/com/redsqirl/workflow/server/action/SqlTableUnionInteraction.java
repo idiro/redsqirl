@@ -274,7 +274,11 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 						curMap.put(table_table_title, alias);
 						curMap.put(table_op_title, alias + "." + field);
-						curMap.put(table_feat_title, field.toUpperCase());
+						if(field.toLowerCase().equals(field)){
+							curMap.put(table_feat_title, field);
+						}else{
+							curMap.put(table_feat_title, field.toUpperCase());
+						}
 						curMap.put(table_type_title,fieldType.toString());
 
 						copyRows.add(curMap);

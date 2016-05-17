@@ -103,7 +103,7 @@ DFEOptimiser {
 		logger.debug("writeProcess 1");
 
 		Map<String,Element>  ans = oozieAction.createOozieElements(oozieXmlDoc, actionName, fileNames);
-		
+		setLastRunOozieElementNames(ans.keySet());
 		logger.debug("writeProcess 2");
 
 		writeOozieActionFiles(files,elementList);
@@ -164,11 +164,10 @@ DFEOptimiser {
 	@Override
 	public void resetCache() throws RemoteException {
 		Iterator<DataFlowElement> it = elementList.iterator();
-		Set<String> lastRunOozieELementNames = getLastRunOozieElementNames();
 		while(it.hasNext()){
 			DataFlowElement cur = it.next();
 			cur.resetCache();
-			cur.setLastRunOozieElementNames(lastRunOozieELementNames);
+			cur.setLastRunOozieElementNames(lastRunOozieElementNames);
 		}
 	}
 
@@ -210,5 +209,12 @@ DFEOptimiser {
 	@Override
 	public void setLastRunOozieElementNames(Set<String> lastRunOozieElementNames) throws RemoteException{
 		this.lastRunOozieElementNames = lastRunOozieElementNames;
+		if(elementList != null){
+			Iterator<DataFlowElement> it = elementList.iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				cur.setLastRunOozieElementNames(lastRunOozieElementNames);
+			}
+		}
 	}
 }
