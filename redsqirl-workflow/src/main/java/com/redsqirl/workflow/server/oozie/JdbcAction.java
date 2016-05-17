@@ -62,7 +62,7 @@ public class JdbcAction extends OozieUniqueActionAbs {
 			if(hiveAction){
 				action = new HiveAction();
 			}else{
-				action = new JdbcAction();
+				action = new JdbcShellAction();
 			}
 			this.hiveAction = hiveAction;
 		}
