@@ -176,7 +176,12 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 				String cur = featIt.next();
 
 				curMap.put(table_op_title, cur);
-				curMap.put(table_feat_title, cur.replaceAll("\\.", "_").toUpperCase());
+				if(cur.toLowerCase().equals(cur)){
+					curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
+				}else{
+					curMap.put(table_feat_title, cur.replaceAll("\\.", "_").toUpperCase());
+				}
+				
 				curMap.put(table_type_title,feats.getFieldType(cur).toString() );
 				copyRows.add(curMap);
 			}
