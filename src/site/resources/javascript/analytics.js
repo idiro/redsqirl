@@ -388,22 +388,22 @@ function requestKey(version, installationName, mac, email){
 
 }
 
-function validadeRequestModuleKeyForm(idk, idm, type, name){
-	if (idm !== "" && idm !== null && idm !== undefined && type !== "" && type !== null && type !== undefined){
-		requestModuleKey(idk, idm, type, name);
+function validadeRequestModuleKeyForm(idk, idm){
+	if (idm !== "" && idm !== null && idm !== undefined){
+		requestModuleKey(idk, idm);
 	}else{
-		alert('Your need select one module and one scope to create Module key');
+		alert('Your need select one module to create Module key');
 	}
 }
 
-function requestModuleKey(idk, idm, type, name){
+function requestModuleKey(idk, idm){
 
 	jQuery.ajax({
 		method: "POST",
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"createModuleKey",
-		data: JSON.stringify({ idk: idk, idm: idm, email: getsessionEmail(), type: type, name: name }),
+		data: JSON.stringify({ idk: idk, idm: idm, email: getsessionEmail(), type: 'SYSTEM' }),
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},

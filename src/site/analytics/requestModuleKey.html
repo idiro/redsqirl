@@ -84,17 +84,6 @@ jQuery(document).ready(function () {
 
 });
 
-function hideShowElement(hide, component){
-	if (hide){
-		for (c in component){
-			$(component[c]).fadeIn("fast");
-		}
-	} else{
-		for (c in component){
-			$(component[c]).fadeOut("fast");
-		}
-	}
-}
 
 function backInstallations(){
 	window.location.href = "installations.html?id="+getUrlParameter('idk');
@@ -123,24 +112,9 @@ function backInstallations(){
 <select style="width:400px;float:left;margin-left:5px;" size="1" id="selectVersion">
 </select>
 <br>
-<span style="display:block;width:150px;float:left;text-align:right;">Scope</span>
-<table id="idFormRequestModuleKey:multiUserRadio">
-<tbody><tr><td>
-<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="USER" id="idFormRequestModuleKey:multiUserRadio:0" name="idFormRequestModuleKey:multiUserRadio" style="margin-left: 5px;position:relative;" >
-<label for="idFormRequestModuleKey:multiUserRadio:0" style="font-weight:normal;position:relative;top:3px;" > USER</label>
-</td>
-<td>
-<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="SYSTEM" id="idFormRequestModuleKey:multiUserRadio:1" name="idFormRequestModuleKey:multiUserRadio" style="margin-left:5px;position:relative;">
-<label for="idFormRequestModuleKey:multiUserRadio:1" style="font-weight:normal;position:relative;top:3px;" > SYSTEM</label>
-</td>
-</tr>
-</tbody></table>
 
-<span style="width: 150px; float: left; text-align: right; display: block;display:none;" id="idFormRequestModuleKey:idRequestModuleKeyUserTitle">User Name</span>
-<input type="text" placeholder="User Name" style="width:400px;float:left;display:block;display:none;margin-left:5px;" id="idFormRequestModuleKey:idRequestModuleKeyUserField">
 <br>
-<br>
-<input type="submit" class="contentButtonSubPages" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val(), $('input:radio:checked').val(), $('#idFormRequestModuleKey\\:idRequestModuleKeyUserField').val());" >
+<input type="submit" class="contentButtonSubPages" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val());" >
 </form>
 
 </div>
