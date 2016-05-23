@@ -390,3 +390,11 @@ label {
 	width:60%;
 }
 
+
+
+/* cart icon */
+.cart_anchor{ 
+float:right; vertical-align:top; background: url('../images/cart-icon.png') no-repeat center center / 100% auto;width: 50px;height: 50px; margin-bottom: 50px;
+}
+
+

@@ -44,6 +44,7 @@ $(document).ready(function() {
 	setTimeout(function(){
 		checkMenu();
 	},200);
+
 });
 
 function doSearch(value) {
@@ -62,7 +63,7 @@ function doSearch(value) {
 
 		jQuery.each(data, function(i) {
 
-			jQuery(".packageList").append("<div class='packageItem' ><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ (data[i].type == 'package' ? "<img src='images/verified_package.png' style='height:20px;margin-top:10px;' title='package' />" : "<img src='images/new_module.gif' style='height:20px;margin-top:10px;' title='model' />")  + "</div><div class='title'>" + data[i].name + " </div> <input type='submit' class='contentbutton' value='Request Key' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' style='position:relative;margin-left:5px;top:40px;z-index:2;' > <div class='license'>" + data[i].tags + "</div> <div class='license' style='margin-right:0px;'>" + data[i].price + "</div> <div class='shortDescription'>"+ data[i].shortDescription +"</div> <div><a href='moduleDetail.html?id="+ data[i].id +"'><img src='images/more_details.png' style='position:relative;float:right;bottom:-20px;height:20px;padding-right:5px;' title='More details' /></a></div> </div>");
+			jQuery(".packageList").append("<div class='packageItem' ><img height='100' width='100' class='image' src='data:image/jpg;base64,"+ data[i].imgBytes +"' ><div class='type'>"+ (data[i].type == 'package' ? "<img src='images/verified_package.png' style='height:20px;margin-top:10px;' title='package' />" : "<img src='images/new_module.gif' style='height:20px;margin-top:10px;' title='model' />")  + "</div><div class='title'>" + data[i].name + " </div> <input type='submit' class='contentbutton' value='Request Key' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' style='position:relative;margin-left:5px;top:40px;z-index:2;' > <div class='license'>" + data[i].tags + "</div> <div class='license' style='margin-right:0px;' >" + data[i].price + "</div> <div class='shortDescription'>"+ data[i].shortDescription +"</div> <div><a href='moduleDetail.html?id="+ data[i].id +"'><img src='images/more_details.png' style='position:relative;float:right;bottom:-20px;height:20px;padding-right:5px;' title='More details' /></a></div> </div>");
 
 		});
 
@@ -94,6 +95,13 @@ function removeImageArrow() {
 </script>
 
 <div id="menudiv"></div>
+
+<!--
+onclick='addCart($(this))'
+<div>
+<a class="cart_anchor"></a>
+</div>
+-->
 
 <div class="mainContent" id="mainPanel">
 
