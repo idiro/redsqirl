@@ -173,7 +173,7 @@ function configureCanvas(canvasName, reset, workflowType){
     configureStage(canvasName);
 
     canvasArray[canvasName].arrow.on('click', function(e) {
-        jQuery(".tooltipCanvas").destroy();
+        jQuery(".tooltipCanvas").remove();
 
         if (!e.ctrlKey) {
             jQuery.each(layer.getChildren(), function(index, value) {
