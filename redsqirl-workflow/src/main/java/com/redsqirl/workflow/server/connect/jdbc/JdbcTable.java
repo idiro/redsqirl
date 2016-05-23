@@ -40,6 +40,7 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.oozie.JdbcAction;
@@ -55,10 +56,13 @@ public class JdbcTable extends DataOutput{
 	private static Logger logger = Logger.getLogger(JdbcTable.class);
 	public final static String key_db = "database";
 	
-	private JdbcStore js = new JdbcStore();
+	private static JdbcStore js = null;
 	
 	public JdbcTable() throws RemoteException {
 		super();
+		if(js == null){
+			js = new JdbcStore(); 
+		}
 	}
 	
 	public JdbcTable(FieldList fields) throws RemoteException {
