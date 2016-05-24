@@ -348,10 +348,11 @@ public class JdbcTable extends DataOutput{
 	 */
 	private void generateFieldsMap() throws RemoteException{
 		fields = new OrderedFieldList();
-		String table = getPath();
-		String[] fieldArray = js.getDescription(JdbcStore.getConnectionAndTable(table)[0],
-				JdbcStore.getConnectionAndTable(table)[1]).get("describe").split(";");
-		List<String> select = js.select(table, "\001" ,100);
+		String path = getPath();
+		String[] pathArr = JdbcStore.getConnectionAndTable(path);
+		String[] fieldArray = JdbcStore.getDescription(pathArr[0],
+				pathArr[1]).get("describe").split(";");
+		List<String> select = js.select(path, "\001" ,100);
 		Iterator<String> itSel = select.iterator();
 		Map<Integer,Set<String>> valForCategory = new LinkedHashMap<Integer,Set<String>>();
 		Map<Integer,String> fieldTypeDetection = new LinkedHashMap<Integer,String>();
@@ -405,7 +406,7 @@ public class JdbcTable extends DataOutput{
 				FieldType type = null;
 				try{
 					type = new JdbcTypeManager().getRsType(
-							JdbcStore.getConnType(JdbcStore.getConnectionAndTable(table)[0]),
+							pathArr[0],
 							field[1].trim());
 					if(type == null){
 						type = FieldType.STRING;
