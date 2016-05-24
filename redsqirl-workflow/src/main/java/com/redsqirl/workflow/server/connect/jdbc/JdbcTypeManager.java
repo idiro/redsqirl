@@ -122,7 +122,9 @@ public class JdbcTypeManager {
 			Iterator<String> it = map.keySet().iterator();
 			while(it.hasNext() && ans == null){
 				String key = it.next();
-				logger.info(fieldType+" match "+key+" ?");
+				if(logger.isDebugEnabled()){
+					logger.debug(fieldType+" match "+key+" ?");
+				}
 				if(fieldType.matches(key)){
 					try{
 						ans = FieldType.valueOf(map.get(key));
