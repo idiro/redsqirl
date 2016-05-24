@@ -128,8 +128,13 @@ public class JdbcStoreConnection extends JdbcConnection{
 		while (rs.next()) {
 			List<String> row = new LinkedList<String>();
 			for (int i = 1; i <= colNb; ++i) {
-				row.add(rs.getString(i));
-				sizeCol = rs.getString(i).length();
+				String colVal = rs.getString(i); 
+				row.add(colVal);
+				
+				sizeCol = 0;
+				if(colVal != null){
+					sizeCol = colVal.length();
+				}
 				if(sizes.get(i-1) < sizeCol){
 					sizes.set(i-1, sizeCol);
 				}
