@@ -1,93 +1,123 @@
-<div class="navbar navbar-fixed-top" id="topbar">
 
-      <div class="navbar-inner">
+<script>
+    $(function() {
+        $(".dropdown").hover(
+            function(){ $(this).addClass('open') },
+            function(){ $(this).removeClass('open') }
+        );
+    });
 
-<img width="170" id="icons" src="images/logo.png" alt="Red Sqirl" style="float: left;">
+var path = this.location.pathname.substring(this.location.pathname.lastIndexOf('/')+1, this.location.pathname.length);
+$('li a[href="'+ path +'"]').parent().addClass('active');
+$('ul a[href="' + path + '"]').parents('li').addClass('active');
 
-                                  <div class="container"><div class="nav-collapse">
-                
-                                <ul class="nav">
-                          <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Home <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-        
-                <li><a title="Home" href="index.html#home" class="scroll">Home</a></li>
-                <li><a title="About" href="index.html#about" class="scroll">About</a></li>
-                <li><a title="Take a Look" href="index.html#services" class="scroll">Take a Look</a></li>
-		<li><a title="Next Steps" href="index.html#contact" class="scroll">Next Steps</a></li>
+</script>
 
-                          </ul>
-      </li>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">
+<img width="170" id="icons" src="images/logo.png" alt="Red Sqirl" >
+</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >
+      
+	<ul class="nav navbar-nav">
         <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Product <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-        
-		<li><a title="Download" href="download.html">Download</a></li>
-		<li><a title="Getting started" href="gettingstarted.html">Getting started</a></li>
-		<li><a title="User Guide" href="userguide.html">User Guide</a></li>
-		<li><a title="Administration Guide" href="adminGuide.html">Administration Guide</a></li>
-		<li><a title="Package Management" href="packagemanagement.html">Package Management</a></li>
-                  
-                      <li class="dropdown-submenu">
-                                      <a title="Package Development Tutorials" href="">Package Development</a>
-              <ul class="dropdown-menu">
-		<li><a title="Developing a Package" href="pckdev.html">Developing a Package</a></li>
-		<li><a title="Basic Package Development" href="developerDocBsc.html">Basic Tutorial</a></li>
-		<li><a title="Advanced Package Development" href="developerDocAdv.html">Advanced tutorial</a></li>
-		<li><a title="Multiple Interaction Action" href="developerDocMulti.html">Multiple Interaction Action</a></li>
-                              </ul>
-            </li>
-<li><a title="Framework Javadoc" href="apidocs/index.html">Framework Javadoc</a></li>
+          <a href="index.html" class="dropdown-toggle" role="button" >Home </span></a>
+        </li>
+      </ul>
 
-                          </ul>
+	<ul class="nav navbar-nav">
+	<li class="dropdown">
+          <a href="product.html" class="dropdown-toggle" role="button" >Product <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="download.html">Download</a></li>
+            <li><a href="gettingstarted.html">Getting Started</a></li>
+            <li><a href="help/main.html">User Guide</a></li>
+            <li><a href="adminGuide.html">Administration Guide</a></li>
+            <li><a href="packagemanagement.html">Package Management</a></li>
 
-      </li>
-                <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Support <b class="caret"></b></a>
-        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+	    <a tabindex="-1" href="pckdev.html">Package Development</a>
+	    <ul class="dropdown-menu">
+		<li><a tabindex="-1" href="pckdev.html">Developing a package</a></li>
+		<li><a tabindex="-1" href="developerDocBsc.html">Basic tutorial</a></li>
+		<li><a tabindex="-1" href="developerDocAdv.html">Advanced tutorial</a></li>
+		<li><a tabindex="-1" href="developerDocMulti.html">Multiple interaction action</a></li>
+	    </ul>
+	    </li>
 
-		<li><a title="Search" href="search.html" >Search</a></li>
-		<li><a title="Contact Us" href="mailsupport.html">Contact Us</a></li>
-		<li><a title="Forum" target="_blank" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user">Forum</a></li>
+	<li><a href="apidocs/index.html" target="_blank" >Framework javadoc</a></li>
+	<li><a href="screenshots.html">Screenshots</a></li>
 
-                          </ul>
-      </li>
-                <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle" href="#">Related Projects <b class="caret"></b></a>
-        <ul class="dropdown-menu">
+          </ul>
+        </li>
+      </ul>
 
-		<li><a title="Sqirl Nutcracker" target="_blank" href="http://www.redsqirl.com/sqirl-nutcracker">Sqirl Nutcracker</a></li>
-                <li><a title="Apache Hadoop" target="_blank" href="http://hadoop.apache.org/">Apache Hadoop</a></li>
-                <li><a title="Apache Oozie" target="_blank" href="http://oozie.apache.org/">Apache Oozie</a></li>
-                <li><a title="Apache Hive" target="_blank" href="http://hive.apache.org/">Apache Hive</a></li>
-                <li><a title="Apache Pig" target="_blank" href="http://pig.apache.org/">Apache Pig</a></li>
-                <li><a title="Apache Hama" target="_blank" href="http://hama.apache.org/">Apache Hama</a></li>
-                          </ul>
-      </li>
-                <li class="dropdown">
-        <a data-toggle="dropdown" href="#" style="cursor: default;"></a>
 
-      </li>
-                <li class="dropdown">
-        <a data-toggle="dropdown" href="#" style="cursor: default;"></a>
+<ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="support.html" class="dropdown-toggle" role="button" >Support <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="search.html">Search</a></li>
+            <li><a href="mailsupport.html">Contact us</a></li>
+            <li><a href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user" target="_blank" >Forum</a></li>
+	    <li><a href="https://www.youtube.com/channel/UCXSM2JzoMjC9ayGHWna8rPQ" target="_blank" >YouTube Channel</a></li>
+          </ul>
+        </li>
+      </ul>
 
-      </li>
-                <li class="dropdown">
-        <a data-toggle="dropdown" href="#" style="cursor: default;"></a>
 
-      </li>
-      <li class="dropdown" id="signupMenu">
-        <a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#myModalNewUser" >Register</a>
-      </li>
-      <li class="dropdown" id="loginMenu">
-	<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#myModal" >Sign In</a>
-      </li>
+<ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="relatedProducts.html" class="dropdown-toggle" role="button" >Related Products <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="http://www.redsqirl.com/sqirl-nutcracker" target="_blank" >Sqirl Nutcracker</a></li>
+            <li><a href="http://hadoop.apache.org/" target="_blank" >Apache hadoop</a></li>
+            <li><a href="http://oozie.apache.org/" target="_blank" >Apache Oozie</a></li>
+	<li><a href="http://hive.apache.org/" target="_blank" >Apache hive</a></li>
+	<li><a href="http://pig.apache.org/" target="_blank" >Apache pig</a></li>
+	<li><a href="http://spark.apache.org/" target="_blank" >Apache Spark</a></li>
+          </ul>
+        </li>
+      </ul>
 
-	<li class="dropdown" id="signOut" style="display:none;" >
-        <a title="signOut" href="#" onclick="event.preventDefault();signout();" >Sign Out</a>
+
+
+      
+      <ul class="nav navbar-nav navbar-right" id="signupMenu" >
+        <li class="dropdown">
+		<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#myModalNewUser" >Register</a>
 	</li>
 
-	<li class="dropdown" id="newLoginMenu" style="display:none;" >
+
+      </ul>
+
+<ul class="nav navbar-nav navbar-right" id="loginMenu" >
+        <li class="dropdown">
+		<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#myModal" >Sign In</a>
+	</li>
+      </ul>
+
+<ul class="nav navbar-nav navbar-right" id="signOut" style="display:none;" >
+	<li class="dropdown">
+        	<a title="signOut" href="#" onclick="event.preventDefault();signout();" >Sign Out</a>
+	</li>
+      </ul>
+
+<ul class="nav navbar-nav navbar-right" id="newLoginMenu" style="display:none;" >
+	<li class="dropdown" >
         	<a data-toggle="dropdown" class="dropdown-toggle" href="#" id="userNameEmail"> <b class="caret"></b></a>
 		<ul class="dropdown-menu">
 			<li><a title="Search" href="search.html" >Search</a></li>
@@ -96,18 +126,26 @@
 
 		</ul>
         </li>
-
 </ul>
-                      </div>
 
-        </div>
-      </div>
 
-</div>
+
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+
+
+
+
 
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog" style="height:290px;width:650px;overflow:hidden;">
+<div class="modal fade" id="myModal" role="dialog" style="overflow:hidden;">
   <div class="modal-dialog">
 
 	<form id="logInForm">
@@ -116,14 +154,15 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">Sign In</h4>
+		<h4 class="modal-title">Sign into the the Red Sqirl App Store.</h4>
 	      </div>
 	      <div class="modal-body">
+
 		<p>
-			<label style="padding-right: 27px;" >Email:</label>
-			<input type="text" placeholder="Email" style="width:420px;" id="email" onkeypress="return enableEnterKey(event, 'btSignIn');" ></br>
+			<label style="padding-right: 29px;" >Email:</label>
+			<input type="text" placeholder="Email" style="width:80%;" id="email" onkeypress="return enableEnterKey(event, 'btSignIn');" maxlength="100" ></br>
 			<label>Password:</label>
-			<input type="password" placeholder="Password" style="width:420px;" id="password" onkeypress="return enableEnterKey(event, 'btSignIn');" >
+			<input type="password" placeholder="Password" style="width:80%;" id="password" onkeypress="return enableEnterKey(event, 'btSignIn');" maxlength="100" >
 		</p>
 	      </div>
 	      <div class="modal-footer">
@@ -140,7 +179,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="requestNewPassword" role="dialog" style="height:290px;width:650px;overflow:hidden;">
+<div class="modal fade" id="requestNewPassword" role="dialog" style="height:290px;overflow:hidden;">
   <div class="modal-dialog">
 
 	<form id="requestNewPasswordForm">
@@ -154,13 +193,13 @@
 	      <div class="modal-body">
 		<p>
 			<label style="padding-right: 27px;" >Email:</label>
-			<input type="text" placeholder="Email" style="width:420px;" id="emailRequestNewPassword" onkeypress="return enableEnterKey(event, 'btRequestNewPassword');" ></br>
+			<input type="text" placeholder="Email" style="width:80%;" id="emailRequestNewPassword" onkeypress="return enableEnterKey(event, 'btRequestNewPassword');" ></br>
 			
 		</p>
 	      </div>
 	      <div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" id="btRequestNewPassword" onclick="event.preventDefault();validadeRequestNewPasswordForm();" >OK</button>
+		<button type="button" class="btn btn-default" id="btRequestNewPassword" onclick="event.preventDefault();validadeRequestNewPasswordForm();" maxlength="100" >OK</button>
 	      </div>
 	    </div>
 
@@ -172,8 +211,8 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="myModalNewUser" role="dialog" style="height:420px;width:700px;overflow:hidden;">
-  <div class="modal-dialog" style="width: 660px;" >
+<div class="modal fade" id="myModalNewUser" role="dialog" style="overflow:hidden;">
+  <div class="modal-dialog" style="width: 700px;" >
 
 	<form id="registerForm" >
 
@@ -181,22 +220,22 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">Register</h4>
+		<h4 class="modal-title" >Register to access the Red Sqirl App Store.</h4>
 	      </div>
 	      <div class="modal-body">
 		<p>
-			<label style="padding-right: 42px;" >First Name:</label>
-			<input type="text" placeholder="Your first name" style="width:420px;" id="firstName" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
-			<label style="padding-right: 42px;" >Last Name:</label>
-			<input type="text" placeholder="Your last name" style="width:420px;" id="lastName" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
-			<label style="padding-right: 76px;" >Email:</label>
-			<input type="text" placeholder="Your email address (E.G. name@domain.com)" style="width:420px;" id="emailRegister" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
-			<label style="padding-right: 50px;" >Company:</label>
-			<input type="text" placeholder="Your company" style="width:420px;" id="company" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
-			<label style="padding-right: 50px;" >Password:</label>
-			<input type="password" placeholder="Enter a password with at least 6 characters" style="width:420px;" id="password" onkeypress="return enableEnterKey(event, 'btRegister');" ></br>
+			<label style="padding-right: 44px;" >First Name:</label>
+			<input type="text" placeholder="Your first name" style="width:75%;" id="firstName" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
+			<label style="padding-right: 46px;" >Last Name:</label>
+			<input type="text" placeholder="Your last name" style="width:75%;" id="lastName" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
+			<label style="padding-right: 82px;" >Email:</label>
+			<input type="text" placeholder="Your email address (E.G. name@domain.com)" style="width:75%;" id="emailRegister" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
+			<label style="padding-right: 54px;" >Company:</label>
+			<input type="text" placeholder="Your company" style="width:75%;" id="company" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
+			<label style="padding-right: 53px;" >Password:</label>
+			<input type="password" placeholder="Enter a password with at least 8 characters" style="width:75%;" id="passwordRegister" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" ></br>
 			<label>Repeat Password:</label>
-			<input type="password" placeholder="Repeat the Password" style="width:420px;" id="rePassword" onkeypress="return enableEnterKey(event, 'btRegister');" >
+			<input type="password" placeholder="Repeat the Password" style="width:75%;" id="rePassword" onkeypress="return enableEnterKey(event, 'btRegister');" maxlength="100" >
 		</p>
 	      </div>
 	      <div class="modal-footer">
@@ -213,7 +252,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="myAccountModal" role="dialog" style="height:360px;width:650px;overflow:hidden;">
+<div class="modal fade" id="myAccountModal" role="dialog" style="height:360px;overflow:hidden;">
   <div class="modal-dialog">
 
 	<form>
@@ -229,13 +268,13 @@
 		<p>
 
 			<label style="padding-right: 10px;" >First Name:</label>
-			<td><input type="text" style="width:400px;" id="editAccountFirstName" class="dontClean" ><br></td>
-			<label style="padding-right: 10px;" >Last Name:</label>
-			<td><input type="text" style="width:400px;" id="editAccountLastName" class="dontClean" ><br></td>
-			<label style="padding-right: 43px;" >Email:</label>
-			<td><input type="text" style="width:400px;" id="editAccountEmail" class="dontClean" ><br></td>
-			<label style="padding-right: 16px;" >Company:</label>
-			<td><input type="text" style="width:400px;" id="editAccountCompany" class="dontClean" ><br></td>
+			<td><input type="text" style="width:80%;" id="editAccountFirstName" class="dontClean" maxlength="100" ><br></td>
+			<label style="padding-right: 12px;" >Last Name:</label>
+			<td><input type="text" style="width:80%;" id="editAccountLastName" class="dontClean" maxlength="100" ><br></td>
+			<label style="padding-right: 48px;" >Email:</label>
+			<td><input type="text" style="width:80%;" id="editAccountEmail" class="dontClean" maxlength="100" ><br></td>
+			<label style="padding-right: 20px;" >Company:</label>
+			<td><input type="text" style="width:80%;" id="editAccountCompany" class="dontClean" maxlength="100" ><br></td>
 
 
 		</p>
@@ -257,8 +296,8 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="modalChangePassword" role="dialog" style="height:300px;width:650px;overflow:hidden;">
-  <div class="modal-dialog">
+<div class="modal fade" id="modalChangePassword" role="dialog" style="height:300px;overflow:hidden;">
+  <div class="modal-dialog" style="width:610px">
 
 	<form>
     
@@ -271,10 +310,10 @@
 	      <div class="modal-body">
 		<p>
 		
-		<label style="padding-right: 50px;" >Password:</label>
-		<input type="password" placeholder="Enter a password with at least 6 characters" style="width:420px;" id="editAccountPassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" ></br>
+		<label style="padding-right: 53px;" >Password:</label>
+		<input type="password" placeholder="Enter a password with at least 8 characters" style="width:70%;" id="editAccountPassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" maxlength="100" ></br>
 		<label>Repeat Password:</label>
-		<input type="password" placeholder="Repeat the Password" style="width:420px;" id="editAccountRePassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" >
+		<input type="password" placeholder="Repeat the Password" style="width:70%;" id="editAccountRePassword" onkeypress="return enableEnterKey(event, 'btChangePassword');" maxlength="100" >
 
 		</p>
 	      </div>
@@ -290,7 +329,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="modalModuleDetail" role="dialog" style="height:340px;width:650px;overflow:hidden;">
+<div class="modal fade" id="modalModuleDetail" role="dialog" style="height:340px;overflow:hidden;">
   <div class="modal-dialog">
 
 	<form>
@@ -306,12 +345,13 @@
 			<label>Installation:</label>
 			<select style="margin-left:5px;" size="1" id="selectInstallation">
 			</select>
+			<div id="divMsgnoSoftwareKey" ></div>
 			
 		</p>
 	      </div>
 	      <div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" id="requestModuleKeyPop" >OK</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();requestModuleKeyPop(jQuery('#selectInstallation').val());" >OK</button>
 	      </div>
 	    </div>
 

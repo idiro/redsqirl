@@ -1,16 +1,12 @@
 html,body{
-	height:99% !important;
-	overflow:hidden;
-	margin-bottom:0px;
-	margin-top:0px;
-	padding-top:5px;
-	padding-bottom:0px;
+	height:100% !important;
+	overflow:auto;
 	background-color:white;
 }
 
 #website{
-	box-shadow: 5px 5px 5px #888888;
-	background: linear-gradient(white,#e6e6e6,#c7c6c6) !important;
+    box-shadow: 5px 5px 5px #888888;
+    background: linear-gradient(white,#e6e6e6,#c7c6c6) !important;
     width:1040px;
     height:99.5%;
     margin-left:auto;
@@ -22,7 +18,6 @@ html,body{
 }
 
 input {
-	height: 25px;
 	font-size: 14px !important;
 	padding-left:5px;
 	margin-left:5px;
@@ -51,24 +46,24 @@ input {
     width: 100%;
     height: 100%;
     margin: 0px;
-	font-size: 15px !important;	
-	font-family: verdana  !important;
+    font-size: 15px !important;	
+    font-family: verdana  !important;
     padding-right:55px;
     padding-top:2px;
     padding-bottom:2px;
     text-decoration: none; 
-	color:white !important;
+    color:white !important;
 }
 
 .subMenuLink{
-    width: 100%;
-    height: 100%;
-    margin: 0px;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
 	margin-left:5px !important;
-    padding-right:55px;
-    padding-top:2px;
-    padding-bottom:2px;
-    text-decoration: none; 
+	padding-right:55px;
+	padding-top:2px;
+	padding-bottom:2px;
+	text-decoration: none; 
 	color:black !important;
 	font-size: 13px !important;
 	font-family: verdana  !important;
@@ -96,15 +91,18 @@ input {
 }
 
 .mainContent{
+/*
 	box-shadow: 3px 3px 3px #888888;
 	width: calc(90% - 170px);
 	margin-left: 180px;
 	margin-top: 31px;
-	height: calc(100% - 110px);
 	background-color:#fef5f5;
-	overflow:auto;
-	padding:5px;
 	border: 1px solid #ab4341 !important;
+	height: calc(100% - 110px);
+*/
+	min-height: calc(100% - 130px);
+	overflow:hidden;
+	padding:5px;
 }
 
 .order-table{
@@ -138,7 +136,7 @@ input {
 
 #left{
 	float:left;
-    max-width:600px;
+	max-width:600px;
 }
 
 h1{
@@ -172,11 +170,10 @@ hr{
 	border-radius: 7px !important;
 	border: 1px solid #cc1b1a;
 	margin: 10px 10px 10px 10px;
-	width: 360px;
+	max-width: 370px;
 	float:left;
 	left:auto;
 	font-size:20px;
-	height: 107px;
 }
 
 .packageItem .image{
@@ -190,7 +187,7 @@ hr{
 	float:left;
 	font-size:25px;
 	margin-left:2px;
-	margin-top: -20px;
+	margin-top: -30px;
 	width:65%;
 }
 
@@ -205,7 +202,6 @@ hr{
 }
 
 .packageItem .license{
-	bottom: -5px;
 	float:right;
 	font-size:12px;
 	margin-right:10px;
@@ -216,7 +212,7 @@ hr{
 }
 
 .packageItem .dependency{
-	float: left;
+    float: left;
     font-size: 12px;
     padding-top: 5px;
     width: 100%;
@@ -232,7 +228,7 @@ hr{
 }
 
 .searchBar{
-	width:750px;
+	text-align: center;
 	margin-left:auto;
 	margin-right:auto;
 	margin-top:10px;
@@ -272,7 +268,7 @@ hr{
 }
 
 .asbutton{
-    background: linear-gradient(to right, #cc1b1a, #991916) !important;
+	background: linear-gradient(to right, #cc1b1a, #991916) !important;
 	color:white !important;
 	font-weight: bold !important;
 	font-family: verdana  !important;
@@ -384,7 +380,7 @@ label {
 }
 
 .packageItem .shortDescription{
-	bottom: -15px;
+	bottom: -10px;
 	float: left;
 	font-size:12px;
 	margin-left:3px;
@@ -393,4 +389,12 @@ label {
 	text-align:left;
 	width:60%;
 }
+
+
+
+/* cart icon */
+.cart_anchor{ 
+float:right; vertical-align:top; background: url('../images/cart-icon.png') no-repeat center center / 100% auto;width: 50px;height: 50px; margin-bottom: 50px;
+}
+
 

@@ -1,26 +1,23 @@
             ------
-            Red Sqirl - Package Management
+            Package Management
             ------
             
 Package Management
             
-	Red Sqirl Packages are managed by another application called the
-{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+	Red Sqirl Packages are managed by the website.
 
 * Install New packages
 
   In order to gain accessibility or functionality you can install packages.
-Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the
-Analytics Store website. Once a package is installed users may have to configure
+Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the website. Once a package is installed users may have to configure
 settings, sign out and back in before using it. 
+
+  Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the analytics store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
+
 
 ** Online installation
 
- If your Red Sqirl instance can reach the
-{{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, packages can be
-installed by the users or through the registered email you use to generate the
-Red Sqirl license.
-
+ 
 *** Through the Admin View
 
  * On the Application home page, click on Admin.
@@ -39,7 +36,7 @@ Red Sqirl license.
 
  * Go in Software > Install Package > Install.
 
- * Log in to the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}, you can register a user if needs be.
+ * Log in to the website, you can register a user if needs be.
 
  * Choose the package and click install.
 
@@ -48,10 +45,10 @@ Red Sqirl license.
 ** Offline mode
 
  
- In offline mode, only the administrator can sign in. You will need to add them
+ In offline mode, only an administrator can sign in. You will need to add them
 manually in the system setting file first.
 
- * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+ * Log in on the website.
 
  * Go in Red Sqirl > Search, choose your package and click install.
 
@@ -70,8 +67,9 @@ manually in the system setting file first.
 
 * Upload a New Package
 
+ * The website do not support uploading a package yet. However you can do it directly on the analytics-store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}.
 
- * Log in on the {{{http://154.50.192.12:8091/analytics-store/}Analytics Store}}.
+ * Log in on the analytics store with your online credentials.
 
  * Go in Red Sqirl > Packages.
 
@@ -86,3 +84,5 @@ manually in the system setting file first.
  * Fill out the form.
 
  * If you go to "Search" you should be able to see your new package.
+
+ [] 

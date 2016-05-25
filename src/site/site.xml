@@ -27,7 +27,7 @@ support@redsqirl.com
 
 	<custom>
 		<fluidoSkin>
-			<copyrightClass>pull-right</copyrightClass>
+			<copyrightClass>customfooter</copyrightClass>
 			<topBarEnabled>false</topBarEnabled>
 			<sideBarEnabled>false</sideBarEnabled>
 		</fluidoSkin>

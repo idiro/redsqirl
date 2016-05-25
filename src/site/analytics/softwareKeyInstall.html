@@ -1,16 +1,33 @@
 <html>
 <head>
 
+<title>Red Sqirl</title>
+
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
 <script src="javascript/jquery.jqGrid.min.js"></script>
 <script src="javascript/grid.locale-en.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
-<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+<!--//google-analytics-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63375912-1', 'auto');
+  ga('send', 'pageview');
+</script>
 
 </head>
 
@@ -22,8 +39,7 @@ jQuery(document).ready(function () {
 
 $('#menudiv').load('menu.html');
 
-//sessionStorage();
-softwareKey();
+	softwareKey();
 
 	setTimeout(function(){
 		checkMenu();
@@ -42,7 +58,7 @@ function softwareKey() {
 	    colModel: [
 		{ name: 'date', index: 'date', width: 40, align: 'left' },
 		{ name: 'installationName', index: 'installationName', width: 150, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='installations.html?id="+ rowObject.id +"' class='labelLinkTable'>"+cellvalue+"</a>";
+		         return "<a href='installations.html?id="+ (rowObject.id !== undefined ? rowObject.id : rowObject._id_) +"' class='labelLinkTable'>"+cellvalue+"</a>";
 		    }
 		},
 		{ name: 'ownerName', index: 'ownerName', width: 150, align: 'left' },
@@ -55,11 +71,13 @@ function softwareKey() {
 	    width: '790',
 	    viewrecords: true,
 	    sortorder: "desc",
+	    firstsortorder: "desc", 
 	    ajaxGridOptions: { contentType: "application/json" },
 	    headertitles: true,
 	    sortable: true,
 	    autowidth: true,
             shrinkToFit: true,
+	    loadonce: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -70,12 +88,17 @@ function softwareKey() {
 	    },
 	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
-		$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
+		if(a[0] !== undefined){
+			$("#linkApplicationKey").attr("href", "requestApplicationKey.html?id="+a[0].softwareID);
+		}
+		if(a !== undefined && a == ''){
+			window.location.href = "requestApplicationKey.html";
+		}
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
 	    },
-	loadError : function(xhr,st,err) {
+	    loadError : function(xhr,st,err) {
 		console.log(xhr);
 		console.log(st);
 		console.log(err);
@@ -85,10 +108,10 @@ function softwareKey() {
 			localStorage.removeItem("email");
 			window.location.href = "index.html";
 		}
-	}
+	    }
 
 	});
-	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
+	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
 
 }
 
@@ -99,7 +122,12 @@ function softwareKey() {
 <div class="mainContent" id="mainPanel">
 
 
-<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Software key</p>
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Software Key Manager</p>
+
+
+<p> This page list the RedSqirl installations that are available to you.
+</br>
+For creating and downloading a new installation, you need to request a key first. </p>
 
 
 <div class="divTab">
@@ -107,14 +135,48 @@ function softwareKey() {
 
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestApplicationKey.html" id="linkApplicationKey"><img class="iconBT" src="images/new_key.gif"></a>
+
+<a href="requestApplicationKey.html" id="linkApplicationKey" style="text-decoration: none;" >
+<input type="submit" class="contentButtonSubPages" value="Install new Software key" title="Install new Software key" >
+</a>
 
 
 </div>
 
 </div>
 
-<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+
+
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		<a href="mailsupport.html" style="float:left;margin-top:15px;" >Contact us</a>
+
+		</p>
+
+	 </div>
+
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+
+<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
+
+
 
 </body>
 </html>

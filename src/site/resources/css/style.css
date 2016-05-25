@@ -166,6 +166,37 @@ label {
 	margin-left:auto;
 }
 /*--content--*/
+.download{
+	background: #fafafa;
+	width:100%;
+	display:block;
+	background-size:cover;
+	text-align:center;
+	padding:2em 0;
+}
+.download h3{
+	margin:0 0 0.3em;
+	font-size:3.5em;
+	color:#222;
+	text-transform:uppercase;
+	font-weight:300;
+}
+.download p{
+	margin:3.5em 0;
+	float:right;
+	text-align: left;
+	font-size:1.7em;
+	color:#222;
+}
+.download ul{
+	font-size:1.3em;
+	color:#222;
+}
+.download h3 span{
+	color:#c4161c;
+}
+
+
 .about-left{
 	width:50%;
 }
@@ -175,11 +206,9 @@ label {
 	display:block;
 	background-size: cover;
 	position:relative;
-	height: 450px;
 }
 .about {
 	padding: 3em 0 3em;
-	min-height:700px;
 	margin: 0 auto;
 }
 .about01 {
@@ -192,6 +221,7 @@ label {
 	font-size:3.5em;
 	color:#333;
 	font-weight:300;
+	text-transform: uppercase;
 }
 .about01 h3 span{
 	color: #c4161c;
@@ -315,11 +345,10 @@ img.five{
 .clients{
 	background: #fff;
 	width:100%;
-	height: 600px;
 	display:block;
 	background-size:cover;
 	text-align:center;
-	padding:5em 0;
+	padding:2em 0;
 }
 
 #hadoop{
@@ -354,10 +383,8 @@ img.five{
 .section05 {
 	background: #fff;
 	display: block;
-	padding-bottom: 100px;
-	padding-top: 100px;
-	min-height: 600px;
-	max-width: 750px;
+	padding-bottom: 40px;
+	padding-top: 10px;
 	margin: 0 auto;
 }
 .section05 h2{
@@ -376,7 +403,6 @@ img.five{
 	color:#222;
 	text-transform:uppercase;
 	font-weight:300;
-	margin-top: 80px;
 }
 .section05 p{
 	text-align: center;
@@ -413,8 +439,14 @@ img.five{
 .services{
 	background: #eee;
 	text-align:center;
-	min-height: 700px;
-	padding: 3em 0 1em;
+	padding: 2em 0;
+}
+.services h3{
+	margin:0 0 0.3em;
+	font-size:3.5em;
+	color:#222;
+	text-transform:uppercase;
+	font-weight:300;
 }
 .videoWrapper {
 	position: relative;
@@ -562,16 +594,13 @@ p.your-para span,p.message-para span{
 }
 .footer p{
 	margin:0;
-	font-size: 1.2em;
 	color:#848383;	
-	padding: 1.5em 0em 0 0;
 }
 p.footer-grid{
-	float: left;
+	text-align: center;
 }
 .footer a{
 	color:#b2b2b2;
-	text-decoration:none;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-o-transition: 0.5s all;
@@ -1065,3 +1094,16 @@ display: none;
     margin-bottom: 9px;
     height: 25px;
 }
+
+.contentButtonSubPages {
+    border-color: #cdcdcd #c2c2c2 #b7b7b7;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 #ffffff inset, 0 1px 2px rgba(0, 0, 0, 0.1);
+    color: #7b7b7b;
+    padding: 3px 30px;
+    text-shadow: 0 1px 0 #ffffff;
+    background-color: white;
+}
+

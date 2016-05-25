@@ -1,6 +1,7 @@
 getPropreties = {
 	url: "http://localhost:9090/analytics-store/rest/"
-	//url: "http://dev:8091/analytics-store/rest/"
+        //url: "http://dev:8091/analytics-store/rest/"
+        //url: "http://192.168.23.4:8091/analytics-store/rest/"
 }
 
 function sessionStorage() {
@@ -75,7 +76,7 @@ function login() {
 				sessionStorageToken(xhr.responseText);
 				$('#myModal').modal('hide');
 				checkMenu();
-				window.location.href = "softwareKeyInstall.html";
+				window.location.href = returnCorrectPath("softwareKeyInstall.html");
 			}
 		},
 		error: function (request, status, error) {
@@ -91,7 +92,7 @@ function register() {
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"createnewuser",
-		data: JSON.stringify({ firstName: jQuery("#firstName").val(), lastName: jQuery("#lastName").val(), email: jQuery("#emailRegister").val(), company: jQuery("#company").val(), password: jQuery("#password").val() }),
+		data: JSON.stringify({ firstName: jQuery("#firstName").val(), lastName: jQuery("#lastName").val(), email: jQuery("#emailRegister").val(), company: jQuery("#company").val(), password: jQuery("#passwordRegister").val() }),
 		complete: function(xhr, textStatus) {
 			
 		},
@@ -145,7 +146,7 @@ function download(url, data){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 
@@ -189,7 +190,7 @@ function signout() {
         		//console.log(xhr.responseText);
 			localStorage.removeItem("token");
 			localStorage.removeItem("email");
-			window.location.href = "index.html";
+			window.location.href = returnCorrectPath("index.html");
 		},
 		error: function (request, status, error) {
 			if (request.status == 401) {
@@ -239,6 +240,8 @@ var empty = true;
 function validadeRegisterForm(){
 
 	var empty = true;
+	var p1;
+
 	$('#registerForm input').each(function(){
 		if ($(this).val() === ""){
 			if($(this).next("span").hasClass("validForm")){
@@ -256,6 +259,43 @@ function validadeRegisterForm(){
 					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter a valid email</span>");
 					$(this).attr('style', 'border: 1px solid red;');
 					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
+				}
+			}else if($(this).attr("id") == "passwordRegister"){
+				p1 = $(this).val();
+				if(!isValidPassword($(this).val())){
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter a password with at least 8 characters</span>");
+					$(this).attr('style', 'border: 1px solid red;');
+					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
+				}
+			}else if($(this).attr("id") == "rePassword"){
+				if(p1 !== $(this).val() ){
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).after("<span class='validForm' >&nbsp;&nbsp;Please enter the same password here</span>");
+					$(this).attr('style', 'border: 1px solid red;');
+					empty = false;
+				}else{
+					if($(this).next("span").hasClass("validForm")){
+						$(this).next("span").remove();
+					}
+					$(this).removeAttr( 'style' );
+					$(this).attr('style', 'width: 420px;');
 				}
 			}else{
 				$(this).removeAttr( 'style' );
@@ -275,6 +315,12 @@ function isValidEmailAddress(emailAddress) {
 	var pattern = new RegExp(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/);
 	return pattern.test(emailAddress);
 }
+
+function isValidPassword(password) {
+	var pattern = new RegExp('[a-zA-Z0-9]{8,}');
+	return pattern.test(password);
+}
+
 
 function validadeRequestKeyForm(version, installationName, mac, email){
 
@@ -296,6 +342,12 @@ function validadeRequestKeyForm(version, installationName, mac, email){
 		}
 
 	});
+
+	var regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+	if(!regex.test(mac.toUpperCase())){
+		empty = false;
+		alert('Mac address is not valid.');
+	}
 
 	if(empty){
 		requestKey(version, installationName, mac, email);
@@ -322,29 +374,36 @@ function requestKey(version, installationName, mac, email){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
 		if(data.error != ""){
 			alert(data.error);
+		}else{
+			alert('Your key have been created successfully. Now you can add any module to your installation');
+			window.location.href = returnCorrectPath("search.html");
 		}
 	});
 
 }
 
-function validadeRequestModuleKeyForm(idk, idm, type, name){
-	requestModuleKey(idk, idm, type, name);
+function validadeRequestModuleKeyForm(idk, idm){
+	if (idm !== "" && idm !== null && idm !== undefined){
+		requestModuleKey(idk, idm);
+	}else{
+		alert('Your need select one module to create Module key');
+	}
 }
 
-function requestModuleKey(idk, idm, type, name){
+function requestModuleKey(idk, idm){
 
 	jQuery.ajax({
 		method: "POST",
 		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		url: getPropreties.url+"createModuleKey",
-		data: JSON.stringify({ idk: idk, idm: idm, email: getsessionEmail(), type: type, name: name }),
+		data: JSON.stringify({ idk: idk, idm: idm, email: getsessionEmail(), type: 'SYSTEM' }),
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
 		},
@@ -356,14 +415,15 @@ function requestModuleKey(idk, idm, type, name){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
 		if(data.error != ""){
 			alert(data.error);
 		}else{
-			alert('success');
+			alert('Your Model key have been created successfully');
+			window.location.href = returnCorrectPath("installations.html?id="+idk);
 		}
 	});
 
@@ -465,7 +525,7 @@ function requestNewPasswordForm(email){
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -491,7 +551,7 @@ function getMyAccount() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -521,7 +581,7 @@ function updateAccount() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 		
@@ -548,7 +608,7 @@ function changePassword() {
 				alert("Sorry, your session has expired. Please login again to continue");
 				localStorage.removeItem("token");
 				localStorage.removeItem("email");
-				window.location.href = "index.html";
+				window.location.href = returnCorrectPath("index.html");
 			}
 		}
 	}).then(function(data) {
@@ -560,38 +620,110 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "zip/"+val;
+	a.href = "download/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
 
+var moduleVersionSelected;
 function installationPopUp(moduleID, moduleVersionID) {
 
-	jQuery.ajax({
-		method: "POST",
-		dataType: "json",
-		contentType: "application/json; charset=utf-8",
-		url: getPropreties.url+"moduleDetail",
-		data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() }),
-		beforeSend: function (xhr) {
-			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
-		},
-		error: function (request, status, error) {
-			if (request.status == 401) {
-				alert("Sorry, your session has expired. Please login again to continue");
-				localStorage.removeItem("token");
-				localStorage.removeItem("email");
-				window.location.href = "index.html";
+	if(getsessionToken() == null){
+		alert("In order to request the key to download a package or model, please register or sign in to the App Store.");
+	}else{
+
+		$('#modalModuleDetail').modal();
+
+		moduleVersionSelected = moduleVersionID;
+
+		jQuery.ajax({
+			method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			url: getPropreties.url+"moduleDetail",
+			data: JSON.stringify({moduleID: moduleID, email: getsessionEmail() }),
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+			},
+			error: function (request, status, error) {
+				if (request.status == 401) {
+					alert("Sorry, your session has expired. Please login again to continue");
+					localStorage.removeItem("token");
+					localStorage.removeItem("email");
+					window.location.href = returnCorrectPath("index.html");
+				}
 			}
-		}
-	}).then(function(data) {
+		}).then(function(data) {
 
-		jQuery.each(data, function(i,v) {
-			jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
-		});
+			if(data == ''){
+				if($("#divMsgnoSoftwareKey").next("span").hasClass("validForm")){
+					$("#divMsgnoSoftwareKey").next("span").remove();
+				}				
+				$("#divMsgnoSoftwareKey").after( "<span class='validForm' >&nbsp;&nbsp;To request a module key you need at least one <a href='requestApplicationKey.html'>software key</a></span>" );
+			}
 
-		$("#requestModuleKeyPop").on("click", function(){ window.location.href = 'requestModuleKey.html?idk='+jQuery("#selectInstallation").val()+'&idm='+moduleVersionID });
+			jQuery.each(data, function(i,v) {
+				jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
+			});
+			
+		})
 
-	})
+	}
 
 }
+
+function requestModuleKeyPop(value) {
+	if(value != null){
+		window.location.href = 'requestModuleKey.html?idk='+value+'&idm='+moduleVersionSelected;
+	}else{
+		alert("To request a module key you need at least one software key.");
+	}
+}
+
+
+function returnCorrectPath(path) {
+	if (this.location.pathname.indexOf("/help/") !=-1) {
+		return "../"+path
+	}
+	return path;
+}
+
+
+function flyToElement(flyer, flyingTo) {
+	var $func = $(this);
+	var divider = 3;
+	var flyerClone = $(flyer).clone();
+	$(flyerClone).css({position: 'absolute', top: $(flyer).offset().top + "px", left: $(flyer).offset().left + "px", opacity: 1, 'z-index': 1000});
+	$('body').append($(flyerClone));
+	var gotoX = $(flyingTo).offset().left + ($(flyingTo).width() / 2) - ($(flyer).width()/divider)/2;
+	var gotoY = $(flyingTo).offset().top + ($(flyingTo).height() / 2) - ($(flyer).height()/divider)/2;
+	 
+	$(flyerClone).animate({
+		opacity: 0.4,
+		left: gotoX,
+		top: gotoY,
+		width: $(flyer).width()/divider,
+		height: $(flyer).height()/divider
+	}, 700,
+	function () {
+		$(flyingTo).fadeOut('fast', function () {
+			$(flyingTo).fadeIn('fast', function () {
+				$(flyerClone).fadeOut('fast', function () {
+					$(flyerClone).remove();
+				});
+			});
+		});
+	});
+}
+
+function addCart(obj){
+
+	//Scroll to top if cart icon is hidden on top
+	$('html, body').animate({
+		'scrollTop' : $(".cart_anchor").position().top
+	});
+	//Select item image and pass to the function
+	var itemImg = obj.parent().find('img').eq(0);
+	flyToElement($(itemImg), $('.cart_anchor'));
+}
+
