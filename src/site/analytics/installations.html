@@ -1,16 +1,33 @@
 <html>
 <head>
 
+<title>Red Sqirl</title>
+
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
 <script src="javascript/jquery.jqGrid.min.js"></script>
 <script src="javascript/grid.locale-en.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
-<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+<!--//google-analytics-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63375912-1', 'auto');
+  ga('send', 'pageview');
+</script>
 
 </head>
 
@@ -22,8 +39,7 @@ jQuery(document).ready(function () {
 
 $('#menudiv').load('menu.html');
 
-//sessionStorage();
-softwareKey();
+	softwareKey();
 
 	setTimeout(function(){
 		checkMenu();
@@ -34,20 +50,20 @@ softwareKey();
 function softwareKey() {
 
 	$("#myGrid").jqGrid({
-	    url: 'http://localhost:9090/analytics-store/rest/installations/modulekey',
+	    url: getPropreties.url+'installations/modulekey',
 	    postData: JSON.stringify({id: getUrlParameter('id')}),
 	    datatype: "json",
 	    mtype: 'POST',
 	    colNames: [' ', 'Date', 'Module Type', 'Name', 'Version', 'Owner', 'User'],
 	    colModel: [
-		{ name: 'id', index: 'id', width: 13, align: 'left', formatter: function (cellvalue, options, rowObject) {
-		        return "<a href='#' onclick='downloadModule("+rowObject.idModuleVersion+");' ><img src='images/download_module.gif' alt='my image' /></a>";
+		{ name: 'id', index: 'id', width: 70, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='#' style='text-decoration: none;' onclick='downloadModule("+rowObject.idModuleVersion+");' ><input type='submit' class='contentButtonSubPages' value='Download Module' title='Download Module' ></a>";
 		    }
 		},
-		{ name: 'date', index: 'date', width: 50, align: 'left' },
+		{ name: 'date', index: 'date', width: 35, align: 'left' },
 		{ name: 'softwareModulestype', index: 'softwareModulestype', width: 80, align: 'left' },
 		{ name: 'module', index: 'module', width: 150, align: 'left' },		
-		{ name: 'moduleVersion', index: 'moduleVersion', width: 30, align: 'left' },
+		{ name: 'moduleVersion', index: 'moduleVersion', width: 25, align: 'left' },
 		{ name: 'owner', index: 'owner', width: 100, align: 'left' },
 		{ name: 'userName', index: 'userName', width: 100, align: 'left' }
 	    ],
@@ -63,6 +79,7 @@ function softwareKey() {
 	    sortable: true,
 	    autowidth: true,
             shrinkToFit: true,
+	    loadonce: true,
 	    jsonReader: {
 		repeatitems: false,
 		root: function(obj) { return obj.Items; },
@@ -73,8 +90,13 @@ function softwareKey() {
 	    },
 	    loadComplete: function(a) {
 		$("tr.jqgrow:odd").css("background", "#E0E0E0");
-		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+a[0].softwareKeyID);
-		$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		$("#linkModuleKey").attr("href", "requestModuleKey.html?idk="+getUrlParameter('id'));
+		if(a[0] !== undefined){
+			$("#downloadModuleKey").on("click", function(){ download(getPropreties.url+'download/downloadModelKeys',JSON.stringify({ id: a[0].softwareKeyID }) ) });
+		}else{
+			$("#downloadModuleKey").remove();
+		}
+		
 	    },
 	    loadBeforeSend: function(jqXHR) {
 	    	jqXHR.setRequestHeader("Authorization", "Basic"+getsessionToken());
@@ -88,8 +110,8 @@ function softwareKey() {
 		}
 	    }
 	});
-	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false});
-	
+	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
+
 }
 
 </script>
@@ -98,22 +120,62 @@ function softwareKey() {
 
 <div class="mainContent" id="mainPanel">
 
-<p style="text-align:center;font-size:30px;padding: 10px 0;">Request Module key</p>
+<a href="softwareKeyInstall.html" >Back</a>
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Module Key Manager</p>
+
+
+<p>
+
+This page list the downloadable module installed into the Red Sqirl installation. You can request a key for <a href="search.html">a public module</a> or <a href="requestModuleKey.html" id="linkModuleKey" >a module that you own</a>.
+
+</p>
+
+
 
 <div class="divTab">
 
-
 <table id='myGrid'></table>
 <div id="myGridDiv"></div>
-<a href="requestModuleKey.html" id="linkModuleKey"><img class="iconBT" src="images/new_key.gif"></a>
-<a href="#" id="downloadModuleKey"><img class="iconBT" src="images/download_keys.gif"></a>
+
+<a href="#" id="downloadModuleKey" style="text-decoration: none;" >
+<input type="submit" class="contentButtonSubPages" value="Download licence key" title="Download licence key" >
+</a>
+
 
 
 </div>
 
 </div>
 
-<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		<a href="mailsupport.html" style="float:left;margin-top:15px;" >Contact us</a>
+
+		</p>
+
+	 </div>
+
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+
+<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
 
 </body>
 </html>

@@ -205,26 +205,6 @@ support@redsqirl.com
 		</execution>
 
 		<execution>
-			<id>copy-resources-css</id>
-			<phase>site</phase>
-			<goals>
-			    <goal>copy-resources</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${basedir}/target/site/css</outputDirectory>
-				<overwrite>true</overwrite>
-			    <resources>
-				<resource>
-				    <directory>${basedir}/src/site/resources/css</directory>
-					<includes>
-	          				<include>apache-maven-fluido-1.3.1.min.css</include>
-					</includes>
-				</resource>
-			    </resources>
-			</configuration>
-		</execution>
-
-		<execution>
 			<id>copy-resources-analytics</id>
 			<phase>site</phase>
 			<goals>
@@ -290,10 +270,6 @@ support@redsqirl.com
 			<replacement>
 			    <token>return false</token>
 			    <value>return true</value>
-			</replacement>
-			<replacement>
-			    <token>&lt;head&gt;</token>
-			    <value>&lt;head&gt;&lt;link rel="stylesheet" type="text/css" href="../css/redsqirl.css"&gt;</value>
 			</replacement>
 		    </replacements>
 		    <regex>false</regex>
@@ -611,6 +587,13 @@ support@redsqirl.com
 		    <groupId>log4j</groupId>
 		    <artifactId>log4j</artifactId>
 		    <version>1.2.12</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <scope>compile</scope>
+		    <version>20090211</version>
 		</dependency>
 
 	    </dependencies>

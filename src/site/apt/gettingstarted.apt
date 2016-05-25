@@ -1,5 +1,5 @@
             ------
-            Red Sqirl - Getting started
+            Getting started
             ------
 
 Getting started
@@ -44,12 +44,13 @@ projects should be installed on the cluster.
 
 * Architecture
 
-   Red Sqirl uses Tomcat as a web service. When you are logging in, it
-will create another process owned by the logged in user and make key components
-available on RMI. Every action on the application is run through the users' process to
-avoid permission conflicts.
+   Red Sqirl uses Tomcat as a web service. When you are logging in, it will create another process owned by the logged in user and make key components available on RMI. Every action on the application is run through the users' process to avoid permission conflicts.
 
 * Install
+
+   Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the Analytics Store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
+
+  The website redsqirl.com reaches the analytics store for you. Sign In and registering on redsqirl.com is the same as registering on the analytics store.
 
   [[01]] Download the version with tomcat
 
@@ -57,39 +58,39 @@ avoid permission conflicts.
 
   [[03]] Run the script bin/install.sh, it will ask for your Tomcat webapps port and directory if necessary. This is going to start the tomcat.
 
-  [[04]] Go http://localhost:<portNumber>/redsqirl and check.
+  [[04]] Go http://<myserver>:<portNumber>/redsqirl, you should see a login page. 
 
-  [[05]] Choose between On-line - if the server can connect to the analytics-store server - (step 6) or Off-line(step 7) in the combobox.
+  [[05]] If you have the On-line option in Mode go to 6 otherwise go to 7.
 
   [[06]] On-line
 
-     [[i]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
+     [[i]] At first, you will need to create an online user from Red Sqirl. Confirm the registration through your e-mail address and sign in on Red Sqirl with your new credentials.
 
-     [[ii]] Install the recommended default package and any other package. Go to 8. 
+     [[ii]] Install the recommended default package and any other packages. Go to 8. 
 
   [[07]] Off-line
 
-     [[i]] Sign in with your OS details. 
+     [[i]] From redsqirl.com, register an account and sign in.
 
-     [[ii]] On the first page follow the Analytics Store link, register an account and sign in.
+     [[ii]] Click on Request new software key and fill the form. Be aware to choose the Red Sqirl version you downloaded. your licence key will be generated automatically.
 
-     [[iii]] Go to Red Sqirl>>Installation, Click on the green button New licence key and fill the form. Be aware to choose the Red Sqirl version you downloaded.
+     [[iii]] Go to Support>>Search, Redsqirl Pig, Request Key as system.
 
-     [[iv]] Go to Red Sqirl>>Search, Redsqirl Pig, Request Key as system
+     [[iv]] Repeat iii for every package that you want to install.
 
-     [[v]] Go to Red Sqirl>>Installation, click on the installation you just created, then click on the Download button.
+     [[v]] Go to Menu>>your e-mail>>software key, click on the installation you just created, then click on the Download licence key button.
 
-     [[vi]] Download also the Red Sqirl Pig package.
+     [[vi]] Download also the Red Sqirl Pig package and the other packages that you installed.
 
-     [[vii]] Go to the installation you just created, and click download. Create a license. In the License key page you need to upload your license key file.(licenseKey.properties)
+     [[vii]] Go back to Red Sqirl (http://<myserver>:<portNumber>/redsqirl) Sign in to Red Sqirl with your OS details.
 
-     [[viii]] Go back to your Red Sqirl tab, upload the licenseKey.properties file you just downloaded and click OK
+     [[viii]] In the License key page you need to upload your license key file (licenseKey.properties). After pressing ok you will be redirected to the Packages page.
 
-     [[ix]] Upload the Red Sqirl Pig package (.zip) downloaded in the new page. Go to 8.
- 
-  [[08]] Set up the system settings from the third admin tab.
+     [[ix]] Upload the Red Sqirl Pig package (.zip) and other packages downloaded in the new page.
+
+  [[08]] Set up the settings from the Settings tab.
   
-  [[09]] You can then sign out from the admin page and sign in to your account.
+  [[09]] You can then sign out from the admin page and sign in to your account (OS user name and password).
 
   []
 ----------------------------------------
@@ -105,4 +106,7 @@ avoid permission conflicts.
 
   Once Red Sqirl is installed, you can find user tutorials in the User Guide,
  {{{./help/buildingworkflow.html}canvas section}}.
+
+  After you have Red Sqirl successfully installed, please look {{{https://www.youtube.com/watch?v=LL6adYq4YL4}here}}
+ for a short tutorial video and {{{./help/buildingworkflow.html}here}} to find the written user tutorials.
 

@@ -1,16 +1,32 @@
 <html>
 <head>
 
+<title>Red Sqirl</title>
+
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
 <script src="javascript/jquery.jqGrid.min.js"></script>
 <script src="javascript/grid.locale-en.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="css/ui.jqgrid.css" type="text/css" />
 <link rel="stylesheet" href="css/analytics.css" type="text/css" />
-<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+
+<!--//google-analytics-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63375912-1', 'auto');
+  ga('send', 'pageview');
+</script>
 
 </head>
 
@@ -47,6 +63,12 @@ jQuery(document).ready(function () {
 		jQuery.each(obj, function(i,v) {
 			jQuery("#selectVersion").append("<option value='"+ v.id +"'>"+ v.value +"</option>");
 		});
+		if(Object.keys(obj).length == 0){
+			jQuery("#msgRequestModuleKey").append("Module list contains only the modules that you own. If you want to generate a key for another module, please go in <a href='search.html'>Search</a>");
+
+			alert('You don\'t own any Module');
+
+		}
 		
 		$("#selectVersion option[value='"+ getUrlParameter('idm') +"']").prop('selected', true);
 
@@ -62,17 +84,6 @@ jQuery(document).ready(function () {
 
 });
 
-function hideShowElement(hide, component){
-	if (hide){
-		for (c in component){
-			$(component[c]).fadeIn("fast");
-		}
-	} else{
-		for (c in component){
-			$(component[c]).fadeOut("fast");
-		}
-	}
-}
 
 function backInstallations(){
 	window.location.href = "installations.html?id="+getUrlParameter('idk');
@@ -87,40 +98,59 @@ function backInstallations(){
 
 <div class="mainContent" id="mainPanel">
 
+<a href="#" onclick="backInstallations();" >Back</a>
+
+<p style="text-align:center;font-size:30px;padding: 10px 0;">Generate Module Key</p>
+
+<p id='msgRequestModuleKey' ></p>
 
 
 <form style="width:570px;" id="requestModuleKeyForm" >
-
-<a href="#" onclick="backInstallations();" >Back</a>
 
 <br>
 <span style="display:block;width:150px;float:left;text-align:right;">Module</span>
 <select style="width:400px;float:left;margin-left:5px;" size="1" id="selectVersion">
 </select>
 <br>
-<span style="display:block;width:150px;float:left;text-align:right;">Scope</span>
-<table id="idFormRequestModuleKey:multiUserRadio">
-<tbody><tr><td>
-<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="USER" id="idFormRequestModuleKey:multiUserRadio:0" name="idFormRequestModuleKey:multiUserRadio">
-<label for="idFormRequestModuleKey:multiUserRadio:0"> USER</label>
-</td>
-<td>
-<input type="radio" onchange="hideShowElement(document.getElementById('idFormRequestModuleKey:multiUserRadio:0').checked , ['#idFormRequestModuleKey\\:idRequestModuleKeyUserTitle','#idFormRequestModuleKey\\:idRequestModuleKeyUserField']);" value="SYSTEM" id="idFormRequestModuleKey:multiUserRadio:1" name="idFormRequestModuleKey:multiUserRadio">
-<label for="idFormRequestModuleKey:multiUserRadio:1"> SYSTEM</label>
-</td>
-</tr>
-</tbody></table>
+
 <br>
-<span style="width: 150px; float: left; text-align: right; display: block;display:none;" id="idFormRequestModuleKey:idRequestModuleKeyUserTitle">User Name</span>
-<input type="text" placeholder="User Name" style="width: 400px; float: left; display: block;display:none;" id="idFormRequestModuleKey:idRequestModuleKeyUserField">
-<br>
-<br>
-<input type="submit" class="contentbutton" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val(), $('input:radio:checked').val(), $('#idFormRequestModuleKey\\:idRequestModuleKeyUserField').val());" >
+<input type="submit" class="contentButtonSubPages" value="Generate Key" onclick="event.preventDefault();validadeRequestModuleKeyForm(getUrlParameter('idk'), $('#selectVersion').val());" >
 </form>
 
 </div>
 
-<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
+
+
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		<a href="mailsupport.html" style="float:left;margin-top:15px;" >Contact us</a>
+
+		</p>
+
+	 </div>
+
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+
+<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
+
+
 
 </body>
 </html>

@@ -1,13 +1,29 @@
 <html>
 <head>
 
+<title>Red Sqirl - Download</title>
+
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-<link href="css/apache-maven-fluido-1.3.1.min.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 
 <script src="javascript/jquery.min.js"></script>
 <script src="javascript/bootstrap.min.js"></script>
 <script src="javascript/analytics.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+<script type="text/javascript" src="javascript/easing.js"></script>
+
+<!--//google-analytics-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63375912-1', 'auto');
+  ga('send', 'pageview');
+</script>
 
 </head>
 <body>
@@ -29,6 +45,8 @@ $(document).ready(function() {
 		checkMenu();
 	},200);
 
+	$().UItoTop({ easingType: 'easeOutQuart' });
+
 });
 
 </script>
@@ -48,10 +66,16 @@ You can find the source on <a href="https://github.com/idiro" target="_blank" >G
 If you don't find the version you are looking for, <a href="mailsupport.html?p=download">email the team</a>.
 </p>
 
+</br>
+
+<p>
+Red Sqirl version <b>0.11</b>
+</p>
+
 <table class="bodyTable" border="1" style="width: 100%">
 	<tbody>
 	<tr>
-		<th align="left" style="width: 25%" >Version</th>
+		<th align="left" style="width: 25%" >Hadoop Version</th>
 		<th align="left" style="width: 25%" >Release Date</th>
 		<th align="left" style="width: 25%" >Source</th>
 		<th align="left" style="width: 25%" >md5sum</th>
@@ -59,38 +83,62 @@ If you don't find the version you are looking for, <a href="mailsupport.html?p=d
 	
 	<tr>
 		<td align="left">
-			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.7.0-0.8.tar.gz" >2.7.0</a>
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.7.0-0.11-tomcat.tar.gz" >2.7.0</a>
 		</td>
-		<td align="left">24 Mar 2016</td>
+		<td align="left">10 May 2016</td>
 		<td align="left">binary *.tar.gz</td>
-		<td align="left">f60bb049774dc6dffec82b8ee1a7f5fd</td>
+		<td align="left">126bb6471a17b1122a289848bcf0a832</td>
 	</tr>
 	<tr>
 		<td align="left">
-			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.6.0-0.8.tar.gz" >2.6.0</a>
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.6.0-0.11-tomcat.tar.gz" >2.6.0</a>
 		</td>
-		<td align="left">24 Mar 2016</td>
+		<td align="left">10 May 2016</td>
 		<td align="left">binary *.tar.gz</td>
-		<td align="left">037cde72ddd21414576d095e4695a80e</td>
+		<td align="left">763f8ea1e224f17f24a447659633628c</td>
 	</tr>
 	<tr>
 		<td align="left">
-			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.4.0-0.8.tar.gz" >2.4.0</a>
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.4.0-0.11-tomcat.tar.gz" >2.4.0</a>
 		</td>
-		<td align="left">24 Mar 2016</td>
+		<td align="left">10 May 2016</td>
 		<td align="left">binary *.tar.gz</td>
-		<td align="left">823f5684187ef71063123cc86a057f01</td>
+		<td align="left">8d6a2b4f8e0c51645a9fdea2df983960</td>
 	</tr>
-
 </table>
 
-</div>
-<p style="float: right; padding: 10px 145px 0px 0px;" >Copyright &copy; 2016 <a href="http://www.redsqirl.com">Red Sqirl</a>. All rights reserved.</p>
 
+
+</div>
+
+
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" style="text-decoration: none" >
+			<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		<a href="mailsupport.html" style="float:left;margin-top:15px;" >Contact us</a>
+
+		</p>
+
+	 </div>
+
+
+<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
 
 
 <!-- Modal -->
-<div class="modal fade" id="modalTermsAndConditions" role="dialog" style="height:250px;width:650px;overflow:hidden;">
+<div class="modal fade" id="modalTermsAndConditions" role="dialog" style="height:250px;overflow:hidden;">
   <div class="modal-dialog">
 
 	<form>

@@ -1,11 +1,18 @@
             ------
-            Red Sqirl - Package Development
+            Package Development
             ------
 
 What is a package
 	
-	Packages are groups of actions that are used to perform specific processes on Red Sqirl. 
-	They generally run on the same platform e.g. Pig, Hive.
+	Packages are groups of actions that are used to perform specific processes on Red Sqirl.
+	They generally run on the same platform e.g. Pig, Hive. We explain below the generalities.
+	For more concrete example you can refer to the following sections:
+
+  * {{{./developerDocBsc.html}Basic Tutorial}}
+
+  * {{{./developerDocAdv.html}Advanced Tutorial}}
+
+  * {{{./developerDocMulti.html}Multi-interaction Tutorial}}
 
 What is in a package
 
