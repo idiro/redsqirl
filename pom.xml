@@ -589,6 +589,13 @@ support@redsqirl.com
 		    <version>1.2.12</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <scope>compile</scope>
+		    <version>20090211</version>
+		</dependency>
+
 	    </dependencies>
 	</profile>
     </profiles>
