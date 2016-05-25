@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface DataFlowCoordinator  extends Remote{
+public interface DataFlowCoordinator extends Remote{
 
 	List<DataFlowElement> getElements() throws RemoteException;
 	
