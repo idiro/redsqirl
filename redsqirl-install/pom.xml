@@ -250,6 +250,7 @@ support@redsqirl.com
 									<directory>${tutorial.data}</directory>
 									<includes>
 									    <include>*tutorial*_data*</include>
+									    <include>gettingstarted.txt</include>
 									</includes>
 								</resource>
 							</resources>

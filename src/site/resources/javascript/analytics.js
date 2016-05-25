@@ -620,7 +620,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "download/"+val;
+	a.href = "files/redsqirlversions/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
