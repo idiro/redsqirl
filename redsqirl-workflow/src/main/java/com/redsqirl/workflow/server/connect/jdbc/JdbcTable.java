@@ -356,6 +356,8 @@ public class JdbcTable extends DataOutput{
 		Iterator<String> itSel = select.iterator();
 		Map<Integer,Set<String>> valForCategory = new LinkedHashMap<Integer,Set<String>>();
 		Map<Integer,String> fieldTypeDetection = new LinkedHashMap<Integer,String>();
+		JdbcStoreConnection conn = JdbcStore.getConnection(pathArr[0]);
+		String connType = conn.getConnType();
 		while(itSel.hasNext()){
 			String dataRow = itSel.next();
 			String dataFields[] = dataRow.split("\001");
@@ -406,7 +408,7 @@ public class JdbcTable extends DataOutput{
 				FieldType type = null;
 				try{
 					type = new JdbcTypeManager().getRsType(
-							pathArr[0],
+							connType,
 							field[1].trim());
 					if(type == null){
 						type = FieldType.STRING;
@@ -425,7 +427,7 @@ public class JdbcTable extends DataOutput{
 						fieldTypeDetection.get(i).equals("INT")){
 					type = FieldType.INT;
 				}
-				
+				logger.info(field[0]+","+field[1]+","+type);
 				fields.addField(field[0].trim(), type);
 
 				

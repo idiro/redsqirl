@@ -685,17 +685,18 @@ public class JdbcStore extends Storage {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
 		String[] fields = null;
 		Object[] obj = cachDesc.get(connectionName+"/"+table);
-		if(obj == null || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
+		if(!cachDesc.containsKey(connectionName+"/"+table) || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
 			fields = storeConnection.execDesc(table);
-			if(fields != null){
-				cachDesc.put(connectionName+"/"+table, new Object[]{System.currentTimeMillis(),fields});
-			}
+			cachDesc.put(connectionName+"/"+table, new Object[]{System.currentTimeMillis(),fields});
 		}else{
 			fields = ((String[]) obj[1]);
 		}
 		if(fields != null){
 			ans.put(key_describe, fields[0]);
 			ans.put(key_partition, fields[1]);
+		}else{
+			ans.put(key_describe, null);
+			ans.put(key_partition, null);
 		}
 		logger.debug("desc : " + ans);
 		return ans;

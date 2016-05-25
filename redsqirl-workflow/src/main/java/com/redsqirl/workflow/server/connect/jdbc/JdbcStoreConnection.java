@@ -238,7 +238,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			rs.close();
 
 		} catch (Exception e) {
-			logger.error("Fail to check the existence " + table,e);
+			logger.error("Fail to describe the table " + table,e);
 		}
 		if(logger.isDebugEnabled()){
 			logger.debug("desc "+table+": "+ fieldsStr);

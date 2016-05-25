@@ -133,6 +133,9 @@ public class JdbcTypeManager {
 					}
 				}
 			}
+			if(logger.isDebugEnabled()){
+				logger.debug(dicName+", "+fieldType+": "+ans);
+			}
 		}
 		return ans;
 	}

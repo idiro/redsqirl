@@ -532,7 +532,7 @@ public class HCatStore extends Storage{
 						prop.put(key_type, key_table);
 						logger.debug("Describe: "+pathArray[0]+"."+tblName);
 						prop.putAll(JdbcHiveStore.getDescription(pathArray[0]+"."+tblName));
-						prop.put(key_children, !prop.get(JdbcStore.key_partition).isEmpty() ? "true":"false");
+						prop.put(key_children, prop.get(JdbcStore.key_partition) != null && !prop.get(JdbcStore.key_partition).isEmpty() ? "true":"false");
 						ans.put(prefix+tblName, prop);
 					}
 				}
