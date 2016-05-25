@@ -149,7 +149,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			id = id.replaceAll(" ", "_");
 		}
 		if(id.matches("^.*[A-Z].*$")){
-			logger.warn("ID does not accept uppercase, change to lower case");
+			logger.warn(id+" does not accept uppercase, change to lower case");
 			id = id.toLowerCase();
 		}
 		String regex = "[a-z]([a-z0-9_]*)";
