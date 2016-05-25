@@ -2140,7 +2140,7 @@ function configureGroupListeners(canvasName, group) {
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
-        console.log()
+        
         canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
