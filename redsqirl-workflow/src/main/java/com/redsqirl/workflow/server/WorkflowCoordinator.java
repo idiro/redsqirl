@@ -32,6 +32,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 
 	@Override
 	public String addElement(DataFlowElement dfe) throws RemoteException {
+		//If error or not linked
 		elements.add(dfe);
 		return null;
 	}
