@@ -657,19 +657,19 @@ ul.social-ic-icons li.browser a span{
 /*----*/
 @media(max-width: 1060px) {
 	.videoWrapper iframe{
-		width: 760px;
+		width: 100%;
 		height: 428px;
 	}
 }
 @media(max-width: 950px) {
 	.videoWrapper iframe{
-		width: 560px;
+		width: 100%;
 		height: 315px;
 	}
 }
 @media(max-width: 400px) {
 	.videoWrapper iframe{
-		width: 300px;
+		width: 100%;
 		height: 169px;
 	}
 	.logo img {

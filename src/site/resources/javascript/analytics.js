@@ -620,7 +620,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "files/redsqirlversions/"+val;
+	a.href = "https://s3-eu-west-1.amazonaws.com/idiro-data/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
@@ -725,5 +725,17 @@ function addCart(obj){
 	//Select item image and pass to the function
 	var itemImg = obj.parent().find('img').eq(0);
 	flyToElement($(itemImg), $('.cart_anchor'));
+}
+
+function msieversion() {
+
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+
+    if(msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)){
+        return true;
+    }
+
+    return false;
 }
 
