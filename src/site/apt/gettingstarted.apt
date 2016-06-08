@@ -4,7 +4,14 @@
 
 Getting started
 
-  This document describes how to install and configure Red Sqirl.
+  Red Sqirl is a platform, that you can install directly on top of a Hadoop Cluster.
+
+  If you don't have access to a cluster, you can download a pre-install tiny environment from the {{{https://docker.com}docker}} {{{https://hub.docker.com}hub}}.
+
+  The three major distributions are available on {{{https://hub.docker.com/u/redsqirl/}our account}}, but if you have no preference click {{{https://hub.docker.com/r/redsqirl/cloudera/}here}}.
+
+  For installing Red Sqirl on your own cluster, just follow the step described below. This document describes how to install and configure Red Sqirl.
+
 
 * Download
 
