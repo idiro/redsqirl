@@ -81,11 +81,17 @@
 	
 //]]>
 
+var comboboxListCategories;
+var comboboxListCategoriesOperation;
+
 function mountComboboxTextEditor(obj1, obj2){
+	
+	console.log("1 " + obj1);
+	console.log("2 " + obj2);
 
 	if(jQuery("[id$='comboboxListCategories']").parent().attr('class') != "text-wrap"){
 
-		jQuery("[id$='comboboxListCategories']").textext({
+		comboboxListCategories = jQuery("[id$='comboboxListCategories']").textext({
 	    	plugins : 'arrow autocomplete'
 	    }).bind('getSuggestions', function(e, data){
 
@@ -112,12 +118,25 @@ function mountComboboxTextEditor(obj1, obj2){
 			onselectListCategories(data);
 		});
 		
+	}else{
+		
+		console.log('comboboxListCategories');
+			
+		var aux = obj1+"";
+		var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+		var list = myArray;
+		
+		comboboxListCategories.trigger('setSuggestions', {
+			result : list,
+			showHideDropdown : false
+		});
+		
 	}
 	
 
 	if(jQuery("[id$='comboboxListCategoriesOperation']").parent().attr('class') != "text-wrap"){
 	
-		jQuery("[id$='comboboxListCategoriesOperation']").textext({
+		comboboxListCategoriesOperation = jQuery("[id$='comboboxListCategoriesOperation']").textext({
 	    	plugins : 'arrow autocomplete'
 	    }).bind('getSuggestions', function(e, data){
 	
@@ -144,6 +163,17 @@ function mountComboboxTextEditor(obj1, obj2){
 			onselectListCategoriesOperation(data);
 		});
 
+	}else{
+		
+		var aux = obj2+"";
+		var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+		var list = myArray;
+		
+		comboboxListCategoriesOperation.trigger('setSuggestions', {
+			result : list,
+			showHideDropdown : false
+		});
+		
 	}
 	
 }
