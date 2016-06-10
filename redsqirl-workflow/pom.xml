@@ -43,21 +43,7 @@ support@redsqirl.com
     <packaging>jar</packaging>
     <name>Red Sqirl - Workflow</name>
     <description>Programme to interact with a Hadoop cluster</description>
-    <url>http://ns.local.net/dev/redsqirl-workflow</url>
     <version>${hadoop.version}-0.11</version>
-
-    <distributionManagement>
-	<repository>
-	    <id>internal</id>
-	    <name>Internal Release Repository</name>
-	    <url>http://dev/apache-archiva-1.3.6/data/repositories/internal</url>
-	</repository>
-	<snapshotRepository>
-	    <id>snapshots</id>
-	    <name>Internal Snapshot Repository</name>
-	    <url>http://dev/apache-archiva-1.3.6/data/repositories/snapshots</url>
-	</snapshotRepository>
-    </distributionManagement>
 
     <organization>
 	<name>Idiro Technologies</name>

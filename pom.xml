@@ -93,38 +93,6 @@ support@redsqirl.com
 	<url>http://swift:3000/projects/researchanddevelopment-idm</url>
     </issueManagement>
 
-    <distributionManagement>
-	<site>
-	    <id>website</id>
-	    <url>scp://dev.local.net:/data/html/idm</url>
-	</site>
-    </distributionManagement>
-
-    <mailingLists>
-	<mailingList>
-	    <name>Project</name>
-	    <post>announce@noonecares.com</post>
-	    <subscribe>users-subscribe@noonecares.com</subscribe>
-	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-	    <archive>http://noonecares.archive.org</archive>
-	</mailingList>
-	<mailingList>
-	    <name>Users</name>
-	    <post>announce@noonecares.com</post>
-	    <subscribe>users-subscribe@noonecares.com</subscribe>
-	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-	    <archive>http://noonecares.archive.org</archive>
-	</mailingList>
-	<mailingList>
-	    <name>Developers</name>
-	    <post>announce@noonecares.com</post>
-	    <subscribe>users-subscribe@noonecares.com</subscribe>
-	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-	    <archive>http://noonecares.archive.org</archive>
-	</mailingList>
-    </mailingLists>
-
-
     <build>
 	<extensions>
 	    <extension>
