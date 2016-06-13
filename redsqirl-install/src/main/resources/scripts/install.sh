@@ -38,6 +38,11 @@ function check_permission_ancestor(){
     fi                                                                           
 } 
 
+function change_rs_prop {
+    prop=`cut -d "=" -f 1 <<< "$1"`
+    sed -i "/${prop}.*/c $1" $SETTINGS_FILE
+}
+
 #Script that deploy the war file into tomcat
 #Set up dynamic properties
 SCRIPT_LOCATION=${BASH_SOURCE[0]}
@@ -45,9 +50,10 @@ SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
 DEFAULT_TOMCAT=$(dirname ${SCRIPT_PATH})/apache-tomcat-7.0.42/webapps
 CONF_FILE=$(dirname ${SCRIPT_PATH})/conf/.internal.conf
+SETTINGS_FILE=$(dirname ${SCRIPT_PATH})/conf/redsqirl_sys.properties
 DONOTCONFIRM="FALSE"
 
-TOMCAT_PORT=8080
+TOMCAT_PORT=8842
 
 source ${CONF_FILE} 2> /dev/null
 
@@ -66,14 +72,15 @@ if [ -n "$file_perm" ]; then
     fi
 fi
 
+#Input the Tomcat port, find the tomcat path
 if [ -z "${TOMCAT_PATH}" ]; then
     if [[ -d ${DEFAULT_TOMCAT} ]]; then
 	TOMCAT_PATH_CUR=${DEFAULT_TOMCAT}
 	DONOTCONFIRM="TRUE"
-	echo "Please specify the tomcat port (default 8080):"
+	echo "Please specify the tomcat port (default 8842):"
         read TOMCAT_PORT
 	if [[ -z "${TOMCAT_PORT}" ]]; then
-	    TOMCAT_PORT=8080
+	    TOMCAT_PORT=8842
 	elif [[  ! "${TOMCAT_PORT}" =~ ^[0-9]{4}$ ]]; then
         	echo "port number is invalid "
                 exit;
@@ -101,11 +108,71 @@ if [[ ${DONOTCONFIRM} == "FALSE" ]]; then
     fi
 fi
 
+###############################################################################
+#Auto settings
+shopt -s nocasematch
+
+#Cluster type
+CLUSTER_TYPE=""
+echo "In the next steps, Red Sqirl will create default settings as much relevant to you as possible."
+while [ true ]; do
+    echo "What is your cluster? [custome], hdp, cloudera or mapr. \"custome\" will jump the auto settings."
+    read CLUSTER_TYPE
+    if [[ -z "$CLUSTER_TYPE" ]]; then
+	CLUSTER_TYPE="custome"
+	break;
+    elif [[ "$CLUSTER_TYPE" == "custome" ||  "$CLUSTER_TYPE" == "hdp" || "$CLUSTER_TYPE" == "cloudera" || "$CLUSTER_TYPE" == "mapr" ]]; then
+	break;
+    else
+	echo "Type unrecognized"
+    fi
+done
+
+#Master
+if [[ "$CLUSTER_TYPE" == "hdp" || "$CLUSTER_TYPE" == "cloudera" || "$CLUSTER_TYPE" == "mapr" ]]; then
+    while [ true ]; do
+	echo "What is your master node hostname, on which most of your services are running?"
+	read MASTER_HOSTNAME
+	if [[ -z "$MASTER_HOSTNAME" ]]; then
+	    MASTER_HOSTNAME=`hostname`
+	fi
+	echo "Is your master node hostname called ${MASTER_HOSTNAME}? [Y/n]"
+	read START_R
+	if [[ -z "${START_R}" || "${START_R}" == 'Y' || "${START_R}" == 'y' ]]; then
+	    break;
+	fi
+    done
+fi
+
+#Write settings
+if [[ "$CLUSTER_TYPE" == "hdp" ]]; then
+    change_rs_prop "core.namenode=hdfs\://${MASTER_HOSTNAME}\:8020"
+    change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8050"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000"
+    change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.hadoop_home=/usr/hdp/current/hadoop-client"
+
+elif [[ "$CLUSTER_TYPE" == "cloudera" ]]; then
+    change_rs_prop "core.namenode=hdfs\://${MASTER_HOSTNAME}\:8022"
+    change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8032"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:9083"
+    change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.hadoop_home=/usr/lib/hadoop"
+
+elif [[ "$CLUSTER_TYPE" == "mapr" ]]; then
+    change_rs_prop "core.namenode=maprfs\:///mapr/mycluster.mapr.com"
+    change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8032"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000"
+    change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.hadoop_home=/opt/mapr"
+fi
+shopt -u nocasematch
+
+###############################################################################
 #Read the dynamic conf file and update tomcat_path
 #The hive port needs to stick at the old value if any
 rm ${CONF_FILE} 2> /dev/null
 echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
-echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
 
 PREV_DIR_RS=${TOMCAT_PATH_CUR}/redsqirl
 PREV_DIR_PCK=${TOMCAT_PATH_CUR}/packages
@@ -128,6 +195,8 @@ fi
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
 chmod 500 ${TOMCAT_PATH_CUR}/../bin
 chmod 700 ${TOMCAT_PATH_CUR}/../bin/*.sh
+
+#Change tomcat port
 sed -i "s#<Connector port=\"....\" protocol=\"HTTP#<Connector port=\"$TOMCAT_PORT\" protocol=\"HTTP#g" ${TOMCAT_PATH_CUR}/../conf/server.xml
 
 property_line="path_sys_home=`dirname ${SCRIPT_PATH}`"
@@ -141,6 +210,8 @@ fi
 
 echo "Installation successful..."
 
+
+#Start tomcat
 echo "Do you want to start the web server? [Y/n]"
 read START_R
 if [[ ! "${START_R}" == 'n' && ! "${START_R}" == 'N' ]]; then

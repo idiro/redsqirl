@@ -70,6 +70,15 @@ public class OracleDictionary extends JdbcDictionary{
 	protected void loadDefaultFunctions() {
 		super.loadDefaultFunctions();
 		
+
+		functionsMap.put(arithmeticOperators,
+				new String[][] { new String[] { "+", "NUMBER,NUMBER...", "NUMBER" },
+				new String[] { "-", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+				new String[] { "-", "DATETIME,DATETIME", "NUMBER" },
+				new String[] { "*", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+				new String[] { "/", "NUMBER,NUMBER,NUMBER...", "NUMBER" },
+				new String[] { "%", "NUMBER,NUMBER,NUMBER...", "NUMBER" } });
+		
 		functionsMap
 				.put(castMethods,
 						new String[][] { 

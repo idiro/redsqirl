@@ -782,8 +782,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	protected boolean runOperation(String[][] list, String expr, FieldList fields, Set<String> aggregFeat)
 			throws Exception {
 		boolean ok = false;
-		String[] method = AbstractSQLLikeDictionary.find(list, expr);
-		if (method != null) {
+		List<String[]> methods = AbstractSQLLikeDictionary.find(list, expr);
+		Iterator<String[]> it = methods.iterator();
+		while(!ok && it.hasNext()){
+			String[] method = it.next();
 			logger.debug("In " + expr + ", method found: " + method[0]);
 
 			String pattern = escapeString(method[0])+"(?![^\\(]*\\))";
@@ -909,26 +911,26 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @param expression
 	 * @return method
 	 */
-	protected static String[] find(String[][] list, String expression) {
+	protected static List<String[]> find(String[][] list, String expression) {
 
 		int i = 0;
-		boolean found = false;
-		String[] ans = null;
+		//String[] ans = null;
+		List<String[]> ans = new LinkedList<String[]>();
 		String search = removeBracketContent(expression.trim());
-		while (!found && list.length > i) {
+		while (list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
 			logger.trace("equals? " + search + " " + regex);
 
-			if (found = search.matches(regex)) {
-				ans = list[i];
+			if (search.matches(regex)) {
+				ans.add(list[i]);
 			}
 
 			++i;
 		}
-		if (ans != null) {
-			logger.debug("expr " + expression + ", to search: " + search + ", found: " + ans[0]);
+		if (!ans.isEmpty()) {
+			logger.debug("expr " + expression + ", to search: " + search + ", found: " + ans.size()+" elements");
 		} else {
-			logger.debug("expr " + expression + ", to search: " + search + ", found: null");
+			logger.debug("expr " + expression + ", to search: " + search + ", no operations found");
 		}
 		return ans;
 	}

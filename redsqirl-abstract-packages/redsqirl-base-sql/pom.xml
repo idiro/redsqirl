@@ -44,20 +44,6 @@ support@redsqirl.com
     <name>Red Sqirl - Sql Base Package</name>
     <description>Provide basic sql actions</description>
 
-    <distributionManagement>
-	<repository>
-	    <id>internal</id>
-	    <name>Internal Release Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
-	</repository>
-
-	<snapshotRepository>
-	    <id>snapshots</id>
-	    <name>Internal Snapshot Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
-	</snapshotRepository>
-    </distributionManagement>
-
     <organization>
 	<name>Idiro Technologies</name>
 	<url>http://www.idiro.com</url>

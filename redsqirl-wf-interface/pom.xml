@@ -40,21 +40,6 @@ support@redsqirl.com
     <version>${hadoop.version}-0.11</version>
     <name>Red Sqirl - Interface</name>
     <description>Provide the interface used by Red Sqirl app</description>
-    <url>http://ns.local.net/dev/idiro-wf-interface</url>
-
-    <distributionManagement>
-	<repository>
-	    <id>internal</id>
-	    <name>Internal Release Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
-	</repository>
-
-	<snapshotRepository>
-	    <id>snapshots</id>
-	    <name>Internal Snapshot Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
-	</snapshotRepository>
-    </distributionManagement>
 
     <organization>
 	<name>Idiro Technologies</name>
