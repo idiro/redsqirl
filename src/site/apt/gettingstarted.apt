@@ -4,7 +4,12 @@
 
 Getting started
 
-  This document describes how to install and configure Red Sqirl.
+  Red Sqirl is a platform, that you can install directly on top of a Hadoop Cluster.
+
+  If you don't have access to a cluster, you can download a pre-install tiny environment from the {{{https://docker.com}docker}} {{{https://hub.docker.com}hub}}. The three major distributions are available on {{{https://hub.docker.com/u/redsqirl/}our account}}, but if you have no preference click {{{https://hub.docker.com/r/redsqirl/cloudera/}here}}.
+
+  For installing Red Sqirl on your own cluster, just follow the step described below.
+
 
 * Download
 
@@ -48,7 +53,7 @@ projects should be installed on the cluster.
 
 * Install
 
-   Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the Analytics Store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
+   Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the Analytics Store {{{http://marketplace.redsqirl.com}http://marketplace.redsqirl.com}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
 
   The website redsqirl.com reaches the analytics store for you. Sign In and registering on redsqirl.com is the same as registering on the analytics store.
 

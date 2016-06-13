@@ -263,7 +263,18 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	}
 	
 	public void mountComboBoxOperationListvalue(String value){
-		setListOperationCombobox(getEdit().getTextEditorOperations().get(value));
+		
+		List<String> l = new ArrayList<String>();
+		List<String[]> list = new ArrayList<String[]>();
+		for (String[] a : getEdit().getTextEditorOperations().get(value)) {
+			if(!l.contains(a[0])){
+				l.add(a[0]);
+				list.add(a);
+			}
+		}
+		
+		setListOperationCombobox(list);
+		
 	}
 
 	/**

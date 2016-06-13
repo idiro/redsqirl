@@ -1,7 +1,7 @@
 getPropreties = {
-	url: "http://localhost:9090/analytics-store/rest/"
+	//url: "http://localhost:9090/analytics-store/rest/"
         //url: "http://dev:8091/analytics-store/rest/"
-        //url: "http://192.168.23.4:8091/analytics-store/rest/"
+        url: "http://marketplace.redsqirl.com/rest/"
 }
 
 function sessionStorage() {
@@ -620,7 +620,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "files/redsqirlversions/"+val;
+	a.href = "https://s3-eu-west-1.amazonaws.com/redsqirl/v0.12/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
@@ -725,5 +725,17 @@ function addCart(obj){
 	//Select item image and pass to the function
 	var itemImg = obj.parent().find('img').eq(0);
 	flyToElement($(itemImg), $('.cart_anchor'));
+}
+
+function msieversion() {
+
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+
+    if(msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)){
+        return true;
+    }
+
+    return false;
 }
 
