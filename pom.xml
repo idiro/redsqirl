@@ -88,6 +88,7 @@ support@redsqirl.com
 	<name>Red Sqirl</name>
 	<url>http://www.redsqirl.com</url>
     </organization>
+
     <issueManagement>
 	<system>Redmine</system>
 	<url>http://swift:3000/projects/researchanddevelopment-idm</url>
@@ -362,7 +363,7 @@ support@redsqirl.com
 			    <goal>exec</goal>
 			</goals>
 			<configuration>
-			    <executable>${basedir}/add_in_all.sh</executable>
+			    <executable>${basedir}/src/main/resources/add_in_all.sh</executable>
 			</configuration>
 		    </execution>
 

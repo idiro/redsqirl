@@ -1,11 +1,16 @@
 #!/bin/bash
 
-CONTENT_TEMPLATE1=`cat template1.html`
-CONTENT_TEMPLATE2=`cat template2.html`
-CONTENT_TEMPLATE3=`cat template3.html`
-CONTENT_TEMPLATE4=`cat template4.html`
-CONTENT_TEMPLATE5=`cat template5.html`
-CONTENT_TEMPLATE6=`cat template6.html`
+SCRIPT_LOCATION=${BASH_SOURCE[0]}
+SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_LOCATION}")"
+SCRIPT_PATH="${SCRIPT_PATH%/*}"
+
+TEMPLATE_FOLDER=${SCRIPT_LOCATION}/templates/
+CONTENT_TEMPLATE1=`cat ${TEMPLATE_FOLDER}template1.html`
+CONTENT_TEMPLATE2=`cat ${TEMPLATE_FOLDER}template2.html`
+CONTENT_TEMPLATE3=`cat ${TEMPLATE_FOLDER}template3.html`
+CONTENT_TEMPLATE4=`cat ${TEMPLATE_FOLDER}template4.html`
+CONTENT_TEMPLATE5=`cat ${TEMPLATE_FOLDER}template5.html`
+CONTENT_TEMPLATE6=`cat ${TEMPLATE_FOLDER}template6.html`
 DIR=target/site
 DIR2=target/site/help
 
