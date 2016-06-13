@@ -12,7 +12,7 @@ Package Management
 Packages are Red Sqirl technology plug-in. Those plug-ins are gathered in the website. Once a package is installed users may have to configure
 settings, sign out and back in before using it. 
 
-  Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the analytics store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
+  Red Sqirl can work in two modes: online or offline. Online means that Red Sqirl can reach the analytics store {{{http://marketplace.redsqirl.com}http://marketplace.redsqirl.com}}. In online mode, you will be able to install and update your packages in one click whereas the offline mode offers the same functionality but several steps are required for every install/update.
 
 
 ** Online installation
@@ -67,7 +67,7 @@ manually in the system setting file first.
 
 * Upload a New Package
 
- * The website do not support uploading a package yet. However you can do it directly on the analytics-store {{{http://192.168.23.4:8091/analytics-store}http://192.168.23.4:8091/analytics-store}}.
+ * The website do not support uploading a package yet. However you can do it directly on the analytics-store {{{http://marketplace.redsqirl.com}http://marketplace.redsqirl.com}}.
 
  * Log in on the analytics store with your online credentials.
 

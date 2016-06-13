@@ -454,6 +454,7 @@ h1,
 h2,
 .h2 {
   font-size: 30px;
+  word-wrap:break-word;
 }
 h3,
 .h3 {
