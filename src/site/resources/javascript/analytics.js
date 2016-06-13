@@ -1,7 +1,7 @@
 getPropreties = {
-	url: "http://localhost:9090/analytics-store/rest/"
+	//url: "http://localhost:9090/analytics-store/rest/"
         //url: "http://dev:8091/analytics-store/rest/"
-        //url: "http://192.168.23.4:8091/analytics-store/rest/"
+        url: "http://marketplace.redsqirl.com/rest/"
 }
 
 function sessionStorage() {
@@ -620,7 +620,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "https://s3-eu-west-1.amazonaws.com/idiro-data/"+val;
+	a.href = "https://s3-eu-west-1.amazonaws.com/redsqirl/v0.12/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
