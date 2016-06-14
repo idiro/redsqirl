@@ -44,19 +44,28 @@ support@redsqirl.com
 
 
 	<parent>
-		<groupId>idiro</groupId>
+		<groupId>idiro.redsqirl</groupId>
 		<artifactId>redsqirl</artifactId>
 		<version>0.12</version>
 	</parent>
 
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>idiro</groupId>
+	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl-install</artifactId>
 	<packaging>pom</packaging>
 	<version>${hadoop.version}-0.12</version>
 	<name>Red Sqirl - Install</name>
 	<description>Create an installer</description>
+
+	<distributionManagement>
+	    <repository>
+		<id>archiva.idiro.com</id>
+		<name>Idiro Release Repository</name>
+		<url>http://archiva.idiro.com/repository/internal/</url>
+	    </repository>
+	</distributionManagement>
+
 
 	<organization>
 		<name>Idiro Technologies</name>

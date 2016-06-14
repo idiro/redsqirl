@@ -27,19 +27,27 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro</groupId>
+	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
 	<version>0.12</version>
     </parent>
 
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>idiro</groupId>
+    <groupId>idiro.redsqirl</groupId>
     <artifactId>redsqirl-wf-interface</artifactId>
     <packaging>jar</packaging>
     <version>${hadoop.version}-0.12</version>
     <name>Red Sqirl - Interface</name>
     <description>Provide the interface used by Red Sqirl app</description>
+
+    <distributionManagement>
+	<repository>
+	    <id>archiva.idiro.com</id>
+	    <name>Idiro Release Repository</name>
+	    <url>http://archiva.idiro.com/repository/internal/</url>
+	</repository>
+    </distributionManagement>
 
     <organization>
 	<name>Idiro Technologies</name>
