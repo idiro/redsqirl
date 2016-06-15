@@ -18,298 +18,312 @@ support@redsqirl.com
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-tm.version>0.1</idiro-tm.version>
-		<compile.resources>${basedir}/src/main/resources</compile.resources>
-		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
-		<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
-		<hadoop.version>2.7.0</hadoop.version>
-	</properties>
+    <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<idiro-tm.version>0.1</idiro-tm.version>
+	<compile.resources>${basedir}/src/main/resources</compile.resources>
+	<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
+	<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
+	<hadoop.version>2.7.0</hadoop.version>
+    </properties>
 
-	<parent>
-		<groupId>idiro.redsqirl</groupId>
-		<artifactId>redsqirl</artifactId>
-		<version>0.12</version>
-	</parent>
-
+    <parent>
 	<groupId>idiro.redsqirl</groupId>
-	<artifactId>redsqirl-webapp</artifactId>
-	<packaging>war</packaging>
-	<version>${hadoop.version}-0.12</version>
-	<name>Red Sqirl - Web Application</name>
+	<artifactId>redsqirl</artifactId>
+	<version>0.12</version>
+    </parent>
+
+    <groupId>idiro.redsqirl</groupId>
+    <artifactId>redsqirl-webapp</artifactId>
+    <packaging>war</packaging>
+    <version>${hadoop.version}-0.12</version>
+    <name>Red Sqirl - Web Application</name>
 
 
-	<issueManagement>
-		<system>Redmine</system>
-		<url>http://swift:3000</url>
-	</issueManagement>
+    <issueManagement>
+	<system>Redmine</system>
+	<url>http://swift:3000</url>
+    </issueManagement>
 
-	<distributionManagement>
-	    <repository>
-		<id>archiva.idiro.com</id>
-		<name>Idiro Release Repository</name>
-		<url>http://archiva.idiro.com/repository/internal/</url>
-	    </repository>
-	</distributionManagement>
+    <distributionManagement>
+	<repository>
+	    <id>archiva.idiro.com</id>
+	    <name>Idiro Release Repository</name>
+	    <url>http://archiva.idiro.com/repository/internal/</url>
+	</repository>
+    </distributionManagement>
 
-	<repositories>
-
-		<!-- JBoss Repository -->
-		<repository>
-			<id>jboss-public-repository</id>
-			<name>JBoss Repository</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-	</repositories>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
-	<build>
-
-		<resources>
-			<resource>
-				<directory>${compile.resources}</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
-
-		<plugins>
-
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>idiro.maven</groupId>
-				<artifactId>depman-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>depman</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+    <pluginRepositories>
+	<pluginRepository>
+	    <id>archiva.idiro.com</id>
+	    <name>Idiro Release Repository</name>
+	    <url>http://archiva.idiro.com/repository/internal</url>
+	</pluginRepository>
+    </pluginRepositories>
 
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
-					<outputDirectory>${dist.war}</outputDirectory>
-					<warName>redsqirl</warName>
-					<warSourceExcludes>pages/packages/**</warSourceExcludes>
-					<webXml>${webXmlFile}</webXml>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <repositories>
 
-	<dependencies>
+	<!-- JBoss Repository -->
+	<repository>
+	    <id>jboss-public-repository</id>
+	    <name>JBoss Repository</name>
+	    <url>https://repository.jboss.org/nexus/content/groups/public</url>
+	    <releases>
+		<enabled>true</enabled>
+	    </releases>
+	    <snapshots>
+		<enabled>false</enabled>
+	    </snapshots>
+	</repository>
 
-		<!-- Idiro Dep -->
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>redsqirl-wf-interface</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>servlet-api-2.5</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>jsp-2.1</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>jsp-api-2.1</artifactId>
-				</exclusion>
-			</exclusions>
-			<!-- <scope>runtime</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>idiro-tm</artifactId>
-			<version>${idiro-tm.version}</version>
-			<scope>compile</scope>
-		</dependency>
+	<repository>
+	    <id>archiva.idiro.com</id>
+	    <name>Idiro Release Repository</name>
+	    <url>http://archiva.idiro.com/repository/internal</url>
+	</repository>
+    </repositories>
 
+    <reporting>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-project-info-reports-plugin</artifactId>
+		<version>2.6</version>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-javadoc-plugin</artifactId>
+		<version>2.9</version>
+		<configuration>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </reporting>
 
-		<!-- Backend -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
+    <build>
 
-		<!-- Other -->
+	<resources>
+	    <resource>
+		<directory>${compile.resources}</directory>
+		<filtering>true</filtering>
+	    </resource>
+	</resources>
 
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>6.0.37</version>
-			<scope>provided</scope>
-		</dependency>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>1.0</version>
+	    </extension>
+	</extensions>
 
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.50</version>
-			<scope>compile</scope>
-		</dependency>
+	<plugins>
 
-		<dependency>
-			<groupId>com.sun.el</groupId>
-			<artifactId>el-ri</artifactId>
-			<version>1.0</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.facelets</groupId>
-			<artifactId>jsf-facelets</artifactId>
-			<version>1.1.14</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.faces</groupId>
-			<artifactId>jsf-api</artifactId>
-			<version>1.2_15</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.faces</groupId>
-			<artifactId>jsf-impl</artifactId>
-			<version>1.2_15</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.richfaces.ui</groupId>
-			<artifactId>richfaces-ui</artifactId>
-			<version>3.3.3.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.richfaces.framework</groupId>
-			<artifactId>richfaces-impl</artifactId>
-			<version>3.3.3.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.ethz.ganymed</groupId>
-			<artifactId>ganymed-ssh2</artifactId>
-			<version>build210</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>3.5.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>1.8</version>
-		</dependency>
-
-		<!-- TEST -->
-
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-		<!-- zip4j API -->
-		<dependency>
-			<groupId>net.lingala.zip4j</groupId>
-			<artifactId>zip4j</artifactId>
-			<version>1.3.2</version>
-		</dependency>
-
-		<!-- Quartz API -->
-		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>18.0</version>
-		</dependency>
+	    <plugin>
+		<groupId>org.apache.tomcat.maven</groupId>
+		<artifactId>tomcat7-maven-plugin</artifactId>
+		<version>2.2</version>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+		    <source>1.6</source>
+		    <target>1.6</target>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<groupId>idiro.maven</groupId>
+		<artifactId>depman-maven-plugin</artifactId>
+		<version>1.0</version>
+		<executions>
+		    <execution>
+			<phase>process-resources</phase>
+			<goals>
+			    <goal>depman</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
 
 
-	</dependencies>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-war-plugin</artifactId>
+		<configuration>
+		    <warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+		    <outputDirectory>${dist.war}</outputDirectory>
+		    <warName>redsqirl</warName>
+		    <warSourceExcludes>pages/packages/**</warSourceExcludes>
+		    <webXml>${webXmlFile}</webXml>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </build>
+
+    <dependencies>
+
+	<!-- Idiro Dep -->
+	<dependency>
+	    <groupId>idiro</groupId>
+	    <artifactId>redsqirl-wf-interface</artifactId>
+	    <version>${project.version}</version>
+	    <exclusions>
+		<exclusion>
+		    <groupId>org.mortbay.jetty</groupId>
+		    <artifactId>servlet-api</artifactId>
+		</exclusion>
+		<exclusion>
+		    <groupId>org.mortbay.jetty</groupId>
+		    <artifactId>servlet-api-2.5</artifactId>
+		</exclusion>
+		<exclusion>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+		</exclusion>
+		<exclusion>
+		    <groupId>org.mortbay.jetty</groupId>
+		    <artifactId>jsp-2.1</artifactId>
+		</exclusion>
+		<exclusion>
+		    <groupId>org.mortbay.jetty</groupId>
+		    <artifactId>jsp-api-2.1</artifactId>
+		</exclusion>
+	    </exclusions>
+	    <!-- <scope>runtime</scope> -->
+	</dependency>
+	<dependency>
+	    <groupId>idiro</groupId>
+	    <artifactId>idiro-tm</artifactId>
+	    <version>${idiro-tm.version}</version>
+	    <scope>compile</scope>
+	</dependency>
+
+
+	<!-- Backend -->
+	<dependency>
+	    <groupId>commons-lang</groupId>
+	    <artifactId>commons-lang</artifactId>
+	    <version>2.3</version>
+	</dependency>
+	<dependency>
+	    <groupId>commons-io</groupId>
+	    <artifactId>commons-io</artifactId>
+	    <version>2.4</version>
+	</dependency>
+
+	<!-- Other -->
+
+	<dependency>
+	    <groupId>org.apache.tomcat</groupId>
+	    <artifactId>servlet-api</artifactId>
+	    <version>6.0.37</version>
+	    <scope>provided</scope>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.jcraft</groupId>
+	    <artifactId>jsch</artifactId>
+	    <version>0.1.50</version>
+	    <scope>compile</scope>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.sun.el</groupId>
+	    <artifactId>el-ri</artifactId>
+	    <version>1.0</version>
+	    <scope>compile</scope>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.sun.facelets</groupId>
+	    <artifactId>jsf-facelets</artifactId>
+	    <version>1.1.14</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>javax.faces</groupId>
+	    <artifactId>jsf-api</artifactId>
+	    <version>1.2_15</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>javax.servlet.jsp</groupId>
+	    <artifactId>jsp-api</artifactId>
+	    <version>2.1</version>
+	    <scope>provided</scope>
+	</dependency>
+	<dependency>
+	    <groupId>javax.faces</groupId>
+	    <artifactId>jsf-impl</artifactId>
+	    <version>1.2_15</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>jstl</groupId>
+	    <artifactId>jstl</artifactId>
+	    <version>1.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.richfaces.ui</groupId>
+	    <artifactId>richfaces-ui</artifactId>
+	    <version>3.3.3.Final</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.richfaces.framework</groupId>
+	    <artifactId>richfaces-impl</artifactId>
+	    <version>3.3.3.Final</version>
+	</dependency>
+	<dependency>
+	    <groupId>ch.ethz.ganymed</groupId>
+	    <artifactId>ganymed-ssh2</artifactId>
+	    <version>build210</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.apache.lucene</groupId>
+	    <artifactId>lucene-core</artifactId>
+	    <version>3.5.0</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.sun.jersey</groupId>
+	    <artifactId>jersey-client</artifactId>
+	    <version>1.8</version>
+	</dependency>
+
+	<!-- TEST -->
+
+	<dependency>
+	    <groupId>log4j</groupId>
+	    <artifactId>log4j</artifactId>
+	    <version>1.2.16</version>
+	</dependency>
+	<!-- zip4j API -->
+	<dependency>
+	    <groupId>net.lingala.zip4j</groupId>
+	    <artifactId>zip4j</artifactId>
+	    <version>1.3.2</version>
+	</dependency>
+
+	<!-- Quartz API -->
+	<dependency>
+	    <groupId>org.quartz-scheduler</groupId>
+	    <artifactId>quartz</artifactId>
+	    <version>2.0.2</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.google.guava</groupId>
+	    <artifactId>guava</artifactId>
+	    <version>18.0</version>
+	</dependency>
+
+
+    </dependencies>
 </project>
