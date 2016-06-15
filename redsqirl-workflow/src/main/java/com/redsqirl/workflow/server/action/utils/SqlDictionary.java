@@ -40,7 +40,7 @@ public interface SqlDictionary {
 	
 	/**
 	 * Id of the dictionary
-	 * @return
+	 * @return string
 	 */
 	public String getId();
 	

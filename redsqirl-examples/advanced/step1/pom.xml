@@ -30,7 +30,7 @@ support@redsqirl.com
 	<resources.pck.dir>src/main/pck</resources.pck.dir>
 	<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 	<timestamp>${maven.build.timestamp}</timestamp>
-	<redsqirl.version>1.0.4-0.1</redsqirl.version>
+	<redsqirl.version>2.7.0-0.12</redsqirl.version>
     </properties>
 
     <organization>

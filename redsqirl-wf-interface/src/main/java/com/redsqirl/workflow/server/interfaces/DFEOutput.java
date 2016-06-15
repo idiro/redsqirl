@@ -209,9 +209,7 @@ public interface DFEOutput extends Remote {
 	public String isPathValid(String path) throws RemoteException;
 
 	/**
-	 * True if the path has been auto generated. True if the path has been auto
-	 * generated using {@link #generatePath(String,String,String) generatePath}
-	 * method for the given user
+	 * True if the path has been auto generated. 
 	 * 
 	 * @param component
 	 * @param outputName

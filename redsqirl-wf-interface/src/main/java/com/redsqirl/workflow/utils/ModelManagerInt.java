@@ -44,14 +44,14 @@ public interface ModelManagerInt extends Remote {
 	 * Create a new Model
 	 * @param user
 	 * @param newModelName
-	 * @return
+	 * @return error
 	 */
 	String create(String user, String newModelName) throws RemoteException;
 	
 	/**
 	 * Get all the models available to a given user.
 	 * @param user
-	 * @return
+	 * @return list of ModelInt
 	 */
 	List<ModelInt> getAvailableModels(String user) throws RemoteException;
 	
@@ -65,7 +65,7 @@ public interface ModelManagerInt extends Remote {
 	 * If the model is not found in the user scope it searches in system.
 	 * @param modelName
 	 * @param user
-	 * @return
+	 * @return ModelInt
 	 */
 	ModelInt getAvailableModel(String user, String modelName) throws RemoteException;
 	
@@ -74,9 +74,8 @@ public interface ModelManagerInt extends Remote {
 	ModelInt getUserModel(String user, String modelName) throws RemoteException;
 	/**
 	 * Remove a model
-	 * @param user
-	 * @param name
-	 * @return
+	 * @param model
+	 * @return error
 	 */
 	String remove(ModelInt model) throws RemoteException;
 

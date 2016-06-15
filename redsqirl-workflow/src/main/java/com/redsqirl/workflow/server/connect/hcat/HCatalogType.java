@@ -247,7 +247,6 @@ public class HCatalogType extends DataOutput{
 
 	/**
 	 * Generate Map of fields from the table
-	 * @param table
 	 * @throws RemoteException
 	 */
 	private void generateFieldsMap() throws RemoteException{

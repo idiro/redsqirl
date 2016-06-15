@@ -528,9 +528,9 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Check if there are duplicate action files
 	 * 
-	 * @param pack
 	 * @param pack_name
 	 * @param user if user is null or empty it is considered as system
+	 * @param actions
 	 * @return Error Message
 	 */
 	public static String checkNoActionDuplicate(String pack_name,

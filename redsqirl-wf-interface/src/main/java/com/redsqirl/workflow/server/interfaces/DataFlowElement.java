@@ -307,7 +307,7 @@ public interface DataFlowElement extends RunnableElement{
 
 	/**
 	 * Last time the element run. If the element didin't run during this session returns null.
-	 * @return
+	 * @return Long
 	 * @throws RemoteException
 	 */
 	Long getLastTimeRun() throws RemoteException;
@@ -321,10 +321,9 @@ public interface DataFlowElement extends RunnableElement{
 
 	/**
 	 * Last time any input element run, null if none run so far.
-	 * @return
+	 * @return long
 	 * @throws RemoteException
 	 */
 	Long getLastTimeInputComponentRun() throws RemoteException;
-
 
 }

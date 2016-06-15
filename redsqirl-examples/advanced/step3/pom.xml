@@ -30,7 +30,7 @@ support@redsqirl.com
 	<resources.pck.dir>src/main/pck</resources.pck.dir>
 	<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 	<timestamp>${maven.build.timestamp}</timestamp>
-	<redsqirl.version>1.0.4-0.1</redsqirl.version>
+	<redsqirl.version>2.7.0-0.12</redsqirl.version>
     </properties>
 
     <organization>
@@ -55,45 +55,6 @@ support@redsqirl.com
     </repositories>
 
 
-    <reporting>
-	<plugins>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-project-info-reports-plugin</artifactId>
-		<version>2.6</version>
-	    </plugin>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-javadoc-plugin</artifactId>
-		<version>2.9</version>
-		<configuration>
-		</configuration>
-	    </plugin>
-	</plugins>
-    </reporting>
-
-    <build>
-
-	<extensions>
-	    <extension>
-		<groupId>org.apache.maven.wagon</groupId>
-		<artifactId>wagon-ssh</artifactId>
-		<version>1.0</version>
-	    </extension>
-	</extensions>
-	<plugins>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<version>3.1</version>
-		<configuration>
-		    <source>1.6</source>
-		    <target>1.6</target>
-		</configuration>
-	    </plugin>
-	</plugins>
-    </build>
-
     <dependencies>
 	<dependency>
 	    <groupId>idiro.redsqirl</groupId>
@@ -116,6 +77,12 @@ support@redsqirl.com
 	    <groupId>log4j</groupId>
 	    <artifactId>log4j</artifactId>
 	    <version>1.2.12</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>idiro</groupId>
+	    <artifactId>redsqirl-pig</artifactId>
+	    <version>0.5</version>
 	    <scope>compile</scope>
 	</dependency>
     </dependencies>

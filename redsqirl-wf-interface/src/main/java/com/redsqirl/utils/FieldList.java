@@ -63,14 +63,14 @@ public interface FieldList extends Remote {
 	
 	/**
 	 * Get the fields with their types as string
-	 * @return
+	 * @return Map<String,String>
 	 * @throws RemoteException
 	 */
 	public Map<String,String> getMap() throws RemoteException;
 
 	/**
 	 * Get the fields with their types as string
-	 * @return
+	 * @return Map<String,List<String>>
 	 * @throws RemoteException
 	 */
 	public Map<String,List<String>> getMapList() throws RemoteException;

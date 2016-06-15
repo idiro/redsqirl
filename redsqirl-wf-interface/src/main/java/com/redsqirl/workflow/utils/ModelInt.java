@@ -40,19 +40,19 @@ public interface ModelInt extends Remote{
 
 	/**
 	 * The model folder. The name of the folder is the model name.
-	 * @return
+	 * @return File
 	 */
 	File getFile() throws RemoteException;
 	
 	/**
 	 * Get the model name.
-	 * @return
+	 * @return String
 	 */
 	String getName() throws RemoteException;
 	
 	/**
 	 * True if the model is editable.
-	 * @return
+	 * @return boolean
 	 */
 	boolean isEditable() throws RemoteException;
 	
@@ -64,7 +64,7 @@ public interface ModelInt extends Remote{
 	
 	/**
 	 * Get the version of the model.
-	 * @return
+	 * @return string
 	 */
 	String getVersion() throws RemoteException;
 	
@@ -100,33 +100,33 @@ public interface ModelInt extends Remote{
 	
 	/**
 	 * Get all the sub workflow names of the model.
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getSubWorkflowNames() throws RemoteException;
 	
 	/**
 	 * Get the name of the sub workflow names.
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getPublicSubWorkflowNames() throws RemoteException;
 	
 	/**
 	 * Get the full name of the public workflows. 
 	 * The full name is composed of the model followed by the subworkflow names. 
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getPublicFullNames() throws RemoteException;
 	
 	/**
 	 * Get the full name of the subworkflows. 
 	 * The full name is composed of the model followed by the subworkflow names. 
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getSubWorkflowFullNames() throws RemoteException;
 	
 	/**
 	 * Get the dependencies of the entire model.  
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getAllDependencies() throws RemoteException;
 	
@@ -149,13 +149,13 @@ public interface ModelInt extends Remote{
 	/**
 	 * Get the dependencies required to run a given subworkflow.
 	 * @param subworkflowName
-	 * @return
+	 * @return Set<String>
 	 */
 	Set<String> getSubWorkflowDependencies(String subworkflowName) throws RemoteException;
 	
 	/**
 	 * Get the dependencies related to each subworkflow.
-	 * @return
+	 * @return Map<String,Set<String>>
 	 */
 	Map<String,Set<String>> getDependenciesPerSubWorkflows() throws RemoteException;
 	
@@ -163,7 +163,7 @@ public interface ModelInt extends Remote{
 	 * Install SubDataFlow with the given privileges.
 	 * @param toInstall
 	 * @param privilege
-	 * @return
+	 * @return error
 	 * @throws RemoteException
 	 */
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException;

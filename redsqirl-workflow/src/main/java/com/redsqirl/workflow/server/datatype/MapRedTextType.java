@@ -92,7 +92,6 @@ public class MapRedTextType extends MapRedDir {
 	/**
 	 * Gernate a path given values
 	 * 
-	 * @param userName
 	 * @param component
 	 * @param outputName
 	 * @return generated path

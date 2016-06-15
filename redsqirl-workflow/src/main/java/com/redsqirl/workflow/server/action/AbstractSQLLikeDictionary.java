@@ -702,7 +702,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * 
 	 * @param expr
 	 * @param fields
-	 * @param aggregFeat
+	 * @param isAggregMethod
 	 * @return <cod>true</code> if method runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
