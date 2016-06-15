@@ -24,7 +24,7 @@ support@redsqirl.com
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<idiro-tm.version>0.1</idiro-tm.version>
+	<idiro-tm.version>0.3</idiro-tm.version>
 	<compile.resources>${basedir}/src/main/resources</compile.resources>
 	<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
 	<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
