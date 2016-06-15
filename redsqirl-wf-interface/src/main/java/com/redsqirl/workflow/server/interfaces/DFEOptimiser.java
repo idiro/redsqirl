@@ -32,14 +32,14 @@ public interface DFEOptimiser extends RunnableElement {
 	/**
 	 * True if the element can be added and is added false otherwise
 	 * @param dfe
-	 * @return
+	 * @return boolean
 	 */
 	public boolean addElement(DataFlowElement dfe) throws RemoteException;
 	
 	/**
 	 * True if all the element can be added and are added false otherwise
 	 * @param dfe
-	 * @return
+	 * @return boolean
 	 */
 	public boolean addAllElement(List<DataFlowElement> dfe) throws RemoteException;
 	

@@ -98,7 +98,6 @@ public class MapRedCompressedType extends MapRedTextType {
 	/**
 	 * Gernate a path given values
 	 * 
-	 * @param userName
 	 * @param component
 	 * @param outputName
 	 * @return generated path

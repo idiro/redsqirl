@@ -39,7 +39,7 @@ public interface DataFlow extends Remote, Cloneable{
 	
 	/**
 	 * Get the element manager of the workflow
-	 * @return
+	 * @return ElementManager
 	 * @throws RemoteException
 	 */
 	public ElementManager getElementManager() throws RemoteException;
@@ -126,7 +126,7 @@ public interface DataFlow extends Remote, Cloneable{
 
 	/**
 	 * Do an automatic backup of the workflow.
-	 * @return 
+	 * @return string
 	 */
 	public String backup() throws RemoteException;
 

@@ -121,7 +121,7 @@ public interface DataFlowInterface extends Remote{
 	 * @param from The id of the workflow to copy from 
 	 * @param elements The element ids to copy
 	 * @param to The id of the workflow to copy to
-	 * @return 
+	 * @return string
 	 */
 	public String copy(String from, List<String> elements, String to) throws RemoteException;
 	
@@ -136,7 +136,7 @@ public interface DataFlowInterface extends Remote{
 	
 	/**
 	 * Get the last files that have been cbacked up in bunch (with a backupAll)
-	 * @return
+	 * @return List<String[]>
 	 * @throws RemoteException
 	 */
 	public List<String[]> getLastBackedUp() throws RemoteException;

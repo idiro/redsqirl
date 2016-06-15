@@ -261,7 +261,6 @@ public class RedSqirlPackage {
 	/**
 	 * Check if the package is a valid package
 	 * 
-	 * @param pack
 	 * @return Error Message
 	 */
 	public String isPackageValid() {
@@ -312,7 +311,6 @@ public class RedSqirlPackage {
 	/**
 	 * Get a property of the package
 	 * 
-	 * @param pack_dir
 	 * @return property
 	 */
 	public Properties getPackageProperties() {
@@ -332,8 +330,6 @@ public class RedSqirlPackage {
 	/**
 	 * Get a property from the package
 	 * 
-	 * @param user  if user is null or empty it is considered as system
-	 * @param packageName
 	 * @param property
 	 * @return Error Message
 	 */
@@ -372,7 +368,6 @@ public class RedSqirlPackage {
 	/**
 	 * Check if the action file contain one of the following action
 	 * 
-	 * @param f
 	 * @param actions
 	 * @return <code>true</code> if the file is an action <code>false</code>
 	 */
@@ -417,7 +412,6 @@ public class RedSqirlPackage {
 	/**
 	 * Get the list of files in the package
 	 * 
-	 * @param dir
 	 * @return File list
 	 * @throws IOException
 	 */

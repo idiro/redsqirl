@@ -50,7 +50,7 @@ public interface HdfsDataStore extends DataStore{
 	 * @param hdfs_path
 	 * @param local_path
 	 * @param writtableByAll
-	 * @return
+	 * @return string
 	 * @throws RemoteException
 	 */
 	String copyToLocal(String hdfs_path, String local_path, boolean writtableByAll) throws RemoteException;

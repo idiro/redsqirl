@@ -293,7 +293,6 @@ public class HCatStore extends Storage{
 	 * 
 	 * @param path
 	 * @param fields
-	 * @param partitions
 	 * @return Error Message
 	 * @throws RemoteException
 	 */

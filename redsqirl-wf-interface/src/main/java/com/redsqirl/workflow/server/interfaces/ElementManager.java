@@ -31,7 +31,7 @@ import java.util.Map;
  * @author etienne
  *
  */
-public interface ElementManager  extends Remote{
+public interface ElementManager extends Remote{
 
 	/**
 	 * Load the current menu from action names
@@ -61,7 +61,7 @@ public interface ElementManager  extends Remote{
 
 	/**
 	 * Get the map (key: action name, value: class path name) for all actions
-	 * @return
+	 * @return Map<String, String>
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
@@ -94,8 +94,9 @@ public interface ElementManager  extends Remote{
 	
 	/**
 	 * Get the list of the packages not yet notified to the user.
-	 * @return
+	 * @return Collection<String>
 	 * @throws RemoteException
 	 */
 	public Collection<String> getPackageToNotify() throws RemoteException;
+	
 }

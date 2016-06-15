@@ -179,7 +179,6 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	/**
 	 * Get a property of the package
 	 * 
-	 * @param pack_dir
 	 * @return property
 	 */
 	public Properties getPackageProperties() {

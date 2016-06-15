@@ -589,7 +589,6 @@ public class JdbcStore extends Storage {
 	 * 
 	 * @param path
 	 * @param fields
-	 * @param partitions
 	 * @return Error Message
 	 * @throws RemoteException
 	 */

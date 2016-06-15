@@ -433,7 +433,6 @@ DFEOutput {
 	/**
 	 * Generate a path and set it as current path
 	 * 
-	 * @param userName
 	 * @param component
 	 * @param outputName
 	 * @throws RemoteException
@@ -722,4 +721,5 @@ DFEOutput {
 	public boolean allowDirectories(){
 		return true;
 	}
+	
 }

@@ -251,7 +251,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Return true if the path exists
 	 * @param path
-	 * @return
+	 * @return boolean
 	 * @throws RemoteException
 	 */
 	public boolean exists(String path) throws RemoteException;
