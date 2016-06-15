@@ -5431,6 +5431,7 @@ button.close {
   display: none;
   -webkit-transition: .6s ease-in-out left;
           transition: .6s ease-in-out left;
+  padding: 0 0 !important;
 }
 .carousel-inner > .item > img,
 .carousel-inner > .item > a > img {
@@ -5480,18 +5481,24 @@ button.close {
   opacity: .5;
 }
 .carousel-control.left {
+  /*
   background-image: -webkit-linear-gradient(left, color-stop(rgba(0, 0, 0, .5) 0%), color-stop(rgba(0, 0, 0, .0001) 100%));
   background-image:         linear-gradient(to right, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
   background-repeat: repeat-x;
+  */
+  background-color: transparent;
 }
 .carousel-control.right {
   right: 0;
   left: auto;
+  background-color: transparent;
+  /*
   background-image: -webkit-linear-gradient(left, color-stop(rgba(0, 0, 0, .0001) 0%), color-stop(rgba(0, 0, 0, .5) 100%));
   background-image:         linear-gradient(to right, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
   background-repeat: repeat-x;
+  */
 }
 .carousel-control:hover,
 .carousel-control:focus {
@@ -5594,7 +5601,7 @@ button.close {
     padding-bottom: 30px;
   }
   .carousel-indicators {
-    bottom: 20px;
+    bottom: 0px;
   }
 }
 .clearfix:before,
@@ -5855,3 +5862,46 @@ button.close {
       width: 90%;
       margin: auto;
 }
+
+
+.textcarousel{
+text-align:center;
+bottom:45%;
+color:white;
+font-size:360%;
+position:absolute;
+text-align:center;
+font-weight:bold;
+text-shadow: 2px 2px #000000;
+}
+
+@media (max-width: 1200px) {
+  .textcarousel {
+    font-size: 360%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .textcarousel {
+    font-size: 260%;
+  }
+}
+
+@media (max-width: 900px) {
+  .textcarousel {
+    font-size: 200%;
+  }
+}
+
+@media (max-width: 700px) {
+  .textcarousel {
+    font-size: 140%;
+  }
+}
+
+@media (max-width: 400px) {
+  .textcarousel {
+    font-size: 80%;
+  }
+}
+

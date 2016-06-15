@@ -30,7 +30,7 @@ video {
 
 .header{
 	width:100%;
-	min-height:700px;
+	/*min-height:700px;*/
 	display:block;
 	background-size:cover;
 	position:relative;
@@ -676,12 +676,14 @@ ul.social-ic-icons li.browser a span{
 		height: auto;
 		float: left;
 	}
+/*
 	.header {
 		background: url(../images/vidstill.png) center;
 	}
 	.header video {
 		display: none;
 	}
+*/
 }
 @media(max-width:768px){
 	.section05 {
@@ -740,9 +742,11 @@ ul.social-ic-icons li.browser a span{
 .header-matter p {
 	margin: 0 0 7em;
 }
+/*
 .header {
 	min-height: 510px;
 }
+*/
 .item-in p {
 	height: 52px;
 	overflow: hidden;
@@ -794,9 +798,11 @@ img.red {
 }
 }
 @media(max-width:640px){
+/*
 .header {
 	min-height: 470px;
 }
+*/
 .header-matter h2 {
 	font-size: 3.5em;
 }
@@ -856,9 +862,11 @@ img.red {
 }
 }
 @media(max-width:480px){
+/*
 .header {
 	min-height: 365px;
 }
+*/
 .header-matter h2 {
 	font-size: 2.5em;
 }
@@ -950,9 +958,11 @@ img.red {
 	overflow: hidden;
 	width: 70%;
 }
+/*
 .header {
 	min-height: 240px;
 }
+*/
 .about, .team, .services, .clients, .portfolio-top, .test, .contact{
 	padding:1.5em 0 2em;
 }
