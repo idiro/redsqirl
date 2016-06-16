@@ -91,7 +91,7 @@ key_featureTable = "features";
 	
 
 	Every action generates an ouput, so we need to make sure that there is a map ready to be used which will contain the output.
-	For this we update thw map to have the right type of output and properties for that output.
+	For this we update the map to have the right type of output and properties for that output.
 	
 +-----------+
 public String updateOut() throws RemoteException {
@@ -430,11 +430,14 @@ public String check(){
  	Inside the 'ActionSample' class we add need to add the last few members of the action.
  	
 	You can download the resulting project {{{./files/advanced-step4.zip}here}}.
+
 +-----------+
+
 //Interaction that was just written
 public SampleInteraction pigsample;
 //page in which the interaction is contained
 private Page page1;
+
 +-----------+
 
 	With the interaction and page added we can now write/update the constructor to include these members and utilize them.

@@ -38,6 +38,8 @@ $(document).ready(function() {
 
 	    var id = $(e.relatedTarget).data('project-id');
 	    $(e.currentTarget).find('#selectedProject').val(id);
+	    $(e.currentTarget).find('#spanBTOK').removeClass();
+	    $(e.currentTarget).find('#spanBTOK').addClass($(e.relatedTarget).parents('table').attr('id')+id);
 
 	});
 
@@ -72,7 +74,7 @@ If you don't find the version you are looking for, <a href="mailsupport.html?p=d
 Red Sqirl version <b>0.12</b>
 </p>
 
-<table class="bodyTable" border="1" style="width: 100%">
+<table class="bodyTable" border="1" style="width:100%" id="table012" >
 	<tbody>
 	<tr>
 		<th align="left" style="width: 25%" >Hadoop Version</th>
@@ -168,7 +170,7 @@ Red Sqirl version <b>0.12</b>
 	      </div>
 	      <div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();DownloadProject( $('#selectedProject').val() );" >OK</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();DownloadProject( $('#selectedProject').val() );" ><span id="spanBTOK" class="" >OK</span></button>
 	      </div>
 	    </div>
 

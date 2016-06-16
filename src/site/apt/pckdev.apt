@@ -387,7 +387,7 @@ application page you need to follow a specific format.
 
 How to deploy a package
 
- [[1]] Log in to the {{{http://95.45.250.249:8091/analytics-store}Analytics Store}}
+ [[1]] Log in to the {{{http://marketplace.redsqirl.com}http://marketplace.redsqirl.com}}
 
  [[2]] Go to the Red Sqirl >> Package
 
@@ -428,7 +428,7 @@ How to install a package
 
 * Manually
 
- [[1]] Log in to the {{{http://95.45.250.249:8091/analytics-store}Analytics Store}}
+ [[1]] Log in to the {{{http://marketplace.redsqirl.com}http://marketplace.redsqirl.com}}
 
  [[2]] Click on Red Sqirl >> Search
 
