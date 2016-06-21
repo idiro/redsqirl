@@ -122,7 +122,7 @@ public class Sample extends DataflowAction{
 			DFEOutput out = output.values().iterator().next();
 			//set the bag for loading the data
 			String loader = "READ";
-			//set the load query piece method is explaned below
+			//set the load query piece method is explained below
 			String load = loader + " = LOAD " + getLoadQueryPiece(in) + ";\n\n";
 			//set the sample query piece by getting the value from the sample interaction
 			String sampletxt = "SAMPLEDATA" + " = SAMPLE " + loader + " "

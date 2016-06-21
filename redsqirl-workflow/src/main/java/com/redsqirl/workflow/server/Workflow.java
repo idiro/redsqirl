@@ -168,31 +168,41 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 	}
 
-	public boolean cloneToFile(String cloneId)
-			throws CloneNotSupportedException {
+	public boolean cloneToFile(String cloneId) throws CloneNotSupportedException {
+		
+		logger.warn("cloneToFile");
+		
 		boolean clonedok = true;
 
 		try {
 
-			// Check if T is instance of Serializeble other throw
-			// CloneNotSupportedException
-			String path = WorkflowPrefManager.getPathClonefolder() + "/"
-					+ cloneId;
+			// Check if T is instance of Serializeble other throw CloneNotSupportedException
+			String path = WorkflowPrefManager.getPathClonefolder() + "/" + cloneId;
 
-			File clonesFolder = new File(
-					WorkflowPrefManager.getPathClonefolder());
+			logger.warn("path " + path);
+			
+			File clonesFolder = new File(WorkflowPrefManager.getPathClonefolder());
 			clonesFolder.mkdir();
 			FileOutputStream output = new FileOutputStream(new File(path));
 
+			logger.warn("cloneToFile 1");
+			
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bos);
+
+			logger.warn("cloneToFile 2 ");
+			
 			// Serialize it
 			out.writeObject(this);
 			byte[] bytes = bos.toByteArray();
+			
+			logger.warn("cloneToFile 3");
+			
 			IOUtils.write(bytes, output);
 			bos.close();
 			out.close();
 			output.close();
+			
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			return false;

@@ -103,6 +103,11 @@ public class ServerProcess {
 					if(uRdmFile.exists()){
 						argJava+= " -Djava.security.egd=file:///dev/urandom ";
 					}
+					
+					if(WorkflowPrefManager.getSysProperty("core.workflow_lib_path") != null){
+						argJava+= " -Dsun.io.serialization.extendedDebugInfo=true ";
+					}
+					
 					logger.info("opening channel");
 					Channel channel = session.openChannel("exec");
 					logger.info("command to launch:\n" + javahome + argJava + command);

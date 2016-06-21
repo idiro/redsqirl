@@ -103,7 +103,11 @@ DFEOptimiser {
 		logger.debug("writeProcess 1");
 
 		Map<String,Element>  ans = oozieAction.createOozieElements(oozieXmlDoc, actionName, fileNames);
-		setLastRunOozieElementNames(ans.keySet());
+		
+		Set<String> lastRun = new LinkedHashSet<String>();
+		lastRun.addAll(ans.keySet());
+		
+		setLastRunOozieElementNames(lastRun);
 		logger.debug("writeProcess 2");
 
 		writeOozieActionFiles(files,elementList);
