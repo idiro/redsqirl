@@ -144,8 +144,11 @@ public class ListInteraction extends UserInteraction {
 		logger.debug("getting value");
 		if (display == DisplayType.list) {
 			try {
-				ans = getTree().getFirstChild("list").getFirstChild("output")
-						.getFirstChild().getHead();
+				if(getTree().getFirstChild("list").getFirstChild("output")
+						.getFirstChild() != null){
+					ans = getTree().getFirstChild("list").getFirstChild("output")
+							.getFirstChild().getHead();
+				}
 			} catch (Exception e) {
 				logger.error(getId() + ": Tree structure incorrect",e);
 				reInitAfterError();

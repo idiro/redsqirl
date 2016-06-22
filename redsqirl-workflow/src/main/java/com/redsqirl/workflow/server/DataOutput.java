@@ -505,7 +505,13 @@ DFEOutput {
 	 * 
 	 */
 	public void addProperty(String key, String value) {
-		dataProperty.put(key, value);
+		if(key != null){
+			if(value != null){
+				dataProperty.put(key, value);
+			}else{
+				dataProperty.remove(key);
+			}
+		}
 	}
 
 	@Override
@@ -721,5 +727,4 @@ DFEOutput {
 	public boolean allowDirectories(){
 		return true;
 	}
-	
 }

@@ -195,7 +195,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 						DataFlowElement dfe = (DataFlowElement) Class.forName(nameWithClass.get(actionName)).newInstance();
 						aux.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
 					} catch (Exception e) {
-						logger.error(LanguageManagerWF.getText("workflow.loadclassfail", new Object[] { actionName }));
+						logger.error(LanguageManagerWF.getText("workflow.loadclassfail", new Object[] { actionName }),e);
 					}
 				}
 				packageHelp.put(packageName, aux);

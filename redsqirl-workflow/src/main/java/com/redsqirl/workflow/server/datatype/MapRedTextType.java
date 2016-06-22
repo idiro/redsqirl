@@ -229,9 +229,10 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	@Override
 	public void addProperty(String key, String value) {
-
-		if (key.equals(key_delimiter) && value.length() == 1) {
-			value = "#" + String.valueOf((int) value.charAt(0));
+		if (key != null && key.equals(key_delimiter)){
+			if(value != null && value.length() == 1) {
+				value = "#" + String.valueOf((int) value.charAt(0));
+			}
 		}
 		super.addProperty(key, value);
 	}
