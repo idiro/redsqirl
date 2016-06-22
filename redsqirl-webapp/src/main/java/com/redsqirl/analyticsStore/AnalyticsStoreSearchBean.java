@@ -309,13 +309,21 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectedVersion = params.get("selectedVersion");
+		String userInstall = params.get("userInstall");
 
 		for (RedSqirlModule redSqirlModule : allPackageList) {
 			if(redSqirlModule.getIdVersion().equals(selectedVersion)){
-				redSqirlInstallations.setInstallationType("system");
+				
+				if(userInstall != null && userInstall.equalsIgnoreCase("true")){
+					redSqirlInstallations.setInstallationType("user");
+					redSqirlInstallations.setUserName(getUserInfoBean().getUserName());
+				}else{
+					redSqirlInstallations.setInstallationType("system");
+					redSqirlInstallations.setUserName("");
+				}
+				
 				redSqirlInstallations.setSoftwareModulestype(redSqirlModule.getType());
 				redSqirlInstallations.setIdModuleVersion(redSqirlModule.getIdVersion());
-				redSqirlInstallations.setUserName("");
 				redSqirlInstallations.setModule(redSqirlModule.getName());
 				redSqirlInstallations.setModuleVersion(redSqirlModule.getVersionName());
 				break;

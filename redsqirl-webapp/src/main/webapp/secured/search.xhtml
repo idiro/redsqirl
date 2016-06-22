@@ -59,6 +59,7 @@
 								
 								<a4j:commandButton id="btInstallPackageSearch" value="#{messages.button_package_install}" styleClass="greenButton" style="position:relative;margin-left:15px;top:40px;z-index:2;" action="#{analyticsStoreSearchBean.installPackageFromSearch}" reRender="msgSearch,btInstallPackageSearch" rendered="#{pck.canInstall}" oncomplete="if(#{analyticsStoreSearchBean.showRestartMSG == 'Y'}){alert('To see the changes it is necessary to restart the system');}" >
 									<f:param name="selectedVersion" value="#{pck.idVersion}"/>
+									<f:param name="userInstall" value="#{packageMngBean.userInstall}" />
 								</a4j:commandButton>
 								<a4j:commandButton value="#{messages.button_package_install}" styleClass="greenButton" style="position:relative;margin-left:15px;top:40px;z-index:2;opacity:0.4;" rendered="#{!pck.canInstall}" />
 								

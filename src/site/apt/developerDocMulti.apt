@@ -73,7 +73,7 @@ public DemoTable(String id, String name, String legend, int column,
 }
 +-----------------+
 	
-	This section of the tutorial is for the update method of the interaction. It will take the two interactions (list and append) and the input object (DFEOutput)
+	This section of the tutorial is for the {update} method of the interaction. It will take the two interactions (list and append) and the input object (DFEOutput)
 	as parameters. 
 	
 	The first section is to generate columns from the interactions provided.

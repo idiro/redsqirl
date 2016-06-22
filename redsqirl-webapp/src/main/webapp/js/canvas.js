@@ -579,13 +579,16 @@ function rectSelectAllObj(canvasName, e) {
 function toggleSelectOnClick(canvasName, obj, e) {
     // <![CDATA[
     
-	//console.log("toggleSelectOnClick");
+	console.log("toggleSelectOnClick");
 	
     var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
     var stage = canvasArray[canvasName].stage;
 
     if (!e.ctrlKey) {
+    	
+    	console.log("toggleSelectOnClick no ctrl");
+    	
         jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
             //value.setStroke('white');
         	if(value.getParent().getId() != obj.getParent().getId()){
@@ -620,7 +623,7 @@ function toggleSelectOnClick(canvasName, obj, e) {
 
 function dragAndDropGroup(canvasName, obj, e) {
 	
-	//console.log("dragAndDropGroup");
+	console.log("dragAndDropGroup");
     
 	var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
@@ -2007,6 +2010,9 @@ function configureCircle(canvasName, circle1) {
 
     circle1.on("click", function(e) {
         if(e.button != 2){
+        	
+        	console.log("configureCircle circle1 on click");
+        	
             createLink(this);
         }
     });
@@ -2017,9 +2023,11 @@ function configureCircle(canvasName, circle1) {
 
 function createLink(circleGp){
 	
-	//console.log("createLink");
+		console.log("createLink");
         
         var arrow = canvasArray[selectedCanvas].arrow;
+        
+        console.log(arrow);
 
         if (canvasArray[selectedCanvas].down) {
             canvasArray[selectedCanvas].down = false;
@@ -2118,6 +2126,9 @@ function configureGroupListeners(canvasName, group) {
     });
     
     group.on('dragmove', function(e) {
+    	
+    	console.log("configureGroupListeners dragmove");
+    	
     	//Always have the element dragged selected....
     	this.getChildren()[2].selected = true;
     	this.getChildren()[0].setFill("#FFDB99");
@@ -2137,6 +2148,9 @@ function configureGroupListeners(canvasName, group) {
     });
 
     group.on('dragend', function(e) {
+    	
+    	console.log("configureGroupListeners dragend");
+    	
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
@@ -2150,7 +2164,7 @@ function configureGroupListeners(canvasName, group) {
     
     group.on('click', function(e) {
     	
-    	//alert(e.button);
+    	console.log("group on click");
         
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
@@ -2237,6 +2251,9 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     });
     
     group1.on('click',function() {
+    	
+    	console.log("createGroup click");
+    	
     	//Display Help
     	if (this.elementType) {
     		var auxId = this.elementType;
@@ -2580,16 +2597,20 @@ function findGroup(groupId){
 
 function polygonOnClick(obj,e, canvasName){
 	
-	//console.log("polygonOnClick");
+	console.log("polygonOnClick");
 	
 	var arrow = canvasArray[canvasName].arrow;
 
 	if (!e.ctrlKey) {
 		if (canvasArray[canvasName].down) {
 			
+			console.log("polygonOnClick arrow");
+			
 			canvasArray[canvasName].down = false;
 			
 			if(canvasArray[canvasName].oldIdSelected != obj.getParent().getId()){
+				
+				console.log("polygonOnClick oldId");
 				
 				deleteArrowOutsideStandard(canvasName);
 				
@@ -2601,6 +2622,8 @@ function polygonOnClick(obj,e, canvasName){
 				//alert("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
+			}else{
+				console.log("polygonOnClick diferent id");
 			}
 
 		}
