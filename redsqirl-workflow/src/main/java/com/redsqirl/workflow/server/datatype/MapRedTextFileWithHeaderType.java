@@ -179,7 +179,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
 						for (String s : line.split(Pattern
-								.quote(delimiter))) {
+								.quote(delimiter),-1)) {
 
 							String nameColumn;
 							nameColumn = headers.get(cont++);
