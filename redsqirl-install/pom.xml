@@ -139,9 +139,10 @@ support@redsqirl.com
 			    <goal>exec</goal>
 			</goals>
 			<configuration>
-			    <executable>scp</executable>
+			    <executable>wget</executable>
 			    <arguments>
-				<argument>dev:/data/tomcat/apache-tomcat-7.0.62.zip</argument>
+				<argument>https://s3-eu-west-1.amazonaws.com/redsqirl/compil/apache-tomcat-7.0.62.zip</argument>
+				<argument>-P</argument>
 				<argument>${dist}</argument>
 			    </arguments>
 			</configuration>
