@@ -1544,9 +1544,9 @@ function ready(canvasName) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
 
-        configureGroupListeners(canvasName, group);
-
         configureCircle(canvasName, circle1);
+        
+        configureGroupListeners(canvasName, group);
 
         polygon1.on('mousedown', function(e) {
             toggleSelectOnClick(canvasName, this, e);
@@ -1693,6 +1693,9 @@ function mountObj(canvasName) {
                 		help.css("left",(e.pageX)+"px" );
                 		jQuery("body").append(help);
                 		help.fadeIn("slow");
+                	}else{
+                		console.log("dragDropGroup " + canvasArray[canvasName].dragDropGroup);
+                		console.log("moving " + canvasArray[canvasName].moving);
                 	}
                 });
                 
@@ -2120,6 +2123,24 @@ function configureGroupListeners(canvasName, group) {
 	
 	//console.log("configureGroupListeners");
 	
+	group.on('click', function(e) {
+    	
+    	console.log("group on click");
+        
+        jQuery(".tooltipCanvas").remove();
+        curToolTip = null;
+        if(e.button != 2){
+        
+          group.getChildren()[2].on('click', function(e) {
+            polygonOnClick(this, e, canvasName);
+          });
+          
+        }else{
+            showContextMenu(this, e);
+            return false;
+        }
+    });
+	
     group.on('mouseenter', function(e) {
         canvasArray[canvasName].positionX = this.getX() + 40;
         canvasArray[canvasName].positionY = this.getY() + 50;
@@ -2160,24 +2181,6 @@ function configureGroupListeners(canvasName, group) {
         curToolTip = null;
         canvasArray[canvasName].savePositions = null;
         canvasArray[canvasName].dragDropGroup = false;
-    });
-    
-    group.on('click', function(e) {
-    	
-    	console.log("group on click");
-        
-        jQuery(".tooltipCanvas").remove();
-        curToolTip = null;
-        if(e.button != 2){
-        
-          group.getChildren()[2].on('click', function(e) {
-            polygonOnClick(this, e, canvasName);
-          });
-          
-        }else{
-            showContextMenu(this, e);
-            return false;
-        }
     });
 
 }

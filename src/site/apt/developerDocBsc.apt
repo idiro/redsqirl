@@ -61,7 +61,7 @@ public Sample() throws RemoteException {
 }
 +-----------------+
 
-	We then have to implement getters for the input and the name of the action. This is necessary for methods in other parts of the framework.
+	We then have to implement getters for the input and the name of the action. This is necessary for methods in other parts of the framework. getName return the name of the action.
 
 +-----------------+
 @Override

@@ -77,6 +77,23 @@
 					<td>Replace text with something else</td>
 				</tr>
 				<tr>
+					<td>Aggregate</td>
+					<td>Aggregate Action</td>
+				</tr>
+				<tr>
+					<td>Clean Actions</td>
+					<td>Clean all Actions</td>
+				</tr>
+				<tr>
+					<td>Output state</td>
+					<td>
+						<ul>
+							<li>Buffered</li>
+							<li>Temporary</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
 					<td>Delete</td>
 					<td>Delete Action</td>
 				</tr>
@@ -91,32 +108,19 @@
 					<td>View the jobs that are listed in Oozie</td>
 				</tr>
 				<tr>
-					<td>Run Selected Items</td>
+					<td>Save & Run Selection</td>
 					<td>Run the selected items as well as their needed
 						dependencies.</td>
 				</tr>
 				<tr>
-					<td>Run</td>
+					<td>save & Run</td>
 					<td>Kick-off an Oozie job that will generate the last elements
 						of the workflow. If they do not exist, the workflow does not
 						necessarily run completely.</td>
 				</tr>
 				<tr>
-					<td>Workflow Comment Editor</td>
+					<td>Comment Editor</td>
 					<td>Edit comment of a workflow to give detail on what the workflow is trying to achieve.</td>
-				</tr>
-				<tr>
-					<td>Clean Project</td>
-					<td>Removes temporary files that are created in certain
-						actions</td>
-				</tr>
-				<tr>
-					<td>Generate</td>
-					<td>Generate is useful when a workflow is copy/pasted several
-						times. In order to not have workflows sharing auto generated data
-						path, you can regenerate them and copy or move the existing data.
-						Copy option can be used only for a small amount of data as
-						otherwise, it could take long time but move is instantaneous.</td>
 				</tr>
 			</table>
 		</ul>
@@ -143,6 +147,18 @@
 					    subworkflow, you can install it. A
 					    Subworkflow have to be installed to
 					be used somewhere else.</td>
+				</tr>
+				<tr>
+					<td>Remove generated data from</td>
+					<td>
+						<ul>
+							<li>All</li>
+							<li>HCatalog</li>
+							<li>Remote File System</li>
+							<li>Jdbc Metastore</li>
+							<li>Hadoop Distributed File System</li>
+						</ul>
+					</td>
 				</tr>
 				<tr>
 					<td>About</td>
