@@ -247,6 +247,8 @@ public class MapRedTextFileType extends MapRedHdfs {
 			return "#124";
 		} else if (text.contains(",")) {
 			return "#44";
+		} else if (text.contains("\t")) {
+			return "#9";
 		}
 		return "#1";
 	}
@@ -445,7 +447,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
 						for (String s : line.split(Pattern
-								.quote(delimiter))) {
+								.quote(delimiter),-1)) {
 
 							String nameColumn = generateColumnName(cont++);
 							
