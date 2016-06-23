@@ -321,7 +321,7 @@ public DemoAction() throws RemoteException {
 +-----------+
 
 	<<Outcome:>> Project with abstract class complete ready for use.
-	The skeleton of the project can be found here :  CREATE A LINK (1)
+	The skeleton of the project can be found {{{directory}here}}
 
  [[3]]Step 3
 
@@ -422,7 +422,7 @@ public String check(){
 +-----------+
 
 	<<Outcome:>> Project with action class almost complete and a complete interaction.
-	The skeleton of the project can be found here :  CREATE A LINK (1)
+	The skeleton of the project can be found {{{directory}here}}
 
  [[4]]Step 4
  
@@ -511,7 +511,7 @@ private Page page1;
 +-----------+
 
 	<<Outcome:>> Project with finished action.
-	The skeleton of the project can be found here :  CREATE A LINK (1)
+	The skeleton of the project can be found {{{directory}here}}  
 
  [[5]]Step 5
  
@@ -564,7 +564,7 @@ packageName=${project.artifactId}
 version=${project.version}
 +-----------+
 
-	The directory listing should display the following 
+	The {directory} listing should display the following 
 
 -------------------------
 	src/
@@ -576,6 +576,8 @@ version=${project.version}
 	    images/
 	     sample.gif
 	    actions.txt
+	    lang.properties
 	    package.properties
+	    settings.json
 -------------------------
 

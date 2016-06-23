@@ -72,9 +72,9 @@ public class FileTextSource extends AbstractSource {
 		addSubTypePage();
 		addSourcePage();
 		
-		logger.debug("PigFileTextSource - addSourcePage ");
+		logger.debug("FileTextSource - addSourcePage ");
 		
-		browser.setTextTip(LanguageManagerWF.getText("pig.test_source_browser_interaction.header_help"));
+		browser.setTextTip(LanguageManagerWF.getText("fileTextSource.test_source_browser_interaction.header_help"));
 		
 		MapRedTextFileType type = new MapRedTextFileType();
 		dataType.setValue(type.getBrowserName());

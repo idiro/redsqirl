@@ -193,7 +193,7 @@ support@redsqirl.com
 	    <scope>compile</scope>
 	</dependency>
 	<dependency>
-	    <groupId>idiro</groupId>
+	    <groupId>idiro.redsqirl</groupId>
 	    <artifactId>redsqirl-pig</artifactId>
 	    <version>0.5</version>
 	    <scope>compile</scope>
