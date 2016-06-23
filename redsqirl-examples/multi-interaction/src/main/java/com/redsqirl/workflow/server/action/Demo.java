@@ -33,6 +33,7 @@ import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -40,6 +41,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.oozie.PigAction;
 
 public class Demo extends DataflowAction {
+	
 	//Demo Pages
 	private Page page1, page2, page3;
 	//input map
@@ -59,7 +61,7 @@ public class Demo extends DataflowAction {
 		//Make Sure input map is useable
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextType.class, 1, 1));
+			in.put(key_input, new DataProperty(MapRedTextFileType.class, 1, 1));
 			input = in;
 		}
 		//Add a page to demo the list interaction

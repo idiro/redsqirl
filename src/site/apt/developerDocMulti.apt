@@ -12,7 +12,9 @@ Package Development
 	add the remaining columns to display in the third interaction.
 	
 	The third and final interaction is a table interacion that displays the first ten rows of the input data with the columns that were selected in
-	the first and sencond interaction. There is no value to the action except for the demonstration of the interactivity between interactions.
+	the first and sencond interaction. 
+
+	There is no value to the action except for the demonstration of the interactivity between interactions. Don't try to run!
 	
 	
 	You can download the resulting project {{{./files/multi-interaction.zip}here}}.
@@ -34,6 +36,9 @@ Create a package
 	[]
 	
 	Lets start the class with the members necessary. The Class 'DemoTable' has not been created yet so there will be errors untill it is created.
+	Each page contain one or more interaction. The interaction can be; inputinteraction, ListInteraction, AppendListInteraction, BrowserInteraction, TableInteraction;
+Each interactions is different and needs to be configured on the update(DFEInteraction interaction) method.
+
 	
 +-----------------+
 	//Demo Pages
@@ -59,6 +64,7 @@ Create a package
 +-----------------+
 	
 	The constructor for interaction sets a few properties, the data tree and initializes the 'HDFSInterface'.
+	On the constructor you need call the constructor of the super class that takes an OozieAction class, used for generated the Oozie xml. Here you add pages. Here you need initialize input map and add an entry
 
 +-----------------+
 public DemoTable(String id, String name, String legend, int column,
