@@ -217,6 +217,8 @@ public class MapRedTextType extends MapRedDir {
 			return "#124";
 		} else if (text.contains(",")) {
 			return "#44";
+		} else if (text.contains("\t")) {
+			return "#9";
 		}
 		return "#1";
 	}

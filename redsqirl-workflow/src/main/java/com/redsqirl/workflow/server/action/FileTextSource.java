@@ -235,7 +235,7 @@ public class FileTextSource extends AbstractSource {
 		hadoopBin += "hadoop";
 		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
 				"export JAVA_HOME=$JAVA_HOME;"+
-				hadoopBin+" fs -cat " + path + 
+				hadoopBin+" fs -cat " + path.replaceAll(" ", "\\ ") + 
 				" | /bin/sed 1d | "+hadoopBin+" fs -put - " + noHeaderPath
 				);
 		boolean ok = toWrite != null;
