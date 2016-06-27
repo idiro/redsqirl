@@ -1824,6 +1824,7 @@ function changeFooter(canvasName) {
 	
 	removeEmpytyCanvas();
 	 
+	canvasResizeSplitter();
 }
 
 function removeEmpytyCanvas() {
