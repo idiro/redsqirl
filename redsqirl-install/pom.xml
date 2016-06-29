@@ -46,7 +46,7 @@ support@redsqirl.com
     <parent>
 	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.12</version>
+	<version>0.13</version>
     </parent>
 
 
@@ -54,7 +54,7 @@ support@redsqirl.com
     <groupId>idiro.redsqirl</groupId>
     <artifactId>redsqirl-install</artifactId>
     <packaging>pom</packaging>
-    <version>${hadoop.version}-0.12</version>
+    <version>${hadoop.version}-0.13</version>
     <name>Red Sqirl - Install</name>
     <description>Create an installer</description>
 

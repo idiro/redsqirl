@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,7 +93,10 @@ DFEOutput {
 	 */
 	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
 	
-	
+	/**
+	 * Only in Hadoop secure mode: the oozie name of the credential to use.
+	 */
+	private String credential;
 	
 	protected boolean headerEditorOnBrowser = false;
 	
@@ -572,6 +576,52 @@ DFEOutput {
 		}
 		return ans;
 	}
+	
+
+	/**
+	 * Xml code to Delete the pointed output from an oozie action
+	 * 
+	 * @param oozieDoc
+	 * @param action
+	 * @param localDirectory
+	 * @param pathFromOozieDir
+	 * @param fileNameWithoutExtension
+	 * @return <code>true</code> if the delete was successful else
+	 *         <code>false</code>
+	 * @throws RemoteException
+	 */
+	public abstract boolean oozieRemove(Document oozieDoc, Element action,
+			File localDirectory, String pathFromOozieDir,
+			String fileNameWithoutExtension) throws RemoteException;
+	
+	@Override
+	public Element oozieRemove(
+			Document oozieXmlDoc, 
+			String actionName,
+			File localDirectory, String pathFromOozieDir)
+					throws RemoteException{
+		
+		Element action = oozieXmlDoc.createElement("action");
+		action.setAttribute("name", actionName);
+		if(getCredential() != null && !getCredential().isEmpty()){
+			action.setAttribute("cred", getCredential());
+		}
+		
+		oozieRemove(
+				oozieXmlDoc, 
+				action, 
+				localDirectory,
+				pathFromOozieDir,
+				actionName);
+		return action;
+	}
+	
+	@Override
+	public Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException{
+		return null;
+	}
 
 	protected abstract String rm() throws RemoteException;
 
@@ -726,5 +776,19 @@ DFEOutput {
 	@Override
 	public boolean allowDirectories(){
 		return true;
+	}
+
+	/**
+	 * @return the credential
+	 */
+	public String getCredential() {
+		return credential;
+	}
+
+	/**
+	 * @param credential the credential to set
+	 */
+	public void setCredential(String credential) {
+		this.credential = credential;
 	}
 }

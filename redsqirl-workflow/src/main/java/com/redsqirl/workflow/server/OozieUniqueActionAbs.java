@@ -41,6 +41,8 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 	 */
 	private static final long serialVersionUID = -4050182914018968247L;
 
+	private String credential = null;
+	
 	/**
 	 * Default Conception
 	 * @throws RemoteException
@@ -49,11 +51,17 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 		super();
 	}
 	
+	protected OozieUniqueActionAbs(String credential) throws RemoteException {
+		super();
+		this.credential = credential;
+	}
+	
 	/**
 	 * Create an Oozie Element
 	 * @param oozieXmlDoc oozie xml document
 	 * @param action the action, parent element
 	 * @param fileNames the file names with path
+	 * @return credential used, null if none
 	 * @throws RemoteException
 	 */
 	public abstract void createOozieElement(
@@ -73,11 +81,10 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 					throws RemoteException{
 		
 		Element action = oozieXmlDoc.createElement("action");
-		Attr attrName = oozieXmlDoc.createAttribute("name");
-		attrName.setValue(actionName);
-		
-		// Create a join node
-		action.setAttributeNode(attrName);
+		action.setAttribute("name", actionName);
+		if(getCredential() != null && !getCredential().isEmpty()){
+			action.setAttribute("cred", getCredential());
+		}
 		
 		createOozieElement(
 				oozieXmlDoc, 
@@ -86,6 +93,14 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 		Map<String,Element> ans = new HashMap<String,Element>(1);
 		ans.put(actionName,action);
 		return ans;
+	}
+
+	public String getCredential() {
+		return credential;
+	}
+
+	public void setCredential(String credential) {
+		this.credential = credential;
 	}
 	
 }

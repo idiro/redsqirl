@@ -22,12 +22,16 @@ package com.redsqirl.workflow.server.oozie;
 
 import java.rmi.RemoteException;
 
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.connect.jdbc.HivePropertiesDetails;
 
 /**
  * Write a hive action into an oozie xml.
@@ -42,11 +46,13 @@ public class HiveAction extends OozieUniqueActionAbs{
 	 */
 	private static final long serialVersionUID = 5119314850496590566L;
 
+	private static Logger logger = Logger.getLogger(HiveAction.class);
 
 	/** Default Hive XML */
-	public static final String	hive_default_xml = "core.jdbc.hive.hive_default_xml",
+	public static final String	
+	//hive_default_xml = "core.jdbc.hive.hive_default_xml",
 	/** Hive XML */
-	hive_xml = "core.jdbc.hive.hive_xml";
+	hive_xml = WorkflowPrefManager.core_settings_hcatalog+".hive_xml";
 	
 	/**
 	 * Constructor
@@ -54,7 +60,11 @@ public class HiveAction extends OozieUniqueActionAbs{
 	 */
 	public HiveAction() throws RemoteException {
 		super();
+		if(WorkflowPrefManager.isSecEnable()){
+			setCredential("hive2-cred");
+		}
 	}
+	
 	/**
 	 * Create Oozie element for Hive actions
 	 * @param oozieXmlDoc
@@ -66,13 +76,22 @@ public class HiveAction extends OozieUniqueActionAbs{
 	public void createOozieElement(Document oozieXmlDoc, Element action,
 			String[] fileNames) throws RemoteException {
 
-		Element hive = oozieXmlDoc.createElement("hive");
+		Element hive = oozieXmlDoc.createElement("hive2");
 		Attr attrXmlns = oozieXmlDoc.createAttribute("xmlns");
-		attrXmlns.setValue("uri:oozie:hive-action:0.2");
+		attrXmlns.setValue("uri:oozie:hive2-action:0.1");
 		hive.setAttributeNode(attrXmlns);
 		
-		if(WorkflowPrefManager.getProperty(
-				hive_xml) != null){
+		String hive_hdfs_xml = WorkflowPrefManager.getProperty(
+				hive_xml);
+		boolean hiveXmlExists;
+		try{
+			org.apache.hadoop.fs.FileSystem fs = NameNodeVar.getFS();
+			hiveXmlExists = fs.exists(new Path(hive_hdfs_xml));
+		}catch(Exception e){
+			hiveXmlExists = false;
+		}
+		
+		if(hiveXmlExists){
 			defaultParam(
 					oozieXmlDoc, 
 					hive,
@@ -83,22 +102,20 @@ public class HiveAction extends OozieUniqueActionAbs{
 					oozieXmlDoc, 
 					hive);
 		}
+
+		HivePropertiesDetails hpd = new HivePropertiesDetails("hive");
+		Element urlEl = oozieXmlDoc.createElement("jdbc-url");
+		String urlStr = hpd.getDburl();
+		if(urlStr.contains(";")){
+			urlStr = urlStr.substring(0, urlStr.indexOf(';'));
+		}
+		urlEl.appendChild(oozieXmlDoc.createTextNode(urlStr));
+		hive.appendChild(urlEl);
 		
-		if(WorkflowPrefManager.getProperty(
-				hive_default_xml) != null){
-			Element confName = oozieXmlDoc.createElement("name");
-			confName.appendChild(oozieXmlDoc.createTextNode("oozie.hive.defaults"));
-			Element confValue = oozieXmlDoc.createElement("value");
-			confValue.appendChild(oozieXmlDoc.createTextNode(
-					WorkflowPrefManager.getProperty(
-							hive_default_xml)));
-
-			Element property = oozieXmlDoc.createElement("property");
-			property.appendChild(confName);
-			property.appendChild(confValue);
-
-			Element configuration = (Element) hive.getElementsByTagName("configuration").item(0);
-			configuration.appendChild(property);
+		if(hpd.getPassword() != null && !hpd.getPassword().isEmpty()){
+			Element passEl = oozieXmlDoc.createElement("password");
+			passEl.appendChild(oozieXmlDoc.createTextNode(hpd.getPassword()));
+			hive.appendChild(passEl);
 		}
 		
 		Element script = oozieXmlDoc.createElement("script");
@@ -108,6 +125,64 @@ public class HiveAction extends OozieUniqueActionAbs{
 		action.appendChild(hive);
 
 	}
+	
+	@Override
+	public Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException{
+		logger.debug("Get into hive create credentials function");
+		Element credential = null;
+		
+		if(WorkflowPrefManager.isSecEnable()){
+			logger.debug("Calculate hive credentials");
+
+			String url = new HivePropertiesDetails("hive").getDburl();
+			String credUrl = url;
+			try{
+				while(credUrl.contains(";")){
+					credUrl = credUrl.substring(0, credUrl.indexOf(";"));
+				}
+			}catch(Exception e){}
+			
+			credential = oozieXmlDoc.createElement("credential");
+			credential.setAttribute("name", "hive2-cred");
+			credential.setAttribute("type", "hive2");
+			
+			{
+				//Principal
+				Element property = oozieXmlDoc.createElement("property");
+				Element name = oozieXmlDoc.createElement("name");
+				name.appendChild(oozieXmlDoc.createTextNode("hive2.server.principal"));
+				property.appendChild(name);
+				Element value = oozieXmlDoc.createElement("value");
+				String principal = url;
+				if(principal.contains("principal=")){
+					principal = url.substring(url.indexOf("principal=")+10);
+					if(principal.contains(";")){
+						principal = principal.substring(0, principal.indexOf(";"));
+					}
+				}
+				value.appendChild(oozieXmlDoc.createTextNode(principal));
+				property.appendChild(value);
+				credential.appendChild(property);
+			}
+
+			{
+				//URL
+				Element property = oozieXmlDoc.createElement("property");
+				Element name = oozieXmlDoc.createElement("name");
+				name.appendChild(oozieXmlDoc.createTextNode("hive2.jdbc.url"));
+				property.appendChild(name);
+				Element value = oozieXmlDoc.createElement("value");
+				value.appendChild(oozieXmlDoc.createTextNode(credUrl));
+				property.appendChild(value);
+				credential.appendChild(property);
+			}
+		}
+		return credential;
+	}
+	
+	
 	/**
 	 * Get the file name extensions for Hive actions 
 	 * @return extension

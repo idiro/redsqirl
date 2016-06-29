@@ -27,6 +27,7 @@ import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.jdbc.HivePropertiesDetails;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcTypeManager;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -48,6 +49,9 @@ public class HCatalogType extends DataOutput{
 		super();
 		if(hcatS == null){
 			hcatS = new HCatStore(); 
+		}
+		if(WorkflowPrefManager.isSecEnable()){
+			setCredential("hive2-cred");
 		}
 	}
 	
@@ -114,28 +118,6 @@ public class HCatalogType extends DataOutput{
 		
 		return createStatement;
 	}
-	
-	/*
-	public Map<String,String> getTypes() throws RemoteException{
-		if(getPath() == null || !isPathExist()){
-			return null;
-		}
-		String[] pathArray = HCatStore.getDatabaseTableAndPartition(getPath());
-		if(pathArray.length <= 1){
-			return null;
-		}
-		Map<String,String> ans = new LinkedHashMap<String,String>();
-		if(pathArray.length == 3){
-			String[] cols = hcatS.getDescription(pathArray).get(JdbcStore.key_describe).split(";");
-			for(String col:cols){
-				String[] colProp= col.split(",");
-				if(fields.containsField(colProp[0])){
-					ans.put(colProp[0], colProp[1]);
-				}
-			}
-		}
-		return ans;
-	}*/
 	
 	public String getHdfsPath() throws RemoteException{
 		if(getPath() == null){
@@ -421,6 +403,64 @@ public class HCatalogType extends DataOutput{
 		}catch(Exception e){}
 		return false;
 	}
+	
+
+	@Override
+	public Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException{
+		logger.debug("Get into hive create credentials function");
+		Element credential = null;
+		
+		if(WorkflowPrefManager.isSecEnable()){
+			logger.debug("Calculate hive credentials");
+
+			String url = new HivePropertiesDetails("hive").getDburl();
+			String credUrl = url;
+			try{
+				while(credUrl.contains(";")){
+					credUrl = credUrl.substring(0, credUrl.indexOf(";"));
+				}
+			}catch(Exception e){}
+			
+			credential = oozieXmlDoc.createElement("credential");
+			credential.setAttribute("name", "hive2-cred");
+			credential.setAttribute("type", "hive2");
+			
+			{
+				//Principal
+				Element property = oozieXmlDoc.createElement("property");
+				Element name = oozieXmlDoc.createElement("name");
+				name.appendChild(oozieXmlDoc.createTextNode("hive2.server.principal"));
+				property.appendChild(name);
+				Element value = oozieXmlDoc.createElement("value");
+				String principal = url;
+				if(principal.contains("principal=")){
+					principal = url.substring(url.indexOf("principal=")+10);
+					if(principal.contains(";")){
+						principal = principal.substring(0, principal.indexOf(";"));
+					}
+				}
+				value.appendChild(oozieXmlDoc.createTextNode(principal));
+				property.appendChild(value);
+				credential.appendChild(property);
+			}
+
+			{
+				//URL
+				Element property = oozieXmlDoc.createElement("property");
+				Element name = oozieXmlDoc.createElement("name");
+				name.appendChild(oozieXmlDoc.createTextNode("hive2.jdbc.url"));
+				property.appendChild(name);
+				Element value = oozieXmlDoc.createElement("value");
+				value.appendChild(oozieXmlDoc.createTextNode(credUrl));
+				property.appendChild(value);
+				credential.appendChild(property);
+			}
+		}
+		return credential;
+	}
+	
 	
 	protected boolean writeOozieActionFiles(File[] files, JdbcAction jdbcAct) throws RemoteException {
 		File sqlFile = null;

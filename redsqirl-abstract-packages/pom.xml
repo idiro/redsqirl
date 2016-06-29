@@ -27,14 +27,14 @@ support@redsqirl.com
     <parent>
 	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.12</version>
+	<version>0.13</version>
     </parent>
 
     <groupId>idiro.redsqirl</groupId>
     <artifactId>redsqirl-abstract-packages</artifactId>
     <name>Red Sqirl - Abstract Packages</name>
     <packaging>pom</packaging>
-    <version>${hadoop.version}-0.12</version>
+    <version>${hadoop.version}-0.13</version>
 
     <modules>
 	<module>redsqirl-base-sql</module>

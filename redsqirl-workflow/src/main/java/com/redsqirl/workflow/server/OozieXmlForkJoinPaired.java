@@ -72,6 +72,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	private static Logger logger = Logger.getLogger(OozieXmlCreatorAbs.class);
 	/** List of elements */
 	Map<String, Element> elements = new LinkedHashMap<String, Element>();
+	/** List of elements */
+	Map<String, Element> credentials = new LinkedHashMap<String, Element>();
 	/** Out edges */
 	Map<String, Set<String>> outEdges = new LinkedHashMap<String, Set<String>>();
 
@@ -194,12 +196,23 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				logger.debug("Create workflow.xml...");
 				
 				elements.clear();
+				credentials.clear();
 				outEdges.clear();
 
 				logger.debug("Create the scripts...");
 
 				createOozieJob(doc, errorNodeName, okEndNodeName, scripts, list, ignoreBuffered);
 
+				if(!credentials.isEmpty()){
+					logger.debug("Add the credentials...");
+					Element credentialsEl = doc.createElement("credentials");
+					Iterator<Element> it = credentials.values().iterator();
+					while(it.hasNext()){
+						credentialsEl.appendChild(it.next());
+					}
+					rootElement.appendChild(credentialsEl);
+				}
+				
 				logger.debug("Order the actions and build the dependency tree...");
 
 				Iterator<String> keys = outEdges.keySet().iterator();
@@ -422,13 +435,17 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							attrNameStr = "delete_" + cur.getComponentId();
 						}
 						// Implement the action
-						Element action = doc.createElement("action");
-						{
-							Attr attrName = doc.createAttribute("name");
-							attrName.setValue(attrNameStr);
-							action.setAttributeNode(attrName);
+						Element action = o.oozieRemove(
+								doc, 
+								attrNameStr,
+								directoryToWrite, directoryToWrite.getName());
+						
+						//Map<String,Element> curOozieActions = cur.writeProcess(doc, directoryToWrite, directoryToWrite.getName());
+						Element credential = o.createCredentials(doc);
+						if(credential != null){
+							logger.info("add a credential..");
+							credentials.put(credential.getAttribute("name"), credential);
 						}
-						o.oozieRemove(doc, action, directoryToWrite, directoryToWrite.getName(), attrNameStr);
 
 						elements.put(attrNameStr, action);
 						Set<String> actionEnd = new LinkedHashSet<String>();
@@ -484,6 +501,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if (cur.getOozieAction() != null) {
 				logger.debug("Create action " + cur.getComponentId());
 				Map<String,Element> curOozieActions = cur.writeProcess(doc, directoryToWrite, directoryToWrite.getName());
+				Element credential = cur.getOozieAction().createCredentials(doc);
+				if(credential != null){
+					logger.info("add a credential..");
+					credentials.put(credential.getAttribute("name"), credential);
+				}
 				String[] curStrArr = curOozieActions.keySet().toArray(new String[curOozieActions.size()]);
 				curOo.oozieFirstEl = curStrArr[0];
 				curOo.oozieLastEl = curStrArr[curOozieActions.size()-1];

@@ -27,14 +27,14 @@ support@redsqirl.com
 	<dist.lib>${dist}/lib</dist.lib>
 	<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
 	<hadoop.version>2.7.0</hadoop.version>
-	<idiro-hadoop.version>${hadoop.version}-0.3</idiro-hadoop.version>
+	<idiro-hadoop.version>${hadoop.version}-0.4</idiro-hadoop.version>
 	<dep-exclude>,hadoop-core</dep-exclude>
     </properties>
 
     <parent>
 	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.12</version>
+	<version>0.13</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -43,7 +43,7 @@ support@redsqirl.com
     <packaging>jar</packaging>
     <name>Red Sqirl - Workflow</name>
     <description>Programme to interact with a Hadoop cluster</description>
-    <version>${hadoop.version}-0.12</version>
+    <version>${hadoop.version}-0.13</version>
 
     <distributionManagement>
 	<repository>

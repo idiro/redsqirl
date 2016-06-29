@@ -110,7 +110,7 @@ public class ServerProcess {
 					
 					logger.info("opening channel");
 					Channel channel = session.openChannel("exec");
-					logger.info("command to launch:\n" + javahome + argJava + command);
+					logger.warn("command to launch:\n" + javahome + argJava + command);
 					((ChannelExec) channel).setCommand(javahome + argJava + command);
 					logger.info("connecting channel");
 					channel.connect();

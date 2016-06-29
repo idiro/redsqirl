@@ -29,7 +29,7 @@ support@redsqirl.com
     <parent>
 	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>0.12</version>
+	<version>0.13</version>
     </parent>
 
 
@@ -37,7 +37,7 @@ support@redsqirl.com
     <groupId>idiro.redsqirl</groupId>
     <artifactId>redsqirl-wf-interface</artifactId>
     <packaging>jar</packaging>
-    <version>${hadoop.version}-0.12</version>
+    <version>${hadoop.version}-0.13</version>
     <name>Red Sqirl - Interface</name>
     <description>Provide the interface used by Red Sqirl app</description>
 

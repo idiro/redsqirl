@@ -41,38 +41,40 @@ public class JdbcPropertiesDetails implements JdbcDetails{
 	public static final String template = "core.jdbc.host.",
 			template_hive = "core.hcatalog.";
 	
-	public static final String url_key_hive_root = "hive_url",
-			password_key_hive_root = "hive_password";
-	
 	public static final String url_key_root = "jdbc_url",
 			user_key_root = "jdbc_user",
 			password_key_root = "jdbc_password",
 			default_connection_key = "core.jdbc.jdbc_default";
 	
-	private String url_key,
+	protected String url_key,
 				   username_key,
 				   password_key;
 	
-	private String name,
+	protected String name,
 				   url, 
 				   username,
 				   password;
 	
-	public JdbcPropertiesDetails(String name){
-		this.setName(name);
-		if("hive".equals(name)){
-			url_key = template_hive+ url_key_hive_root;
-			username_key = null;
-			password_key = template_hive + password_key_hive_root;
-		}else{
-			url_key = template + name + "." + url_key_root;
-			username_key = template + name + "." + user_key_root;
-			password_key = template + name + "." + password_key_root;
-		}
-		read();
+	protected JdbcPropertiesDetails(String name, boolean read){
+		init(name,read);
 	}
 	
-	private void read(){
+	public JdbcPropertiesDetails(String name){
+		init(name,true);
+	}
+	
+	private void init(String name, boolean read){
+
+		this.setName(name);
+		url_key = template + name + "." + url_key_root;
+		username_key = template + name + "." + user_key_root;
+		password_key = template + name + "." + password_key_root;
+		if(read){
+			read();
+		}
+	}
+	
+	protected void read(){
 		try{
 			this.url = WorkflowPrefManager.getProperty(url_key);
 		}catch(Exception e){

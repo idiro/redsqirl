@@ -91,53 +91,53 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 	 */
 	@Override
 	public String check() throws RemoteException {
-		FieldList fields = hj.getInFields();
-		int rowNb = 0;
-		String msg = null;
+		String msg = super.check();
+		if(msg == null){
+			FieldList fields = hj.getInFields();
+			int rowNb = 0;
+			List<Map<String, String>> lRow = getValues();
 
-		List<Map<String, String>> lRow = getValues();
+			if (lRow.isEmpty()) {
+				msg = SqlLanguageManager
+						.getText("sql.join_fields_interaction.checkempty");
+			}
 
-		if (lRow.isEmpty()) {
-			msg = SqlLanguageManager
-					.getText("sql.join_fields_interaction.checkempty");
-		}
+			logger.debug(fields.getFieldNames());
+			Iterator<Map<String, String>> rows = lRow.iterator();
+			while (rows.hasNext() && msg == null) {
+				++rowNb;
+				Map<String, String> row = rows.next();
 
-		logger.debug(fields.getFieldNames());
-		Iterator<Map<String, String>> rows = lRow.iterator();
-		while (rows.hasNext() && msg == null) {
-			++rowNb;
-			Map<String, String> row = rows.next();
-
-			String type = row.get(table_type_title);
-			String op = row.get(table_op_title);
-			String field = row.get(table_feat_title);
-			if (!getDictionary().isVariableName(field)) {
-				msg = SqlLanguageManager.getText(
-						"sql.join_fields_interaction.fieldinvalid",
-						new Object[] { rowNb, field });
-			} else {
-				try {
-					String typeRetuned = dictionaryCach.get(op);
-					if(typeRetuned == null){
+				String type = row.get(table_type_title);
+				String op = row.get(table_op_title);
+				String field = row.get(table_feat_title);
+				if (!getDictionary().isVariableName(field)) {
+					msg = SqlLanguageManager.getText(
+							"sql.join_fields_interaction.fieldinvalid",
+							new Object[] { rowNb, field });
+				} else {
+					try {
+						String typeRetuned = dictionaryCach.get(op);
+						if(typeRetuned == null){
 							typeRetuned = getDictionary()
 									.getReturnType(op,fields);
-						dictionaryCach.put(op,typeRetuned);
+							dictionaryCach.put(op,typeRetuned);
+						}
+						if (!getDictionary().check(type, 
+								typeRetuned)) {
+							msg = SqlLanguageManager.getText(
+									"sql.select_fields_interaction.checkreturntype",
+									new Object[] {rowNb,
+											field, typeRetuned,
+											type });
+						}
+					} catch (Exception e) {
+						msg = SqlLanguageManager
+								.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 					}
-					if (!getDictionary().check(type, 
-							typeRetuned)) {
-						msg = SqlLanguageManager.getText(
-								"sql.select_fields_interaction.checkreturntype",
-								new Object[] {rowNb,
-										field, typeRetuned,
-										type });
-					}
-				} catch (Exception e) {
-					msg = SqlLanguageManager
-							.getText("sql.row_expressionexception",new Object[]{rowNb,e.getMessage()});
 				}
 			}
 		}
-
 		return msg;
 	}
 	

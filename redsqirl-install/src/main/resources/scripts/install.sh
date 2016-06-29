@@ -148,21 +148,21 @@ fi
 if [[ "$CLUSTER_TYPE" == "hdp" ]]; then
     change_rs_prop "core.namenode=hdfs\://${MASTER_HOSTNAME}\:8020"
     change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8050"
-    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000/default"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
     change_rs_prop "core.hadoop_home=/usr/hdp/current/hadoop-client"
 
 elif [[ "$CLUSTER_TYPE" == "cloudera" ]]; then
     change_rs_prop "core.namenode=hdfs\://${MASTER_HOSTNAME}\:8022"
     change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8032"
-    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:9083"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:9083/default"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
     change_rs_prop "core.hadoop_home=/usr/lib/hadoop"
 
 elif [[ "$CLUSTER_TYPE" == "mapr" ]]; then
     change_rs_prop "core.namenode=maprfs\:///mapr/mycluster.mapr.com"
     change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8032"
-    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000"
+    change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000/default"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
     change_rs_prop "core.hadoop_home=/opt/mapr"
 fi

@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class BaseCommand {
 					user,
 					softwareLicense);
 
-			classpath = " -classpath " + p + packagePath;
+			classpath = " -classpath " + p + packagePath + getHadoopConf();
 		} catch (Exception e) {
 			classpath = System.getProperty("java.class.path");
 		}
@@ -120,6 +121,23 @@ public class BaseCommand {
 				+ " com.redsqirl.workflow.server.connect.ServerMain " + port;
 
 		return command;
+	}
+	
+	static String getHadoopConf(){
+		String xmlClassPath = "";
+		try{
+			String hadoopHomeStr = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_hadoop_home);
+			if(hadoopHomeStr != null){
+				String confDirStr = hadoopHomeStr+"/conf";
+				File confDir = new File(confDirStr);
+				if(confDir.exists() && confDir.isDirectory()){
+					xmlClassPath+=":" +confDir.getAbsolutePath();
+				}
+			}
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		return xmlClassPath;
 	}
 
 	static String getPackageClasspath(String pathUser, String pathSys,Properties licenseKeys, String userName , String softwareKey) throws IOException {

@@ -273,7 +273,7 @@ public interface DFEOutput extends Remote {
 	 * Xml code to Delete the pointed output from an oozie action
 	 * 
 	 * @param oozieDoc
-	 * @param action
+	 * @param actionName
 	 * @param localDirectory
 	 * @param pathFromOozieDir
 	 * @param fileNameWithoutExtension
@@ -281,9 +281,19 @@ public interface DFEOutput extends Remote {
 	 *         <code>false</code>
 	 * @throws RemoteException
 	 */
-	public boolean oozieRemove(Document oozieDoc, Element action,
-			File localDirectory, String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException;
+	public Element oozieRemove(
+			Document oozieXmlDoc, 
+			String actionName,
+			File localDirectory, String pathFromOozieDir) throws RemoteException;
+	/**
+	 * Xml code for credentials needed for deleting.
+	 * @param oozieXmlDoc
+	 * @return
+	 * @throws RemoteException
+	 */
+	Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException;
 
 	/**
 	 * Select the first lines of the output if exists

@@ -224,7 +224,8 @@ public class WorkflowPrefManager extends BlockManager {
 	/** Namenode url */
 	public static final String core_settings = "core",
 			core_settings_oozie = core_settings+".oozie",
-			core_settings_hive = core_settings+".hive",
+			core_settings_hcatalog = core_settings+".hcatalog",
+			core_settings_security = core_settings+".security",
 			core_settings_data_usage = core_settings+".data_usage",
 
 			/** Default oozie launcher queue for hadoop */
@@ -260,7 +261,16 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Parallel clause for pig */
 			sys_pig_parallel = "pig_parallel",
 			/** Max number of workers for Giraph */
-			sys_max_workers = "max_workers";
+			sys_max_workers = "max_workers",
+			/** Enable Kerberos security */
+			sys_enable_security = core_settings_security+".enable",
+			/** Keytab path */
+			sys_keytab_pat_template = core_settings_security+".user_keytab_template",
+			/** Realm */
+			sys_kerberos_realm = core_settings_security+".realm",
+			/** Hostname */
+			sys_sec_hostname = core_settings_security+".hostname";
+			
 
 	public static final String 
 			/** Path to Private Key */
@@ -284,6 +294,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	private static LocalProperties props;
 
+	private static Boolean secEnable = null;
 	
 
 	/**
@@ -1151,5 +1162,23 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String getPathSysSuperAction() {
 		return pathSysSuperAction;
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static Boolean isSecEnable() {
+		if(secEnable == null){
+			try {
+				String secEnableStr = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_enable_security);
+				secEnable = secEnableStr != null && secEnableStr.equalsIgnoreCase("true");
+			} catch (RemoteException e) {
+				logger.error(e,e);
+			}
+		}
+		return secEnable;
+	}
+
+
 
 }

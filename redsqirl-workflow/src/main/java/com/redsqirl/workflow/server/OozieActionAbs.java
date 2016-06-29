@@ -5,7 +5,6 @@ import java.rmi.server.UnicastRemoteObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 
 
@@ -22,6 +21,13 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 	 */
 	protected OozieActionAbs() throws RemoteException {
 		super();
+	}
+	
+	@Override
+	public Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException{
+		return null;
 	}
 	
 	/**

@@ -21,6 +21,9 @@ package com.redsqirl.workflow.server.connect;
 
 
 
+import static org.apache.hadoop.fs.CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION;
+import static org.apache.hadoop.security.UserGroupInformation.AuthenticationMethod.KERBEROS;
+
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -28,6 +31,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.security.SecurityUtil;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -45,7 +50,7 @@ import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.ModelManager;
-import com.redsqirl.workflow.utils.ModelManagerInt;
+import com.redsqirl.workflow.utils.ModelManagerInt; 
 
 /**
  * Class to start up the server.
@@ -66,7 +71,7 @@ public class ServerMain {
 	private static Registry registry;
 
 	public static void main(String[] arg) throws RemoteException{
-
+		String userName = System.getProperty("user.name");
 		int port = 2001;
 		if(arg.length > 0){
 			try{
@@ -107,21 +112,56 @@ public class ServerMain {
 			NameNodeVar.setJobTracker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_jobtracker));
 			logger.debug("sys_namenode Path: " + NameNodeVar.get());
 
+			//Login on kerberos if necessary
+			if(WorkflowPrefManager.isSecEnable()){
+				logger.info("Security enabled"); 
+				String hostname = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_sec_hostname);
+				String keytabTemplate = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_keytab_pat_template);
+				String realm = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_kerberos_realm);
+				if(keytabTemplate != null){
+					try {
+						String keytab = keytabTemplate.replaceAll("_USER", userName);
+						try{
+							//Update Hadoop security configurations
+							NameNodeVar.addToDefaultConf(HADOOP_SECURITY_AUTHENTICATION, KERBEROS.toString());
+							NameNodeVar.addToDefaultConf(NameNodeVar.SERVER_KEYTAB_KEY, keytab);
+							NameNodeVar.addToDefaultConf(NameNodeVar.SERVER_PRINCIPAL_KEY, userName+"/_HOST@"+realm);
+						}catch(Exception e){
+							logger.error(e,e);
+						}
+						Configuration conf = NameNodeVar.getConf();
+						
+						logger.info(NameNodeVar.getConfStr(conf));
+						
+						SecurityUtil.setAuthenticationMethod(KERBEROS, conf);
+						logger.info("Keytab: "+keytab);
+						logger.info("user: "+userName);
+						Process p = Runtime.getRuntime().exec("kinit -k -t "+keytab+" "+SecurityUtil.getServerPrincipal(
+								conf.get(NameNodeVar.SERVER_PRINCIPAL_KEY), hostname));
+						p.waitFor();
+					} catch (Exception e) {
+						logger.error("Fail to register to on kerberos: "+e,e);
+					}
+				}
+			}else{
+				logger.info("Security disabled");
+			}
+			
 			try {
 				
 				logger.debug("start server main");
 
-				String nameWorkflow = System.getProperty("user.name")+"@wfm";
+				String nameWorkflow = userName+"@wfm";
 				
-				String nameHDFS = System.getProperty("user.name")+"@hdfs";
-				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
-				String nameHcat = System.getProperty("user.name")+"@hcat";
-				String nameJdbc = System.getProperty("user.name")+"@jdbc";
-				String nameSshArray = System.getProperty("user.name")+"@ssharray";
+				String nameHDFS = userName+"@hdfs";
+				String nameHDFSBrowser = userName+"@hdfsbrowser";
+				String nameHcat = userName+"@hcat";
+				String nameJdbc = userName+"@jdbc";
+				String nameSshArray = userName+"@ssharray";
 				
-				String nameOozie = System.getProperty("user.name")+"@oozie";
-				String namePrefs = System.getProperty("user.name")+"@prefs";
-				String nameSuperActionManager = System.getProperty("user.name")+"@samanager";
+				String nameOozie = userName+"@oozie";
+				String namePrefs = userName+"@prefs";
+				String nameSuperActionManager = userName+"@samanager";
 
 				try{
 					registry = LocateRegistry.createRegistry(port);
@@ -223,6 +263,13 @@ public class ServerMain {
 	 * Remove all processes in the registry
 	 */
 	public static void shutdown() {
+		if(WorkflowPrefManager.isSecEnable()){
+			try{
+				Process p = Runtime.getRuntime().exec("kdestroy -A");
+				p.waitFor();
+			}catch(Exception e){}
+		}
+		
         String[] threads;
         try {
             threads = registry.list();
