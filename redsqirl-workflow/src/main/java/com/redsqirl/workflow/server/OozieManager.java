@@ -48,6 +48,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
+import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
@@ -115,7 +116,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 */
 	private OozieManager() throws FileNotFoundException, IOException {
 		super();
-		oc = new OozieClient(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie));
+		String secEnable = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_enable_security);
+		if(secEnable != null && secEnable.equalsIgnoreCase("true")){
+			oc = new AuthOozieClient(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie));
+		}else{
+			oc = new OozieClient(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie));
+		}
 	}
 
 	/**

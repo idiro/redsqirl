@@ -177,11 +177,7 @@ public class JdbcStore extends Storage {
 				defaultConnection = true;
 			}
 		}else if(details.getDburl().startsWith("jdbc:hive2:")){
-			if(mysqlDriver != null){
-				ans = new JdbcStoreConnection("org.apache.hive.jdbc.HiveDriver",details, bs);
-			}else{
-				defaultConnection = true;
-			}
+			ans = new JdbcStoreConnection("org.apache.hive.jdbc.HiveDriver",details, bs);
 		}else{
 			String techName = JdbcStoreConnection.getConnType(details.getDburl());
 			String className = WorkflowPrefManager.getProperty(property_other_drivers+techName+property_class_name);

@@ -20,7 +20,7 @@ public class JdbcHiveStore extends JdbcStore{
 	}
 	
 	private static JdbcStoreConnection createHiveConnection() throws Exception{
-		JdbcDetails details = new JdbcPropertiesDetails(connectionName);
+		JdbcDetails details = new HivePropertiesDetails(connectionName);
 		hiveConnection = initConnection(details);
 		if(hiveConnection != null){
 			hiveConnectionFailure = null;

@@ -42,6 +42,10 @@ public interface OozieAction extends Remote{
 			String[] fileNames)
 					throws RemoteException;
 	
+	Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException;
+	
 	/**
 	 * Get the extensions of the different files,
 	 * every extension have to be different.

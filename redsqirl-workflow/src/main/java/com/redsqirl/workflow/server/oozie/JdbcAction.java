@@ -47,6 +47,13 @@ public class JdbcAction extends OozieUniqueActionAbs {
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
 		this.action.createOozieElement(oozieXmlDoc, action, fileNames);
 	}
+	
+	@Override
+	public Element createCredentials(
+			Document oozieXmlDoc
+			)throws RemoteException{
+		return action.createCredentials(oozieXmlDoc);
+	}
 
 	@Override
 	public String[] getFileExtensions() throws RemoteException {
@@ -70,6 +77,11 @@ public class JdbcAction extends OozieUniqueActionAbs {
 
 	public OozieAction getAction() {
 		return action;
+	}
+	
+	@Override
+	public String getCredential(){
+		return action.getCredential();
 	}
 
 }
