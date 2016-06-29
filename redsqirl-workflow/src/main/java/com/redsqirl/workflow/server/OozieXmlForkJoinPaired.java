@@ -435,13 +435,17 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							attrNameStr = "delete_" + cur.getComponentId();
 						}
 						// Implement the action
-						Element action = doc.createElement("action");
-						{
-							Attr attrName = doc.createAttribute("name");
-							attrName.setValue(attrNameStr);
-							action.setAttributeNode(attrName);
+						Element action = o.oozieRemove(
+								doc, 
+								attrNameStr,
+								directoryToWrite, directoryToWrite.getName());
+						
+						//Map<String,Element> curOozieActions = cur.writeProcess(doc, directoryToWrite, directoryToWrite.getName());
+						Element credential = o.createCredentials(doc);
+						if(credential != null){
+							logger.info("add a credential..");
+							credentials.put(credential.getAttribute("name"), credential);
 						}
-						o.oozieRemove(doc, action, directoryToWrite, directoryToWrite.getName(), attrNameStr);
 
 						elements.put(attrNameStr, action);
 						Set<String> actionEnd = new LinkedHashSet<String>();
