@@ -155,6 +155,8 @@ function onPageReady(){
 	validateArrowsAll();
 
 	//resizeTables();
+	
+	console.log("onPageReady END");
 
 }
 

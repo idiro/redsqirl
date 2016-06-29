@@ -60,7 +60,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	 * 
 	 */
 	private static final long serialVersionUID = 8260229620701006942L;
-	
+
 	private static Logger logger = Logger.getLogger(MapRedTextFileWithHeaderType.class);
 
 
@@ -106,34 +106,39 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	 */
 	protected List<Map<String,String>> readRecord(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
-		Iterator<String> it = selectLine(maxToRead).iterator();
-		
-		if (it.hasNext()){
-			it.next();
-		}
-		while(it.hasNext()){
-			String l = it.next();
-			if(l != null && ! l.isEmpty()){
-				String[] line = l.split(
-						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				List<String> fieldNames = getFields().getFieldNames();
-				if (fieldNames.size() == line.length) {
-					Map<String, String> cur = new LinkedHashMap<String, String>();
-					for (int i = 0; i < line.length; ++i) {
-						cur.put(fieldNames.get(i), line[i]);
+
+		List<String> list = selectLine(maxToRead);
+		if(list != null){
+			Iterator<String> it = list.iterator();
+
+			if (it.hasNext()){
+				it.next();
+			}
+			while(it.hasNext()){
+				String l = it.next();
+				if(l != null && ! l.isEmpty()){
+					String[] line = l.split(
+							Pattern.quote(getChar(getProperty(key_delimiter))), -1);
+					List<String> fieldNames = getFields().getFieldNames();
+					if (fieldNames.size() == line.length) {
+						Map<String, String> cur = new LinkedHashMap<String, String>();
+						for (int i = 0; i < line.length; ++i) {
+							cur.put(fieldNames.get(i), line[i]);
+						}
+						ans.add(cur);
+					} else {
+						logger.error("The line size (" + line.length
+								+ ") is not compatible to the number of fields ("
+								+ fieldNames.size() + "). " + "The splitter is '"
+								+ getChar(getProperty(key_delimiter)) + "'.");
+						logger.error("Error line: " + l);
+						ans = null;
+						break;
 					}
-					ans.add(cur);
-				} else {
-					logger.error("The line size (" + line.length
-							+ ") is not compatible to the number of fields ("
-							+ fieldNames.size() + "). " + "The splitter is '"
-							+ getChar(getProperty(key_delimiter)) + "'.");
-					logger.error("Error line: " + l);
-					ans = null;
-					break;
 				}
 			}
 		}
+		
 		return ans;
 	}
 
@@ -142,7 +147,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	protected String getDefaultColor() {
 		return "MediumSlateBlue";
 	}
-	
+
 	/**
 	 * Generate a fields list from the data in the current path
 	 * 
@@ -153,24 +158,24 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	protected FieldList generateFieldsMap(String delimiter, List<String> lines ) throws RemoteException {
 
 		logger.debug("generateFieldsMap --");
-		
+
 		FieldList fl = new OrderedFieldList();
 		try {
-			
+
 			List<String> headers = new ArrayList<String>();
 			String lineHeader = this.selectLine(1).get(0);
-				
+
 			for (String s : lineHeader.split(Pattern
 					.quote(delimiter))) {
 				headers.add(s);
 			}
-			
-			
+
+
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
-			
+
 			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
-			
+
 			if (lines != null) {
 				lines.remove(0);
 				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
@@ -183,7 +188,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 
 							String nameColumn;
 							nameColumn = headers.get(cont++);
-							
+
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
 								nbValueMap.put(nameColumn, 0);
@@ -201,7 +206,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 						break;
 					}
 				}
-				
+
 				Iterator<String> valueIt = valueMap.keySet().iterator();
 				while(valueIt.hasNext()){
 					String cat = valueIt.next();
@@ -215,6 +220,6 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 		return fl;
 
 	}
-	
+
 
 }

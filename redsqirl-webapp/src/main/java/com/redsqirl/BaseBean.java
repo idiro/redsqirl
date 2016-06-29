@@ -329,26 +329,22 @@ public class BaseBean {
 	 * @author Igor.Souza
 	 */
 	public UsageRecordWriter usageRecordLog() {
-
 		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 		ServletContext sc = (ServletContext) context.getExternalContext().getContext();
 		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
 		if(sessionUsageRecordWriter != null){
-			UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(userInfoBean.getUserName());
+			UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(getUserInfoBean().getUserName());
 			if(usageRecordLog != null){
 				return usageRecordLog;
 			}else{
-				bb_logger.error("usageRecord file not found");
+				bb_logger.error("usageRecord file not found " + getUserInfoBean().getUserName());
 				return new UsageRecordWriter();
 			}
 		}else{
 			bb_logger.error("usageRecord file not found");
 			return new UsageRecordWriter();
 		}
-
 	}
-	
 
 	protected void displayErrorMessage(String error, String usageRecordField){
 		if(error != null){
