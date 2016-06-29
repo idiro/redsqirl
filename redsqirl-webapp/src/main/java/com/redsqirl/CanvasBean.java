@@ -593,6 +593,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				df = dfi.getWorkflow(newWfName);
 				logger.warn("read " + path);
 				error = df.read(path);
+				df.setName(newWfName);
 			}
 
 			if (error == null) {
@@ -1138,7 +1139,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (df != null) {
 			name = df.getName();
 			running = df.isrunning();
-			logger.debug(df.getName()+" running: "+running);
+			logger.warn(df.getName()+" running: "+running);
 			if(running){
 				try {
 					setTotalProgressBar(getOozie().getNbElement(getDf()));
@@ -1789,7 +1790,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			if(checkRuningstatus){
 				try {
-					runningStatus =getDf().getRunningStatus(dfe.getComponentId());
+					runningStatus = getDf().getRunningStatus(dfe.getComponentId());
 				} catch (Exception e1) {
 					logger.info("Error getting the status: " + e1.getMessage(), e1);
 				}

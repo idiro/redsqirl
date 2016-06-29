@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,10 +37,7 @@ import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
-import com.redsqirl.workflow.server.connect.interfaces.SSHDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.SSHDataStoreArray;
 
 /** SshBean
@@ -63,6 +61,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private String tableState = new String();
 	private SSHDataStoreArray dsa;
 	private boolean selectedpassword;
+	private Map<String, String> mapPaths = new HashMap<String, String>();
 
 	/** openCanvasScreen
 	 * 
@@ -86,13 +85,16 @@ public class SshBean extends FileSystemBean implements Serializable{
 			}
 
 			tabs = new ArrayList<String>();
+			mapPaths = new HashMap<String, String>();
 			for (Entry<String, DataStore> e : dsa.getStores().entrySet()){
 				tabs.add(e.getKey());
+				mapPaths.put(e.getKey(), e.getValue().getPath());
 			}
 
 			if (!tabs.isEmpty()){
 				setSelectedTab(tabs.get(0));
 				setDataStore(dsa.getStore(selectedTab));
+				setPath(dsa.getStore(selectedTab).getPath());
 
 				if(getTableGrid() != null && getTableGrid().getRows() != null && getTableGrid().getRows().isEmpty()){
 					mountTable();
@@ -198,14 +200,26 @@ public class SshBean extends FileSystemBean implements Serializable{
 				error = dsa.initKnownStores();
 
 				tabs = new ArrayList<String>();
+				mapPaths = new HashMap<String, String>();
 				for(Entry<String, DataStore> e : dsa.getStores().entrySet()){
 					tabs.add(e.getKey());
+					mapPaths.put(e.getKey(), e.getValue().getPath());
 				}
 
 				setSelectedTab(tabs.get(0));
 				setDataStore(dsa.getStores().get(selectedTab));
+				setPath(dsa.getStores().get(selectedTab).getPath());
 
 				mountTable();
+			}else{
+
+				for(Map<String, String> map : dsa.getKnownStoreDetails()){
+					if (map.get("host name").equals(getHost())){
+						dsa.removeKnownStore(map);
+						dsa.removeStore(getHost());
+					}
+				}
+
 			}
 
 			if(error != null){
@@ -222,6 +236,66 @@ public class SshBean extends FileSystemBean implements Serializable{
 		}
 
 	}
+	
+	private void setCorrectPath(){
+		String path = mapPaths.get(getSelectedTab());
+		logger.info(path);
+		setPath(path);
+	}
+
+	public void changePathSsh() throws RemoteException {
+		
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameTab = params.get("nameTab");
+		String path = params.get("path");
+		
+		if(nameTab != null && nameTab.equalsIgnoreCase(getSelectedTab())){
+			logger.info(path);
+			setPath(path);
+			changePath();
+			mapPaths.put(getSelectedTab(), getPath());
+		}
+		
+	}
+	
+	public void goPreviousSsh() throws RemoteException {
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameTab = params.get("nameTab");
+		
+		if(nameTab != null && nameTab.equalsIgnoreCase(getSelectedTab())){
+			setCorrectPath();
+			goPrevious();
+			mapPaths.put(getSelectedTab(), getPath());
+		}
+	}
+	
+	public void goNextSsh() throws RemoteException {
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameTab = params.get("nameTab");
+		
+		if(nameTab != null && nameTab.equalsIgnoreCase(getSelectedTab())){
+			setCorrectPath();
+			goNext();
+			mapPaths.put(getSelectedTab(), getPath());
+		}
+	}
+	
+	public void goUpSsh() throws RemoteException {
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameTab = params.get("nameTab");
+		
+		if(nameTab != null && nameTab.equalsIgnoreCase(getSelectedTab())){
+			setCorrectPath();
+			goUp();
+			mapPaths.put(getSelectedTab(), getPath());
+		}
+	}
+	
+	public void selectFileSsh() {
+		setCorrectPath();
+		selectFile();
+		mapPaths.put(getSelectedTab(), getPath());
+	}
 
 	public void changeTab() throws RemoteException, Exception{
 
@@ -236,9 +310,9 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
+		mapPaths.put(getSelectedTab(), getPath());
 
 		mountTable();
-
 	}
 
 	public void closeTab() throws Exception{
@@ -262,8 +336,10 @@ public class SshBean extends FileSystemBean implements Serializable{
 		}
 
 		tabs = new ArrayList<String>();
+		mapPaths = new HashMap<String, String>();
 		for(Entry<String, DataStore> e : dsa.getStores().entrySet()){
 			tabs.add(e.getKey());
+			mapPaths.put(e.getKey(), e.getValue().getPath());
 		}
 
 	}
@@ -369,6 +445,14 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 	public void setSelectedpassword(boolean selectedpassword) {
 		this.selectedpassword = selectedpassword;
+	}
+
+	public Map<String, String> getMapPaths() {
+		return mapPaths;
+	}
+
+	public void setMapPaths(Map<String, String> mapPaths) {
+		this.mapPaths = mapPaths;
 	}
 
 }

@@ -290,7 +290,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setPath(null);
 			updateTable(false);
 		} else {
-			getBundleMessage("error.invalid.path");
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			String error = getMessageResources("error.invalid.path");
+			MessageUseful.addErrorMessage(error);
+			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR FILESYSTEM", error);
 		}
 
 	}
@@ -687,21 +691,28 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if (getPath() != null) {
 			if (getPath().length() > 1) {
 				String newPath = "";
-				if (getPath().endsWith("/")) {
+				if (getPath().trim().endsWith("/")) {
 					newPath = getPath().substring(0, getPath().length() - 1);
+				}else{
+					newPath = getPath();
 				}
-				newPath = getPath().substring(0, getPath().lastIndexOf('/'));
+				newPath = newPath.substring(0, newPath.lastIndexOf('/'));
 
 				if (newPath.length() < 1) {
 					newPath = "/";
 				}
 
 				logger.info("newPath" + newPath);
+				setPath(newPath);
 
 				if (getDataStore().goTo(newPath)) {
 					updateTable(false);
 				} else {
-					getBundleMessage("error.invalid.path");
+					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+					String error = getMessageResources("error.invalid.path");
+					MessageUseful.addErrorMessage(error);
+					request.setAttribute("msnError", "msnError");
+					usageRecordLog().addError("ERROR FILESYSTEM", error);
 				}
 			}
 		}
