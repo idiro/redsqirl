@@ -34,11 +34,11 @@ support@redsqirl.com
     <parent>
 	<groupId>idiro.redsqirl</groupId>
 	<artifactId>redsqirl-abstract-packages</artifactId>
-	<version>${hadoop.version}-0.12</version>
+	<version>${hadoop.version}-0.13</version>
     </parent>
 
     <artifactId>redsqirl-base-sql</artifactId>
-    <version>${hadoop.version}-0.12</version>
+    <version>${hadoop.version}-0.13</version>
 
     <packaging>jar</packaging>
     <name>Red Sqirl - Sql Base Package</name>
