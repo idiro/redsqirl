@@ -3,54 +3,42 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-<script>
-    
-    function selectFileSsh(isFile, nameFile){
-    	if (isFile != "true"){
-    		updateTableSsh(nameFile);
-    	}
-    }
-    
-</script>
-
 	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 300px;">
 		
 		<rich:dragIndicator id="indicator" />
-		<h:form id="fileSysGridFormSshTab">
+		
 			<div class="pathHeader">
-			<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
-			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
-				maxlength="255" style="width:395px; margin-left:5px;"
-				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>
 				
-				<a4j:commandLink 
-					id="sshchangePathBt"
-					action="#{sshBean.changePath}" 
-					reRender="sshpath,sshfs"
-					oncomplete="resizeTables();">
-					<h:graphicImage
-						id="sshbtgo"
-						value="../image/icons/button-search.gif"
-						title='#{messages.canvas_path}' styleClass="fileSystemIcon" />
+				<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
+				
+				<c:set var="key" value="#{tab}" />
+				<h:inputText id="sshpath" styleClass="mainPageTextField #{tab}" label="Path" value="#{sshBean.mapPaths[key]}" maxlength="255" style="width:395px; margin-left:5px;" onkeypress="return enableEnterKeyByClass(event, '#{tab}');"/>
+					
+				<a4j:commandLink id="sshchangePathBt" reRender="sshpath,sshfs,msnErrorSsh" oncomplete="getSSHPathSelected('#{tab}');" styleClass="#{tab}" >
+					<h:graphicImage	id="sshbtgo" value="../image/icons/button-search.gif" title='#{messages.canvas_path}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
+				
 			</div>
 
 			<div class="divMenu">
-				<a4j:commandLink action="#{sshBean.goPrevious}"
-					reRender="sshpath,sshfs">
+				<a4j:commandLink action="#{sshBean.goPreviousSsh}" reRender="sshpath,sshfs,msnErrorSsh">
 					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' styleClass="fileSystemIcon" />
+					<a4j:actionparam name="nameTab" value="#{tab}" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" >
+				<a4j:commandLink action="#{sshBean.goNextSsh}" reRender="sshpath,sshfs,msnErrorSsh" >
 					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' styleClass="fileSystemIcon" />
+					<a4j:actionparam name="nameTab" value="#{tab}" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" >
+				<a4j:commandLink action="#{sshBean.goUpSsh}" reRender="sshpath,sshfs,msnErrorSsh" >
 					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+					<a4j:actionparam name="nameTab" value="#{tab}" />
 				</a4j:commandLink>
 			</div>
 			
@@ -115,6 +103,9 @@
 	
 				</rich:extendedDataTable>
 			</rich:panel>
-		</h:form>
+		
 	</div>
+	
+	
+	
 </ui:composition>

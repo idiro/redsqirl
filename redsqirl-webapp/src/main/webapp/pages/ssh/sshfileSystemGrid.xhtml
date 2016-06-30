@@ -11,6 +11,22 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 <body>
+
+<script>
+    
+    function selectFileSsh(isFile, nameFile){
+    	if (isFile != "true"){
+    		updateTableSsh(nameFile);
+    	}
+    }
+    
+    function getSSHPathSelected(value){
+    	console.log(value);
+    	console.log(jQuery('.'+value).val());
+    	submitSSHPathSelected(value, jQuery('.'+value).val());
+    }
+    
+</script>
 	
 	<a4j:keepAlive beanName = "sshBean"/>
 	<h:panelGroup id="tabRemote" styleClass="removeDefaults" layout="block">
@@ -20,7 +36,7 @@
 				<a4j:actionparam name="nameTab"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" oncomplete="resizeTables()" reRender="sshfs,sshpath">
+			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFileSsh}" oncomplete="resizeTables()" reRender="sshfs,sshpath">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
@@ -30,8 +46,9 @@
 		
 			<ul class="ulCssCanvas removeDefaults topBanner">
 				<ui:repeat value="#{sshBean.tabs}" var="tab">
-					<li class="locked canvasTabsInactive" ><a href="##{tab}" class="canvasTab" onclick="setSelectedRemoteTab('#{tab}');">#{tab}</a> 
-						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
+					<li class="locked canvasTabsInactive" ><a href="##{tab}" class="canvasTab" onclick="setSelectedRemoteTab('#{tab}');">#{tab}</a>
+						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span>
+					</li>
 				</ui:repeat>
 				
 				<a4j:commandButton image="../image/icons/button-new_canvas.gif" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show();openSshPopUp();" 
@@ -45,6 +62,13 @@
 					
 		</h:form>
 			
+		<h:form id="fileSysGridFormSshTab">
+		
+		<a4j:jsFunction name="submitSSHPathSelected" action="#{sshBean.changePathSsh}" oncomplete="resizeTables();" reRender="sshpath,sshfs,msnErrorSsh" >
+			<a4j:actionparam name="nameTab" />
+			<a4j:actionparam name="path" />
+		</a4j:jsFunction>
+
 		<a4j:repeat value="#{sshBean.tabs}" var="tab" rowKeyVar="index">
 						
 			<div id="#{tab}">
@@ -55,6 +79,7 @@
 							
 			</div>
 		</a4j:repeat>
+		</h:form>
 	
 	</h:panelGroup>
 	

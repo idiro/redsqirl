@@ -1532,9 +1532,9 @@ function ready(canvasName) {
     jQuery.each(polygonLayer.get('.group1'), function(index, value) {
         var group = this;
 
-        var circle1 = value.getChildren()[1];
-        var polygon1 = value.getChildren()[2];
-        var text = value.getChildren()[3];
+        var circle1 = group.getChildren()[1];
+        var polygon1 = group.getChildren()[2];
+        var text = group.getChildren()[3];
 
         // alert(text.getText().substring(2));
         imgTab1.src = './' + text.getText().substring(2);
@@ -1544,7 +1544,11 @@ function ready(canvasName) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
 
-        configureCircle(canvasName, circle1);
+        try{
+        	configureCircle(canvasName, circle1);
+        }catch(exception){
+            console.log(exception);
+        }
         
         configureGroupListeners(canvasName, group);
 
@@ -2002,6 +2006,8 @@ function configureCircle(canvasName, circle1) {
 	
 	//console.log("configureCircle");
     
+	canvasArray[canvasName].down = false;
+	
     circle1.on('mouseover', function() {
         document.body.style.cursor = 'pointer';
     });
@@ -2009,8 +2015,6 @@ function configureCircle(canvasName, circle1) {
     circle1.on('mouseout', function() {
         document.body.style.cursor = 'default';
     });
-
-    canvasArray[canvasName].down = false;
 
     circle1.on("click", function(e) {
         if(e.button != 2){
@@ -2630,6 +2634,8 @@ function polygonOnClick(obj,e, canvasName){
 				console.log("polygonOnClick diferent id");
 			}
 
+		}else{
+			console.log("polygonOnClick down false");
 		}
 	}
 	

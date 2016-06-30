@@ -546,6 +546,20 @@ function enableEnterKey(e, id){
 	return (key != 13);
 }
 
+function enableEnterKeyByClass(e, id){
+	var key;
+	if(window.event)
+		key = window.event.keyCode;
+	else
+		key = e.keyCode;
+
+	if (key == 13){
+		e.preventDefault();
+		jQuery("."+id).click();
+	}
+	return (key != 13);
+}
+
 function updatedComboboxTableInteraction(element, index){
 	var idx=element.selectedIndex;
 	var val=element.options[idx].value;
