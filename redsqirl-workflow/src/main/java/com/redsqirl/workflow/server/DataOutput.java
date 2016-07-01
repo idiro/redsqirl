@@ -376,7 +376,11 @@ DFEOutput {
 			cachSelectTimeStamp = System.currentTimeMillis();
 			oldPath = getPath();
 		}
-		return cachSelect;
+		List<Map<String,String>> ans = cachSelect;
+		if(cachSelect != null && cachSelect.size() > maxToRead){
+			ans = cachSelect.subList(0, maxToRead-1);
+		}
+		return ans;
 	}
 	
 	protected abstract List<Map<String,String>> readRecord(int maxToRead)  throws RemoteException;
