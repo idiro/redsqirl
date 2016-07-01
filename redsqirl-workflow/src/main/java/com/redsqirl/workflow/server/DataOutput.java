@@ -27,7 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -378,7 +378,7 @@ DFEOutput {
 		}
 		List<Map<String,String>> ans = cachSelect;
 		if(cachSelect != null && cachSelect.size() > maxToRead){
-			ans = cachSelect.subList(0, maxToRead-1);
+			ans = new ArrayList<Map<String,String>>(cachSelect.subList(0, maxToRead-1));
 		}
 		return ans;
 	}
