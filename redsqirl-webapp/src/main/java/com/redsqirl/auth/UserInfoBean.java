@@ -314,10 +314,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			return "failure";
 		}
 
+		
 		UsageRecordWriter usageRecordLog = new UsageRecordWriter(licence, userName);
-		Map<String, UsageRecordWriter> sessionUsageRecordWriter = new HashMap<String, UsageRecordWriter>();
+		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
+		if(sessionUsageRecordWriter == null){
+			sessionUsageRecordWriter = new HashMap<String, UsageRecordWriter>();
+		}
 		sessionUsageRecordWriter.put(userName, usageRecordLog);
 		sc.setAttribute("usageRecordLog", sessionUsageRecordWriter);
+		
 
 		@SuppressWarnings("unchecked")
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
