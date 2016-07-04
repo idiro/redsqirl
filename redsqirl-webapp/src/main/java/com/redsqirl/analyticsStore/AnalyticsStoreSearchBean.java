@@ -197,7 +197,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					pck.setId(Integer.valueOf(id));
 					pck.setName(pckObj.getString("name"));
 					pck.setTags(pckObj.getString("tags"));
-					pck.setImage(getRepoServer() + pckObj.getString("image"));
+					pck.setImage(getRepoServer() + pckObj.getString("image").substring(1));
 					pck.setType(pckObj.getString("type"));
 					pck.setPrice(pckObj.getString("price"));
 

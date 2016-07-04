@@ -409,7 +409,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		String outputN = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("outputName");
 		String resetMaxRows = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("resetMaxRows");
 		String selectedComboBox = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedComboBox");
-		
 
 		if(resetMaxRows != null && resetMaxRows.equals("Y")){
 			setMaxRows(null);
@@ -424,9 +423,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				setNameOutput(outputN);
 				logger.info("display out: " + nameOutput);
 				updateDFEOutputTable();
-
 			}
-			
 		}else {
 			if(outputFormList != null && !outputFormList.isEmpty()){
 				outputN = outputFormList.get(0).getName();
@@ -434,7 +431,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					setNameOutput(outputN);
 					logger.info("display out: " + nameOutput);
 					updateDFEOutputTable();
-
+				}else if(selectedComboBox != null){
+					setNameOutput(outputN);
+					logger.info("display out: " + nameOutput);
+					updateDFEOutputTable();
 				}
 			}else{
 				logger.info("display out null ");

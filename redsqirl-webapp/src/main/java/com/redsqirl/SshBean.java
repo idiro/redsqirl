@@ -351,10 +351,12 @@ public class SshBean extends FileSystemBean implements Serializable{
 		String file = context.getExternalContext().getRequestParameterMap().get("file");
 		String path = context.getExternalContext().getRequestParameterMap().get("path");
 
-		logger.info("copy from "+path+"/"+file+" to "+getSelectedTab()+":"+getPath()+"/"+file);
-
+		String pathTo = mapPaths.get(getSelectedTab());
+		
+		logger.warn("copy from "+path+"/"+file+" to "+getSelectedTab()+":"+pathTo+"/"+file);
+		
 		try{
-			getHDFS().copyToRemote(path+"/"+file, getPath()+"/"+file, getSelectedTab());
+			getHDFS().copyToRemote(path+"/"+file, pathTo+"/"+file, getSelectedTab());
 			updateTable(true);
 		}
 		catch(Exception e){

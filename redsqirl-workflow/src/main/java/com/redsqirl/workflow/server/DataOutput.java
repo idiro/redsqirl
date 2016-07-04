@@ -378,7 +378,7 @@ DFEOutput {
 		}
 		List<Map<String,String>> ans = cachSelect;
 		if(cachSelect != null && cachSelect.size() > maxToRead){
-			ans = new ArrayList<Map<String,String>>(cachSelect.subList(0, maxToRead-1));
+			ans = new ArrayList<Map<String,String>>(cachSelect.subList(0, maxToRead));
 		}
 		return ans;
 	}

@@ -527,7 +527,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private void load(String path,String newWfName,boolean setWorkflow){
 		logger.info("load " + path);
-		loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow);
+		String error = loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow);
+		displayErrorMessage(error,"LOADWORKFLOW");
 	}
 
 	/**
