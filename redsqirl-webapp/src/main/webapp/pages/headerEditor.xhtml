@@ -157,7 +157,7 @@
 						
 					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
 					    styleClass="greenButton" value="#{messages.button_ok}" onclick="blockSourceModalHeaderEditor();"
-						oncomplete="if(#{requestScope['msnError'] == null} ){canvasModalApply();}"
+						oncomplete="if(#{requestScope['msnError'] == null} ){canvasModalApply();}else{unBlockSourceModalHeaderEditor();}"
 						reRender="browserTableData, msnError, errorTable" />
 					
 				</div>
