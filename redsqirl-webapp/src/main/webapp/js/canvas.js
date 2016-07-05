@@ -1700,6 +1700,8 @@ function mountObj(canvasName) {
                 	}else{
                 		console.log("dragDropGroup " + canvasArray[canvasName].dragDropGroup);
                 		console.log("moving " + canvasArray[canvasName].moving);
+                		console.log("canvasName " + canvasName);
+                		console.log("canvas array " + canvasName.length);
                 	}
                 });
                 
@@ -2035,7 +2037,7 @@ function configureCircle(canvasName, circle1) {
 
 
 function createLink(circleGp){
-	
+
 		console.log("createLink");
         
         var arrow = canvasArray[selectedCanvas].arrow;
