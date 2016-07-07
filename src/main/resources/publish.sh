@@ -48,6 +48,9 @@ mkdir -p $DIRECTORY_NAME
 pushd ${SCRIPT_PATH}/../../../
 pwd
 
+mvn clean install  -Dhadoop.version=1.0.3-mapr-4.1.0 -DskipTests
+mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
+
 mvn clean install  -Dhadoop.version=2.4.0 -DskipTests
 mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
 
