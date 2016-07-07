@@ -31,7 +31,6 @@ Getting started
 
   * HDFS Home directory for each user (/user/${user})
 
-  * Access for every user to run the hadoop command
 
   []  
 
@@ -60,6 +59,8 @@ projects should be installed on the cluster.
   Red Sqirl since version 0.13 supports Hadoop secure mode. If your cluster is kerberized, you will have to create passwordless principal and copy them to the Red Sqirl server.
 The principal should follow the format <_USER/_HOST@_REALM> for example <myuser/myhost.example.com@EXAMPLE.COM>. All keytabs should be exclusively accessible to the user it has been created for (permission 400).
 By default, Red Sqirl is expecting the keytab files at </etc/security/keytabs/redsqirl/user-_USER.keytab>.
+
+In a Kerberized environment, Red Sqirl have to sit on a server on which Hadoop is installed. The Hadoop conf folder is required in the hadoop home.
 
 * Architecture
 
