@@ -49,10 +49,10 @@
 	            
 	            jQuery("#btIndex").show();
 	            if(jQuery(this).attr("href").indexOf('#') == -1){
-			      jQuery("#tabs-1").scrollTop( 0 );
+			    	jQuery("#divTabHelp").scrollTop( 0 );
 	            }else{
-	              jQuery("#tabs-1").animate({
-	                  scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
+	            	console.log(jQuery(jQuery(this,'href')).offset().top);
+	            	jQuery("#divTabHelp").animate({ scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
 			    }
 			    
 			    //<![CDATA[
