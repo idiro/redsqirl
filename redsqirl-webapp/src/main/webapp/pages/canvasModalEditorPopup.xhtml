@@ -305,15 +305,19 @@ function mountComboboxTextEditor(obj1, obj2){
 			</table>
 			</div>
 		<br />
-			
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" 
-			reRender="command,tableInteraction, msnError, errorTable" />
-			
-		<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 		
-		<a4j:commandButton action="#{canvasModalBean.selEditor.confirmValueAndCopy}" styleClass="greenButton" value="#{messages.button_ok}"
-			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
-			reRender="command,tableInteraction, msnError, errorTable" />
+		<rich:panel style="border:none; float:right;" >
+			
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" 
+				reRender="command,tableInteraction, msnError, errorTable" />
+				
+			<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+			
+			<a4j:commandButton action="#{canvasModalBean.selEditor.confirmValueAndCopy}" styleClass="greenButton" value="#{messages.button_ok}"
+				oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
+				reRender="command,tableInteraction, msnError, errorTable" />
+			
+		</rich:panel>
 
 	</div>
 	
