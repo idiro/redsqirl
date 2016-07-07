@@ -1700,6 +1700,8 @@ function mountObj(canvasName) {
                 	}else{
                 		console.log("dragDropGroup " + canvasArray[canvasName].dragDropGroup);
                 		console.log("moving " + canvasArray[canvasName].moving);
+                		console.log("canvasName " + canvasName);
+                		console.log("canvas array " + canvasName.length);
                 	}
                 });
                 
@@ -2004,7 +2006,7 @@ function save(path) {
 
 function configureCircle(canvasName, circle1) {
 	
-	//console.log("configureCircle");
+	console.log("configureCircle");
     
 	canvasArray[canvasName].down = false;
 	
@@ -2017,11 +2019,16 @@ function configureCircle(canvasName, circle1) {
     });
 
     circle1.on("click", function(e) {
+    	
+    	console.log("configureCircle circle1 on click " + e.button);
+    	
         if(e.button != 2){
         	
-        	console.log("configureCircle circle1 on click");
+        	console.log("if configureCircle");
         	
             createLink(this);
+        }else{
+        	console.log("configureCircle button ");
         }
     });
 
@@ -2030,7 +2037,7 @@ function configureCircle(canvasName, circle1) {
 
 
 function createLink(circleGp){
-	
+
 		console.log("createLink");
         
         var arrow = canvasArray[selectedCanvas].arrow;
@@ -2130,17 +2137,22 @@ function configureGroupListeners(canvasName, group) {
 	
 	group.on('click', function(e) {
     	
-    	console.log("group on click");
+    	console.log("group on click " + e.button);
         
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
         if(e.button != 2){
         
+        	console.log("group on click A ");
+        	
           group.getChildren()[2].on('click', function(e) {
             polygonOnClick(this, e, canvasName);
           });
           
         }else{
+        	
+        	console.log("group on click B ");
+        	
             showContextMenu(this, e);
             return false;
         }
