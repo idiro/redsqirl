@@ -122,7 +122,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	/**
 	 * The current Action in the workflow
 	 */
-	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
+	//protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
 
 	protected String
 	/** Name of the workflow */
