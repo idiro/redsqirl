@@ -107,7 +107,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			modulesToInstall.put("redsqirl-pig", "0.8");
 			modulesToInstall.put("redsqirl-jdbc", "0.5");
 			modulesToInstall.put("redsqirl-spark-etl", "0.5");
-			modulesToInstall.put("redsqirl-spark-ml", "0.4");
+			modulesToInstall.put("redsqirl-spark-ml", "0.5");
 
 		} catch (RemoteException e) {
 			logger.warn(e,e);

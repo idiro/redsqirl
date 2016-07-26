@@ -176,7 +176,13 @@ public class HiveDictionary extends JdbcDictionary{
 					},
 			new String[] { "ISNOTNULL()", "ANY", "BOOLEAN",
 					"@function:ISNOTNULL@param:a@short:Returns true if a is not NULL and false otherwise.",
-					},
+					}, 
+			new String[] {
+					"RAND()",
+					"",
+					"DOUBLE",
+			"@function:RAND()@short: Generate a random double@description:Generates a random double and returns it" },
+			
 		};
 		addToFunctionsMap(utilsMethods,hiveUtilMethods);
 		
