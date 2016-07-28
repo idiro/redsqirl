@@ -23,9 +23,8 @@
     });
     
     jQuery(document).on("click", ".stopLink", function(e){
-
 		
-	    if(! jQuery('#notMoveHelp').is(':checked')){
+	    if(!jQuery('#notMoveHelp').is(':checked')){
 			showTabResult();
 			jQuery("#divTabHelp").scrollTop( 0 );
 			var id = jQuery(this).attr('id');
