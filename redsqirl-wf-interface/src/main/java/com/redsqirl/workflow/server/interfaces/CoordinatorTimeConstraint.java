@@ -1,12 +1,13 @@
 package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface CoordinatorTimeConstraint extends Remote{
 
-	int getFrequency();
+	int getFrequency() throws RemoteException;
 	
-	String getFrequencyStr();
+	String getFrequencyStr() throws RemoteException;
 	
-	String getUnit();
+	String getUnit() throws RemoteException;
 }

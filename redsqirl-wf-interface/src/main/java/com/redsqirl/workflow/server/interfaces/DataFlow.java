@@ -389,6 +389,13 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return the workingWA
 	 */
 	public List<DataFlowElement> getElement() throws RemoteException;
+	
+	/**
+	 * Get the list of coordinators
+	 * @return
+	 * @throws RemoteException
+	 */
+	public List<DataFlowCoordinator> getCoordinators() throws RemoteException;
 
 	/**
 	 * Get the last elment of workingWA

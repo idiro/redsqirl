@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -50,6 +51,7 @@ DFELinkProperty {
 	protected int maxOccurence;
 	protected FieldList fieldListAccepted;
 	protected List<FieldType> fieldTypeAccepted;
+	protected PathType pathTypeAccepted = PathType.REAL;
 
 	/**
 	 * Constructor with one accepted type and the min and max occurrence values
@@ -80,6 +82,22 @@ DFELinkProperty {
 			int minOccurence, int maxOccurence) throws RemoteException {
 		super();
 		this.typeAccepted = typeAccepted;
+		init(minOccurence, maxOccurence);
+	}
+	
+	/**
+	 * 
+	 * @param typeAccepted
+	 * @param minOccurence
+	 * @param maxOccurence
+	 * @param pathTypeAccepted
+	 * @throws RemoteException
+	 */
+	public DataProperty(List<Class<? extends DFEOutput>> typeAccepted,
+			int minOccurence, int maxOccurence, PathType pathTypeAccepted) throws RemoteException {
+		super();
+		this.typeAccepted = typeAccepted;
+		this.pathTypeAccepted = pathTypeAccepted;
 		init(minOccurence, maxOccurence);
 	}
 
@@ -245,4 +263,13 @@ DFELinkProperty {
 	public final List<FieldType> getFieldTypeAccepted() {
 		return fieldTypeAccepted;
 	}
+
+	public final PathType getPathTypeAccepted() {
+		return pathTypeAccepted;
+	}
+
+	public final void setPathTypeAccepted(PathType pathTypeAccepted) {
+		this.pathTypeAccepted = pathTypeAccepted;
+	}
+	
 }

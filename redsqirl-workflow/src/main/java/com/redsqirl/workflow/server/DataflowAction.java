@@ -116,9 +116,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	
 	private Long lastTimeRun;
 	
-	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();;
-
-	//private static Logger logger = Logger.getLogger(.class);
+	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();
+	
+	private Set<String> requiredVariables = new LinkedHashSet<String>();
 
 	/**
 	 * Constructor that takes a type of
@@ -692,7 +692,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
 			throws RemoteException {
 		Map<String, Entry<String, DFEOutput>> ans = new LinkedHashMap<String, Entry<String, DFEOutput>>();
-		Map<String, List<DataFlowElement>> in = getInputComponent();
 		Iterator<DataFlowElement> it = getAllInputComponent().iterator();
 		while (it.hasNext()) {
 			DataFlowElement inEl = it.next();
@@ -1318,5 +1317,41 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	@Override
 	public void setLastRunOozieElementNames(Set<String> lastRunOozieElementNames) throws RemoteException{
 		this.lastRunOozieElementNames = lastRunOozieElementNames;
+	}
+
+	/**
+	 * @return the requiredVariables
+	 */
+	@Override
+	public Set<String> getRequiredVariables() {
+		return requiredVariables;
+	}
+	
+	/**
+	 * Add a variable into the list of required variables
+	 * @param variable
+	 * @return
+	 */
+	@Override
+	public boolean addRequiredVariable(String variable){
+		return requiredVariables.add(variable);
+	}
+	
+	/**
+	 * Add all the given variables into the list of required variables
+	 * @param variables
+	 * @return
+	 */
+	@Override
+	public boolean addRequiredVariables(Set<String> variables){
+		return requiredVariables.addAll(variables);
+	}
+
+	/**
+	 * @param requiredVariables the requiredVariables to set
+	 */
+	@Override
+	public void setRequiredVariables(Set<String> requiredVariables) {
+		this.requiredVariables = requiredVariables;
 	}
 }

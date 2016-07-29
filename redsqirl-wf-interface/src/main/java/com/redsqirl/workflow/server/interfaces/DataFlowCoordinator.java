@@ -10,6 +10,10 @@ public interface DataFlowCoordinator extends Remote{
 
 	List<DataFlowElement> getElements() throws RemoteException;
 	
+	List<String> getComponentIds() throws RemoteException;
+	
+	DataFlowElement getElement(String componentId) throws RemoteException;
+	
 	String addElement(DataFlowElement dfe) throws RemoteException;
 	
 	String removeElement(DataFlowElement dfe) throws RemoteException;
@@ -20,15 +24,11 @@ public interface DataFlowCoordinator extends Remote{
 	
 	CoordinatorTimeConstraint getTimeCondition() throws RemoteException;
 	
-	Date getStartTime() throws RemoteException;
-	
-	void setStartTime(Date startTime) throws RemoteException;
-	
-	Date getEndTime() throws RemoteException;
-	
-	void setEndTime(Date endTime) throws RemoteException;
-	
 	Map<String,String> getVariables() throws RemoteException;
 	
 	String addVariable(String name, String value, boolean force) throws RemoteException;
+
+	void merge(DataFlowCoordinator coord) throws RemoteException;
+
+	DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException;
 }

@@ -7,13 +7,17 @@ import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 
 public class WfCoordTimeConstraint extends UnicastRemoteObject implements CoordinatorTimeConstraint{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9222678978810373856L;
+	
 	int frequency;
 	String frequencyStr;
 	String unit;
 
 	protected WfCoordTimeConstraint() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

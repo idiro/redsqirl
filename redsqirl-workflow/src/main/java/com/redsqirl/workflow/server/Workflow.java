@@ -76,6 +76,8 @@ import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.action.SyncSink;
+import com.redsqirl.workflow.server.action.SyncSourceFilter;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
@@ -84,6 +86,7 @@ import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.server.interfaces.RunnableElement;
@@ -120,9 +123,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected static String userName = System.getProperty("user.name");
 	
 	/**
-	 * The current Action in the workflow
+	 * The current Action in the workflow.
 	 */
-	//protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
+	private LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
+	
+	/**
+	 * The coordinators
+	 */
+	protected LinkedList<DataFlowCoordinator> coordinators = new LinkedList<DataFlowCoordinator>();
 
 	protected String
 	/** Name of the workflow */
@@ -2312,9 +2320,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { e.getMessage() });
 		}
 		if (error == null) {
+			DataFlowElement new_wa = null;
 			if (namesWithClassName.get(waName) == null
 					&& !actionManager.getSuperActions(name).contains(waName)) {
-				DataFlowElement new_wa = new SuperAction();
+				new_wa = new SuperAction();
 				new_wa.setComponentId(componentId);
 				element.add(new_wa);
 				/*
@@ -2327,7 +2336,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				try {
 					logger.debug("initiate the action " + waName + " "
 							+ namesWithClassName.get(waName));
-					DataFlowElement new_wa = null;
+					new_wa = null;
 					new_wa = actionManager.createElementFromClassName(namesWithClassName,
 							waName);
 					logger.debug("set the componentId...");
@@ -2338,6 +2347,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					error = e.getMessage();
 					logger.debug(error, e);
 				}
+			}
+			
+			if(new_wa != null){
+				DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+				dfC.addElement(new_wa);
 			}
 		}
 		if (error != null) {
@@ -2372,6 +2386,121 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.debug("Component " + componentId + " not found");
 		}
 		return ans;
+	}
+	
+	/**
+	 * Get the Coordinator corresponding to the name.
+	 * 
+	 * @param coordinatorName
+	 *            the componentId @see {@link DataflowAction#componentId}
+	 * @return a DataFlowCoordinator object or null
+	 * @throws RemoteException
+	 */
+	public DataFlowCoordinator getCoordinator(String coordinatorName)
+			throws RemoteException {
+		Iterator<DataFlowCoordinator> it = coordinators.iterator();
+		DataFlowCoordinator ans = null;
+		while (it.hasNext() && ans == null) {
+			ans = it.next();
+			if (!ans.getName().equals(coordinatorName)) {
+				ans = null;
+			}
+		}
+		if (ans == null) {
+			logger.debug("Component " + coordinatorName + " not found");
+		}
+		return ans;
+	}
+	
+	public DataFlowCoordinator getFirstCoordinator(){
+		return coordinators.getFirst();
+	}
+	
+	public List<DataFlowCoordinator> getCoordinators(){
+		return coordinators;
+	}
+	
+	public String checkCoodinatorMergeConflict(DataFlowCoordinator coord1, DataFlowCoordinator coord2) throws RemoteException{
+		DataFlowCoordinator coordCheck = null;
+		DataFlowCoordinator coordOther = null;
+		if(coord1.getElements().size()< coord2.getElements().size()){
+			coordCheck = coord1;
+			coordOther = coord2;
+		}else{
+			coordCheck = coord2;
+			coordOther = coord1;
+		}
+		List<DataFlowElement> dfe = new LinkedList<DataFlowElement>();
+		Iterator<DataFlowElement> it = coordCheck.getElements().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			dfe.addAll(cur.getAllInputComponent());
+			dfe.addAll(cur.getAllOutputComponent());
+		}
+		it = dfe.iterator();
+		String coordErr = null;
+		while(it.hasNext() && coordErr == null ){
+			if(coordOther.getElement(it.next().getComponentId()) != null){
+				coordErr = "Coordinator conflict";
+			}
+		}
+		return coordErr;
+	}
+	
+	public String mergeCoordinator(String coordinatorName1, String coordinatorName2) throws RemoteException{
+		//Check if the two coordinators are already linked
+		DataFlowCoordinator coordinator1 = getCoordinator(coordinatorName1);
+		DataFlowCoordinator coordinator2 = getCoordinator(coordinatorName2);
+		String error = checkCoodinatorMergeConflict(coordinator1,coordinator2);
+		
+		if(error == null){
+			//Merge Coordinator
+			coordinator1.merge(coordinator2);
+			coordinators.remove(coordinator2);
+		}
+		
+		return error;
+	}
+	
+	public String splitCoordinator(String coordinatorName, List<String> elements) throws RemoteException{
+		String coordErr = null;
+		if(elements.isEmpty()){
+			return "No elements selected";
+		}else{
+			DataFlowCoordinator coordCheck = getCoordinator(coordinatorName);
+			int sizeRemainCoord= 0;
+			List<DataFlowElement> dfeToMove = new LinkedList<DataFlowElement>();
+			List<DataFlowElement> dfeList2 = new LinkedList<DataFlowElement>();
+			Iterator<DataFlowElement> it = coordCheck.getElements().iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				if(elements.contains(cur.getComponentId())){
+					dfeToMove.add(cur);
+				}else{
+					++sizeRemainCoord;
+					dfeList2.addAll(cur.getAllInputComponent());
+					dfeList2.addAll(cur.getAllOutputComponent());
+				}
+			}
+			if(dfeToMove.size() != elements.size()){
+				coordErr = "Not all the elements selected are in the same coordinator";
+			}else if(sizeRemainCoord == 0){
+				coordErr = "No element to split";
+			}else{
+				it = dfeList2.iterator();
+				while(it.hasNext() && coordErr == null ){
+					if(dfeToMove.contains(it.next())){
+						coordErr = "Coordinator conflict: cannot split the coordinator due to the links between them";
+					}
+				}
+				
+				if(coordErr == null){
+					coordCheck.split(dfeToMove);
+				}
+			}
+				
+		}
+		return coordErr;
 	}
 
 	/**
@@ -2516,6 +2645,45 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					if (error != null) {
 						removeLink(outName, componentIdOut, inName,
 								componentIdIn, true);
+					}
+				}
+			}
+			//Handle the coordinators
+			if(force || error == null){
+				//Check if they are in the same coordinator
+				DataFlowCoordinator coordIn = null;
+				boolean coordInFirst = false;
+				DataFlowCoordinator coordOut = null;
+				Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
+				while(itCoord.hasNext() && coordIn == null && coordOut == null){
+					DataFlowCoordinator cur = itCoord.next();
+					if(coordIn == null && cur.getElement(componentIdIn) != null){
+						coordIn = cur;
+						coordInFirst = coordOut == null;
+					}
+					if(coordOut == null && cur.getElement(componentIdOut) != null){
+						coordOut = cur;
+					}
+				}
+				if(coordIn != coordOut){
+					//Check if it is a Sync-Sink - Sync-Source-Filter link
+					if(!in.getClass().equals(SyncSink.class) || !out.getClass().equals(SyncSourceFilter.class)){
+						String coordErr = checkCoodinatorMergeConflict(coordIn,coordOut);
+						
+						if(coordErr == null){
+							//Merge Coordinator
+							if(coordInFirst){
+								coordIn.merge(coordOut);
+								coordinators.remove(coordOut);
+							}else{
+								coordOut.merge(coordIn);
+								coordinators.remove(coordIn);
+							}
+						}else if(!force){
+							error = coordErr;
+							removeLink(outName, componentIdOut, inName,
+									componentIdIn, true);
+						}
 					}
 				}
 			}

@@ -45,7 +45,9 @@ import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -75,6 +77,14 @@ DFEOutput {
 	 * Saving state
 	 */
 	protected SavingState savingState = SavingState.TEMPORARY;
+	
+	/**
+	 * Path Type
+	 */
+	protected PathType pathType = PathType.REAL;
+	protected int numberMaterializedPath = 0;
+	protected CoordinatorTimeConstraint frequency;
+	protected String initialInstance;
 
 	/**
 	 * The path
@@ -795,4 +805,33 @@ DFEOutput {
 	public void setCredential(String credential) {
 		this.credential = credential;
 	}
+
+	public PathType getPathType() {
+		return pathType;
+	}
+
+	public void setPathType(PathType pathType) {
+		this.pathType = pathType;
+	}
+
+	public int getNumberMaterializedPath() {
+		return numberMaterializedPath;
+	}
+
+	public void setNumberMaterializedPath(int numberMaterializedPath) {
+		this.numberMaterializedPath = numberMaterializedPath;
+	}
+
+	public final CoordinatorTimeConstraint getFrequency() {
+		return frequency;
+	}
+
+	public final String getInitialInstance() {
+		return initialInstance;
+	}
+
+	public final void setInitialInstance(String initialInstance) {
+		this.initialInstance = initialInstance;
+	}
+	
 }
