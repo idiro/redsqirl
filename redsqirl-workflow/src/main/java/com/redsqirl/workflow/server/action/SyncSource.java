@@ -21,12 +21,27 @@ package com.redsqirl.workflow.server.action;
 
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.hadoop.NameNodeVar;
+import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.InputInteraction;
+import com.redsqirl.workflow.server.ListInteraction;
+import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.enumeration.PathType;
+import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
+import com.redsqirl.workflow.server.interfaces.DFEInteraction;
+import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
+import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -40,8 +55,18 @@ public class SyncSource extends AbstractSource {
 	private static final long serialVersionUID = 7519928238030041208L;
 
 	private static Logger logger = Logger.getLogger(SyncSource.class);
+	public static final String hcat_metastore_key = WorkflowPrefManager.core_settings_hcatalog+".metastore_uri";
+	public final static String out_template = "template",
+			inter_template = "template_path",
+			inter_unit = "unit",
+			inter_freq = "frequency";
 	
+	protected Page page4,page5;
 	protected InputInteraction templatePath;
+
+	private ListInteraction unit;
+
+	private InputInteraction frequency;
 	
 	/**
 	 * Constructor containing the pages, page checks and interaction
@@ -54,21 +79,246 @@ public class SyncSource extends AbstractSource {
 
 		addTypePage();
 		addSubTypePage();
+		addSourcePage();
 		
-
+		page4 = addPage(LanguageManagerWF.getText("sync_source.page4.title"),
+				LanguageManagerWF.getText("sync_source.page4.legend"), 1);
+		
 		//Data Set Type
 		templatePath = new InputInteraction(
-				"template_path", 
+				inter_template, 
 				LanguageManagerWF.getText("sync_source.template_path.title"),
 				LanguageManagerWF.getText("sync_source.template_path.legend")
 				, 0, 0);
-		page3.addInteraction(templatePath);
 		
+		templatePath.setChecker(new DFEInteractionChecker() {
+			
+			@Override
+			public String check(DFEInteraction interaction) throws RemoteException {
+				return checkTemplatePath(output.get(out_name).getPath(), templatePath.getValue());
+			}
+		});
+		
+		page4.addInteraction(templatePath);
+		
+		page5 = addPage(LanguageManagerWF.getText("sync_source.page5.title"),
+				LanguageManagerWF.getText("sync_source.page5.legend"), 1);
+		
+		unit = new ListInteraction(
+				inter_unit, 
+				LanguageManagerWF.getText("sync_source.unit.title"),
+				LanguageManagerWF.getText("sync_source.unit.legend")
+				, 0, 0);
+		
+		frequency = new InputInteraction(
+				inter_freq, 
+				LanguageManagerWF.getText("sync_source.frequency.title"),
+				LanguageManagerWF.getText("sync_source.frequency.legend")
+				, 0, 0);
+		frequency.setValue("1");
+		frequency.setRegex("[1-9][0-9]{0,1}");
+		
+		page5.addInteraction(unit);
+		page5.addInteraction(frequency);
+		
+		
+	}
+	
+	protected void initializeDataTypeInteraction() throws RemoteException{
+		dataType = new ListInteraction(
+				key_datatype,
+				LanguageManagerWF.getText("source.datatype_interaction.title"),
+				LanguageManagerWF.getText("source.datatype_interaction.legend"),
+				0, 0);
+		dataType.setReplaceDisable(true);
+		dataType.setDisplayRadioButton(true);
+		List<String> posValues = new LinkedList<String>();
+		posValues.add(new HDFSInterface().getBrowserName());
+		posValues.add(new HCatStore().getBrowserName());
+		dataType.setPossibleValues(posValues);
+	}
+	
+	protected void updateUnit() throws RemoteException{
+		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		Matcher m = p.matcher(templatePath.getValue());
+		TimeTemplate minTemp = null;
+		while(m.find()){
+			try{
+				TimeTemplate cur = TimeTemplate.valueOf(m.group(1));
+				boolean isMin = false;
+				if(cur != null){
+					switch(cur){
+					case DAY:
+						isMin = minTemp == null || TimeTemplate.YEAR.equals(minTemp) || TimeTemplate.MONTH.equals(minTemp);
+						break;
+					case HOUR:
+						isMin = minTemp == null || TimeTemplate.YEAR.equals(minTemp) || TimeTemplate.MONTH.equals(minTemp) 
+							|| TimeTemplate.DAY.equals(minTemp);
+						break;
+					case MINUTE:
+						isMin = minTemp == null || TimeTemplate.YEAR.equals(minTemp) || TimeTemplate.MONTH.equals(minTemp) 
+						|| TimeTemplate.DAY.equals(minTemp) || TimeTemplate.HOUR.equals(minTemp);
+						break;
+					case MONTH:
+						isMin = minTemp == null || TimeTemplate.YEAR.equals(minTemp);
+						break;
+					case YEAR:
+						isMin = minTemp == null;
+						break;
+					default:
+						break;
+					}
+					if(isMin){
+						minTemp = cur;
+					}
+				}
+			}catch(Exception e){
+			}
+		}
+		String defaultVal = minTemp.toString();
+		List<String> freqPos = new LinkedList<String>();
+		switch(minTemp){
+		case MINUTE:
+			freqPos.add(TimeTemplate.MINUTE.toString());
+		case HOUR:
+			freqPos.add(TimeTemplate.HOUR.toString());
+		case DAY:
+			freqPos.add(TimeTemplate.DAY.toString());
+		case MONTH:
+			freqPos.add(TimeTemplate.MONTH.toString());
+		case YEAR:
+			freqPos.add(TimeTemplate.YEAR.toString());
+		}
+		unit.setPossibleValues(freqPos);
+		unit.setValue(defaultVal);
+	}
+	
+	protected void updateTemplatePath() throws RemoteException{
+		DFEOutput startInstance = output.get(out_name);
+		String curVal = templatePath.getValue();
+		if(curVal == null ||curVal.isEmpty()){
+			templatePath.setValue(startInstance.getPath());
+		}
+		
+	}
+	
+	
+	protected static String checkTemplatePath(String realPath, String templatePathStr){
+		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		Matcher m = p.matcher(templatePathStr);
+		String error = null; 
+		String buildingStr = "";
+		int prevIndex = 0;
+		int found = 0;
+		while(m.find() && error == null){
+			++found;
+			boolean match = true;
+			buildingStr += templatePathStr.substring(prevIndex, m.start());
+			prevIndex = m.end();
+			try{
+				TimeTemplate cur = TimeTemplate.valueOf(m.group(1)); 
+				if(match = cur != null){
+					String toAdd = "";
+					int realPathSubStart = buildingStr.length();
+					switch(cur){
+					case DAY:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						if(!toAdd.matches("^[0-9][0-9]$") || Integer.valueOf(toAdd.startsWith("0")?toAdd.substring(1):toAdd) > 31){
+							error = "A day should have a value between 0 and 31, given ("+toAdd+")";
+						}
+						break;
+					case HOUR:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						if(!toAdd.matches("^[0-9][0-9]$") || Integer.valueOf(toAdd.startsWith("0")?toAdd.substring(1):toAdd) > 23){
+							error = "An hour should have a value between 0 and 23, given ("+toAdd+")";
+						}
+						break;
+					case MINUTE:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						if(!toAdd.matches("^[0-9][0-9]$") || Integer.valueOf(toAdd.startsWith("0")?toAdd.substring(1):toAdd) > 59){
+							error = "A minute should have a value between 0 and 59, given ("+toAdd+")";
+						}
+						break;
+					case MONTH:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						if(!toAdd.matches("^[0-9][0-9]$") || Integer.valueOf(toAdd.startsWith("0")?toAdd.substring(1):toAdd) > 12){
+							error = "A month should have a value between 1 and 12, given ("+toAdd+")";
+						}
+						break;
+					case YEAR:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+4);
+						if(!toAdd.matches("^[1-2][0-9][0-9][0-9]$")){
+							error = "A year should contain four digits, given ("+toAdd+")";
+						}
+						break;
+					default:
+						break;
+					}
+					buildingStr += toAdd;
+				}
+			}catch(Exception e){
+				match = false;
+			}
+			if(!match){
+				error = m.group(1)+" is not a template variable accepted, it should be YEAR, MONTH, DAY, HOUR or MINUTE";
+			}
+		}
+		if(prevIndex < realPath.length()){
+			buildingStr += realPath.substring(prevIndex);
+		}
+		
+		if(error == null){
+			if(found == 0){
+				error = "No template specified.";
+			}else if(!buildingStr.equals(realPath)){
+				error = "The real path doesn't match the template";
+			} 
+		}
+		
+		System.out.println("building: "+buildingStr);
+		System.out.println("real path: "+realPath);
+		return error;
+	}
+	
+	@Override
+	public void update(DFEInteraction interaction) throws RemoteException {
+		super.update(interaction);
+		String interId = interaction.getId();
+		logger.debug("interaction : " + interId);
+		if (interId.equals(inter_template)) {
+			updateTemplatePath();
+		}else if(interId.equals(inter_unit)){
+			updateUnit();
+		}
 	}
 
 	@Override
 	public String updateOut() throws RemoteException {
-		return null;
+		String error = super.updateOut();
+		if (error == null){
+
+			String templatePathStr = templatePath.getValue();
+			DFEOutput startInstance = output.get(out_name);
+
+
+			if (output.get(out_template) == null) {
+				output.put(out_template, DataOutput.getOutput(startInstance.getTypeName()));
+			}else if(!output.get(out_template).getTypeName().equals(startInstance.getTypeName())){
+				output.put(out_template, DataOutput.getOutput(startInstance.getTypeName()));
+			}
+			DFEOutput templateOut = output.get(out_template);
+			if(new HDFSInterface().getBrowserName().equals(startInstance.getBrowserName())){
+				templateOut.setPath(NameNodeVar.get()+templatePathStr);
+			}else{
+				templateOut.setPath(WorkflowPrefManager.getProperty(hcat_metastore_key).replaceAll("thrift", "hcat")+templatePathStr.replaceAll(",", ";"));
+			}
+			templateOut.setFields(startInstance.getFields());
+			templateOut.setPathType(PathType.TEMPLATE);
+			templateOut.setSavingState(SavingState.RECORDED);
+			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));
+			templateOut.getFrequency().setUnit(unit.getValue());
+		}
+		return error;
 	}
 	
 	/**
@@ -79,7 +329,7 @@ public class SyncSource extends AbstractSource {
 	 */
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous source";
+		return "synchronuous_source";
 	}
 
 	// Override default static methods

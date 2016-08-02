@@ -10,13 +10,16 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.enumeration.PathType;
+import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -84,7 +87,7 @@ public class SyncSourceFilter extends DataflowAction{
 
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous source filter";
+		return "synchronuous_source_filter";
 	}
 
 	@Override
@@ -99,17 +102,21 @@ public class SyncSourceFilter extends DataflowAction{
 	@Override
 	public String updateOut() throws RemoteException {
 		String error = null;
+		DFEOutput in = getDFEInput().get(key_input).get(0);
+		DFEOutput out = output.get(key_output);
 		FieldList new_field = getNewFields();
 		logger.info("Fields "+new_field.getFieldNames());
 
-		if(output.get(key_output) == null){
-			output.put(key_output, new HCatalogType());
-			output.get(key_output).setPathType(PathType.MATERIALIZED);
+		if( out == null || !out.getTypeName().equals(in.getTypeName())){
+			output.put(key_output, DataOutput.getOutput(in.getTypeName()));
+			out = output.get(key_output);
+			out.setPathType(PathType.MATERIALIZED);
+			out.setSavingState(SavingState.RECORDED);
 		}
 		
-
-		output.get(key_output).setFields(new_field);
-		output.get(key_output).setNumberMaterializedPath(getNbPath());		
+		out.setPath(in.getPath());
+		out.setFields(new_field);
+		out.setNumberMaterializedPath(getNbPath());		
 			
 		return error;
 	}
@@ -123,4 +130,65 @@ public class SyncSourceFilter extends DataflowAction{
 	public void update(DFEInteraction interaction) throws RemoteException {
 	}
 
+	/**
+	 * Get path to help
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String getHelp() throws RemoteException {
+		String absolutePath = "";
+		String helpFile = "/help/" + getName().toLowerCase() + ".html";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(helpFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source help absPath : " + absolutePath);
+			logger.debug("Source help Path : " + path);
+			logger.debug("Source help ans : " + ans);
+		}
+		// absolutePath
+		return absolutePath;
+	}
+
+	/**
+	 * Get the path to the Image
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String getImage() throws RemoteException {
+		String absolutePath = "";
+		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
+		String path = WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(imageFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source image abs Path : " + absolutePath);
+			logger.debug("Source image Path : " + path);
+			logger.debug("Source image ans : " + ans);
+		}
+		return absolutePath;
+	}
 }

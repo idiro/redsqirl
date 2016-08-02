@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -14,14 +16,17 @@ import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.PathType;
+import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
+import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.server.interfaces.OozieAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class SyncSink extends DataflowAction{
@@ -37,8 +42,8 @@ public class SyncSink extends DataflowAction{
 	
 	protected InputInteraction templatePath;
 	
-	public SyncSink(OozieAction oozieAction) throws RemoteException {
-		super(oozieAction);
+	public SyncSink() throws RemoteException {
+		super(null);
 		init();
 		
 		Page page1 = addPage(LanguageManagerWF.getText("sync_sink.page1.title"),
@@ -50,7 +55,59 @@ public class SyncSink extends DataflowAction{
 				LanguageManagerWF.getText("sync_sink.template_path.title"),
 				LanguageManagerWF.getText("sync_sink.template_path.legend")
 				, 0, 0);
+		templatePath.setChecker(new DFEInteractionChecker() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -7018145668059968489L;
+
+			@Override
+			public String check(DFEInteraction interaction) throws RemoteException {
+				return checkTemplatePathInt();
+			}
+		});
 		page1.addInteraction(templatePath);
+	}
+	
+	
+	protected static String checkTemplatePath(String templatePathStr){
+		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		Matcher m = p.matcher(templatePathStr);
+		String error = null; 
+		int found = 0;
+		while(m.find() && error == null){
+			++found;
+			boolean match = true;
+			try{
+				TimeTemplate cur = TimeTemplate.valueOf(m.group(1)); 
+				match = cur != null;
+			}catch(Exception e){
+				match = false;
+			}
+			if(!match){
+				error = m.group(1)+" is not a template variable accepted, it should be YEAR, MONTH, DAY, HOUR or MINUTE";
+			}
+		}
+		
+		if(error == null && found == 0){
+			error = "No template specified.";
+		}
+		
+		return error;
+	}
+	
+	public String checkTemplatePathInt() throws RemoteException{
+		String templatePathStr = templatePath.getValue();
+		String error = checkTemplatePath(templatePathStr);
+		if(error == null){
+			String templateParentStr = templatePathStr.substring(0,templatePathStr.lastIndexOf("/", templatePathStr.indexOf("$")));
+			DFEOutput in = getDFEInput().get(key_input).get(0);
+			if(!in.getBrowser().exists(templateParentStr)){
+				error = "The path "+templateParentStr+" doesn't exist";
+			}
+		}
+		return error;
 	}
 	
 	/**
@@ -72,7 +129,7 @@ public class SyncSink extends DataflowAction{
 
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous sink";
+		return "synchronuous_sink";
 	}
 
 	@Override
@@ -88,20 +145,20 @@ public class SyncSink extends DataflowAction{
 	public String updateOut() throws RemoteException {
 		String error = null;
 		FieldList new_field = getNewFields();
-		DFEOutput out = output.get(key_output);
+		
 		logger.info("Fields "+new_field.getFieldNames());
-
-		if(output.get(key_output) == null){
+		DFEOutput in = getDFEInput().get(key_input).get(0);
+		if(new HCatalogType().getTypeName().equals(in.getTypeName())){
 			output.put(key_output, new HCatalogType());
-		}
-
-		if(out == null){
+		}else{
 			output.put(key_output, new MapRedTextType());
-			out = output.get(key_output);
 		}
 
-		output.get(key_output).setFields(new_field);
-		output.get(key_output).setPathType(PathType.TEMPLATE);
+		DFEOutput out = output.get(key_output);
+		out.setFields(new_field);
+		out.setPath(templatePath.getValue());
+		out.setPathType(PathType.TEMPLATE);
+		out.setSavingState(SavingState.RECORDED);
 			
 		return error;
 	}
@@ -113,6 +170,68 @@ public class SyncSink extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+	}
+	
+	/**
+	 * Get path to help
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String getHelp() throws RemoteException {
+		String absolutePath = "";
+		String helpFile = "/help/" + getName().toLowerCase() + ".html";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(helpFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source help absPath : " + absolutePath);
+			logger.debug("Source help Path : " + path);
+			logger.debug("Source help ans : " + ans);
+		}
+		// absolutePath
+		return absolutePath;
+	}
+
+	/**
+	 * Get the path to the Image
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String getImage() throws RemoteException {
+		String absolutePath = "";
+		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
+		String path = WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(imageFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source image abs Path : " + absolutePath);
+			logger.debug("Source image Path : " + path);
+			logger.debug("Source image ans : " + ans);
+		}
+		return absolutePath;
 	}
 
 }

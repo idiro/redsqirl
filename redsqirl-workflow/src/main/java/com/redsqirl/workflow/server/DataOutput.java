@@ -131,6 +131,7 @@ DFEOutput {
 
 	public DataOutput() throws RemoteException {
 		super();
+		frequency = new WfCoordTimeConstraint();
 	}
 
 	/**
@@ -231,9 +232,31 @@ DFEOutput {
 		statLogger.debug("into write...");
 
 		statLogger.debug("state " + savingState.toString());
-		Element state = doc.createElement("state");
-		state.appendChild(doc.createTextNode(savingState.toString()));
-		parent.appendChild(state);
+		{
+			Element state = doc.createElement("state");
+			state.appendChild(doc.createTextNode(savingState.toString()));
+			parent.appendChild(state);
+		}
+		{
+			Element type = doc.createElement("type");
+			type.appendChild(doc.createTextNode(pathType.toString()));
+			parent.appendChild(type);
+		}
+		{
+			Element freq = doc.createElement("freq");
+			freq.appendChild(doc.createTextNode(Integer.toString(numberMaterializedPath)));
+			parent.appendChild(freq);
+		}
+		{
+			Element timeConstraint = doc.createElement("time-constraint");
+			frequency.write(doc, timeConstraint);
+			parent.appendChild(timeConstraint);
+		}
+		{
+			Element initInstEl = doc.createElement("initial-instance");
+			initInstEl.appendChild(doc.createTextNode(initialInstance));
+			parent.appendChild(initInstEl);
+		}
 
 		statLogger.debug("path: " + path);
 		Element pathE = doc.createElement("path");
@@ -297,11 +320,35 @@ DFEOutput {
 	 */
 	public void read(Element parent) throws RemoteException {
 
-		String savStateStr = parent.getElementsByTagName("state").item(0)
-				.getChildNodes().item(0).getNodeValue();
-		statLogger.debug("Saving state: " + savStateStr);
-		savingState = SavingState.valueOf(savStateStr);
+		{
+			String savStateStr = parent.getElementsByTagName("state").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Saving state: " + savStateStr);
+			savingState = SavingState.valueOf(savStateStr);
+		}
 
+		{
+			String typeStr = parent.getElementsByTagName("type").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Path type: " + typeStr);
+			pathType = PathType.valueOf(typeStr);
+		}
+		{
+			String materializedPathStr = parent.getElementsByTagName("freq").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("MaterializedPath: " + materializedPathStr);
+			numberMaterializedPath = Integer.getInteger(materializedPathStr);
+		}
+		{
+			Element timeConstraint = (Element) parent.getElementsByTagName("time-constraint").item(0);
+			frequency.read(timeConstraint);
+		}
+		try{
+			initialInstance = parent.getElementsByTagName("initial-instance").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Initial Instance: " + initialInstance);
+		}catch(Exception e){}
+		
 		path = parent.getElementsByTagName("path").item(0).getChildNodes()
 				.item(0).getNodeValue();
 		statLogger.debug("Path: " + path);

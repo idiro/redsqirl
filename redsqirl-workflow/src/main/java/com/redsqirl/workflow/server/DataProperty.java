@@ -175,6 +175,13 @@ DFELinkProperty {
 		if(typeAccepted == null || typeAccepted.isEmpty()){
 			return true;
 		}
+		
+		if(!pathTypeAccepted.equals(out.getPathType()) && 
+				!(PathType.MATERIALIZED.equals(pathTypeAccepted) && PathType.REAL.equals(out.getPathType()))
+				){
+			return false;
+		}
+		
 		Iterator<Class<? extends DFEOutput>> it = typeAccepted.iterator();
 		while (it.hasNext() && !ok) {
 			Class<?> cur = it.next();
@@ -200,14 +207,19 @@ DFELinkProperty {
 	public String checkStr(DFEOutput out, String componentId, String componentName, String outName)throws RemoteException{
 		String ans = null;
 		if(!check(out)){
-			if(getFieldListAccepted() != null){
+			if(!pathTypeAccepted.equals(out.getPathType()) && 
+					!(PathType.TEMPLATE.equals(pathTypeAccepted) && PathType.REAL.equals(out.getPathType()))
+					){
+				ans = LanguageManagerWF.getText(
+						"dataflowaction.checkIn_wrong_path_type");
+			}else if(getFieldListAccepted() != null){
 				
 				logger.debug("componentId " + componentId);
 				
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible_with_features",
 						new Object[] { componentId, componentName,
-								outName,fieldListAccepted.toString() });
+								outName,fieldListAccepted.getMap().toString() });
 			}else if(getFieldTypeAccepted() != null){
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible_with_types",
