@@ -250,22 +250,27 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	
 	public String readInXml(Document doc, Element parent, DataFlow df) throws Exception{
 		String error = null;
-		{
+		try{
 			name = parent.getElementsByTagName("name").item(0)
 					.getChildNodes().item(0).getNodeValue();
+		}catch(Exception e){
+			name = RandomString.getRandomName(8);
 		}
-		{
+		try{
 			timeCondition.read((Element) parent.getElementsByTagName("time-condition").item(0));
+		}catch(Exception e){
 		}
-		
-		NodeList props = ((Element) parent.getElementsByTagName("configuration").item(0)).getElementsByTagName("property");
-		for (int temp = 0; temp < props.getLength() && error == null; ++temp) {
-			Node compCur = props.item(temp);
-			String key = ((Element) compCur).getElementsByTagName("name").item(0)
-					.getChildNodes().item(0).getNodeValue();
-			String value = ((Element) compCur).getElementsByTagName("value").item(0)
-					.getChildNodes().item(0).getNodeValue();
-			addVariable(key, value, true);
+		try{
+			NodeList props = ((Element) parent.getElementsByTagName("configuration").item(0)).getElementsByTagName("property");
+			for (int temp = 0; temp < props.getLength() && error == null; ++temp) {
+				Node compCur = props.item(temp);
+				String key = ((Element) compCur).getElementsByTagName("name").item(0)
+						.getChildNodes().item(0).getNodeValue();
+				String value = ((Element) compCur).getElementsByTagName("value").item(0)
+						.getChildNodes().item(0).getNodeValue();
+				addVariable(key, value, true);
+			}
+		}catch(Exception e){
 		}
 		
 		if(error == null){
@@ -309,7 +314,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 					.getNodeValue());
 			logger.debug("create new Action: " + name + " " + id + ": (" + x
 					+ "," + y + ")");
-			wf.addElement(name, id);
+			wf.addElement(name, id,this);
 
 			getElement(id).setPosition(x, y);
 			getElement(id).setComment(compComment);
@@ -338,8 +343,15 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 
 		}
 
+		return error;
+	}
+	
+	public String readInXmlLinks(Document doc, Element parent, DataFlow df) throws Exception{
+
 		// Link and data
+		String error = null;
 		String warn = null;
+		NodeList compList = parent.getElementsByTagName("component");
 		logger.debug("loads links...");
 		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
@@ -450,7 +462,6 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		}
 		return error;
 	}
-	
 	
 
 	@Override

@@ -37,4 +37,6 @@ public interface DataFlowCoordinator extends Remote{
 	String readInXml(Document doc, Element parent, DataFlow wf) throws RemoteException, Exception;
 	
 	String saveInXml(Document doc, Element rootElement) throws RemoteException;
+	
+	String readInXmlLinks(Document doc, Element parent, DataFlow df) throws Exception;
 }

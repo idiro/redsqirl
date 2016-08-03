@@ -84,7 +84,7 @@ DFEOutput {
 	protected PathType pathType = PathType.REAL;
 	protected int numberMaterializedPath = 0;
 	protected CoordinatorTimeConstraint frequency;
-	protected String initialInstance;
+	protected String initialInstance = "";
 
 	/**
 	 * The path
@@ -327,21 +327,26 @@ DFEOutput {
 			savingState = SavingState.valueOf(savStateStr);
 		}
 
-		{
+		try{
 			String typeStr = parent.getElementsByTagName("type").item(0)
 					.getChildNodes().item(0).getNodeValue();
 			statLogger.debug("Path type: " + typeStr);
 			pathType = PathType.valueOf(typeStr);
+		}catch(Exception e){
+			pathType = PathType.REAL;
 		}
-		{
+		try{
 			String materializedPathStr = parent.getElementsByTagName("freq").item(0)
 					.getChildNodes().item(0).getNodeValue();
 			statLogger.debug("MaterializedPath: " + materializedPathStr);
-			numberMaterializedPath = Integer.getInteger(materializedPathStr);
+			numberMaterializedPath = Integer.valueOf(materializedPathStr);
+		}catch(Exception e){
+			numberMaterializedPath = 0;
 		}
-		{
+		try{
 			Element timeConstraint = (Element) parent.getElementsByTagName("time-constraint").item(0);
 			frequency.read(timeConstraint);
+		}catch(Exception e){
 		}
 		try{
 			initialInstance = parent.getElementsByTagName("initial-instance").item(0)

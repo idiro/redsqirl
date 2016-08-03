@@ -1166,14 +1166,32 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// for link all the element
 		logger.debug("loads elements...");
 		NodeList compList = doc.getElementsByTagName("coordinator");
-		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
-
-			Node coordCur = compList.item(temp);
+		if(compList == null || compList.getLength() == 0){
+			Element wf = (Element) doc.getElementsByTagName("workflow").item(0);
 			WorkflowCoordinator coord = new WorkflowCoordinator();
-			coord.readInXml(doc, (Element) coordCur, this);
-			coordinators.add(coord);
-			
+			coord.readInXml(doc, wf, this);
+			coord.readInXmlLinks(doc, (Element) wf, this);
+			logger.debug("loads links...");
+		}else{
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
+
+				Node coordCur = compList.item(temp);
+				WorkflowCoordinator coord = new WorkflowCoordinator();
+				coord.readInXml(doc, (Element) coordCur, this);
+				coordinators.add(coord);
+			}
+			logger.debug("loads coordinator links...");
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
+
+				Node coordCur = compList.item(temp);
+				String nameCoord = ((Element) coordCur).getElementsByTagName("name").item(0)
+						.getChildNodes().item(0).getNodeValue();
+				
+				getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this);
+			}
 		}
+		
+		
 		
 		
 		return error;
@@ -2002,6 +2020,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	protected String addElement(String waName, String componentId)
 			throws Exception {
+		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+		String error = addElement(waName, componentId, dfC);
+		coordinators.add(dfC);
+		
+		return error;
+	}
+	
+	protected String addElement(String waName, String componentId, DataFlowCoordinator dfC)
+			throws Exception {
 		String error = null;
 		Map<String, String> namesWithClassName = null;
 		try {
@@ -2045,7 +2072,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 			
 			if(new_wa != null){
-				DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
 				dfC.addElement(new_wa);
 			}
 		}

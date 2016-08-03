@@ -16,8 +16,8 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	private static final long serialVersionUID = -9222678978810373856L;
 	
 	int frequency;
-	String frequencyStr;
-	String unit;
+	String frequencyStr = "";
+	String unit ="";
 
 	protected WfCoordTimeConstraint() throws RemoteException {
 		super();
@@ -69,7 +69,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	@Override
 	public void read(Element parent) throws RemoteException {
 		try{
-			frequency = Integer.getInteger(parent.getElementsByTagName("frequency").item(0)
+			frequency = Integer.valueOf(parent.getElementsByTagName("frequency").item(0)
 					.getChildNodes().item(0).getNodeValue());
 		}catch(Exception e){}
 		try{

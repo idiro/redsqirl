@@ -573,7 +573,6 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 			throws RemoteException {
 		Map<String, String> prop = new LinkedHashMap<String, String>();
 		try{
-			logger.debug(1.5);
 			if (stat == null) {
 				logger.debug("File status not available for " + path);
 				return null;
