@@ -76,6 +76,8 @@ import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.action.SyncSink;
+import com.redsqirl.workflow.server.action.SyncSourceFilter;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
@@ -84,6 +86,7 @@ import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.server.interfaces.RunnableElement;
@@ -120,9 +123,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected static String userName = System.getProperty("user.name");
 	
 	/**
-	 * The current Action in the workflow
+	 * The current Action in the workflow.
 	 */
-	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
+	private LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
+	
+	/**
+	 * The coordinators
+	 */
+	protected LinkedList<DataFlowCoordinator> coordinators = new LinkedList<DataFlowCoordinator>();
 
 	protected String
 	/** Name of the workflow */
@@ -874,159 +882,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Element wfComment = doc.createElement("wfcomment");
 		wfComment.appendChild(doc.createTextNode(comment));
 		rootElement.appendChild(wfComment);
-
-		Iterator<DataFlowElement> it = element.iterator();
-		while (it.hasNext() && error == null) {
-			DataflowAction cur = (DataflowAction) it.next();
-			logger.debug("write: " + cur.getComponentId());
-
-			Element component = doc.createElement("component");
-
-			// attribute
-			logger.debug("add attributes...");
-			Attr attrId = doc.createAttribute("id");
-			attrId.setValue(cur.componentId);
-			component.setAttributeNode(attrId);
-
-			logger.debug("name: " + cur.getName());
-			Attr attrName = doc.createAttribute("name");
-			attrName.setValue(cur.getName());
-			component.setAttributeNode(attrName);
-
-			// Comment
-			logger.debug("add positions...");
-			Element commentEl = doc.createElement("comment");
-			commentEl.appendChild(doc.createTextNode(cur.getComment()));
-			component.appendChild(commentEl);
-
-			//Oozie Action Id
-			Element oozieActionNamesEl = doc.createElement("oozeactionnames");
-			Iterator<String> itOozieElements = cur.getLastRunOozieElementNames().iterator();
-			while(itOozieElements.hasNext()){
-				String curOozieElement = itOozieElements.next();
-				Element oozieActionNameEl = doc.createElement("oozeactionname");
-				oozieActionNameEl.appendChild(doc.createTextNode(curOozieElement));
-				oozieActionNamesEl.appendChild(oozieActionNameEl);
-			}
-			component.appendChild(oozieActionNamesEl);
-			
-			// Position
-			logger.debug("add positions...");
-			Element position = doc.createElement("position");
-			Element x = doc.createElement("x");
-			x.appendChild(doc.createTextNode(String.valueOf(cur.getPosition().x)));
-			position.appendChild(x);
-			Element y = doc.createElement("y");
-			y.appendChild(doc.createTextNode(String.valueOf(cur.getPosition().y)));
-			position.appendChild(y);
-			component.appendChild(position);
-
-			// Saving data
-			Map<String, DFEOutput> saveMap = cur.getDFEOutput();
-			if (saveMap != null) {
-				logger.debug("find state of the outputs...");
-				Iterator<String> itStr = saveMap.keySet().iterator();
-				while (itStr.hasNext()) {
-					String outName = itStr.next();
-					if (saveMap.get(outName) != null) {
-						logger.debug("save data named " + outName);
-						Element data = doc.createElement("data");
-
-						Attr attrDataName = doc.createAttribute("name");
-						attrDataName.setValue(outName);
-						data.setAttributeNode(attrDataName);
-
-						Attr attrTypeName = doc.createAttribute("typename");
-						attrTypeName.setValue(saveMap.get(outName)
-								.getTypeName());
-						data.setAttributeNode(attrTypeName);
-
-						logger.debug("Enter in write...");
-						saveMap.get(outName).write(doc, data);
-
-						component.appendChild(data);
-					}
-				}
-			}
-
-			// Input
-			logger.debug("add inputs...");
-			Element inputs = doc.createElement("inputs");
-			Map<String, List<DataFlowElement>> inComp = cur.getInputComponent();
-			if (inComp != null) {
-				logger.debug("inputs not null");
-				Iterator<String> itS = inComp.keySet().iterator();
-				logger.debug("inputs size " + inComp.size());
-				while (itS.hasNext()) {
-					String inputName = itS.next();
-					logger.debug("save " + inputName + "...");
-					if (inComp.get(inputName) != null) {
-						Iterator<DataFlowElement> wa = inComp.get(inputName)
-								.iterator();
-						while (wa.hasNext()) {
-							Element input = doc.createElement("input");
-							String inId = wa.next().getComponentId();
-							logger.debug("add " + inputName + " " + inId);
-
-							Attr attrNameEl = doc.createAttribute("name");
-							attrNameEl.setValue(inputName);
-							input.setAttributeNode(attrNameEl);
-
-							Element id = doc.createElement("id");
-							id.appendChild(doc.createTextNode(inId));
-							input.appendChild(id);
-
-							inputs.appendChild(input);
-						}
-					}
-				}
-			}
-			component.appendChild(inputs);
-
-			// Output
-			logger.debug("add outputs...");
-			Element outputs = doc.createElement("outputs");
-			Map<String, List<DataFlowElement>> outComp = cur
-					.getOutputComponent();
-			if (outComp != null) {
-				logger.debug("outputs not null");
-				Iterator<String> itS = outComp.keySet().iterator();
-				logger.debug("outputs size " + outComp.size());
-				while (itS.hasNext()) {
-					String outputName = itS.next();
-					logger.debug("save " + outputName + "...");
-					Iterator<DataFlowElement> wa = outComp.get(outputName)
-							.iterator();
-					logger.debug(2);
-					while (wa.hasNext()) {
-						logger.debug(3);
-						Element output = doc.createElement("output");
-						logger.debug(31);
-						String outId = wa.next().getComponentId();
-						logger.debug("add " + outputName + " " + outId);
-
-						Attr attrNameEl = doc.createAttribute("name");
-						attrNameEl.setValue(outputName);
-						output.setAttributeNode(attrNameEl);
-
-						Element id = doc.createElement("id");
-						id.appendChild(doc.createTextNode(outId));
-						output.appendChild(id);
-
-						outputs.appendChild(output);
-					}
-					logger.debug(4);
-
-				}
-			}
-			component.appendChild(outputs);
-
-			// Element
-			Element interactions = doc.createElement("interactions");
-			error = cur.writeValuesXml(doc, interactions);
-			component.appendChild(interactions);
-
-			rootElement.appendChild(component);
+		
+		Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
+		while(itCoord.hasNext() && error == null){
+			DataFlowCoordinator coordCur = itCoord.next();
+			Element coordinatorEl = doc.createElement("coordinator");
+			error = coordCur.saveInXml(doc, coordinatorEl);
+			rootElement.appendChild(coordinatorEl);
 		}
 
 		if (error != null) {
@@ -1303,176 +1165,35 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// for the element and there id
 		// for link all the element
 		logger.debug("loads elements...");
-		NodeList compList = doc.getElementsByTagName("component");
-		// Init element
-		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
+		NodeList compList = doc.getElementsByTagName("coordinator");
+		if(compList == null || compList.getLength() == 0){
+			Element wf = (Element) doc.getElementsByTagName("workflow").item(0);
+			WorkflowCoordinator coord = new WorkflowCoordinator();
+			coord.readInXml(doc, wf, this);
+			coord.readInXmlLinks(doc, (Element) wf, this);
+			logger.debug("loads links...");
+		}else{
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
-			Node compCur = compList.item(temp);
+				Node coordCur = compList.item(temp);
+				WorkflowCoordinator coord = new WorkflowCoordinator();
+				coord.readInXml(doc, (Element) coordCur, this);
+				coordinators.add(coord);
+			}
+			logger.debug("loads coordinator links...");
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
-			String name = compCur.getAttributes().getNamedItem("name")
-					.getNodeValue();
-
-			String id = compCur.getAttributes().getNamedItem("id")
-					.getNodeValue();
-
-			String compComment = "";
-			try {
-				compComment = ((Element) compCur)
-						.getElementsByTagName("comment").item(0)
+				Node coordCur = compList.item(temp);
+				String nameCoord = ((Element) coordCur).getElementsByTagName("name").item(0)
 						.getChildNodes().item(0).getNodeValue();
-			} catch (Exception e) {
+				
+				getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this);
 			}
-			
-
-			int x = Integer.valueOf(((Element) (((Element) compCur)
-					.getElementsByTagName("position").item(0)))
-					.getElementsByTagName("x").item(0).getChildNodes().item(0)
-					.getNodeValue());
-			int y = Integer.valueOf(((Element) (((Element) compCur)
-					.getElementsByTagName("position").item(0)))
-					.getElementsByTagName("y").item(0).getChildNodes().item(0)
-					.getNodeValue());
-			logger.debug("create new Action: " + name + " " + id + ": (" + x
-					+ "," + y + ")");
-			addElement(name, id);
-
-			getElement(id).setPosition(x, y);
-			getElement(id).setComment(compComment);
-			
-			Set<String> lastRunOozieElements = new LinkedHashSet<String>();
-			try{
-				NodeList compOozieElements= ((Element) ((Element) compCur).getElementsByTagName("oozeactionnames").item(0))
-						.getElementsByTagName("oozeactionname");
-				for (int oozieElIdx = 0; oozieElIdx < compOozieElements.getLength() && error == null; ++oozieElIdx) {
-					Node compOozieCur = compOozieElements.item(oozieElIdx);
-					lastRunOozieElements.add(compOozieCur.getChildNodes().item(0).getNodeValue());
-				}
-			}catch(Exception e){
-				try {
-					lastRunOozieElements.add(((Element) compCur)
-							.getElementsByTagName("oozeactionid").item(0)
-							.getChildNodes().item(0).getNodeValue());
-				} catch (Exception e2) {
-				}
-			}
-			getElement(id).setLastRunOozieElementNames(lastRunOozieElements);
-			
-			error = getElement(id).readValuesXml(
-					((Element) compCur).getElementsByTagName("interactions")
-							.item(0));
-
 		}
-
-		// Link and data
-		String warn = null;
-		logger.debug("loads links...");
-		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
-
-			Node compCur = compList.item(temp);
-			String compId = compCur.getAttributes().getNamedItem("id")
-					.getNodeValue();
-			DataFlowElement el = getElement(compId);
-			Map<String, List<DataFlowElement>> elInputComponent = el
-					.getInputComponent();
-			Map<String, List<DataFlowElement>> elOutputComponent = el
-					.getOutputComponent();
-
-			logger.debug(compId + ": input...");
-			NodeList inList = ((Element) ((Element) compCur)
-					.getElementsByTagName("inputs").item(0)).getElementsByTagName("input");
-			if (inList != null) {
-				for (int index = 0; index < inList.getLength() && error == null; index++) {
-					logger.debug(compId + ": input index " + index);
-					Node inCur = inList.item(index);
-					String nameIn = inCur.getAttributes().getNamedItem("name")
-							.getNodeValue();
-					String id = ((Element) inCur).getElementsByTagName("id")
-							.item(0).getChildNodes().item(0).getNodeValue();
-
-					warn = el.addInputComponent(nameIn, getElement(id));
-					if (warn != null) {
-						logger.warn(warn);
-						warn = null;
-						List<DataFlowElement> lwa = elInputComponent
-								.get(nameIn);
-						if (lwa == null) {
-							lwa = new LinkedList<DataFlowElement>();
-							elInputComponent.put(name, lwa);
-						}
-						lwa.add(getElement(id));
-					}
-				}
-			}
-
-			// Save element
-			logger.debug("loads dataset: " + compId);
-			Map<String, DFEOutput> mapOutput = el.getDFEOutput();
-			NodeList dataList = ((Element) compCur)
-					.getElementsByTagName("data");
-			for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
-				Node dataCur = dataList.item(ind);
-
-				String dataName = dataCur.getAttributes().getNamedItem("name")
-						.getNodeValue();
-				String typeName = dataCur.getAttributes()
-						.getNamedItem("typename").getNodeValue();
-				DFEOutput cur = DataOutput.getOutput(typeName);
-				if (cur != null) {
-					mapOutput.put(dataName, cur);
-					logger.debug("loads state dataset: " + dataName);
-					mapOutput.get(dataName).read((Element) dataCur);
-					if (!SavingState.RECORDED.equals(mapOutput.get(dataName).getSavingState()) 
-							&& (mapOutput.get(dataName).getPath() == null || !mapOutput
-									.get(dataName).isPathAutoGeneratedForUser(compId, dataName))) {
-						mapOutput.get(dataName).generatePath(compId,
-								dataName);
-					}
-				} else {
-					error = LanguageManagerWF.getText(
-							"workflow.read_unknownType",
-							new Object[] { typeName });
-					error = "Unknown typename " + typeName;
-				}
-
-			}
-
-			logger.debug(compId + ": output...");
-			NodeList outList = ((Element) ((Element) compCur)
-					.getElementsByTagName("outputs").item(0)).getElementsByTagName("output");
-			if (outList != null) {
-				for (int index = 0; index < outList.getLength()
-						&& error == null; index++) {
-					try {
-						logger.debug(compId + ": output index " + index);
-						Node outCur = outList.item(index);
-
-						String nameOut = outCur.getAttributes()
-								.getNamedItem("name").getNodeValue();
-						String id = ((Element) outCur)
-								.getElementsByTagName("id").item(0)
-								.getChildNodes().item(0).getNodeValue();
-
-						warn = el.addOutputComponent(nameOut, getElement(id));
-						if (warn != null) {
-							logger.warn(warn);
-							warn = null;
-							List<DataFlowElement> lwa = elOutputComponent
-									.get(nameOut);
-							if (lwa == null) {
-								lwa = new LinkedList<DataFlowElement>();
-								elOutputComponent.put(name, lwa);
-							}
-							lwa.add(getElement(id));
-						}
-					} catch (Exception e) {
-						error = LanguageManagerWF
-								.getText("workflow.read_failLoadOut");
-						logger.error(error,e);
-					}
-				}
-			}
-
-		}
+		
+		
+		
+		
 		return error;
 	}
 
@@ -2299,6 +2020,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	protected String addElement(String waName, String componentId)
 			throws Exception {
+		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+		String error = addElement(waName, componentId, dfC);
+		coordinators.add(dfC);
+		
+		return error;
+	}
+	
+	protected String addElement(String waName, String componentId, DataFlowCoordinator dfC)
+			throws Exception {
 		String error = null;
 		Map<String, String> namesWithClassName = null;
 		try {
@@ -2312,9 +2042,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { e.getMessage() });
 		}
 		if (error == null) {
+			DataFlowElement new_wa = null;
 			if (namesWithClassName.get(waName) == null
 					&& !actionManager.getSuperActions(name).contains(waName)) {
-				DataFlowElement new_wa = new SuperAction();
+				new_wa = new SuperAction();
 				new_wa.setComponentId(componentId);
 				element.add(new_wa);
 				/*
@@ -2327,7 +2058,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				try {
 					logger.debug("initiate the action " + waName + " "
 							+ namesWithClassName.get(waName));
-					DataFlowElement new_wa = null;
+					new_wa = null;
 					new_wa = actionManager.createElementFromClassName(namesWithClassName,
 							waName);
 					logger.debug("set the componentId...");
@@ -2338,6 +2069,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					error = e.getMessage();
 					logger.debug(error, e);
 				}
+			}
+			
+			if(new_wa != null){
+				dfC.addElement(new_wa);
 			}
 		}
 		if (error != null) {
@@ -2372,6 +2107,121 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.debug("Component " + componentId + " not found");
 		}
 		return ans;
+	}
+	
+	/**
+	 * Get the Coordinator corresponding to the name.
+	 * 
+	 * @param coordinatorName
+	 *            the componentId @see {@link DataflowAction#componentId}
+	 * @return a DataFlowCoordinator object or null
+	 * @throws RemoteException
+	 */
+	public DataFlowCoordinator getCoordinator(String coordinatorName)
+			throws RemoteException {
+		Iterator<DataFlowCoordinator> it = coordinators.iterator();
+		DataFlowCoordinator ans = null;
+		while (it.hasNext() && ans == null) {
+			ans = it.next();
+			if (!ans.getName().equals(coordinatorName)) {
+				ans = null;
+			}
+		}
+		if (ans == null) {
+			logger.debug("Component " + coordinatorName + " not found");
+		}
+		return ans;
+	}
+	
+	public DataFlowCoordinator getFirstCoordinator(){
+		return coordinators.getFirst();
+	}
+	
+	public List<DataFlowCoordinator> getCoordinators(){
+		return coordinators;
+	}
+	
+	public String checkCoodinatorMergeConflict(DataFlowCoordinator coord1, DataFlowCoordinator coord2) throws RemoteException{
+		DataFlowCoordinator coordCheck = null;
+		DataFlowCoordinator coordOther = null;
+		if(coord1.getElements().size()< coord2.getElements().size()){
+			coordCheck = coord1;
+			coordOther = coord2;
+		}else{
+			coordCheck = coord2;
+			coordOther = coord1;
+		}
+		List<DataFlowElement> dfe = new LinkedList<DataFlowElement>();
+		Iterator<DataFlowElement> it = coordCheck.getElements().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			dfe.addAll(cur.getAllInputComponent());
+			dfe.addAll(cur.getAllOutputComponent());
+		}
+		it = dfe.iterator();
+		String coordErr = null;
+		while(it.hasNext() && coordErr == null ){
+			if(coordOther.getElement(it.next().getComponentId()) != null){
+				coordErr = "Coordinator conflict";
+			}
+		}
+		return coordErr;
+	}
+	
+	public String mergeCoordinator(String coordinatorName1, String coordinatorName2) throws RemoteException{
+		//Check if the two coordinators are already linked
+		DataFlowCoordinator coordinator1 = getCoordinator(coordinatorName1);
+		DataFlowCoordinator coordinator2 = getCoordinator(coordinatorName2);
+		String error = checkCoodinatorMergeConflict(coordinator1,coordinator2);
+		
+		if(error == null){
+			//Merge Coordinator
+			coordinator1.merge(coordinator2);
+			coordinators.remove(coordinator2);
+		}
+		
+		return error;
+	}
+	
+	public String splitCoordinator(String coordinatorName, List<String> elements) throws RemoteException{
+		String coordErr = null;
+		if(elements.isEmpty()){
+			return "No elements selected";
+		}else{
+			DataFlowCoordinator coordCheck = getCoordinator(coordinatorName);
+			int sizeRemainCoord= 0;
+			List<DataFlowElement> dfeToMove = new LinkedList<DataFlowElement>();
+			List<DataFlowElement> dfeList2 = new LinkedList<DataFlowElement>();
+			Iterator<DataFlowElement> it = coordCheck.getElements().iterator();
+			while(it.hasNext()){
+				DataFlowElement cur = it.next();
+				if(elements.contains(cur.getComponentId())){
+					dfeToMove.add(cur);
+				}else{
+					++sizeRemainCoord;
+					dfeList2.addAll(cur.getAllInputComponent());
+					dfeList2.addAll(cur.getAllOutputComponent());
+				}
+			}
+			if(dfeToMove.size() != elements.size()){
+				coordErr = "Not all the elements selected are in the same coordinator";
+			}else if(sizeRemainCoord == 0){
+				coordErr = "No element to split";
+			}else{
+				it = dfeList2.iterator();
+				while(it.hasNext() && coordErr == null ){
+					if(dfeToMove.contains(it.next())){
+						coordErr = "Coordinator conflict: cannot split the coordinator due to the links between them";
+					}
+				}
+				
+				if(coordErr == null){
+					coordCheck.split(dfeToMove);
+				}
+			}
+				
+		}
+		return coordErr;
 	}
 
 	/**
@@ -2516,6 +2366,45 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					if (error != null) {
 						removeLink(outName, componentIdOut, inName,
 								componentIdIn, true);
+					}
+				}
+			}
+			//Handle the coordinators
+			if(force || error == null){
+				//Check if they are in the same coordinator
+				DataFlowCoordinator coordIn = null;
+				boolean coordInFirst = false;
+				DataFlowCoordinator coordOut = null;
+				Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
+				while(itCoord.hasNext() && coordIn == null && coordOut == null){
+					DataFlowCoordinator cur = itCoord.next();
+					if(coordIn == null && cur.getElement(componentIdIn) != null){
+						coordIn = cur;
+						coordInFirst = coordOut == null;
+					}
+					if(coordOut == null && cur.getElement(componentIdOut) != null){
+						coordOut = cur;
+					}
+				}
+				if(coordIn != coordOut){
+					//Check if it is a Sync-Sink - Sync-Source-Filter link
+					if(!in.getClass().equals(SyncSink.class) || !out.getClass().equals(SyncSourceFilter.class)){
+						String coordErr = checkCoodinatorMergeConflict(coordIn,coordOut);
+						
+						if(coordErr == null){
+							//Merge Coordinator
+							if(coordInFirst){
+								coordIn.merge(coordOut);
+								coordinators.remove(coordOut);
+							}else{
+								coordOut.merge(coordIn);
+								coordinators.remove(coordIn);
+							}
+						}else if(!force){
+							error = coordErr;
+							removeLink(outName, componentIdOut, inName,
+									componentIdIn, true);
+						}
 					}
 				}
 			}

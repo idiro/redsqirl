@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -361,7 +360,6 @@ public class TableInteraction extends UserInteraction {
 	 */
 	protected Map<String,Set<String>> getColumnsPosValue() throws RemoteException{
 		Map<String,Set<String>> ans = new LinkedHashMap<String,Set<String>>();
-		String error = null;
 		List<Tree<String>> values = null;
 		Tree<String> constraint = null;
 

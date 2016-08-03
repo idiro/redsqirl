@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -46,10 +47,12 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
 import com.redsqirl.workflow.server.interfaces.RunnableElement;
@@ -137,15 +140,240 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	public String createSubXml(String dfId, DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		df.cleanProject();
-		return createXml(dfId,df, list,new File(directory,dfId),true);
+		return createWorkflowXml(dfId,df, list,new File(directory,dfId),true);
 	}
 	
 	public String createMainXml(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
-		return createXml(df.getName(),df, list,directory,false);
+		return createWorkflowXml(df.getName(),df, list,directory,false);
 	}
 	
-	public String createXml(String wfId,DataFlow df, List<RunnableElement> list,
+	public String createMainCoordinatorXml(DataFlow df, File directory, String startDate, String endDate) throws RemoteException {
+		Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
+		String error = null;
+		while(it.hasNext() && error == null){
+			DataFlowCoordinator cur = it.next();
+			error = createCoordinatorXml(df.getName(),df, cur,
+					new File(directory, cur.getName()),
+					startDate,
+					endDate);
+			if(error == null){
+				try {
+					error = createMainXml(df,df.subsetToRun(cur.getComponentIds()), directory);
+				} catch (Exception e) {
+					error =" "+ LanguageManagerWF.getText(
+							"ooziexmlforkjoinpaired.createxml.fail",
+							new Object[] { cur.getName(), df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
+					logger.error(error,e);
+				}
+			}
+		}
+		return error;
+	}
+	
+	public String createCoordinatorXml(String wfId,DataFlow df, DataFlowCoordinator coordinator,
+			File directory,
+			String startDate,
+			String endDate) throws RemoteException {
+		
+
+		logger.debug("create coordinator Xml");
+		String filename = "coordinator.xml";
+		String error = null;
+
+		File scripts = new File(directory, "scripts");
+		scripts.mkdirs();
+
+		try {
+			
+			// Creating xml
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			// root elements
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("coordinator-app");
+			doc.appendChild(rootElement);
+
+			{
+				Attr attrName = doc.createAttribute("name");
+				attrName.setValue(wfId);
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			{
+				//Frequency
+				Attr attrName = doc.createAttribute("frequency");
+				attrName.setValue(coordinator.getTimeCondition().getFrequencyStr());
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			{
+				Attr attrName = doc.createAttribute("start");
+				attrName.setValue(startDate);
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			{
+				Attr attrName = doc.createAttribute("end");
+				attrName.setValue(endDate);
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			{
+				Attr attrName = doc.createAttribute("timezone");
+				attrName.setValue("${timezone}");
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			Attr attrXmlns = doc.createAttribute("xmlns");
+			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_coord_xmlns));
+			rootElement.setAttributeNode(attrXmlns);
+			
+			//Define the datasets
+			
+			Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
+			Set<String> inputsDone = new LinkedHashSet<String>();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				if(cur.getAllInputComponent().isEmpty()){
+					Iterator<DFEOutput> itOutputs = cur.getDFEOutput().values().iterator();
+					while(itOutputs.hasNext()){
+						DFEOutput datasetCur = itOutputs.next();
+						if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
+							if(inputsDone.add(datasetCur.getPath())){
+								Element dataset = doc.createElement("dataset");
+								dataset.setAttribute("name", cur.getComponentId());
+								dataset.setAttribute("timezone", "${timezone}");
+								dataset.setAttribute("frequency", datasetCur.getFrequency().getFrequencyStr());
+								dataset.setAttribute("initial-instance", datasetCur.getInitialInstance());
+
+								Element uriTemplate= doc.createElement("uri-template");
+								uriTemplate.appendChild(doc
+										.createTextNode(datasetCur.getPath()));
+
+								rootElement.appendChild(dataset);
+							}
+						}
+					}
+				}
+			}
+			
+			//Define the input events
+			Element inputEvent = doc.createElement("input-events");
+			itDfe = coordinator.getElements().iterator();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
+				while(it.hasNext()){
+					DFEOutput out = it.next();
+					
+					if(PathType.MATERIALIZED.equals(out.getPathType())){
+
+						Element dataIn = doc.createElement("data-in");
+						dataIn.setAttribute("name", cur.getComponentId());
+						dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());	
+						if(out.getNumberMaterializedPath() == 1){
+							Element instance= doc.createElement("instance");
+							instance.appendChild(doc
+									.createTextNode("${coord:current(0)}"));
+							
+							dataIn.appendChild(instance);
+						}else{
+
+							Element startInstance= doc.createElement("start-instance");
+							startInstance.appendChild(doc
+									.createTextNode("${coord:current(-"+(out.getNumberMaterializedPath()-1)+")}"));
+
+							Element endInstance= doc.createElement("end-instance");
+							endInstance.appendChild(doc
+									.createTextNode("${coord:current(0)}"));
+							
+							dataIn.appendChild(startInstance);
+							dataIn.appendChild(endInstance);
+						}
+						inputEvent.appendChild(dataIn);
+					}
+				}
+				
+			}
+			rootElement.appendChild(inputEvent);
+			
+			//Define the output events
+			Element outputEvent = doc.createElement("output-events");
+			itDfe = coordinator.getElements().iterator();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				if(!cur.getAllInputComponent().isEmpty()){
+					Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
+					while(it.hasNext()){
+						DFEOutput out = it.next();
+
+						if(PathType.TEMPLATE.equals(out.getPathType())){
+							Element dataIn = doc.createElement("data-in");
+							dataIn.setAttribute("name", cur.getComponentId());
+							dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());
+							
+							Element instance= doc.createElement("instance");
+							instance.appendChild(doc
+									.createTextNode("${coord:current(0)}"));
+							dataIn.appendChild(instance);
+							outputEvent.appendChild(dataIn);
+						}
+					}
+				}
+			}
+			rootElement.appendChild(outputEvent);
+			
+			Element action = doc.createElement("action");
+			Element workflow = doc.createElement("workflow");
+			
+			Element appPath = doc.createElement("app-path");
+			appPath.appendChild(doc.createTextNode("/user/${userName}/.redsqirl/jobs/"+df.getName()+"/"+coordinator.getName()));
+			Element configuration = doc.createElement("configuration");
+			Iterator<Entry<String,String>> it = coordinator.getVariables().entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> cur = it.next();
+				Element prop = doc.createElement("property");
+				Element propName = doc.createElement("name");
+				propName.appendChild(doc.createTextNode(cur.getKey()));
+				prop.appendChild(propName);
+				Element propValue = doc.createElement("value");
+				propValue.appendChild(doc.createTextNode(cur.getValue()));
+				prop.appendChild(propValue);
+				
+				configuration.appendChild(prop);
+			}
+			workflow.appendChild(configuration);
+			action.appendChild(workflow);
+			rootElement.appendChild(action);
+			
+			
+
+
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(
+					"{http://xml.apache.org/xslt}indent-amount", "4");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(directory,
+					filename));
+			transformer.transform(source, result);
+		} catch (Exception e) {
+			error =" "+ LanguageManagerWF.getText(
+					"ooziexmlforkjoinpaired.createxml.fail",
+					new Object[] { wfId, df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
+			logger.error(error,e);
+		}
+
+		return error;
+	}
+	
+	
+	public String createWorkflowXml(String wfId,DataFlow df, List<RunnableElement> list,
 			File directory,
 			boolean ignoreBuffered) throws RemoteException {
 		

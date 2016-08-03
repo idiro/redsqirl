@@ -45,7 +45,9 @@ import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -75,6 +77,14 @@ DFEOutput {
 	 * Saving state
 	 */
 	protected SavingState savingState = SavingState.TEMPORARY;
+	
+	/**
+	 * Path Type
+	 */
+	protected PathType pathType = PathType.REAL;
+	protected int numberMaterializedPath = 0;
+	protected CoordinatorTimeConstraint frequency;
+	protected String initialInstance = "";
 
 	/**
 	 * The path
@@ -121,6 +131,7 @@ DFEOutput {
 
 	public DataOutput() throws RemoteException {
 		super();
+		frequency = new WfCoordTimeConstraint();
 	}
 
 	/**
@@ -221,9 +232,31 @@ DFEOutput {
 		statLogger.debug("into write...");
 
 		statLogger.debug("state " + savingState.toString());
-		Element state = doc.createElement("state");
-		state.appendChild(doc.createTextNode(savingState.toString()));
-		parent.appendChild(state);
+		{
+			Element state = doc.createElement("state");
+			state.appendChild(doc.createTextNode(savingState.toString()));
+			parent.appendChild(state);
+		}
+		{
+			Element type = doc.createElement("type");
+			type.appendChild(doc.createTextNode(pathType.toString()));
+			parent.appendChild(type);
+		}
+		{
+			Element freq = doc.createElement("freq");
+			freq.appendChild(doc.createTextNode(Integer.toString(numberMaterializedPath)));
+			parent.appendChild(freq);
+		}
+		{
+			Element timeConstraint = doc.createElement("time-constraint");
+			frequency.write(doc, timeConstraint);
+			parent.appendChild(timeConstraint);
+		}
+		{
+			Element initInstEl = doc.createElement("initial-instance");
+			initInstEl.appendChild(doc.createTextNode(initialInstance));
+			parent.appendChild(initInstEl);
+		}
 
 		statLogger.debug("path: " + path);
 		Element pathE = doc.createElement("path");
@@ -287,11 +320,40 @@ DFEOutput {
 	 */
 	public void read(Element parent) throws RemoteException {
 
-		String savStateStr = parent.getElementsByTagName("state").item(0)
-				.getChildNodes().item(0).getNodeValue();
-		statLogger.debug("Saving state: " + savStateStr);
-		savingState = SavingState.valueOf(savStateStr);
+		{
+			String savStateStr = parent.getElementsByTagName("state").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Saving state: " + savStateStr);
+			savingState = SavingState.valueOf(savStateStr);
+		}
 
+		try{
+			String typeStr = parent.getElementsByTagName("type").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Path type: " + typeStr);
+			pathType = PathType.valueOf(typeStr);
+		}catch(Exception e){
+			pathType = PathType.REAL;
+		}
+		try{
+			String materializedPathStr = parent.getElementsByTagName("freq").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("MaterializedPath: " + materializedPathStr);
+			numberMaterializedPath = Integer.valueOf(materializedPathStr);
+		}catch(Exception e){
+			numberMaterializedPath = 0;
+		}
+		try{
+			Element timeConstraint = (Element) parent.getElementsByTagName("time-constraint").item(0);
+			frequency.read(timeConstraint);
+		}catch(Exception e){
+		}
+		try{
+			initialInstance = parent.getElementsByTagName("initial-instance").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("Initial Instance: " + initialInstance);
+		}catch(Exception e){}
+		
 		path = parent.getElementsByTagName("path").item(0).getChildNodes()
 				.item(0).getNodeValue();
 		statLogger.debug("Path: " + path);
@@ -795,4 +857,33 @@ DFEOutput {
 	public void setCredential(String credential) {
 		this.credential = credential;
 	}
+
+	public PathType getPathType() {
+		return pathType;
+	}
+
+	public void setPathType(PathType pathType) {
+		this.pathType = pathType;
+	}
+
+	public int getNumberMaterializedPath() {
+		return numberMaterializedPath;
+	}
+
+	public void setNumberMaterializedPath(int numberMaterializedPath) {
+		this.numberMaterializedPath = numberMaterializedPath;
+	}
+
+	public final CoordinatorTimeConstraint getFrequency() {
+		return frequency;
+	}
+
+	public final String getInitialInstance() {
+		return initialInstance;
+	}
+
+	public final void setInitialInstance(String initialInstance) {
+		this.initialInstance = initialInstance;
+	}
+	
 }

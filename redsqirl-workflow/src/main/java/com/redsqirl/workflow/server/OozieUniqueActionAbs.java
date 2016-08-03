@@ -21,10 +21,12 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -42,6 +44,8 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 	private static final long serialVersionUID = -4050182914018968247L;
 
 	private String credential = null;
+
+	protected Set<String> variables = new HashSet<String>();
 	
 	/**
 	 * Default Conception
@@ -101,6 +105,30 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 
 	public void setCredential(String credential) {
 		this.credential = credential;
+	}
+
+	public boolean addVariable(String arg0) {
+		return variables.add(arg0);
+	}
+
+	public boolean addAllVariables(Collection<? extends String> arg0) {
+		return variables.addAll(arg0);
+	}
+
+	public void clearVariables() {
+		variables.clear();
+	}
+
+	public boolean containsVariable(Object arg0) {
+		return variables.contains(arg0);
+	}
+
+	public boolean removeVariable(Object arg0) {
+		return variables.remove(arg0);
+	}
+
+	public final Set<String> getVariables() {
+		return variables;
 	}
 	
 }

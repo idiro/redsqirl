@@ -611,8 +611,12 @@ public class PackageManager extends UnicastRemoteObject {
 		actions.add("file_text_source");
 		actions.add("send_email");
 		actions.add("source");
+		actions.add("hcatalog_source");
 		actions.add("superactioninput");
 		actions.add("superactionoutput");
+		actions.add("synchronuous_sink");
+		actions.add("synchronuous_source");
+		actions.add("synchronuous_source_filter");
 		return actions;
 	}
 	

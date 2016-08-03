@@ -363,12 +363,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 				new String[][] {
 			new String[] { "COALESCE()", "ANY,ANY,ANY...", "ANY",
 					"@function:COALESCE@short:returns the first non-null expression in the list.",
-			}, 
-			new String[] {
-					"RAND()",
-					"",
-					"DOUBLE",
-			"@function:RANDOM()@short: Generate a random double@description:Generates a random double and returns it" },
+			},
 			new String[] {
 					"CASE END",
 					"",

@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 
 /**
@@ -383,4 +384,42 @@ public interface DFEOutput extends Remote {
 	 */
 	void clearCache() throws RemoteException;
 
+	/**
+	 * Get the type of the path
+	 * @return
+	 * @throws RemoteException
+	 */
+	public PathType getPathType() throws RemoteException;
+
+	/**
+	 * Set the type of the path
+	 * @param pathType
+	 * @throws RemoteException
+	 */
+	public void setPathType(PathType pathType) throws RemoteException;
+
+	/**
+	 * In case of a Materialized path, number of real path to process.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public int getNumberMaterializedPath() throws RemoteException;
+
+	/**
+	 * In case of a Materialized path, number of real path to process.
+	 * @param numberMaterializedPath
+	 * @throws RemoteException
+	 */
+	public void setNumberMaterializedPath(int numberMaterializedPath) throws RemoteException;
+	
+	/**
+	 * Get the time constraint on a template dataset
+	 * @return
+	 * @throws RemoteException
+	 */
+	public CoordinatorTimeConstraint getFrequency() throws RemoteException;
+	
+	public String getInitialInstance() throws RemoteException;
+
+	public void setInitialInstance(String initialInstance) throws RemoteException;
 }
