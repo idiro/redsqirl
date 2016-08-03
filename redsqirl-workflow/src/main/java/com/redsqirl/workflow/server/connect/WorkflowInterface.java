@@ -638,7 +638,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
                 try{
                     LocalFileSystem.delete(clone);
                 }catch(Exception e){
-                    logger.info("Fail to clean clone temporary files.");
+                    logger.warn("Fail to clean clone temporary files.");
                 }
             }
         } catch (Exception e) {
@@ -650,7 +650,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
                 try{
                     it.next().close();
                 }catch(Exception e){
-                    logger.info("Fail to close a datastore: "+e,e);
+                    logger.warn("Fail to close a datastore: "+e,e);
                 }
             }
         } catch (Exception e) {

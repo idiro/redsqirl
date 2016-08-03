@@ -46,7 +46,7 @@ public class SessionListener implements HttpSessionListener{
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent arg0) {
-		logger.info("before session destroy");
+		logger.warn("before session destroy");
 		HttpSession session = arg0.getSession();
 		ServletContext sc = session.getServletContext();
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
@@ -58,7 +58,7 @@ public class SessionListener implements HttpSessionListener{
 		try{
 			ServerProcess th = (ServerProcess) session.getAttribute("serverThread");
 			if (th != null){
-				logger.info("kill serverThread");
+				logger.warn("kill serverThread");
 				th.kill(session,userName);
 			}
 		}catch(Exception e){
