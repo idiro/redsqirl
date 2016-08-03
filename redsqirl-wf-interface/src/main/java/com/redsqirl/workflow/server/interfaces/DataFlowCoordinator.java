@@ -2,9 +2,11 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public interface DataFlowCoordinator extends Remote{
 
@@ -31,4 +33,8 @@ public interface DataFlowCoordinator extends Remote{
 	void merge(DataFlowCoordinator coord) throws RemoteException;
 
 	DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException;
+	
+	String readInXml(Document doc, Element parent, DataFlow wf) throws RemoteException, Exception;
+	
+	String saveInXml(Document doc, Element rootElement) throws RemoteException;
 }
