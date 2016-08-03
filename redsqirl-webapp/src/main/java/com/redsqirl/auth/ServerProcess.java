@@ -93,10 +93,10 @@ public class ServerProcess {
 
 					ProcessesManager pm = new WorkflowProcessesManager(user);
 					killOldProcess(pm, user);
-					logger.info("ProjectID " + ProjectID.get());
+					logger.warn("ProjectID " + ProjectID.get());
 					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get()) + " 1>/dev/null & echo $! 1> "+pm.getPath();
 
-					logger.info("getting java");
+					logger.warn("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
 					File uRdmFile = new File("/dev/urandom");
@@ -108,11 +108,11 @@ public class ServerProcess {
 						argJava+= " -Dsun.io.serialization.extendedDebugInfo=true ";
 					}
 					
-					logger.info("opening channel");
+					logger.warn("opening channel");
 					Channel channel = session.openChannel("exec");
 					logger.warn("command to launch:\n" + javahome + argJava + command);
 					((ChannelExec) channel).setCommand(javahome + argJava + command);
-					logger.info("connecting channel");
+					logger.warn("connecting channel");
 					channel.connect();
 
 					channel.getInputStream().close();
@@ -169,10 +169,10 @@ public class ServerProcess {
 		try{
 			old_pid = pm.getPid();
 		}catch(Exception e){
-			logger.info("Could not read the old pid, assuming there is none.");
+			logger.warn("Could not read the old pid, assuming there is none.");
 		}
 
-		logger.info("old workflow process : " + old_pid);
+		logger.warn("old workflow process : " + old_pid);
 		if (old_pid != null && !old_pid.isEmpty()) {
 
 			try{
@@ -185,25 +185,25 @@ public class ServerProcess {
 						new InputStreamReader(channel.getInputStream()));
 				String pid1 = br1.readLine();
 				channel.disconnect();
-				logger.info("got running process pid : " + pid1);
+				logger.warn("got running process pid : " + pid1);
 
 				if (pid1 != null
 						&& pid1.trim().equals(old_pid)) {
 					try {
-						logger.info("Attempt to clean up old process.");
+						logger.warn("Attempt to clean up old process.");
 						Registry registry = LocateRegistry
 								.getRegistry(port);
-						logger.info("get dfi");
+						logger.warn("get dfi");
 						DataFlowInterface dfi = (DataFlowInterface) registry
 								.lookup(user + "@wfm");
-						logger.info("back up ");
+						logger.warn("back up ");
 						dfi.backupAll();
-						logger.info("clean up");
+						logger.warn("clean up");
 						dfi.autoCleanAll();
-						logger.info("shutdown");
+						logger.warn("shutdown");
 						dfi.shutdown();
 					} catch (Exception e) {
-						logger.info("Unabled to clean up old proces, attempting to kill it...");
+						logger.warn("Unabled to clean up old proces, attempting to kill it...");
 						FacesContext facesContext = FacesContext
 								.getCurrentInstance();
 						String messageBundleName = facesContext
@@ -212,20 +212,20 @@ public class ServerProcess {
 								.getLocale();
 						ResourceBundle bundle = ResourceBundle
 								.getBundle(messageBundleName, locale);
-						logger.info(bundle
+						logger.warn(bundle
 								.getString("old_workflow_deleted"));
 					}
 					kill(pid1);
 					pm.deleteFile();
-					logger.info("killed old process");
+					logger.warn("killed old process");
 				}
 			} catch (Exception e) {
-				logger.info("Got an exception when attempting to kill old process, trying again more expeditively..");
+				logger.warn("Got an exception when attempting to kill old process, trying again more expeditively..");
 				try{
 					pm.deleteFile();
 					kill(old_pid);
 				}catch(Exception e1){
-					logger.info("Unable to kill process: "+e.getMessage());
+					logger.warn("Unable to kill process: "+e.getMessage());
 				}
 			}
 		}
@@ -237,7 +237,7 @@ public class ServerProcess {
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(
 				pr.getInputStream()));
 		String java = stdInput.readLine();
-		logger.info("java path : "+java);
+		logger.warn("java path : "+java);
 		if(java == null){
 			java ="java ";
 		}
@@ -253,14 +253,14 @@ public class ServerProcess {
 	 * @author Igor.Souza
 	 */
 	public void kill(HttpSession httpSession,String user) {
-		logger.info("kill attempt");
+		logger.warn("kill attempt");
 		if (session != null && run) {
-			logger.info(1);
+			logger.warn(1);
 
 			try {
 				DataFlowInterface dataFlowInterface = (DataFlowInterface) httpSession
 						.getAttribute("wfm");
-				logger.info("Clean and close all the open worfklows");
+				logger.warn("Clean and close all the open worfklows");
 				try {
 					dataFlowInterface.backupAll();
 				} catch (RemoteException e) {
@@ -284,7 +284,7 @@ public class ServerProcess {
 			try{
 				kill(new WorkflowProcessesManager(user).getPid());
 			}catch(Exception e){
-				logger.info("Exception: "+e.getMessage(), e);
+				logger.warn("Exception: "+e.getMessage(), e);
 			}
 			list.remove(this);
 			run = false;
@@ -295,21 +295,21 @@ public class ServerProcess {
 
 	protected void kill(String lpid){
 		if(session == null){
-			logger.info("The SSH session is down");
+			logger.warn("The SSH session is down");
 		}else{
-			logger.info("kill attempt");
+			logger.warn("kill attempt");
 			try {
-				logger.info(3);
+				logger.warn(3);
 				Channel channel = session.openChannel("exec");
-				logger.info("kill -9 " + lpid);
+				logger.warn("kill -9 " + lpid);
 				((ChannelExec) channel).setCommand("kill -9 " + lpid);
 				channel.connect();
 				channel.disconnect();
-				logger.info("process "+lpid+" successfully killed");
+				logger.warn("process "+lpid+" successfully killed");
 			} catch (JSchException e) {
-				logger.info("JSchException: "+e.getMessage());
+				logger.warn("JSchException: "+e.getMessage());
 			} catch(Exception e){
-				logger.info("Exception: "+e.getMessage());
+				logger.warn("Exception: "+e.getMessage());
 			}
 		}
 	}

@@ -156,7 +156,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * Init the progress bar.
 	 */
 	public void startProgressBar() {
-		logger.info("startProcess");
+		logger.warn("startProcess");
 		setProgressBarEnabled(true);
 		setValueProgressBar(Long.valueOf(0));
 	}
@@ -170,7 +170,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public String login() {
-		logger.info("login");
+		logger.warn("login");
 		setMsnError(null);
 		cancel = false;
 		checkPassword = false;
@@ -221,15 +221,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				setMsnError("Authentication Error");
 				setAlreadySignedInOtherMachine(null);
 
-				logger.info("Authentication Error");
+				logger.warn("Authentication Error");
 
 				return "failure";
 			}
 			try {
 				File licenseP = new File(WorkflowPrefManager.getPathSystemLicence());
-				logger.info("path licence " + WorkflowPrefManager.getPathSystemLicence());
+				logger.warn("path licence " + WorkflowPrefManager.getPathSystemLicence());
 				Properties props = new Properties();
-				logger.info(ProjectID.get());
+				logger.warn(ProjectID.get());
 
 				String[] value = ProjectID.get().trim().split("-");
 				if(value != null && value.length > 1){
@@ -237,21 +237,21 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					if (licenseP.exists()) {
 						props.load(new FileInputStream(licenseP));
-						logger.info(props.toString());
+						logger.warn(props.toString());
 
 						licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-						logger.info(licenseKey);
+						logger.warn(licenseKey);
 						licence =  props.getProperty(licenseKey);
 					} else {
 						setMsnError("Could not find license key");
-						logger.info("Could not find license key");
+						logger.warn("Could not find license key");
 						invalidateSession();
 						return "failure";
 					}
 
 					if(licence == null || licence.isEmpty()){
 						setMsnError("License key was empty");
-						logger.info("License key was empty");
+						logger.warn("License key was empty");
 						invalidateSession();
 						return "failure";
 					}
@@ -279,7 +279,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					if(!decrypt.validateExpiredKey(params)){
 						setMsnError("License Key is expired");
-						logger.info("License Key is expired");
+						logger.warn("License Key is expired");
 						invalidateSession();
 						return "failure";
 					}
@@ -288,14 +288,14 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					if(!valid){
 						setMsnError("License Key is Invalid");
-						logger.info("License Key is Invalid");
+						logger.warn("License Key is Invalid");
 						invalidateSession();
 						return "failure";
 					}
 
 				}else{
 					setMsnError("Project Version is Invalid");
-					logger.info("Project Version is Invalid");
+					logger.warn("Project Version is Invalid");
 					invalidateSession();
 					return "failure";
 				}
@@ -330,13 +330,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession sessionLogin = sessionLoginMap.get(userName);
 		if (sessionLogin != null) {
 
-			logger.info("validateSecondLogin sessionLogin");
+			logger.warn("validateSecondLogin sessionLogin");
 
 			if (sessionLogin.getId().equals(session.getId())) {
 				setAlreadySignedInOtherMachine(null);
 				setAlreadySignedIn("twice");
 
-				logger.info("Already Authenticated twice");
+				logger.warn("Already Authenticated twice");
 				usageRecordLog().addError("ERROR LOGIN", "Already Authenticated twice");
 
 				return "failure";
@@ -345,7 +345,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				invalidateSession(sessionLogin);
 			}else{
 				setAlreadySignedInOtherMachine("two");
-				logger.info("Already Authenticated two");
+				logger.warn("Already Authenticated two");
 				usageRecordLog().addError("ERROR LOGIN", "Already Authenticated two");
 				return "failure";
 			}
@@ -382,7 +382,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			password = null;
 		} catch (Exception e) {
 			password = null;
-			logger.info("Fail to connect through SSH to " + userName
+			logger.warn("Fail to connect through SSH to " + userName
 					+ "@localhost");
 			setMsnError("Fail to connect through SSH to " + userName
 					+ "@localhost");
@@ -438,7 +438,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		// Init workflow preference
 		WorkflowPrefManager.getInstance();
-		logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
+		logger.warn("Sys home is : "+WorkflowPrefManager.pathSysHome);
 
 		// Create home folder for this user if it does not exist yet
 		WorkflowPrefManager.createUserHome(userName);
@@ -456,10 +456,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			if(th != null){
 				try {
 					String pid = new WorkflowProcessesManager(userName).getPid();
-					logger.info("Kill the process " + pid);
+					logger.warn("Kill the process " + pid);
 					th.kill(pid);
 				} catch (IOException e) {
-					logger.info("Fail killing job after canceling it");
+					logger.warn("Fail killing job after canceling it");
 				}
 			}
 			invalidateSession();
@@ -518,7 +518,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public boolean createRegistry() {
 
-		logger.info("createRegistry");
+		logger.warn("createRegistry");
 
 		List<String> beans = new ArrayList<String>();
 		beans.add("wfm");
@@ -559,14 +559,14 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			if (th != null) {
 				String pid = new WorkflowProcessesManager(userName).getPid();
-				logger.info("Kill the process " + pid);
+				logger.warn("Kill the process " + pid);
 				th.kill(pid);
 			}
 
 			th = new ServerProcess(port);
-			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
+			logger.warn("Sys home is : "+WorkflowPrefManager.pathSysHome);
 			th.run(userName, sessionSSH);
-			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
+			logger.warn("Sys home is : "+WorkflowPrefManager.pathSysHome);
 
 			if (sessionSSH != null) {
 				sc.setAttribute("UserInfo", sessionSSH.getUserInfo());
@@ -580,7 +580,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			Iterator<String> itBean = beans.iterator();
 			while (itBean.hasNext() && !cancel) {
 				String beanName = itBean.next();
-				logger.info("createRegistry - " + beanName);
+				logger.warn("createRegistry - " + beanName);
 
 				if (beanName.equalsIgnoreCase("wfm")) {
 					boolean error = true;
@@ -600,7 +600,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 //								return false;
 //							}
 
-							logger.info("workflow is running ");
+							logger.warn("workflow is running ");
 						} catch (Exception e) {
 							logger.info("workflow not running ");
 							Thread.sleep(500);
@@ -723,29 +723,29 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			checkPassword = false;
 
 		}catch(Exception e){
-			logger.info(e,e);
+			logger.error(e,e);
 		}
 	}
 
 	public void sshDisconnect(){
-		logger.info("ssh disconnect");
+		logger.warn("ssh disconnect");
 		try {
 			sessionSSH.disconnect();
 		} catch (Exception e) {
-			logger.info("Fail to disconnect from SSH session");
+			logger.warn("Fail to disconnect from SSH session");
 		}
 		sessionSSH = null;
 	}
 
 	private void invalidateSession(HttpSession sessionOtherMachine){
-		logger.info("before invalidating session");
+		logger.warn("before invalidating session");
 		try {
 			sessionOtherMachine.invalidate();
 		} catch (Exception e) {
-			logger.info("Fail invalidate session: assume none created");
+			logger.warn("Fail invalidate session: assume none created");
 		}
 
-		logger.info("after invalidating session");
+		logger.warn("after invalidating session");
 	}
 
 	public void luceneIndex() throws Exception {
