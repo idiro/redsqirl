@@ -7,26 +7,99 @@
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<div id="modalVoronoi" style="width:100%;overflow:auto;height:100%;" >
+	<h:form>
+		<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
+		
+			<table>
+				<tr>
+					<td>
+						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
+					</td>
+					<td>
+			    		<rich:calendar value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:outputText value="#{messages.label_voronoi_repeat}" title="#{messages.title_voronoi_repeat}" />
+					</td>
+					<td>
+				    	<h:inputText value="#{voronoiBean.repeat}" title="#{messages.title_voronoi_repeat}" />
+					</td>
+				</tr>
+			</table>
+			
+			
+			
+			
+			
+			
+			
+			<a4j:commandLink title="#{messages.label_add_new_line}" action="#{voronoiBean.addNewLine}" reRender="tableVoronoi" >
+            	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+           </a4j:commandLink>
+			
+			<rich:dataTable id="tableVoronoi" value="#{voronoiBean.tableList}" var="rowItem" rowKeyVar="rowNb" width="100%" 
+				style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" 
+	            onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+
+	             <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+	                 <h:outputText value="#{rowNb+1}" />
+	             </rich:column>
 	
-		<h:form>
-		
-			<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
-			<a4j:outputPanel id="calendar" layout="block">
-		    	<rich:calendar value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" />
-		    </a4j:outputPanel>
-		    
-		    <h:outputText value="#{messages.label_voronoi_repeat}" title="#{messages.title_voronoi_repeat}" />
-		    <h:inputText value="#{voronoiBean.repeat}" title="#{messages.title_voronoi_repeat}" />
-		    
-		
-			<rich:panel columns="2" style="border:none; float:right;">
-			    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
-			    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" oncomplete="#{rich:component('voronoiModal')}.hide();" reRender="msnError, errorTable" />
-			</rich:panel>
-		
-		</h:form>
+	             <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+	                 <f:facet name="header">
+	                     <h:panelGrid columns="1" >
+	                      <a4j:commandLink title="Delete selected lines" action="#{voronoiBean.deleteLine}" reRender="tableVoronoi"
+	                          onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+	                          <img src="../image/icons/button-delete-small.gif" class="btConfigureFooter" />
+	                      </a4j:commandLink>
+	                      <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableVoronoiSelect$/);"/>
+	                     </h:panelGrid>
+	                 </f:facet>
 	
-	</div>
+	                 <h:selectBooleanCheckbox id="tableVoronoiSelect" value="#{rowItem.selected}">
+	                     <f:selectItem itemValue="true" />
+	                 </h:selectBooleanCheckbox>
+	
+				</rich:column>
+	             
+				<rich:column style="border-bottom:0px;border-right:0px;" width="235px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_voronoilist_key}" />
+			        </f:facet>
+	              
+	              	<h:inputText value="#{rowItem.key}" />
+	              
+	            </rich:column>
+	            <rich:column style="border-bottom:0px;border-right:0px;" width="235px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_voronoilist_value}" />
+			        </f:facet>
+			        
+			        <h:inputText value="#{rowItem.value}" />
+			        
+	            </rich:column>
+             
+         	</rich:dataTable>
+			
+			
+			
+			
+			
+			
+			
+		
+		</rich:panel>
+		
+		<br/>
+		
+		<rich:panel columns="2" style="border:none; float:right;">
+		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
+		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{voronoiBean.apply}" 
+		    	oncomplete="#{rich:component('voronoiModal')}.hide();" reRender="msnError, errorTable" />
+		</rich:panel>
+	
+	</h:form>
 
 </ui:composition>
