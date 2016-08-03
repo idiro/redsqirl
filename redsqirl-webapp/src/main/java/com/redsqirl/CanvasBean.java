@@ -318,9 +318,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 					}
 				} catch (RemoteException e) {
-					logger.info("updatePosition error " + e, e);
+					logger.warn("updatePosition error " + e, e);
 				} catch (Exception e) {
-					logger.info("updatePosition error " + e, e);
+					logger.warn("updatePosition error " + e, e);
 				}
 			}
 		}
@@ -353,10 +353,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			setNameOutput(nameElementA);
 
 		} catch (RemoteException e) {
-			logger.info(e,e);
+			logger.warn(e,e);
 			msg = e.getMessage();
 		} catch (Exception e) {
-			logger.info(e,e);
+			logger.warn(e,e);
 			msg = e.getMessage();
 		}
 
@@ -508,7 +508,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void loadBackup() {
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("path");
-		logger.info("loadBackup " + path);
+		logger.warn("loadBackup " + path);
 		setPath(path);
 		load();
 	}
@@ -526,7 +526,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	private void load(String path,String newWfName,boolean setWorkflow){
-		logger.info("load " + path);
+		logger.warn("load " + path);
 		String error = loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow);
 		displayErrorMessage(error,"LOADWORKFLOW");
 	}
@@ -635,7 +635,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		} catch (Exception e) {
 			error = "Error loading workflow: "+e.getMessage();
-			logger.info(error,e);
+			logger.warn(error,e);
 		}
 		return error;
 
@@ -666,7 +666,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			}
 		} catch (JSONException e) {
-			logger.info("Error updating positions",e);
+			logger.warn("Error updating positions",e);
 		}
 	}
 
@@ -710,13 +710,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 			} catch (JSONException e) {
-				logger.info("Error updating positions",e);
+				logger.warn("Error updating positions",e);
 			}
 		}
 	}
 
 	public void loadBackup(String path) {
-		logger.info("loadBackup " + path);
+		logger.warn("loadBackup " + path);
 		setPath(path);
 		load();
 	}
@@ -751,7 +751,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getworkFlowInterface().backupAll();
 
 		} catch (RemoteException e) {
-			logger.info("Error backing up all workflows",e);
+			logger.warn("Error backing up all workflows",e);
 		}
 	}
 
@@ -762,7 +762,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getworkFlowInterface().backupAll();
 			closeAll();
 		} catch (RemoteException e) {
-			logger.info("Error backing up all workflows",e);
+			logger.warn("Error backing up all workflows",e);
 		}
 	}
 
@@ -798,7 +798,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String selecteds = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("selecteds");
-		logger.info("save " + selecteds);
+		logger.warn("save " + selecteds);
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext()
 				.getContext();
@@ -806,7 +806,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		workflowType = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("workflowType");
-		logger.info("workflow Type " + workflowType);
+		logger.warn("workflow Type " + workflowType);
 
 		String name = generateWorkflowName(path);
 		if (workflowType != null && workflowType.equals("S")) {
@@ -852,7 +852,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		try {
 			if (msg == null) {
-				logger.info("save workflow " + nameWorkflow + " in " + path);
+				logger.warn("save workflow " + nameWorkflow + " in " + path);
 				DataFlow df = getWorkflowMap().get(nameWorkflow);
 				setDf(df);
 				msg = df.save(path);
@@ -867,11 +867,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 					idMap.get(nameWorkflow).put(cur, cur);
 				}
 
-				logger.info("save msg :" + msg);
+				logger.warn("save msg :" + msg);
 			}
 		} catch (Exception e) {
 			msg = "Error saving workflow";
-			logger.info(msg,e);
+			logger.warn(msg,e);
 		}
 
 		displayErrorMessage(msg,"SAVE");
@@ -898,7 +898,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 			DataFlow dfCur = workflowMap.get(workflowName);
 			if (dfCur != null) {
-				logger.info("remove " + workflowName);
+				logger.warn("remove " + workflowName);
 				dfCur.close();
 				getworkFlowInterface().removeWorkflow(workflowName);
 				workflowMap.remove(workflowName);
@@ -1793,7 +1793,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				try {
 					runningStatus = getDf().getRunningStatus(dfe.getComponentId());
 				} catch (Exception e1) {
-					logger.info("Error getting the status: " + e1.getMessage(), e1);
+					logger.warn("Error getting the status: " + e1.getMessage(), e1);
 				}
 			}
 
@@ -1828,7 +1828,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				String compId = dfe.getComponentId();
 				if (compId == null) {
-					logger.info("Error component id cannot be null");
+					logger.warn("Error component id cannot be null");
 				} else {
 					ans.add(compId);
 					for (DataFlowElement cur : dfe.getAllOutputComponent()) {
@@ -1885,7 +1885,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		if (error == null && comment != null && !comment.equals("undefined")) {
-			logger.info("set comment: " + comment);
+			logger.warn("set comment: " + comment);
 			getDf().getElement(elementId).setComment(comment);
 		}
 
@@ -2010,7 +2010,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.info("Error " + e + " - " + e.getMessage());
+			logger.warn("Error " + e + " - " + e.getMessage());
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oozie_process"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -2232,7 +2232,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					getMapWorkflowType().get(workflowName) };
 
 		} catch (Exception e) {
-			logger.info("Error " + e + " - " + e.getMessage());
+			logger.warn("Error " + e + " - " + e.getMessage());
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -2420,7 +2420,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (error == null) {
 				df = dfi.getSubWorkflow(newWfName);
 				df.setName(newWfName);
-				logger.info("read " + path);
+				logger.warn("read " + path);
 				error = df.readFromLocal(new File(path));
 			}
 			if (error == null) {
@@ -2452,7 +2452,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.info("Error loading workflow",e);
+			logger.warn("Error loading workflow",e);
 		}
 
 		displayErrorMessage(error, "LOADSUBWORKFLOWFROMLOCAL");
@@ -2641,7 +2641,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			aggregate(inputNameSubWorkflow,inputNameModel,inputComment,inputs,outputs);
 		} catch (JSONException e) {
-			logger.info("Error updating positions",e);
+			logger.warn("Error updating positions",e);
 		}
 
 		return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
@@ -2749,7 +2749,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 			} catch (RemoteException e) {
-				logger.info("Error: " + e,e);
+				logger.warn("Error: " + e,e);
 			}
 
 		}

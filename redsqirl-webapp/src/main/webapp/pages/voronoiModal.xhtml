@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<div id="modalVoronoi" style="width:100%;overflow:auto;height:100%;" >
+	
+		<h:form>
+		
+			<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
+			<a4j:outputPanel id="calendar" layout="block">
+		    	<rich:calendar value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" />
+		    </a4j:outputPanel>
+		    
+		    <h:outputText value="#{messages.label_voronoi_repeat}" title="#{messages.title_voronoi_repeat}" />
+		    <h:inputText value="#{voronoiBean.repeat}" title="#{messages.title_voronoi_repeat}" />
+		    
+		
+			<rich:panel columns="2" style="border:none; float:right;">
+			    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
+			    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" oncomplete="#{rich:component('voronoiModal')}.hide();" reRender="msnError, errorTable" />
+			</rich:panel>
+		
+		</h:form>
+	
+	</div>
+
+</ui:composition>
