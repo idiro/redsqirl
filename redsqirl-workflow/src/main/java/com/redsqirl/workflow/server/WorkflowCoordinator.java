@@ -35,10 +35,12 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	private static final long serialVersionUID = 2983015342985143960L;
 	private static Logger logger = Logger.getLogger(WorkflowCoordinator.class);
 	
-	CoordinatorTimeConstraint timeCondition = new WfCoordTimeConstraint();
-	String name;
-	List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
-	Map<String,String> variables = new LinkedHashMap<String,String>();
+	protected CoordinatorTimeConstraint timeCondition = new WfCoordTimeConstraint();
+	protected String name;
+	protected List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
+	protected Map<String,String> variables = new LinkedHashMap<String,String>();
+	protected String startTime = "";
+	protected String endTime = "";
 	
 	protected WorkflowCoordinator() throws RemoteException {
 		super();
@@ -61,6 +63,16 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			Element elTimeConstraint = doc.createElement("time-condition");
 			timeCondition.write(doc, elTimeConstraint);
 			rootElement.appendChild(elTimeConstraint);
+		}
+		{
+			Element elTime = doc.createElement("start-time");
+			elTime.appendChild(doc.createTextNode(startTime));
+			rootElement.appendChild(elTime);
+		}
+		{
+			Element elTime = doc.createElement("end-time");
+			elTime.appendChild(doc.createTextNode(endTime));
+			rootElement.appendChild(elTime);
 		}
 		Element elConfiguration = doc.createElement("configuration");
 		Iterator<Entry<String,String>> itVar = variables.entrySet().iterator();
@@ -258,6 +270,16 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		}
 		try{
 			timeCondition.read((Element) parent.getElementsByTagName("time-condition").item(0));
+		}catch(Exception e){
+		}
+		try{
+			startTime = parent.getElementsByTagName("start-time").item(0)
+					.getChildNodes().item(0).getNodeValue();
+		}catch(Exception e){
+		}
+		try{
+			endTime = parent.getElementsByTagName("end-time").item(0)
+					.getChildNodes().item(0).getNodeValue();
 		}catch(Exception e){
 		}
 		try{
@@ -507,12 +529,16 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	public String addElement(DataFlowElement dfe) throws RemoteException {
 		//If error or not linked
 		elements.add(dfe);
+		dfe.setCoordinatorName(name);
 		return null;
 	}
 	
 	@Override
 	public void merge(DataFlowCoordinator coord) throws RemoteException{
-		elements.addAll(coord.getElements());
+		Iterator<DataFlowElement> it = coord.getElements().iterator();
+		while(it.hasNext()){
+			addElement(it.next());
+		}
 		variables.putAll(coord.getVariables());
 	}
 	
@@ -520,8 +546,11 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	public DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException {
 		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
 		dfC.getVariables().putAll(variables);
-		dfC.getElements().addAll(dfe);
-		Iterator<DataFlowElement> it = elements.iterator();
+		Iterator<DataFlowElement> it = dfe.iterator();
+		while(it.hasNext()){
+			dfC.addElement(it.next());
+		}
+		it = elements.iterator();
 		while(it.hasNext()){
 			if(elements.contains(it.next())){
 				it.remove();
@@ -564,6 +593,22 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			variables.put(name,value);
 		}
 		return error;
+	}
+
+	public final String getStartTime() {
+		return startTime;
+	}
+
+	public final void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public final String getEndTime() {
+		return endTime;
+	}
+
+	public final void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 
 }

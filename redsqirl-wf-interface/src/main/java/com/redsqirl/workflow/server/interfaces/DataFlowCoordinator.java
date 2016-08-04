@@ -39,4 +39,12 @@ public interface DataFlowCoordinator extends Remote{
 	String saveInXml(Document doc, Element rootElement) throws RemoteException;
 	
 	String readInXmlLinks(Document doc, Element parent, DataFlow df) throws Exception;
+	
+	String getStartTime() throws RemoteException;
+
+	void setStartTime(String startTime) throws RemoteException;
+
+	String getEndTime() throws RemoteException;
+
+	void setEndTime(String endTime) throws RemoteException;
 }
