@@ -90,6 +90,13 @@
                     "type": "STRING"
                 },
                 {
+                    "default": "GMT+00:00",
+                    "optional": "true",
+                    "property": "timezone",
+                    "scope": "any",
+                    "type": "STRING"
+                },
+                {
                     "default": "default",
                     "optional": "false",
                     "property": "oozie_action_queue",
