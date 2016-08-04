@@ -119,6 +119,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();
 	
 	private Set<String> requiredVariables = new LinkedHashSet<String>();
+	
+	protected String coordinatorName = "";
 
 	/**
 	 * Constructor that takes a type of
@@ -1354,4 +1356,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public void setRequiredVariables(Set<String> requiredVariables) {
 		this.requiredVariables = requiredVariables;
 	}
+
+	public final String getCoordinatorName() {
+		return coordinatorName;
+	}
+
+	public final void setCoordinatorName(String coordinatorName) {
+		this.coordinatorName = coordinatorName;
+	}
+	
 }

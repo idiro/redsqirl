@@ -414,7 +414,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			String wfPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode) + hdfsWfPath;
 			logger.debug("Workflow path: " + wfPath);
 			Properties conf = addProperties(oc.createConfiguration(), defaultMap(hdfsWfPath));
-
+			/* //TODO uncomment to run the workflow
 			try {
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
@@ -422,7 +422,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				logger.error(e,e);
 				error = LanguageManagerWF.getText("ooziemanager.launchjob",
 						new Object[] { e.getMessage() });
-			}
+			}*/
 		}
 
 		if (error != null) {

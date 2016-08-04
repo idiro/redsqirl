@@ -349,5 +349,10 @@ public interface DataFlowElement extends RunnableElement{
 	 * @param requiredVariables the requiredVariables to set
 	 */
 	public void setRequiredVariables(Set<String> requiredVariables) throws RemoteException;
+	
+	String getCoordinatorName() throws RemoteException;
+
+	void setCoordinatorName(String coordinatorName) throws RemoteException;
+	
 
 }

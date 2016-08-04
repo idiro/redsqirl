@@ -2141,7 +2141,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return coordinators;
 	}
 	
-	public String checkCoodinatorMergeConflict(DataFlowCoordinator coord1, DataFlowCoordinator coord2) throws RemoteException{
+	public String checkCoordinatorMergeConflict(DataFlowCoordinator coord1, DataFlowCoordinator coord2) throws RemoteException{
 		DataFlowCoordinator coordCheck = null;
 		DataFlowCoordinator coordOther = null;
 		if(coord1.getElements().size()< coord2.getElements().size()){
@@ -2172,7 +2172,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		//Check if the two coordinators are already linked
 		DataFlowCoordinator coordinator1 = getCoordinator(coordinatorName1);
 		DataFlowCoordinator coordinator2 = getCoordinator(coordinatorName2);
-		String error = checkCoodinatorMergeConflict(coordinator1,coordinator2);
+		String error = checkCoordinatorMergeConflict(coordinator1,coordinator2);
 		
 		if(error == null){
 			//Merge Coordinator
@@ -2358,50 +2358,47 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 									in.getComponentId(), in.getName(),
 									out.getName());
 				} else {
-					out.addOutputComponent(outName, in);
-					error = in.addInputComponent(inName, out);
-					if (error == null) {
-						error = topoligicalSort();
+					
+					//Check if they are in the same coordinator
+					DataFlowCoordinator coordIn = null;
+					boolean coordInFirst = false;
+					DataFlowCoordinator coordOut = null;
+					Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
+					while(itCoord.hasNext() && (coordIn == null || coordOut == null)){
+						DataFlowCoordinator cur = itCoord.next();
+						if(coordIn == null && cur.getElement(componentIdIn) != null){
+							coordIn = cur;
+							coordInFirst = coordOut == null;
+						}
+						if(coordOut == null && cur.getElement(componentIdOut) != null){
+							coordOut = cur;
+						}
 					}
-					if (error != null) {
-						removeLink(outName, componentIdOut, inName,
-								componentIdIn, true);
-					}
-				}
-			}
-			//Handle the coordinators
-			if(force || error == null){
-				//Check if they are in the same coordinator
-				DataFlowCoordinator coordIn = null;
-				boolean coordInFirst = false;
-				DataFlowCoordinator coordOut = null;
-				Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
-				while(itCoord.hasNext() && coordIn == null && coordOut == null){
-					DataFlowCoordinator cur = itCoord.next();
-					if(coordIn == null && cur.getElement(componentIdIn) != null){
-						coordIn = cur;
-						coordInFirst = coordOut == null;
-					}
-					if(coordOut == null && cur.getElement(componentIdOut) != null){
-						coordOut = cur;
-					}
-				}
-				if(coordIn != coordOut){
-					//Check if it is a Sync-Sink - Sync-Source-Filter link
-					if(!in.getClass().equals(SyncSink.class) || !out.getClass().equals(SyncSourceFilter.class)){
-						String coordErr = checkCoodinatorMergeConflict(coordIn,coordOut);
-						
-						if(coordErr == null){
-							//Merge Coordinator
-							if(coordInFirst){
-								coordIn.merge(coordOut);
-								coordinators.remove(coordOut);
-							}else{
-								coordOut.merge(coordIn);
-								coordinators.remove(coordIn);
+					if(coordIn != coordOut){
+						//Check if it is a Sync-Sink - Sync-Source-Filter link
+						if(!in.getClass().equals(SyncSink.class) || !out.getClass().equals(SyncSourceFilter.class)){
+							error = checkCoordinatorMergeConflict(coordIn,coordOut);
+							
+							if(error == null){
+								//Merge Coordinator
+								if(coordInFirst){
+									coordIn.merge(coordOut);
+									coordinators.remove(coordOut);
+								}else{
+									coordOut.merge(coordIn);
+									coordinators.remove(coordIn);
+								}
 							}
-						}else if(!force){
-							error = coordErr;
+						}
+					}
+					
+					if(error == null){
+						out.addOutputComponent(outName, in);
+						error = in.addInputComponent(inName, out);
+						if (error == null) {
+							error = topoligicalSort();
+						}
+						if (error != null) {
 							removeLink(outName, componentIdOut, inName,
 									componentIdIn, true);
 						}

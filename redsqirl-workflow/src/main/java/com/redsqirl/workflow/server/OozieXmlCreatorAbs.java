@@ -174,31 +174,5 @@ implements OozieXmlCreator{
 		}
 		return lDf;
 	}
-	/**
-	 * Get List of action names
-	 * @param list of {@link com.redsqirl.workflow.server.interfaces.RunnableElement} that
-	 * @return list of actions names
-	 * @throws RemoteException 
-	 */
-	/*@Override
-	public List<String> getNameActions(List<RunnableElement> list)
-			throws RemoteException{
-		List<String> lName = new LinkedList<String>();
-		Iterator<RunnableElement> itDFE = list.iterator();
-		while(itDFE.hasNext()){
-			lName.add(getNameAction(itDFE.next()));
-		}
-		return lName;
-	}*/
-	/**
-	 * Get action name
-	 * @param e element to get action name of
-	 * @return action name
-	 * @throws RemoteException
-	 */
-	/*@Override
-	public String getNameAction(RunnableElement e) throws RemoteException{
-		return "act_"+e.getComponentId();
-	}*/
 
 }

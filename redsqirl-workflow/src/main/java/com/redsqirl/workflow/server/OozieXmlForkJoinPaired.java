@@ -145,28 +145,41 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	
 	public String createMainXml(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
-		return createWorkflowXml(df.getName(),df, list,directory,false);
-	}
-	
-	public String createMainCoordinatorXml(DataFlow df, File directory, String startDate, String endDate) throws RemoteException {
+
+
+		boolean scheduleJob = df.getCoordinators().get(0).getTimeCondition().getUnit() != null;
 		Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
 		String error = null;
-		while(it.hasNext() && error == null){
-			DataFlowCoordinator cur = it.next();
-			error = createCoordinatorXml(df.getName(),df, cur,
-					new File(directory, cur.getName()),
-					startDate,
-					endDate);
-			if(error == null){
-				try {
-					error = createMainXml(df,df.subsetToRun(cur.getComponentIds()), directory);
-				} catch (Exception e) {
-					error =" "+ LanguageManagerWF.getText(
-							"ooziexmlforkjoinpaired.createxml.fail",
-							new Object[] { cur.getName(), df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
-					logger.error(error,e);
+		if(scheduleJob){
+			logger.debug("Create coordinators...");
+			while(it.hasNext() && error == null){
+				DataFlowCoordinator cur = it.next();
+				logger.debug("Create xml coordinator for "+cur.getName());
+				error = createCoordinatorXml(df.getName(),df, cur,
+						new File(directory, cur.getName()),
+						cur.getStartTime(),
+						cur.getEndTime());
+				if(error == null){
+					try {
+						List<RunnableElement> toRun = df.subsetToRun(cur.getComponentIds());
+						if(logger.isDebugEnabled()){
+							Iterator<RunnableElement> itLog = toRun.iterator();
+							logger.debug("List of elements to run for "+cur.getName());
+							while(itLog.hasNext()){
+								logger.debug(itLog.next().getComponentId());
+							}
+						}
+						error = createWorkflowXml(df.getName(),df,toRun, directory,true);
+					} catch (Exception e) {
+						error =" "+ LanguageManagerWF.getText(
+								"ooziexmlforkjoinpaired.createxml.fail",
+								new Object[] { cur.getName(), df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
+						logger.error(error,e);
+					}
 				}
 			}
+		}else{
+			error = createWorkflowXml(df.getName(),df, list,directory,false); 
 		}
 		return error;
 	}
@@ -236,6 +249,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Set<String> inputsDone = new LinkedHashSet<String>();
 			while(itDfe.hasNext()){
 				DataFlowElement cur = itDfe.next();
+				logger.debug("Element "+cur.getComponentId());
 				if(cur.getAllInputComponent().isEmpty()){
 					Iterator<DFEOutput> itOutputs = cur.getDFEOutput().values().iterator();
 					while(itOutputs.hasNext()){
@@ -264,6 +278,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			itDfe = coordinator.getElements().iterator();
 			while(itDfe.hasNext()){
 				DataFlowElement cur = itDfe.next();
+				logger.debug("Element "+cur.getComponentId());
 				Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
 				while(it.hasNext()){
 					DFEOutput out = it.next();
