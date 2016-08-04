@@ -24,7 +24,21 @@
 						<h:outputText value="#{messages.label_voronoi_repeat}" title="#{messages.title_voronoi_repeat}" />
 					</td>
 					<td>
-				    	<h:inputText value="#{voronoiBean.repeat}" title="#{messages.title_voronoi_repeat}" />
+				    	<h:panelGroup style="max-width:100px;" layout="block" >
+	                     	<select onchange="updatedComboboxListScheduling(this);" style="max-width:100px;">
+				            	<a4j:repeat value="#{voronoiBean.schedulingOptions}" var="idx"  >
+									<h:outputText rendered="#{voronoiBean.selectedSchedulingOption == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+							    	<h:outputText rendered="#{voronoiBean.selectedSchedulingOption != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+								</a4j:repeat>
+				            </select>
+				            
+				            <div id="selectedListScheduling">
+								<h:inputHidden value="#{voronoiBean.selectedSchedulingOption}" id="selectedListSchedulingHidden" />
+							</div>
+							
+							<a4j:jsFunction name="reLoadlistSchedulingInputHidden" reRender="selectedListSchedulingHidden" />
+						</h:panelGroup>
+				    	
 					</td>
 				</tr>
 			</table>

@@ -3,7 +3,10 @@ package com.redsqirl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +21,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
 	private String startDate;
 	private String repeat;
+	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
+	private String selectedSchedulingOption;
+	
 	
 	
 	public void openVoronoi(){
@@ -29,12 +35,21 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		v.setValue("b");
 		tableList.add(v);*/
 		
+		schedulingOptions = new LinkedList<SelectItem>();
+		
+		schedulingOptions.add(new SelectItem("HOUR", "HOUR"));
+		schedulingOptions.add(new SelectItem("DAY", "DAY"));
+		schedulingOptions.add(new SelectItem("MONTH", "MONTH"));
+		
+		
 	}
 	
 	
 	public void apply(){
 		
-		logger.warn("apply " + startDate);
+		logger.warn("date to start " + startDate);
+		
+		logger.warn("selected " + selectedSchedulingOption);
 		
 	}
 	
@@ -70,6 +85,18 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setRepeat(String repeat) {
 		this.repeat = repeat;
+	}
+	public String getSelectedSchedulingOption() {
+		return selectedSchedulingOption;
+	}
+	public void setSelectedSchedulingOption(String selectedSchedulingOption) {
+		this.selectedSchedulingOption = selectedSchedulingOption;
+	}
+	public List<SelectItem> getSchedulingOptions() {
+		return schedulingOptions;
+	}
+	public void setSchedulingOptions(List<SelectItem> schedulingOptions) {
+		this.schedulingOptions = schedulingOptions;
 	}
 
 }

@@ -578,6 +578,15 @@ function updatedComboboxListInteraction(element, index){
 	reLoadlistInteractionInputHidden();
 }
 
+function updatedComboboxListScheduling(element){
+	var idx=element.selectedIndex;
+	var val=element.options[idx].value;
+	var content=element.options[idx].innerHTML;
+	jQuery("[id$=selectedListScheduling]").children().val(val);
+	//alert(val + " " + content);
+	reLoadlistSchedulingInputHidden();
+}
+
 
 function disableAllButton(){
 	jQuery("input[type=button]").attr("disabled", "disabled");

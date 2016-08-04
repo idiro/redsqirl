@@ -58,6 +58,7 @@ import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -2158,8 +2159,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
+			String voranoiPolygonTitle = null;
 
 			if (df != null && df.getElement() != null) {
+				
+				//voronoi polygon
+				DataFlowCoordinator dfc = df.getCoordinators().get(df.getCoordinators().size()-1);
+				voranoiPolygonTitle = dfc.getName();
+				
 
 				for (DataFlowElement e : df.getElement()) {
 					String compId = e.getComponentId();
@@ -2183,13 +2190,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 					.put(new Object[] {
 							elements.get(compId),
 							elementName.startsWith(">") ? elementName.substring(elementName.lastIndexOf(">")+1): elementName,
-									LocalFileSystem.relativize(
-											getCurrentPage(), e.getImage()),
+									LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
 											e.getX(), 
 											e.getY(),
-											compId ,
+											compId,
 											privilege,
-											elementName
+											elementName,
+											voranoiPolygonTitle
 					});
 
 				}
@@ -2216,6 +2223,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 					}
 				}
+				
+				
 
 			} else {
 				logger.warn("Error getPositions getDf NULL or empty");

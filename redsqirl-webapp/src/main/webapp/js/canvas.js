@@ -1258,7 +1258,8 @@ function addElements(canvasName, positions, selecteds) {
 					positionsArrays[i][0],
 					selecteds,
 					positionsArrays[i][6],
-					positionsArrays[i][7]
+					positionsArrays[i][7],
+					positionsArrays[i][8]
 					);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
@@ -1282,7 +1283,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName, voranoiPolygonTitle) {
     
 	console.log("addElement");
 	
@@ -1296,6 +1297,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	console.log("selecteds " + selecteds);
 	console.log("privilege " + privilege);
 	console.log("elementTypeName " + elementTypeName);
+	console.log("voranoiPolygonTitle " + voranoiPolygonTitle);
+	
 	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
 	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
 	
@@ -1476,7 +1479,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     //add point to voronoi list
     canvasArray[canvasName].pointsList.push([posx+40,posy+50]);
-    startVoronoi(canvasName);
+    startVoronoi(canvasName, voranoiPolygonTitle);
     
     
     var selectedObj = false
@@ -3123,7 +3126,7 @@ function getPolygonTextPosition(list){
 	return ans;
 }
 
-function createPolygonVoronoi(canvasName, list) {
+function createPolygonVoronoi(canvasName, list, voranoiPolygonTitle) {
 	
 	var voronoiLayer = canvasArray[canvasName].voronoiLayer;
 	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
@@ -3143,7 +3146,7 @@ function createPolygonVoronoi(canvasName, list) {
 		var point = getPolygonTextPosition(list[i]);
 		
 		var polygonButtonText = new Kinetic.Text({
-	        text : 'title',
+	        text : voranoiPolygonTitle,
 	        fontSize : 14,
 	        fill : 'black',
 	        fontStyle : 'bold',
@@ -3204,7 +3207,7 @@ function updateVoronoi(canvasName){
 	
 }
 
-function startVoronoi(canvasName){
+function startVoronoi(canvasName, voranoiPolygonTitle){
 	
 	console.log("START Voronoi");
 	
@@ -3212,7 +3215,7 @@ function startVoronoi(canvasName){
     var y = canvasArray[canvasName].stage.getHeight();
     var voronoi = v.voronoi().extent([[0, 0], [x, y]]);
     canvasArray[canvasName].voronoi = voronoi(canvasArray[canvasName].pointsList);
-    createPolygonVoronoi(canvasName, canvasArray[canvasName].voronoi.polygons());
+    createPolygonVoronoi(canvasName, canvasArray[canvasName].voronoi.polygons(), voranoiPolygonTitle);
     
     console.log("END Voronoi");
     
