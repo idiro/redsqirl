@@ -1,16 +1,19 @@
 package com.redsqirl;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.VoronoiType;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
 
 public class VoronoiBean extends BaseBean implements Serializable {
 	
@@ -23,6 +26,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private String repeat;
 	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
 	private String selectedSchedulingOption;
+	private String[] voronoiNewName;
 	
 	
 	
@@ -66,6 +70,19 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		tableList.add(new VoronoiType());
 	}
 	
+	public void retrieveVoranoiPolygonTitle() throws RemoteException{
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
+		String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
+		String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
+		
+		
+		//voronoi polygon
+		String voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
+		
+		setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
+	}
 	
 	
 	public List<VoronoiType> getTableList() {
@@ -97,6 +114,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setSchedulingOptions(List<SelectItem> schedulingOptions) {
 		this.schedulingOptions = schedulingOptions;
+	}
+	public String[] getVoronoiNewName() {
+		return voronoiNewName;
+	}
+	public void setVoronoiNewName(String[] voronoiNewName) {
+		this.voronoiNewName = voronoiNewName;
 	}
 
 }

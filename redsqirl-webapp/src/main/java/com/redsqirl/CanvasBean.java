@@ -2163,10 +2163,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			if (df != null && df.getElement() != null) {
 				
-				//voronoi polygon
-				DataFlowCoordinator dfc = df.getCoordinators().get(df.getCoordinators().size()-1);
-				voranoiPolygonTitle = dfc.getName();
-				
 
 				for (DataFlowElement e : df.getElement()) {
 					String compId = e.getComponentId();
@@ -2186,6 +2182,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 					logger.info(compId+" privilege "+privilege);
 					String elementName = e.getName();
+					
+					//voronoi polygon
+					voranoiPolygonTitle = e.getCoordinatorName();
+					
 					jsonElements
 					.put(new Object[] {
 							elements.get(compId),

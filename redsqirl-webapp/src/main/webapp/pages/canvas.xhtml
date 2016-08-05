@@ -1593,6 +1593,15 @@
 					<a4j:actionparam name="paramIdElement" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="retrieveVoranoiPolygonTitle" action="#{voronoiBean.retrieveVoranoiPolygonTitle}" data="#{voronoiBean.voronoiNewName}" 
+					oncomplete="updateVoranoiPolygonTitle(data[0], data[1], data[2], data[3]);">
+					<a4j:actionparam name="canvasName" />
+					<a4j:actionparam name="idElement" />
+					<a4j:actionparam name="groupID" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 
