@@ -154,9 +154,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			logger.debug("Create coordinators...");
 			while(it.hasNext() && error == null){
 				DataFlowCoordinator cur = it.next();
+				File dirCoordinator = new File(directory, cur.getName());
 				logger.debug("Create xml coordinator for "+cur.getName());
 				error = createCoordinatorXml(df.getName(),df, cur,
-						new File(directory, cur.getName()),
+						dirCoordinator,
 						cur.getStartTime(),
 						cur.getEndTime());
 				if(error == null){
@@ -169,7 +170,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								logger.debug(itLog.next().getComponentId());
 							}
 						}
-						error = createWorkflowXml(df.getName(),df,toRun, directory,true);
+						error = createWorkflowXml(df.getName(),df,toRun, dirCoordinator,true);
 					} catch (Exception e) {
 						error =" "+ LanguageManagerWF.getText(
 								"ooziexmlforkjoinpaired.createxml.fail",
@@ -194,9 +195,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		String filename = "coordinator.xml";
 		String error = null;
 
-		File scripts = new File(directory, "scripts");
-		scripts.mkdirs();
-
+		directory.mkdirs();
 		try {
 			
 			// Creating xml

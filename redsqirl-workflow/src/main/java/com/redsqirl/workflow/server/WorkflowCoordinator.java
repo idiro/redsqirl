@@ -573,6 +573,10 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	@Override
 	public void setName(String name) throws RemoteException {
 		this.name = name;
+		Iterator<DataFlowElement> it = elements.iterator();
+		while(it.hasNext()){
+			it.next().setCoordinatorName(name);
+		}
 	}
 
 	@Override
