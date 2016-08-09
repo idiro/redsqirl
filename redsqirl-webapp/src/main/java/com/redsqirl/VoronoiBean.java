@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -13,7 +14,9 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.VoronoiType;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 
 public class VoronoiBean extends BaseBean implements Serializable {
 	
@@ -30,21 +33,43 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	
 	
 	
-	public void openVoronoi(){
+	public void openVoronoi() throws RemoteException{
 		
 		logger.warn("openVoronoi");
 		
-		/*VoronoiType v = new VoronoiType();
-		v.setKey("a");
-		v.setValue("b");
-		tableList.add(v);*/
+		FacesContext context = FacesContext.getCurrentInstance();
+		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
+		String canvasName = context.getExternalContext().getRequestParameterMap().get("paramSelectedTab");
+		
+		
+		Map<String,String> mapVariables;
+		DataFlowCoordinator dtFlowCoordinator = null;
+		List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(canvasName).getCoordinators();
+		for (DataFlowCoordinator dataFlowCoordinator : l) {
+			if(dataFlowCoordinator.getName().equalsIgnoreCase(groupId)){
+				dtFlowCoordinator = dataFlowCoordinator;
+				break;
+			}
+		}
+		if(dtFlowCoordinator != null){
+			mapVariables = dtFlowCoordinator.getVariables();
+			
+			Iterator<String> ans = mapVariables.keySet().iterator();
+			while(ans.hasNext()){
+				String key = ans.next();
+				VoronoiType v = new VoronoiType();
+				v.setKey(key);
+				v.setValue(mapVariables.get(key));
+				tableList.add(v);
+			}
+			
+			
+		}
 		
 		schedulingOptions = new LinkedList<SelectItem>();
-		
-		schedulingOptions.add(new SelectItem("HOUR", "HOUR"));
-		schedulingOptions.add(new SelectItem("DAY", "DAY"));
-		schedulingOptions.add(new SelectItem("MONTH", "MONTH"));
-		
+		for (TimeTemplate tt : TimeTemplate.values()) {
+			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
+		}
 		
 	}
 	

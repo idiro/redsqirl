@@ -3150,10 +3150,12 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 			
 			if(polygonLayer.getChildren()[i].voronoiTitle  != undefined){
 				pname = polygonLayer.getChildren()[i].voronoiTitle;
+				voranoiPolygonTitle = pname;
+				console.log("pname1A " + pname + " - " + voranoiPolygonTitle);
 			}else{
 				pname = polygonLayer.getChildren()[i].getId();
+				console.log("pname1B " + pname);
 			}
-			console.log("pname1 " + pname);
 		}else{
 			pname = idElement;
 			console.log("pname2 " + pname);
@@ -3199,7 +3201,9 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	        document.body.style.cursor = 'default';
 	    });
 		groupBt.on('dblclick', function() {
-			openVoronoiModal();
+			console.log(this.getChildren()[0].getText());
+			console.log(canvasName);
+			openVoronoiModal(this.getChildren()[0].getText(), canvasName);
 	    });
 		
 		//groupBt.add(polygonButton);
@@ -3290,7 +3294,7 @@ function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
 		console.log("each " + name);*/
 		
         if (value.getId() == idElement || value.getId() == groupId) {
-        	value.voronoiTitle(name);
+        	value.voronoiTitle = name;
         }
     });
 	

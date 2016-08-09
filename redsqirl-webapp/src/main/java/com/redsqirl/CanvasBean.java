@@ -1885,7 +1885,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					+ "' has not been initialised!";
 		}
 
-		if (error == null && comment != null && !comment.equals("undefined")) {
+		if (error == null && comment != null && !comment.equals("undefined") && !comment.isEmpty()) {
 			logger.warn("set comment: " + comment);
 			getDf().getElement(elementId).setComment(comment);
 		}
@@ -2142,16 +2142,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		logger.warn("getPositions " + selecteds);
 		
-		if(getDf() != null){
+		/*if(getDf() != null){
 			logger.warn('a');
 		}else{
 			logger.warn('b');
-		}
+		}*/
 
 		return getPositions(getDf(), getNameWorkflow(), selecteds);
 	}
 
-	public String[] getPositions(DataFlow df, String workflowName, String selecteds) throws Exception {
+	public String[] getPositions(DataFlow df, String workflowName, String selecteds) {
 
 		try {
 
@@ -2162,7 +2162,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			String voranoiPolygonTitle = null;
 
 			if (df != null && df.getElement() != null) {
-				
 
 				for (DataFlowElement e : df.getElement()) {
 					String compId = e.getComponentId();
@@ -2249,6 +2248,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
+		logger.warn("getPositions empty ");
+		
 		return new String[] {};
 	}
 
