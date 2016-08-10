@@ -116,6 +116,13 @@
                     "property": "oozie_xmlns",
                     "scope": "system",
                     "type": "STRING"
+                },
+                {
+                    "default": "uri:oozie:coordinator:0.1",
+                    "optional": "true",
+                    "property": "oozie_coord_xmlns",
+                    "scope": "system",
+                    "type": "STRING"
                 }
             ]
         },

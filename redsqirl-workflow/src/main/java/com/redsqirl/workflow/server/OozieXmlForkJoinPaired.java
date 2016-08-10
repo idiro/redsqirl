@@ -22,7 +22,9 @@ package com.redsqirl.workflow.server;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,6 +51,7 @@ import org.w3c.dom.Element;
 
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -96,7 +99,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	@Override
 	public String createXml(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
-		String error = createMainXml(df, list,directory);
+		String error = createMainXml(df, list,directory,null);
 		
 		if(error == null){
 			error = createSubXmls(df,list,directory);
@@ -144,10 +147,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	}
 	
 	public String createMainXml(DataFlow df, List<RunnableElement> list,
-			File directory) throws RemoteException {
+			File directory,String endTime) throws RemoteException {
 
 
-		boolean scheduleJob = df.getCoordinators().get(0).getTimeCondition().getUnit() != null;
+		boolean scheduleJob = true;//df.getCoordinators().get(0).getTimeCondition().getUnit() != null;
 		Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
 		String error = null;
 		if(scheduleJob){
@@ -158,8 +161,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				logger.debug("Create xml coordinator for "+cur.getName());
 				error = createCoordinatorXml(df.getName(),df, cur,
 						dirCoordinator,
-						cur.getStartTime(),
-						cur.getEndTime());
+						endTime);
 				if(error == null){
 					try {
 						List<RunnableElement> toRun = df.subsetToRun(cur.getComponentIds());
@@ -187,7 +189,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	
 	public String createCoordinatorXml(String wfId,DataFlow df, DataFlowCoordinator coordinator,
 			File directory,
-			String startDate,
 			String endDate) throws RemoteException {
 		
 
@@ -207,28 +208,54 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Element rootElement = doc.createElement("coordinator-app");
 			doc.appendChild(rootElement);
 
+			
+			//Define the datasets
+			CoordinatorTimeConstraint minCT = null;
+			Element datasets = doc.createElement("datasets");
+			Map<String,String> autoVariables = new LinkedHashMap<String,String>();
+			Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
+			Set<String> inputsDone = new LinkedHashSet<String>();
+			List<Element> datasetList = new LinkedList<Element>();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				logger.debug("Element "+cur.getComponentId());
+				Iterator<DFEOutput> itOutputs = cur.getDFEOutput().values().iterator();
+				while(itOutputs.hasNext()){
+					DFEOutput datasetCur = itOutputs.next();
+					if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
+						if(inputsDone.add(datasetCur.getPath())){
+							Element dataset = doc.createElement("dataset");
+							dataset.setAttribute("name", cur.getComponentId());
+							dataset.setAttribute("timezone", "${timezone}");
+							dataset.setAttribute("frequency", datasetCur.getFrequency().getOozieFreq());
+							dataset.setAttribute("initial-instance", datasetCur.getInitialInstance());
+							
+							if(datasetCur.getFrequency().getOozieFreq() == null ||
+									datasetCur.getFrequency().getOozieFreq().isEmpty() ||
+									datasetCur.getInitialInstance() == null ||
+									datasetCur.getInitialInstance().isEmpty()){
+								datasetList.add(dataset);
+							}
+							Element uriTemplate= doc.createElement("uri-template");
+							uriTemplate.appendChild(doc
+									.createTextNode(datasetCur.getPath()));
+							dataset.appendChild(uriTemplate);
+							datasets.appendChild(dataset);
+							
+							if(minCT == null){
+								minCT = datasetCur.getFrequency();
+							}else{
+								minCT = WfCoordTimeConstraint.getMostFrequent(minCT,datasetCur.getFrequency());
+							}
+						}
+					}
+				}
+			}
+
+
 			{
 				Attr attrName = doc.createAttribute("name");
 				attrName.setValue(wfId);
-				rootElement.setAttributeNode(attrName);
-			}
-			
-			{
-				//Frequency
-				Attr attrName = doc.createAttribute("frequency");
-				attrName.setValue(coordinator.getTimeCondition().getFrequencyStr());
-				rootElement.setAttributeNode(attrName);
-			}
-			
-			{
-				Attr attrName = doc.createAttribute("start");
-				attrName.setValue(startDate);
-				rootElement.setAttributeNode(attrName);
-			}
-			
-			{
-				Attr attrName = doc.createAttribute("end");
-				attrName.setValue(endDate);
 				rootElement.setAttributeNode(attrName);
 			}
 			
@@ -237,43 +264,56 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				attrName.setValue("${timezone}");
 				rootElement.setAttributeNode(attrName);
 			}
-			
-			Attr attrXmlns = doc.createAttribute("xmlns");
-			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_coord_xmlns));
-			rootElement.setAttributeNode(attrXmlns);
-			
-			//Define the datasets
-			
-			Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
-			Set<String> inputsDone = new LinkedHashSet<String>();
-			while(itDfe.hasNext()){
-				DataFlowElement cur = itDfe.next();
-				logger.debug("Element "+cur.getComponentId());
-				if(cur.getAllInputComponent().isEmpty()){
-					Iterator<DFEOutput> itOutputs = cur.getDFEOutput().values().iterator();
-					while(itOutputs.hasNext()){
-						DFEOutput datasetCur = itOutputs.next();
-						if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
-							if(inputsDone.add(datasetCur.getPath())){
-								Element dataset = doc.createElement("dataset");
-								dataset.setAttribute("name", cur.getComponentId());
-								dataset.setAttribute("timezone", "${timezone}");
-								dataset.setAttribute("frequency", datasetCur.getFrequency().getFrequencyStr());
-								dataset.setAttribute("initial-instance", datasetCur.getInitialInstance());
-
-								Element uriTemplate= doc.createElement("uri-template");
-								uriTemplate.appendChild(doc
-										.createTextNode(datasetCur.getPath()));
-
-								rootElement.appendChild(dataset);
-							}
-						}
-					}
-				}
+			{
+				Attr attrXmlns = doc.createAttribute("xmlns");
+				attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_coord_xmlns));
+				rootElement.setAttributeNode(attrXmlns);
 			}
+			{
+				//Frequency
+				Attr attrName = doc.createAttribute("frequency");
+				if(coordinator.getTimeCondition().getUnit() == null){
+					attrName.setValue(minCT.getOozieFreq());
+				}else{
+					attrName.setValue(coordinator.getTimeCondition().getOozieFreq());
+				}
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+			Date startDate = minCT.getStartTime(coordinator.getExecutionTime());
+			{
+				Attr attrName = doc.createAttribute("start");
+				attrName.setValue(dateFormat.format(startDate));
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			Iterator<Element> datasetIt = datasetList.iterator();
+			while(datasetIt.hasNext()){
+				Element dataset = datasetIt.next();
+				if(coordinator.getTimeCondition().getUnit() == null){
+					dataset.setAttribute("frequency", minCT.getOozieFreq());
+				}else{
+					dataset.setAttribute("frequency", coordinator.getTimeCondition().getOozieFreq());
+				}
+				dataset.setAttribute("initial-instance", dateFormat.format(startDate));
+			}
+			
+			{
+				Attr attrName = doc.createAttribute("end");
+				if(endDate != null && !endDate.isEmpty()){
+					attrName.setValue(endDate);
+				}else{
+					attrName.setValue(dateFormat.format(minCT.getDefaultEndTime(startDate)));
+				}
+				rootElement.setAttributeNode(attrName);
+			}
+			
+			
 			
 			//Define the input events
 			Element inputEvent = doc.createElement("input-events");
+			int inputNb = 0;
 			itDfe = coordinator.getElements().iterator();
 			while(itDfe.hasNext()){
 				DataFlowElement cur = itDfe.next();
@@ -285,6 +325,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					if(PathType.MATERIALIZED.equals(out.getPathType())){
 
 						Element dataIn = doc.createElement("data-in");
+						autoVariables.put(cur.getComponentId(), "${coord:dataIn('"+cur.getComponentId()+"')}");
 						dataIn.setAttribute("name", cur.getComponentId());
 						dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());	
 						if(out.getNumberMaterializedPath() == 1){
@@ -307,10 +348,42 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							dataIn.appendChild(endInstance);
 						}
 						inputEvent.appendChild(dataIn);
+						++inputNb;
 					}
 				}
 				
 			}
+			
+			//Define Controls
+			Element controls = doc.createElement("controls");
+			{
+				Element execution = doc.createElement("execution");
+				if(inputNb > 0){
+					execution.appendChild(doc.createTextNode("FIFO"));
+				}else{
+					execution.appendChild(doc.createTextNode("LAST_ONLY"));
+				}
+				controls.appendChild(execution);
+			}
+			{
+				Element concurrency = doc.createElement("concurrency");
+				concurrency.appendChild(doc.createTextNode("1"));
+				controls.appendChild(concurrency);
+			}
+			{
+				Element timeout = doc.createElement("timeout");
+				timeout.appendChild(doc.createTextNode("-1"));
+				controls.appendChild(timeout);
+			}
+			{
+				Element throttle = doc.createElement("throttle");
+				throttle.appendChild(doc.createTextNode("12"));
+				controls.appendChild(throttle);
+			}
+			rootElement.appendChild(controls);
+			
+			
+			rootElement.appendChild(datasets);
 			rootElement.appendChild(inputEvent);
 			
 			//Define the output events
@@ -324,8 +397,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						DFEOutput out = it.next();
 
 						if(PathType.TEMPLATE.equals(out.getPathType())){
-							Element dataIn = doc.createElement("data-in");
+							Element dataIn = doc.createElement("data-out");
 							dataIn.setAttribute("name", cur.getComponentId());
+							autoVariables.put(cur.getComponentId(), "${coord:dataOut('"+cur.getComponentId()+"')}");
 							dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());
 							
 							Element instance= doc.createElement("instance");
@@ -344,8 +418,24 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			Element appPath = doc.createElement("app-path");
 			appPath.appendChild(doc.createTextNode("/user/${userName}/.redsqirl/jobs/"+df.getName()+"/"+coordinator.getName()));
+			workflow.appendChild(appPath);
+			
 			Element configuration = doc.createElement("configuration");
-			Iterator<Entry<String,String>> it = coordinator.getVariables().entrySet().iterator();
+			
+			Iterator<Entry<String,String>> it = autoVariables.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> cur = it.next();
+				Element prop = doc.createElement("property");
+				Element propName = doc.createElement("name");
+				propName.appendChild(doc.createTextNode(cur.getKey()));
+				prop.appendChild(propName);
+				Element propValue = doc.createElement("value");
+				propValue.appendChild(doc.createTextNode(cur.getValue()));
+				prop.appendChild(propValue);
+				
+				configuration.appendChild(prop);
+			}
+			it = coordinator.getVariables().entrySet().iterator();
 			while(it.hasNext()){
 				Entry<String,String> cur = it.next();
 				Element prop = doc.createElement("property");

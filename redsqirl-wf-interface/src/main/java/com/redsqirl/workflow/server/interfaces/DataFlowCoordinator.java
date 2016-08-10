@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,11 +41,8 @@ public interface DataFlowCoordinator extends Remote{
 	
 	String readInXmlLinks(Document doc, Element parent, DataFlow df) throws Exception;
 	
-	String getStartTime() throws RemoteException;
+	Date getExecutionTime() throws RemoteException;
 
-	void setStartTime(String startTime) throws RemoteException;
-
-	String getEndTime() throws RemoteException;
-
-	void setEndTime(String endTime) throws RemoteException;
+	void setExecutionTime(Date executionTime) throws RemoteException;
+	
 }
