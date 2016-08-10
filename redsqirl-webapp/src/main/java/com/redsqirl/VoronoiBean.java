@@ -53,6 +53,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		if(dataFlowCoordinator != null){
 			mapVariables = dataFlowCoordinator.getVariables();
 			
+			tableList = new ArrayList<VoronoiType>();
 			Iterator<String> ans = mapVariables.keySet().iterator();
 			while(ans.hasNext()){
 				String key = ans.next();
@@ -80,7 +81,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		for (VoronoiType voronoiType : tableList) {
 			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
 		}
-		dataFlowCoordinator.setStartTime(startDate.toString());
+		dataFlowCoordinator.setExecutionTime(startDate);
 		
 	}
 	
