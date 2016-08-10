@@ -58,6 +58,7 @@ import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -1884,7 +1885,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					+ "' has not been initialised!";
 		}
 
-		if (error == null && comment != null && !comment.equals("undefined")) {
+		if (error == null && comment != null && !comment.equals("undefined") && !comment.isEmpty()) {
 			logger.warn("set comment: " + comment);
 			getDf().getElement(elementId).setComment(comment);
 		}
@@ -2141,16 +2142,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		logger.warn("getPositions " + selecteds);
 		
-		if(getDf() != null){
+		/*if(getDf() != null){
 			logger.warn('a');
 		}else{
 			logger.warn('b');
-		}
+		}*/
 
 		return getPositions(getDf(), getNameWorkflow(), selecteds);
 	}
 
-	public String[] getPositions(DataFlow df, String workflowName, String selecteds) throws Exception {
+	public String[] getPositions(DataFlow df, String workflowName, String selecteds) {
 
 		try {
 
@@ -2158,6 +2159,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
+			String voranoiPolygonTitle = null;
 
 			if (df != null && df.getElement() != null) {
 
@@ -2179,17 +2181,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 					logger.info(compId+" privilege "+privilege);
 					String elementName = e.getName();
+					
+					//voronoi polygon
+					voranoiPolygonTitle = e.getCoordinatorName();
+					
 					jsonElements
 					.put(new Object[] {
 							elements.get(compId),
 							elementName.startsWith(">") ? elementName.substring(elementName.lastIndexOf(">")+1): elementName,
-									LocalFileSystem.relativize(
-											getCurrentPage(), e.getImage()),
+									LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
 											e.getX(), 
 											e.getY(),
-											compId ,
+											compId,
 											privilege,
-											elementName
+											elementName,
+											voranoiPolygonTitle
 					});
 
 				}
@@ -2216,6 +2222,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 					}
 				}
+				
+				
 
 			} else {
 				logger.warn("Error getPositions getDf NULL or empty");
@@ -2240,6 +2248,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
+		logger.warn("getPositions empty ");
+		
 		return new String[] {};
 	}
 

@@ -529,7 +529,8 @@
 
 	    	  console.log("addElementJS");
 	    	  
-	    	  /* console.log("canvasName " + canvasName);
+	    	  /*
+	    	  console.log("canvasName " + canvasName);
 	    	  console.log("path " + path);
 	    	  console.log("positions " + positions);
 	    	  console.log("links " + links);
@@ -537,7 +538,8 @@
 	    	  console.log("reset " + path);
 	    	  console.log("workflowType " + workflowType);
 	    	  console.log("forceRefresh " + forceRefresh);
-	    	  console.log("setWf " + setWf); */
+	    	  console.log("setWf " + setWf); 
+	    	  */
 	    	  
 	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
 	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
@@ -1528,8 +1530,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());"
-					>
+					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1589,6 +1590,15 @@
 					<a4j:actionparam name="paramNameElement" />
 					<a4j:actionparam name="paramGroupID" />
 					<a4j:actionparam name="paramIdElement" />
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="retrieveVoranoiPolygonTitle" action="#{voronoiBean.retrieveVoranoiPolygonTitle}" data="#{voronoiBean.voronoiNewName}" 
+					oncomplete="updateVoranoiPolygonTitle(data[0], data[1], data[2], data[3]);">
+					<a4j:actionparam name="canvasName" />
+					<a4j:actionparam name="idElement" />
+					<a4j:actionparam name="groupID" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -2105,9 +2115,7 @@
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();"
 					reRender="msnErrorPage">
 					<a4j:actionparam name="paramGroupId" />
-					<a4j:actionparam name="paramPathImage" />
 					<a4j:actionparam name="paramSelectedTab" />
-					<a4j:actionparam name="paramPageNb" />
 				</a4j:jsFunction>
 			</a4j:region>
 			

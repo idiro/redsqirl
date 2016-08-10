@@ -1258,7 +1258,8 @@ function addElements(canvasName, positions, selecteds) {
 					positionsArrays[i][0],
 					selecteds,
 					positionsArrays[i][6],
-					positionsArrays[i][7]
+					positionsArrays[i][7],
+					positionsArrays[i][8]
 					);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
@@ -1282,7 +1283,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName, voranoiPolygonTitle) {
     
 	console.log("addElement");
 	
@@ -1296,6 +1297,12 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	console.log("selecteds " + selecteds);
 	console.log("privilege " + privilege);
 	console.log("elementTypeName " + elementTypeName);
+	console.log("voranoiPolygonTitle " + voranoiPolygonTitle);
+	
+	if(voranoiPolygonTitle == undefined){
+		voranoiPolygonTitle = "title";
+	}
+	
 	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
 	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
 	
@@ -1476,7 +1483,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     //add point to voronoi list
     canvasArray[canvasName].pointsList.push([posx+40,posy+50]);
-    startVoronoi(canvasName);
+    startVoronoi(canvasName, idElement, voranoiPolygonTitle);
     
     
     var selectedObj = false
@@ -2216,7 +2223,7 @@ function configureGroupListeners(canvasName, group) {
         canvasArray[canvasName].savePositions = null;
         canvasArray[canvasName].dragDropGroup = false;
         
-        updateVoronoi(canvasName);        
+        updateVoronoi(canvasName, group.getId());        
         
     });
 
@@ -3123,27 +3130,49 @@ function getPolygonTextPosition(list){
 	return ans;
 }
 
-function createPolygonVoronoi(canvasName, list) {
+function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) {
 	
+	
+	var polygonLayer = canvasArray[canvasName].polygonLayer;
 	var voronoiLayer = canvasArray[canvasName].voronoiLayer;
 	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
 	var coloursList = ['blue', 'green', 'red', 'black', 'yellow', 'orange', 'grey']
 	
+	
 	voronoiLayer.removeChildren();
 	voronoiButtonLayer.removeChildren();
 	
+	var pname;
 	var i = 0;
 	for (;list[i];) {
+		
+		if(polygonLayer.getChildren()[i] != undefined){
+			
+			if(polygonLayer.getChildren()[i].voronoiTitle  != undefined){
+				pname = polygonLayer.getChildren()[i].voronoiTitle;
+				voranoiPolygonTitle = pname;
+				console.log("pname1A " + pname + " - " + voranoiPolygonTitle);
+			}else{
+				pname = polygonLayer.getChildren()[i].getId();
+				console.log("pname1B " + pname);
+			}
+		}else{
+			pname = idElement;
+			console.log("pname2 " + pname);
+		}
+		
 		poly = new Kinetic.Polygon({
-		points: list[i],
-		fill: coloursList[i%7],
-		opacity: 0.1
+			name : pname,
+			points: list[i],
+			fill: coloursList[i%7],
+			opacity: 0.1
 		});
 		
 		var point = getPolygonTextPosition(list[i]);
 		
 		var polygonButtonText = new Kinetic.Text({
-	        text : 'title',
+			name : pname,
+	        text : voranoiPolygonTitle,
 	        fontSize : 14,
 	        fill : 'black',
 	        fontStyle : 'bold',
@@ -3162,7 +3191,7 @@ function createPolygonVoronoi(canvasName, list) {
 		
 		var groupBt = new Kinetic.Group({
 	        id : 'bt',
-	        name : 'bt',
+	        name : pname
 	    });
 		
 		groupBt.on('mouseover', function(e) {
@@ -3172,7 +3201,9 @@ function createPolygonVoronoi(canvasName, list) {
 	        document.body.style.cursor = 'default';
 	    });
 		groupBt.on('dblclick', function() {
-			openVoronoiModal();
+			console.log(this.getChildren()[0].getText());
+			console.log(canvasName);
+			openVoronoiModal(this.getChildren()[0].getText(), canvasName);
 	    });
 		
 		//groupBt.add(polygonButton);
@@ -3188,9 +3219,10 @@ function createPolygonVoronoi(canvasName, list) {
 	
 }
 
-function updateVoronoi(canvasName){
+function updateVoronoi(canvasName, idElement){
 	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
+	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
 	
 	canvasArray[canvasName].pointsList = [];
 	
@@ -3199,12 +3231,19 @@ function updateVoronoi(canvasName){
             canvasArray[canvasName].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
         }
     });
+	
+	var voranoiPolygonTitle;
+	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
+        if (value.getChildren()[0].getName() == idElement) {
+        	voranoiPolygonTitle = value.getChildren()[0].getText();
+        }
+    });
     
-	startVoronoi(canvasName);
+	startVoronoi(canvasName, idElement, voranoiPolygonTitle);
 	
 }
 
-function startVoronoi(canvasName){
+function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
 	
 	console.log("START Voronoi");
 	
@@ -3212,11 +3251,56 @@ function startVoronoi(canvasName){
     var y = canvasArray[canvasName].stage.getHeight();
     var voronoi = v.voronoi().extent([[0, 0], [x, y]]);
     canvasArray[canvasName].voronoi = voronoi(canvasArray[canvasName].pointsList);
-    createPolygonVoronoi(canvasName, canvasArray[canvasName].voronoi.polygons());
+    createPolygonVoronoi(canvasName, idElement, canvasArray[canvasName].voronoi.polygons(), voranoiPolygonTitle);
     
     console.log("END Voronoi");
     
 }
+
+function retrieveVoranoiPolygonTitleJS(canvasName, idElement, groupId) {
+	
+	//console.log("retrieveVoranoiPolygonTitleJS");
+	retrieveVoranoiPolygonTitle(canvasName, idElement, groupId);
+}
+
+function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
+    
+	console.log("updateVoranoiPolygonTitle");
+	
+//	console.log("canvasName " + canvasName);
+//	console.log("idElement " + idElement);
+//	console.log("groupId " + groupId);
+//	console.log("name " + name);
+	
+	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
+
+	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
+		
+		console.log("each1 " + value.getChildren()[0].getName() );
+		console.log("each1 " + idElement);
+		console.log("each1 " + groupId);
+		console.log("each1 " + name);
+		
+        if (value.getChildren()[0].getName() == idElement || value.getChildren()[0].getName() == groupId) {
+        	value.getChildren()[0].setText(name);
+        }
+    });
+	
+	jQuery.each(canvasArray[canvasName].polygonLayer.getChildren(), function(index, value) {
+		
+/*		console.log("each " + value.getId());
+		console.log("each " + idElement);
+		console.log("each " + groupId);
+		console.log("each " + name);*/
+		
+        if (value.getId() == idElement || value.getId() == groupId) {
+        	value.voronoiTitle = name;
+        }
+    });
+	
+	voronoiButtonLayer.draw();
+}
+
 
 
 

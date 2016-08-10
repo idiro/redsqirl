@@ -1,13 +1,22 @@
 package com.redsqirl;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.VoronoiType;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 
 public class VoronoiBean extends BaseBean implements Serializable {
 	
@@ -18,23 +27,58 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
 	private String startDate;
 	private String repeat;
+	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
+	private String selectedSchedulingOption;
+	private String[] voronoiNewName;
 	
 	
-	public void openVoronoi(){
+	
+	public void openVoronoi() throws RemoteException{
 		
 		logger.warn("openVoronoi");
 		
-		/*VoronoiType v = new VoronoiType();
-		v.setKey("a");
-		v.setValue("b");
-		tableList.add(v);*/
+		FacesContext context = FacesContext.getCurrentInstance();
+		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
+		String canvasName = context.getExternalContext().getRequestParameterMap().get("paramSelectedTab");
+		
+		
+		Map<String,String> mapVariables;
+		DataFlowCoordinator dtFlowCoordinator = null;
+		List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(canvasName).getCoordinators();
+		for (DataFlowCoordinator dataFlowCoordinator : l) {
+			if(dataFlowCoordinator.getName().equalsIgnoreCase(groupId)){
+				dtFlowCoordinator = dataFlowCoordinator;
+				break;
+			}
+		}
+		if(dtFlowCoordinator != null){
+			mapVariables = dtFlowCoordinator.getVariables();
+			
+			Iterator<String> ans = mapVariables.keySet().iterator();
+			while(ans.hasNext()){
+				String key = ans.next();
+				VoronoiType v = new VoronoiType();
+				v.setKey(key);
+				v.setValue(mapVariables.get(key));
+				tableList.add(v);
+			}
+			
+			
+		}
+		
+		schedulingOptions = new LinkedList<SelectItem>();
+		for (TimeTemplate tt : TimeTemplate.values()) {
+			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
+		}
 		
 	}
 	
 	
 	public void apply(){
 		
-		logger.warn("apply " + startDate);
+		logger.warn("date to start " + startDate);
+		
+		logger.warn("selected " + selectedSchedulingOption);
 		
 	}
 	
@@ -51,6 +95,19 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		tableList.add(new VoronoiType());
 	}
 	
+	public void retrieveVoranoiPolygonTitle() throws RemoteException{
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
+		String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
+		String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
+		
+		
+		//voronoi polygon
+		String voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
+		
+		setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
+	}
 	
 	
 	public List<VoronoiType> getTableList() {
@@ -70,6 +127,24 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setRepeat(String repeat) {
 		this.repeat = repeat;
+	}
+	public String getSelectedSchedulingOption() {
+		return selectedSchedulingOption;
+	}
+	public void setSelectedSchedulingOption(String selectedSchedulingOption) {
+		this.selectedSchedulingOption = selectedSchedulingOption;
+	}
+	public List<SelectItem> getSchedulingOptions() {
+		return schedulingOptions;
+	}
+	public void setSchedulingOptions(List<SelectItem> schedulingOptions) {
+		this.schedulingOptions = schedulingOptions;
+	}
+	public String[] getVoronoiNewName() {
+		return voronoiNewName;
+	}
+	public void setVoronoiNewName(String[] voronoiNewName) {
+		this.voronoiNewName = voronoiNewName;
 	}
 
 }

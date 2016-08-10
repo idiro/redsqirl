@@ -250,9 +250,16 @@ CommandAddObj.prototype.redo = function(){
 			this.privilege
 		);
     tmpCommandObj = this;
+    
+    var cn = this.canvasName;
+    var gi = this.groupId;
+    
     addElementBt(this.elementType,this.groupId,this.elementId);
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].stage.draw();
+	
+	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(cn, tmpCommandObj.elementId, gi); }, 1000);
+	
 	canvasArray[this.canvasName].polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");
 };
