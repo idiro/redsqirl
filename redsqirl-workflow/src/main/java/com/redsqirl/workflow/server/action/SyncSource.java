@@ -21,6 +21,8 @@ package com.redsqirl.workflow.server.action;
 
 
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -280,6 +282,58 @@ public class SyncSource extends AbstractSource {
 		return error;
 	}
 	
+	protected String getInitialInstance(String realPath, String templatePathStr){
+		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		Matcher m = p.matcher(templatePathStr);
+		Date now = new Date();
+		String buildingStr = "";
+		String year = new SimpleDateFormat("YYYY").format(now);
+		String month = new SimpleDateFormat("MM").format(now);
+		String day = new SimpleDateFormat("dd").format(now);
+		String hour  = "00";
+		String minute  = "00";
+		int prevIndex = 0;
+		while(m.find()){
+			buildingStr += templatePathStr.substring(prevIndex, m.start());
+			prevIndex = m.end();
+			try{
+				TimeTemplate cur = TimeTemplate.valueOf(m.group(1)); 
+				if(cur != null){
+					String toAdd = "";
+					int realPathSubStart = buildingStr.length();
+					switch(cur){
+					case DAY:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						day = toAdd;
+						break;
+					case HOUR:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						hour = toAdd;
+						break;
+					case MINUTE:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						minute = toAdd;
+						break;
+					case MONTH:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+2);
+						month = toAdd;
+						break;
+					case YEAR:
+						toAdd = realPath.substring(realPathSubStart,realPathSubStart+4);
+						year = toAdd;
+						break;
+					default:
+						break;
+					}
+					buildingStr += toAdd;
+				}
+			}catch(Exception e){
+			}
+		}
+		
+		return year+"-"+month+"-"+day+"T"+hour+":"+minute;
+	}
+	
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		super.update(interaction);
@@ -316,7 +370,8 @@ public class SyncSource extends AbstractSource {
 			templateOut.setPathType(PathType.TEMPLATE);
 			templateOut.setSavingState(SavingState.RECORDED);
 			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));
-			templateOut.getFrequency().setUnit(unit.getValue());
+			templateOut.getFrequency().setUnit(TimeTemplate.valueOf(unit.getValue()));
+			templateOut.setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
 		}
 		return error;
 	}

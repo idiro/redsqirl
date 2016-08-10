@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -39,8 +40,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	protected String name;
 	protected List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
 	protected Map<String,String> variables = new LinkedHashMap<String,String>();
-	protected String startTime = "";
-	protected String endTime = "";
+	protected Date executionTime = null;
 	
 	protected WorkflowCoordinator() throws RemoteException {
 		super();
@@ -64,16 +64,11 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			timeCondition.write(doc, elTimeConstraint);
 			rootElement.appendChild(elTimeConstraint);
 		}
-		{
-			Element elTime = doc.createElement("start-time");
-			elTime.appendChild(doc.createTextNode(startTime));
+		try{
+			Element elTime = doc.createElement("execution-time");
+			elTime.appendChild(doc.createTextNode( Long.valueOf(executionTime.getTime()).toString()));
 			rootElement.appendChild(elTime);
-		}
-		{
-			Element elTime = doc.createElement("end-time");
-			elTime.appendChild(doc.createTextNode(endTime));
-			rootElement.appendChild(elTime);
-		}
+		}catch(Exception e){}
 		Element elConfiguration = doc.createElement("configuration");
 		Iterator<Entry<String,String>> itVar = variables.entrySet().iterator();
 		while(itVar.hasNext()){
@@ -273,13 +268,8 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		}catch(Exception e){
 		}
 		try{
-			startTime = parent.getElementsByTagName("start-time").item(0)
-					.getChildNodes().item(0).getNodeValue();
-		}catch(Exception e){
-		}
-		try{
-			endTime = parent.getElementsByTagName("end-time").item(0)
-					.getChildNodes().item(0).getNodeValue();
+			executionTime = new Date(Long.valueOf(parent.getElementsByTagName("execution-time").item(0)
+					.getChildNodes().item(0).getNodeValue()));
 		}catch(Exception e){
 		}
 		try{
@@ -599,20 +589,12 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		return error;
 	}
 
-	public final String getStartTime() {
-		return startTime;
+	public final Date getExecutionTime() {
+		return executionTime;
 	}
 
-	public final void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
-
-	public final String getEndTime() {
-		return endTime;
-	}
-
-	public final void setEndTime(String endTime) {
-		this.endTime = endTime;
+	public final void setExecutionTime(Date executionTime) {
+		this.executionTime = executionTime;
 	}
 
 }
