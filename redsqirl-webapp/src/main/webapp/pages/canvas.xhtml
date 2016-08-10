@@ -2113,7 +2113,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();"
-					reRender="msnErrorPage">
+					reRender="modalVoronoi,modalVoronoiTale">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>

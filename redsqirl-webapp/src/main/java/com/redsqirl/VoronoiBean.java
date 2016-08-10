@@ -3,6 +3,7 @@ package com.redsqirl;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.VoronoiType;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
-import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 
 public class VoronoiBean extends BaseBean implements Serializable {
@@ -25,12 +25,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private static Logger logger = Logger.getLogger(VoronoiBean.class);
 	
 	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
-	private String startDate;
+	private Date startDate;
 	private String repeat;
 	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
 	private String selectedSchedulingOption;
 	private String[] voronoiNewName;
-	
+	private DataFlowCoordinator dataFlowCoordinator;
 	
 	
 	public void openVoronoi() throws RemoteException{
@@ -43,16 +43,15 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		
 		
 		Map<String,String> mapVariables;
-		DataFlowCoordinator dtFlowCoordinator = null;
 		List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(canvasName).getCoordinators();
-		for (DataFlowCoordinator dataFlowCoordinator : l) {
-			if(dataFlowCoordinator.getName().equalsIgnoreCase(groupId)){
-				dtFlowCoordinator = dataFlowCoordinator;
+		for (DataFlowCoordinator dtFlowCoordinator : l) {
+			if(dtFlowCoordinator.getName().equalsIgnoreCase(groupId)){
+				dataFlowCoordinator = dtFlowCoordinator;
 				break;
 			}
 		}
-		if(dtFlowCoordinator != null){
-			mapVariables = dtFlowCoordinator.getVariables();
+		if(dataFlowCoordinator != null){
+			mapVariables = dataFlowCoordinator.getVariables();
 			
 			Iterator<String> ans = mapVariables.keySet().iterator();
 			while(ans.hasNext()){
@@ -62,7 +61,6 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				v.setValue(mapVariables.get(key));
 				tableList.add(v);
 			}
-			
 			
 		}
 		
@@ -74,11 +72,15 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	
 	
-	public void apply(){
+	public void apply() throws RemoteException{
 		
 		logger.warn("date to start " + startDate);
-		
 		logger.warn("selected " + selectedSchedulingOption);
+		
+		for (VoronoiType voronoiType : tableList) {
+			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
+		}
+		dataFlowCoordinator.setStartTime(startDate.toString());
 		
 	}
 	
@@ -116,10 +118,10 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	public void setTableList(List<VoronoiType> tableList) {
 		this.tableList = tableList;
 	}
-	public String getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(String startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 	public String getRepeat() {
@@ -145,6 +147,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setVoronoiNewName(String[] voronoiNewName) {
 		this.voronoiNewName = voronoiNewName;
+	}
+	public DataFlowCoordinator getDataFlowCoordinator() {
+		return dataFlowCoordinator;
+	}
+	public void setDataFlowCoordinator(DataFlowCoordinator dataFlowCoordinator) {
+		this.dataFlowCoordinator = dataFlowCoordinator;
 	}
 
 }
