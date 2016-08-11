@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server.oozie;
 
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
@@ -121,6 +122,14 @@ public class HiveAction extends OozieUniqueActionAbs{
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
 		hive.appendChild(script);
+		
+		Iterator<String> it = getVariables().iterator();
+		while(it.hasNext()){
+			String var = it.next();
+			Element paramEl = oozieXmlDoc.createElement("param");
+			paramEl.appendChild(oozieXmlDoc.createTextNode(var+"=${"+var+"}"));
+			hive.appendChild(paramEl);
+		}
 		
 		action.appendChild(hive);
 

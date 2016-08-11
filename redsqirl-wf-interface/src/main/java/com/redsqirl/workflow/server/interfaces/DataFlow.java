@@ -87,6 +87,19 @@ public interface DataFlow extends Remote, Cloneable{
 	 */
 	public boolean isrunning() throws RemoteException;
 
+	/**
+	 * Check if the workflow is a schedule workflow
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isSchelule() throws RemoteException;
+	
+	/**
+	 * 
+	 * @param componentId
+	 * @return
+	 * @throws RemoteException
+	 */
 	public String getRunningStatus(String componentId) throws RemoteException;
 	
 	/**
@@ -396,6 +409,14 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws RemoteException
 	 */
 	public List<DataFlowCoordinator> getCoordinators() throws RemoteException;
+	
+	/**
+	 * 
+	 * @param coordinatorName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public DataFlowCoordinator getCoordinator(String coordinatorName) throws RemoteException;
 
 	/**
 	 * Get the last elment of workingWA

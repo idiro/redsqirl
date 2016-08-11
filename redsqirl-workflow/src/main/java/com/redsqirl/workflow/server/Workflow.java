@@ -82,6 +82,7 @@ import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.action.superaction.SuperAction;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -477,7 +478,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			throws Exception {
 
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
-		if (dataFlowElements.size() < element.size()) {
+		if (!isSchelule() && dataFlowElements.size() < element.size()) {
 			Iterator<DataFlowElement> itIn = getEls(dataFlowElements)
 					.iterator();
 			while (itIn.hasNext()) {
@@ -597,19 +598,21 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = null;
 		List<RunnableElement> toRun = null;
 
-		try {
-			toRun = subsetToRun(dataFlowElement);
-		} catch (Exception e) {
-			logger.error(e,e);
-			error = e.getMessage();
-		}
-		
-		if(error == null && toRun == null){
-			error = LanguageManagerWF.getText("workflow.noelement_torun");
-		}
-		
-		if (error == null && toRun.isEmpty()) {
-			error = LanguageManagerWF.getText("workflow.torun_uptodate");
+		if(!isSchelule()){
+			try {
+				toRun = subsetToRun(dataFlowElement);
+			} catch (Exception e) {
+				logger.error(e,e);
+				error = e.getMessage();
+			}
+
+			if(error == null && toRun == null){
+				error = LanguageManagerWF.getText("workflow.noelement_torun");
+			}
+
+			if (error == null && toRun.isEmpty()) {
+				error = LanguageManagerWF.getText("workflow.torun_uptodate");
+			}
 		}
 
 
@@ -2376,7 +2379,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 					if(coordIn != coordOut){
 						//Check if it is a Sync-Sink - Sync-Source-Filter link
-						if(!in.getClass().equals(SyncSink.class) || !out.getClass().equals(SyncSourceFilter.class)){
+						logger.debug("In Class: "+in.getClass().toString());
+						logger.debug("Out Class: "+out.getClass().toString());
+						if(!in.getClass().equals(SyncSourceFilter.class) || !out.getClass().equals(SyncSink.class)){
 							error = checkCoordinatorMergeConflict(coordIn,coordOut);
 							
 							if(error == null){
@@ -2708,6 +2713,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public ElementManager getElementManager() throws RemoteException {
 		return actionManager;
+	}
+
+	@Override
+	public boolean isSchelule() throws RemoteException {
+		boolean ans = false;
+		Iterator<DataFlowElement> it = element.iterator();
+		while(it.hasNext() && !ans){
+			Iterator<DFEOutput> itOut = it.next().getDFEOutput().values().iterator();
+			while(itOut.hasNext() && !ans){
+				ans = PathType.TEMPLATE.equals(itOut.next().getPathType());
+			}
+		}
+		return ans;
 	}
 
 }

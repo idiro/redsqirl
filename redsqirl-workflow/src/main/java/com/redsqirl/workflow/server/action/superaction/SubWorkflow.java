@@ -678,5 +678,10 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	public final Boolean getPrivilege() {
 		return privilege;
 	}
+	
+	@Override
+	public boolean isSchelule() throws RemoteException {
+		return false;
+	}
 
 }
