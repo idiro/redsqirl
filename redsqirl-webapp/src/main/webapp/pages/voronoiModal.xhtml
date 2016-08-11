@@ -10,14 +10,13 @@
 	<h:form>
 		<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
 		
-			<h:panelGroup layout="block" id="modalVoronoiTale" >
 			<table>
 				<tr>
 					<td>
 						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
 					</td>
 					<td>
-			    		<rich:calendar value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
+			    		<rich:calendar id="voronoiStartDate" value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
 			    		<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
@@ -27,7 +26,7 @@
 						<h:outputText value="#{messages.label_voronoi_repeat}" title="#{messages.title_voronoi_repeat}" />
 					</td>
 					<td>
-				    	<h:panelGroup style="max-width:100px;" layout="block" >
+				    	<h:panelGroup style="max-width:100px;" layout="block" id="voronoiScheduling" >
 	                     	<select onchange="updatedComboboxListScheduling(this);" style="max-width:100px;">
 				            	<a4j:repeat value="#{voronoiBean.schedulingOptions}" var="idx"  >
 									<h:outputText rendered="#{voronoiBean.selectedSchedulingOption == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
@@ -45,7 +44,6 @@
 					</td>
 				</tr>
 			</table>
-			</h:panelGroup>
 			
 			
 			

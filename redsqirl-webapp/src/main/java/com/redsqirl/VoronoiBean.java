@@ -62,7 +62,8 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				v.setValue(mapVariables.get(key));
 				tableList.add(v);
 			}
-			
+		
+			setStartDate(dataFlowCoordinator.getExecutionTime());
 		}
 		
 		schedulingOptions = new LinkedList<SelectItem>();

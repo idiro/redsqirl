@@ -1076,6 +1076,10 @@ function addLink(canvasName, outId, inId,updateLayer) {
        polygonLayer.draw();
     }
     
+    
+    console.log("arrow " + outId + " - " + inId);
+    
+    
     return arrowClone;
 }
 
@@ -3149,8 +3153,8 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 		if(polygonLayer.getChildren()[i] != undefined){
 			
 			if(polygonLayer.getChildren()[i].voronoiTitle  != undefined){
-				pname = polygonLayer.getChildren()[i].voronoiTitle;
-				voranoiPolygonTitle = pname;
+				voranoiPolygonTitle = polygonLayer.getChildren()[i].voronoiTitle;
+				pname = polygonLayer.getChildren()[i].getId();
 				console.log("pname1A " + pname + " - " + voranoiPolygonTitle);
 			}else{
 				pname = polygonLayer.getChildren()[i].getId();
@@ -3267,31 +3271,38 @@ function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
     
 	console.log("updateVoranoiPolygonTitle");
 	
-//	console.log("canvasName " + canvasName);
-//	console.log("idElement " + idElement);
-//	console.log("groupId " + groupId);
-//	console.log("name " + name);
+	/*
+	console.log("canvasName " + canvasName);
+	console.log("idElement " + idElement);
+	console.log("groupId " + groupId);
+	console.log("name " + name);
+	*/
 	
 	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
 
 	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
 		
+		/*
 		console.log("each1 " + value.getChildren()[0].getName() );
 		console.log("each1 " + idElement);
 		console.log("each1 " + groupId);
 		console.log("each1 " + name);
+		*/
 		
         if (value.getChildren()[0].getName() == idElement || value.getChildren()[0].getName() == groupId) {
         	value.getChildren()[0].setText(name);
+        	//value.getChildren()[0].setName(idElement);
         }
     });
 	
 	jQuery.each(canvasArray[canvasName].polygonLayer.getChildren(), function(index, value) {
 		
-/*		console.log("each " + value.getId());
+		/*		
+		console.log("each " + value.getId());
 		console.log("each " + idElement);
 		console.log("each " + groupId);
-		console.log("each " + name);*/
+		console.log("each " + name);
+		*/
 		
         if (value.getId() == idElement || value.getId() == groupId) {
         	value.voronoiTitle = name;
@@ -3301,6 +3312,43 @@ function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
 	voronoiButtonLayer.draw();
 }
 
+function updateVoranoiAllPolygonTitle(listNames) {
+	
+	console.log("updateVoranoiAllPolygonTitle");
+	
+	var listNamesArrays = JSON.parse(listNames);
+	
+	for ( var i = 0; i < listNamesArrays.length; i++) {
+		 
+		console.log("update1 " + listNamesArrays[i][0] );
+		console.log("update2 " + listNamesArrays[i][1] );
+		
+		jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value) {
+			
+			console.log("update3 " + value.getChildren()[0].getName() );
+			
+	        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
+	        	value.getChildren()[0].setText(listNamesArrays[i][1]);
+	        	console.log("update text");
+	        }
+	    });
+		 
+	}
+	canvasArray[selectedCanvas].voronoiButtonLayer.draw();
+	
+	for ( var i = 0; i < listNamesArrays.length; i++) {
+		jQuery.each(canvasArray[selectedCanvas].polygonLayer.getChildren(), function(index, value) {
+			
+			console.log("update4 " + value.getId() );
+			
+	        if (value.getId() == listNamesArrays[i][0]) {
+	        	value.voronoiTitle = listNamesArrays[i][1];
+	        	console.log("update group text");
+	        }
+	    });
+	}
+	
+}
 
 
 
