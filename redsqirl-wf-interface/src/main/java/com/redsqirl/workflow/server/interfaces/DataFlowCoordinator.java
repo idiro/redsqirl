@@ -44,5 +44,7 @@ public interface DataFlowCoordinator extends Remote{
 	Date getExecutionTime() throws RemoteException;
 
 	void setExecutionTime(Date executionTime) throws RemoteException;
+
+	CoordinatorTimeConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;
 	
 }

@@ -27,6 +27,7 @@ import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
+import com.redsqirl.workflow.server.oozie.DistcpAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class SyncSink extends DataflowAction{
@@ -43,7 +44,7 @@ public class SyncSink extends DataflowAction{
 	protected InputInteraction templatePath;
 	
 	public SyncSink() throws RemoteException {
-		super(null);
+		super(new DistcpAction());
 		init();
 		
 		Page page1 = addPage(LanguageManagerWF.getText("sync_sink.page1.title"),
@@ -121,7 +122,7 @@ public class SyncSink extends DataflowAction{
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			List<Class< ? extends DFEOutput>> l = new LinkedList<Class< ? extends DFEOutput>>();
 			l.add(MapRedCompressedType.class);
-			l.add(HCatalogType.class);
+			//l.add(HCatalogType.class);
 			in.put(key_input, new DataProperty(l, 1, 1));
 			input = in;
 		}
@@ -159,13 +160,23 @@ public class SyncSink extends DataflowAction{
 		out.setPath(templatePath.getValue());
 		out.setPathType(PathType.TEMPLATE);
 		out.setSavingState(SavingState.RECORDED);
+		DistcpAction distcp = ((DistcpAction) getOozieAction());
+		distcp.setInput(in.getPath());
+		distcp.setOutput("${"+getComponentId()+"}");
 			
 		return error;
 	}
 
+	/**
+	 * Write files needed to run the Oozie action
+	 * 
+	 * @param files
+	 * @return <code>true</code> if actions were written else <code>false</code>
+	 * @throws RemoteException
+	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		return false;
+		return true;
 	}
 
 	@Override

@@ -20,6 +20,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idiro.utils.RandomString;
+import com.redsqirl.workflow.server.action.SyncSourceFilter;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -388,7 +390,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 					String id = ((Element) inCur).getElementsByTagName("id")
 							.item(0).getChildNodes().item(0).getNodeValue();
 
-					warn = el.addInputComponent(nameIn, getElement(id));
+					warn = el.addInputComponent(nameIn, df.getElement(id));
 					if (warn != null) {
 						logger.warn(warn);
 						warn = null;
@@ -451,7 +453,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 								.getElementsByTagName("id").item(0)
 								.getChildNodes().item(0).getNodeValue();
 
-						warn = el.addOutputComponent(nameOut, getElement(id));
+						warn = el.addOutputComponent(nameOut, df.getElement(id));
 						if (warn != null) {
 							logger.warn(warn);
 							warn = null;
@@ -572,6 +574,41 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	@Override
 	public CoordinatorTimeConstraint getTimeCondition() throws RemoteException {
 		return timeCondition;
+	}
+	
+	public CoordinatorTimeConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException {
+		Iterator<DataFlowElement> itDfe = elements.iterator();
+		CoordinatorTimeConstraint minCT = null;
+		while(itDfe.hasNext()){
+			DataFlowElement cur = itDfe.next();
+			
+			logger.debug("Element "+cur.getComponentId());
+			Iterator<DFEOutput> itOutputs = cur.getDFEOutput().values().iterator();
+			while(itOutputs.hasNext()){
+				DFEOutput datasetCur = itOutputs.next();
+				CoordinatorTimeConstraint curTimeConstraint = null;
+				if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
+					curTimeConstraint = datasetCur.getFrequency();
+				}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty()){
+					List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
+					if(!inputsDfe.get(0).getCoordinatorName().equals(getName()) && 
+							(curTimeConstraint == null || curTimeConstraint.getUnit() == null)){
+						curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
+						if(curTimeConstraint.getUnit() == null){
+							curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
+						}
+					}
+				}
+				if(curTimeConstraint != null){
+					if(minCT == null){
+						minCT = curTimeConstraint;
+					}else{
+						minCT = WfCoordTimeConstraint.getMostFrequent(minCT,curTimeConstraint);
+					}
+				}
+			}
+		}
+		return minCT;
 	}
 
 	@Override
