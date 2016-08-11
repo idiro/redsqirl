@@ -56,6 +56,7 @@ var mouseIn = false;
 var canvasModalParam;
 var timestampLastElementClicked;
 var lastElementClicked
+var coloursList = ['blue', 'green', 'red', 'black', 'yellow', 'orange', 'grey']
 
 var menu_createLink = "Create Link";
 var menu_rename = "Rename Object...";
@@ -3140,15 +3141,18 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 	var voronoiLayer = canvasArray[canvasName].voronoiLayer;
 	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
-	var coloursList = ['blue', 'green', 'red', 'black', 'yellow', 'orange', 'grey']
-	
 	
 	voronoiLayer.removeChildren();
 	voronoiButtonLayer.removeChildren();
 	
+	var arryNames = [];
+	var arryColours = [];
+	
 	var pname;
 	var i = 0;
 	for (;list[i];) {
+		
+		var colour = coloursList[i%7];
 		
 		if(polygonLayer.getChildren()[i] != undefined){
 			
@@ -3158,6 +3162,7 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 				console.log("pname1A " + pname + " - " + voranoiPolygonTitle);
 			}else{
 				pname = polygonLayer.getChildren()[i].getId();
+				voranoiPolygonTitle = "title";
 				console.log("pname1B " + pname);
 			}
 		}else{
@@ -3165,10 +3170,17 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 			console.log("pname2 " + pname);
 		}
 		
+		//check if contains
+		var index = arryNames.indexOf(voranoiPolygonTitle);
+		if(index > -1){
+			colour = arryColours[index]
+		}
+		
+		
 		poly = new Kinetic.Polygon({
 			name : pname,
 			points: list[i],
-			fill: coloursList[i%7],
+			fill: colour,
 			opacity: 0.1
 		});
 		
@@ -3184,14 +3196,16 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	        y : point[1] + 20
 	    });
 		
-		/*var polygonButton = new Kinetic.Rect({
+		/*
+		var polygonButton = new Kinetic.Rect({
 			x : point[0] + 5,
 			y : point[1] + 20,
 			width : 30,
 			height : 15,
 			fill : 'gray',
             opacity: 0.3
-        });*/
+        })
+        ;*/
 		
 		var groupBt = new Kinetic.Group({
 	        id : 'bt',
@@ -3215,8 +3229,14 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	
 		voronoiButtonLayer.add(groupBt);
 		voronoiLayer.add(poly);
+		
+		arryNames.push(voranoiPolygonTitle);
+		arryColours.push(colour);
+		
 		i++;
 	}
+	
+	voronoiButtonLayer = removeVoronoiButtonDuplicate(voronoiButtonLayer);
 	
 	voronoiLayer.draw();
 	voronoiButtonLayer.draw();
@@ -3317,29 +3337,57 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	console.log("updateVoranoiAllPolygonTitle");
 	
 	var listNamesArrays = JSON.parse(listNames);
+	var colour;
+	var newName;
 	
-	for ( var i = 0; i < listNamesArrays.length; i++) {
+	for (var i = 0; i < listNamesArrays.length; i++) {
 		 
-		console.log("update1 " + listNamesArrays[i][0] );
-		console.log("update2 " + listNamesArrays[i][1] );
+		console.log("update1 " + listNamesArrays[i][0]);
+		console.log("update2 " + listNamesArrays[i][1]);
 		
-		jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value) {
+		jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value){
 			
-			console.log("update3 " + value.getChildren()[0].getName() );
+			console.log("update3 " + value.getChildren()[0].getName());
 			
 	        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
 	        	value.getChildren()[0].setText(listNamesArrays[i][1]);
 	        	console.log("update text");
+	        	
+	        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(i, v) {
+	        		
+	        		console.log("update4 " + v.getName());
+	        		
+	        		if (v.getName() == listNamesArrays[i][0]) {
+	        			if(colour == "" || colour == undefined){
+	        				colour = v.getFill();
+	        				newName = listNamesArrays[i][1];
+	        				console.log("update4 yes " + colour);
+	        			}else{
+	        				if(newName == listNamesArrays[i][1]){
+	        					console.log("update4 not " + colour);
+	        					v.setFill(colour);
+	        					
+	        				}
+	        			}
+	        		}
+	        		
+	        	});
+	        	colour = "";
+	        	
 	        }
 	    });
-		 
+
 	}
+	
+	canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
+	
 	canvasArray[selectedCanvas].voronoiButtonLayer.draw();
+	canvasArray[selectedCanvas].voronoiLayer.draw();
 	
 	for ( var i = 0; i < listNamesArrays.length; i++) {
 		jQuery.each(canvasArray[selectedCanvas].polygonLayer.getChildren(), function(index, value) {
 			
-			console.log("update4 " + value.getId() );
+			console.log("updatePoly " + value.getId() );
 			
 	        if (value.getId() == listNamesArrays[i][0]) {
 	        	value.voronoiTitle = listNamesArrays[i][1];
@@ -3348,6 +3396,20 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	    });
 	}
 	
+}
+
+function removeVoronoiButtonDuplicate(voronoiButtonLayer){
+	var newTitle;
+	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value){
+		if(newTitle == value.getChildren()[0].getText()){
+			value.getChildren()[0].setOpacity(0);
+			value.on('mouseover', function(e) {
+				document.body.style.cursor = 'default';
+			});
+		}
+		newTitle = value.getChildren()[0].getText();
+	});
+	return voronoiButtonLayer;
 }
 
 

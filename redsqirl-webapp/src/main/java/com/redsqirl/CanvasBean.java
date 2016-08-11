@@ -357,6 +357,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (df != null && df.getElement() != null) {
 				for (DataFlowElement e : df.getElement()) {
 					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
+					logger.warn("mid element " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
 				}
 			}
 			
