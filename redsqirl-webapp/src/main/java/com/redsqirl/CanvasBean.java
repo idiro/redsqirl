@@ -350,7 +350,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
-			ans = new String[] { getParamNameLink(), nameElementA, nameElementB };
+			
+			//voronoi polygon
+			JSONArray jsonVoronoiNames = new JSONArray();
+			Map<String, String> mId = getReverseIdMap();
+			if (df != null && df.getElement() != null) {
+				for (DataFlowElement e : df.getElement()) {
+					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
+					logger.warn("mid element " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
+				}
+			}
+			
+			
+			ans = new String[] { getParamNameLink(), nameElementA, nameElementB, jsonVoronoiNames.toString() };
 			setNameOutput(nameElementA);
 
 		} catch (RemoteException e) {
