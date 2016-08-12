@@ -350,7 +350,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
-			
+
 			//voronoi polygon
 			JSONArray jsonVoronoiNames = new JSONArray();
 			Map<String, String> mId = getReverseIdMap();
@@ -361,8 +361,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
 				}
 			}
-			
-			
+
+
 			ans = new String[] { getParamNameLink(), nameElementA, nameElementB, jsonVoronoiNames.toString() };
 			setNameOutput(nameElementA);
 
@@ -377,6 +377,36 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(msg,"ADDLINK");
 
 		return ans;
+	}
+
+	public String[] getVoronoi() {
+
+		String error = null;
+		
+		try {
+			DataFlow df = getDf();
+
+			//voronoi polygon
+			JSONArray jsonVoronoiNames = new JSONArray();
+			Map<String, String> mId = getReverseIdMap();
+			if (df != null && df.getElement() != null) {
+				for (DataFlowElement e : df.getElement()) {
+					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
+					logger.warn("mid element " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
+				}
+			}
+			
+			return new String[] { jsonVoronoiNames.toString() };
+			
+		} catch (RemoteException e) {
+			logger.error(e,e);
+			error = getMessageResources("msg_error_oops");
+		}
+		
+		displayErrorMessage(error, "GETVORONOI");
+		
+		return new String[] { };
 	}
 
 	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA, DataFlowElement dfeObjB) {
@@ -1100,6 +1130,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "RUNWORKFLOW");
 	}
 
+	public String[] getCheckIfSchelule() throws RemoteException {
+
+		String positions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("positions");
+		String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+
+		DataFlow df = getDf();
+		if(df.isSchelule()){
+			return new String[] {positions, savedFile, select, "true"};
+		}else{
+			return new String[] {positions, savedFile, select, "false"};
+		}
+	}
+
 	public void calcWorkflowUrl() {
 
 		logger.info("calcWorkflowUrl");
@@ -1183,7 +1227,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}catch(Exception e){
 			error = getMessageResources("msg_error_oops");
 		}
-		
+
 		displayErrorMessage(error, "KILLWORKFLOW");
 	}
 
@@ -2152,9 +2196,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
-		
+
 		logger.warn("getPositions " + selecteds);
-		
+
 		/*if(getDf() != null){
 			logger.warn('a');
 		}else{
@@ -2172,7 +2216,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
-			String voranoiPolygonTitle = null;
+			String voronoiPolygonTitle = null;
 
 			if (df != null && df.getElement() != null) {
 
@@ -2194,21 +2238,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 					logger.info(compId+" privilege "+privilege);
 					String elementName = e.getName();
-					
+
 					//voronoi polygon
-					voranoiPolygonTitle = e.getCoordinatorName();
-					
+					voronoiPolygonTitle = e.getCoordinatorName();
+
 					jsonElements
 					.put(new Object[] {
 							elements.get(compId),
 							elementName.startsWith(">") ? elementName.substring(elementName.lastIndexOf(">")+1): elementName,
 									LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
-											e.getX(), 
-											e.getY(),
-											compId,
-											privilege,
-											elementName,
-											voranoiPolygonTitle
+									e.getX(), 
+									e.getY(),
+									compId,
+									privilege,
+									elementName,
+									voronoiPolygonTitle
 					});
 
 				}
@@ -2235,8 +2279,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 					}
 				}
-				
-				
+
+
 
 			} else {
 				logger.warn("Error getPositions getDf NULL or empty");
@@ -2262,7 +2306,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		logger.warn("getPositions empty ");
-		
+
 		return new String[] {};
 	}
 
@@ -2792,7 +2836,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			modelMan.uninstallSA(new ModelManager().getUserModel(userName, nameModel), nameSA);
 		}
 	}
-	
+
 	public void cleanTmp() throws RemoteException{
 		logger.debug("clean tmp");
 

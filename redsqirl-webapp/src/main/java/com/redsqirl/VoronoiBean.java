@@ -19,29 +19,30 @@ import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 
 public class VoronoiBean extends BaseBean implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Logger logger = Logger.getLogger(VoronoiBean.class);
-	
+
 	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
 	private Date startDate;
+	private Date endDate;
 	private String repeat;
 	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
 	private String selectedSchedulingOption;
 	private String[] voronoiNewName;
 	private DataFlowCoordinator dataFlowCoordinator;
-	
-	
+
+
 	public void openVoronoi() throws RemoteException{
-		
+
 		logger.warn("openVoronoi");
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
 		String canvasName = context.getExternalContext().getRequestParameterMap().get("paramSelectedTab");
-		
-		
+
+
 		Map<String,String> mapVariables;
 		List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(canvasName).getCoordinators();
 		for (DataFlowCoordinator dtFlowCoordinator : l) {
@@ -52,7 +53,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}
 		if(dataFlowCoordinator != null){
 			mapVariables = dataFlowCoordinator.getVariables();
-			
+
 			tableList = new ArrayList<VoronoiType>();
 			Iterator<String> ans = mapVariables.keySet().iterator();
 			while(ans.hasNext()){
@@ -62,30 +63,30 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				v.setValue(mapVariables.get(key));
 				tableList.add(v);
 			}
-		
+
 			setStartDate(dataFlowCoordinator.getExecutionTime());
 		}
-		
+
 		schedulingOptions = new LinkedList<SelectItem>();
 		for (TimeTemplate tt : TimeTemplate.values()) {
 			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
 		}
-		
+
 	}
-	
-	
+
+
 	public void apply() throws RemoteException{
-		
+
 		logger.warn("date to start " + startDate);
 		logger.warn("selected " + selectedSchedulingOption);
-		
+
 		for (VoronoiType voronoiType : tableList) {
 			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
 		}
 		dataFlowCoordinator.setExecutionTime(startDate);
-		
+
 	}
-	
+
 	public void deleteLine(){
 		for (Iterator<VoronoiType> iterator = tableList.iterator(); iterator.hasNext();) {
 			VoronoiType voronoiType = (VoronoiType) iterator.next();
@@ -94,26 +95,36 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void addNewLine(){
 		tableList.add(new VoronoiType());
 	}
-	
-	public void retrieveVoranoiPolygonTitle() throws RemoteException{
+
+	public void retrieveVoranoiPolygonTitle(){
+
+		String error = null;
 		
-		FacesContext context = FacesContext.getCurrentInstance();
-		String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
-		String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
-		String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
+		try{
+
+			FacesContext context = FacesContext.getCurrentInstance();
+			String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
+			String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
+			String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
+
+			//voronoi polygon
+			String voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
+
+			setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
+
+		}catch(Exception e){
+			logger.error(e,e);
+			error = getMessageResources("msg_error_oops");
+		}
 		
-		
-		//voronoi polygon
-		String voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
-		
-		setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
+		displayErrorMessage(error, "RETRIEVEVORANOIPOLYGONTITLE");
 	}
-	
-	
+
+
 	public List<VoronoiType> getTableList() {
 		return tableList;
 	}
@@ -155,6 +166,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setDataFlowCoordinator(DataFlowCoordinator dataFlowCoordinator) {
 		this.dataFlowCoordinator = dataFlowCoordinator;
+	}
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 }

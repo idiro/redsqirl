@@ -875,6 +875,9 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	
 	layer.draw();
 	polygonLayer.draw();
+	
+	//deleteSelectedVoronoi(listIds);
+	undoRedoVoronoi();
 }
 
 //erase all objects from the canvas
@@ -923,6 +926,9 @@ function deleteAllElements() {
 	for(iter = 0; iter <  toDelete.length;++iter){
         toDelete[iter].destroy();
     }
+	
+	//deleteAllVoronoi();
+	undoRedoVoronoi();
 	
 	//layer.draw();
 	//polygonLayer.draw();
@@ -3278,7 +3284,6 @@ function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
     createPolygonVoronoi(canvasName, idElement, canvasArray[canvasName].voronoi.polygons(), voranoiPolygonTitle);
     
     console.log("END Voronoi");
-    
 }
 
 function retrieveVoranoiPolygonTitleJS(canvasName, idElement, groupId) {
@@ -3411,6 +3416,95 @@ function removeVoronoiButtonDuplicate(voronoiButtonLayer){
 	});
 	return voronoiButtonLayer;
 }
+
+function undoRedoVoronoi(){
+	
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	
+	canvasArray[selectedCanvas].pointsList = [];
+	
+	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+        if(value !== undefined && value.getParent().getId() !== undefined){
+            canvasArray[selectedCanvas].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
+        }
+    });
+    
+	startVoronoi(selectedCanvas, "", "");
+	undoRedoVoronoiJS();
+}
+
+
+
+/*function deleteAllVoronoi(){
+	
+	console.log("deleteAllVoronoi");
+	
+	var voronoiButtonLayer = canvasArray[selectedCanvas].voronoiButtonLayer;
+	var voronoiLayer = canvasArray[selectedCanvas].voronoiLayer;
+	
+	toDelete = [];
+	iter=-1;
+	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
+		toDelete[++iter] = value;
+    });
+	for(iter = 0; iter < toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
+	
+	toDelete = [];
+	iter=-1;
+	jQuery.each(voronoiLayer.getChildren(), function(index, value) {
+		toDelete[++iter] = value;
+    });
+	for(iter = 0; iter < toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
+	
+	voronoiButtonLayer.draw();
+	voronoiLayer.draw();
+	
+	console.log("deleteAllVoronoi end");
+}
+
+function deleteSelectedVoronoi(listIds){
+	
+	console.log("deleteSelectedVoronoi " + listIds);
+	
+	var voronoiButtonLayer = canvasArray[selectedCanvas].voronoiButtonLayer;
+	var voronoiLayer = canvasArray[selectedCanvas].voronoiLayer;
+	
+	toDelete = [];
+	iter=-1;
+	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
+		if(checkIfExistID(value.getName(),listIds)){
+			//console.log("deleteSelectedVoronoi " + value); 
+			toDelete[++iter] = value;
+	    }
+    });
+	for(iter = 0; iter < toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
+	
+	toDelete = [];
+	iter=-1;
+	jQuery.each(voronoiLayer.getChildren(), function(index, value) {
+		if(checkIfExistID(value.getName(),listIds)){
+			//console.log("deleteSelectedVoronoi " + value);
+		    toDelete[++iter] = value;
+	    }
+    });
+	for(iter = 0; iter < toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
+	
+	voronoiButtonLayer.draw();
+	voronoiLayer.draw();
+	
+	console.log("deleteSelectedVoronoi end");
+}*/
+
+
+
 
 
 
