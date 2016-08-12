@@ -89,7 +89,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	public String getOozieFreq() throws RemoteException{
 		String ans = null;
 		if(unit != null){
-			ans = "${"+unit.toString().toLowerCase()+"s("+frequency+")}";
+			ans = "${coord:"+unit.toString().toLowerCase()+"s("+frequency+")}";
 		}
 		return ans;
 	}

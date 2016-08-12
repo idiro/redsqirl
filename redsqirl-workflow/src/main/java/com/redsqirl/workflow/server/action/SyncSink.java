@@ -15,6 +15,7 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
+import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
@@ -161,7 +162,7 @@ public class SyncSink extends DataflowAction{
 		out.setPathType(PathType.TEMPLATE);
 		out.setSavingState(SavingState.RECORDED);
 		DistcpAction distcp = ((DistcpAction) getOozieAction());
-		distcp.setInput(in.getPath());
+		distcp.setInput("${"+OozieManager.prop_namenode+"}"+in.getPath());
 		distcp.setOutput("${"+getComponentId()+"}");
 			
 		return error;

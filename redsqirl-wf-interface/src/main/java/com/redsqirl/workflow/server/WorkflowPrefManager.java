@@ -238,6 +238,8 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_oozie_xmlns = core_settings_oozie+".oozie_xmlns",
 			/** Oozie coordinator xml schema location */
 			sys_oozie_coord_xmlns = core_settings_oozie+".oozie_coord_xmlns",
+			/** Oozie bundle xml schema location */
+			sys_oozie_bundle_xmlns = core_settings_oozie+".oozie_bundle_xmlns",
 			/** Oozie coordinator xml schema location */
 			sys_oozie_timezone = core_settings_oozie+".timezone",
 			/** namenode path */
