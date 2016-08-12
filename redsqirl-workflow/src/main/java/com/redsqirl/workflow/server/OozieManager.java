@@ -99,7 +99,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			/** Default running job queue */
 			prop_action_queue = "default_action_queue",
 			/** User Name property key */
-			prop_user = "user_name",
+			prop_user = "user.name",
 			/** Library Path for Oozie property key */
 			prop_libpath = "oozie.libpath",
 			/** Main Workflow path property key */
@@ -108,6 +108,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			prop_timezone = "timezone";
 
 	public static final String oozie_mode_default = "default";
+	
+	public enum Type{
+		WORKFLOW,
+		COORDINATOR,
+		BUNDLE
+	}
 
 	/**
 	 * Constructor.
@@ -347,7 +353,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String error = null;
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
-		boolean bundle = df.isSchelule();
+		Type bundle = df.isSchelule() ? Type.BUNDLE : Type.WORKFLOW;
 		File parentDir = new File(WorkflowPrefManager.getPathooziejob() + "/"
 				+ fileName);
 		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs() + "/"
@@ -618,7 +624,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws RemoteException 
 	 */
 
-	protected Map<String, String> defaultMap(String hdfsWfPath, boolean bundle) throws RemoteException {
+	public static Map<String, String> defaultMap(String hdfsWfPath, Type bundle) throws RemoteException {
 		Map<String, String> properties = new HashMap<String, String>(5);
 		Properties propSys = WorkflowPrefManager.getSysProperties();
 		properties.put(prop_jobtracker,
@@ -635,14 +641,25 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		properties.put(prop_user,System.getProperty("user.name"));
 		properties.put(prop_timezone,
 				WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_timezone));
-		if(bundle){
+		switch(bundle){
+		case BUNDLE:
 			properties.put(OozieClient.BUNDLE_APP_PATH,
 					propSys.getProperty(WorkflowPrefManager.sys_namenode)
 					+ hdfsWfPath);
-		}else{
+			break;
+		case COORDINATOR:
+			properties.put(OozieClient.COORDINATOR_APP_PATH,
+					propSys.getProperty(WorkflowPrefManager.sys_namenode)
+					+ hdfsWfPath);
+			break;
+		case WORKFLOW:
 			properties.put(OozieClient.APP_PATH,
 					propSys.getProperty(WorkflowPrefManager.sys_namenode)
 					+ hdfsWfPath);
+			break;
+		default:
+			break;
+		
 		}
 		properties.put("oozie.use.system.libpath", "true");
 
@@ -656,7 +673,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @param hdfsWfPath
 	 * @throws Exception
 	 */
-	protected void writeWorkflowProp(File workflowPropWriter, String hdfsWfPath, boolean bundle)
+	public static void writeWorkflowProp(File workflowPropWriter, String hdfsWfPath, Type bundle)
 			throws Exception {
 		Map<String, String> properties = defaultMap(hdfsWfPath,bundle);
 

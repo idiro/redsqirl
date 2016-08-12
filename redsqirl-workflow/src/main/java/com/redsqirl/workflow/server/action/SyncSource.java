@@ -362,7 +362,7 @@ public class SyncSource extends AbstractSource {
 			}
 			DFEOutput templateOut = output.get(out_template);
 			if(new HDFSInterface().getBrowserName().equals(startInstance.getBrowserName())){
-				templateOut.setPath(NameNodeVar.get()+templatePathStr);
+				templateOut.setPath(templatePathStr);
 			}else{
 				templateOut.setPath(WorkflowPrefManager.getProperty(hcat_metastore_key).replaceAll("thrift", "hcat")+templatePathStr.replaceAll(",", ";"));
 			}

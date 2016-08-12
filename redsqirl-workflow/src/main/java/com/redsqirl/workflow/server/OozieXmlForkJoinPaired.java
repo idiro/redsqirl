@@ -49,6 +49,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.OozieManager.Type;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
@@ -160,6 +161,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				File dirCoordinator = new File(directory, cur.getName());
 				logger.debug("Create xml coordinator for "+cur.getName());
 				error = createCoordinatorXml(df.getName(),df, cur,
+						directory.getName(),
 						dirCoordinator,
 						endTime);
 				if(error == null){
@@ -198,6 +200,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		String error = null;
 
 		directory.mkdirs();
+		String hdfsBundlePath = WorkflowPrefManager.getHDFSPathJobs()+"/"+directory.getName();
+		String jobFile = "job.properties";
+		String coordinatorFile = "coordinator.xml";
 		try {
 			
 			// Creating xml
@@ -209,6 +214,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Element rootElement = doc.createElement("bundle-app");
 			doc.appendChild(rootElement);
 			
+			rootElement.setAttribute("name", df.getName());
+			rootElement.setAttribute("xmlns", WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_bundle_xmlns));
+			
+			
 			Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
 			while(it.hasNext()){
 				DataFlowCoordinator cur = it.next();
@@ -216,8 +225,25 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				coordinator.setAttribute("name", cur.getName());
 				
 				Element path = doc.createElement("app-path");
-				path.appendChild(doc.createTextNode("/user/${userName}/.redsqirl/jobs/"+df.getName()+"/"+cur.getName()));
+				path.appendChild(doc.createTextNode("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName()+"/"+coordinatorFile));
 				coordinator.appendChild(path);
+				
+				Map<String,String> autoVariables = OozieManager.defaultMap("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName(), null);
+				Element configuration = doc.createElement("configuration");
+				Iterator<Entry<String,String>> itAutoVariable = autoVariables.entrySet().iterator();
+				while(itAutoVariable.hasNext()){
+					Entry<String,String> curVariable = itAutoVariable.next();
+					Element prop = doc.createElement("property");
+					Element propName = doc.createElement("name");
+					propName.appendChild(doc.createTextNode(curVariable.getKey()));
+					prop.appendChild(propName);
+					Element propValue = doc.createElement("value");
+					propValue.appendChild(doc.createTextNode(curVariable.getValue()));
+					prop.appendChild(propValue);
+					
+					configuration.appendChild(prop);
+				}
+				coordinator.appendChild(configuration);
 				rootElement.appendChild(coordinator);
 			}
 
@@ -243,12 +269,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	}
 	
 	public String createCoordinatorXml(String wfId,DataFlow df, DataFlowCoordinator coordinator,
+			String oozieFileName,
 			File directory,
 			String endDate) throws RemoteException {
 		
 
 		logger.debug("create coordinator Xml");
 		String filename = "coordinator.xml";
+		String hdfsCoordPath = WorkflowPrefManager.getHDFSPathJobs()+"/"+oozieFileName+"/"+coordinator.getName();
 		String error = null;
 
 		directory.mkdirs();
@@ -303,16 +331,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			{
 				Attr attrName = doc.createAttribute("start");
-				attrName.setValue(dateFormat.format(startDate));
+				attrName.setValue(dateFormat.format(startDate)+"Z");
 				rootElement.setAttributeNode(attrName);
 			}
 			
 			{
 				Attr attrName = doc.createAttribute("end");
 				if(endDate != null && !endDate.isEmpty()){
-					attrName.setValue(endDate);
+					attrName.setValue(endDate+"Z");
 				}else{
-					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate)));
+					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate))+"Z");
 				}
 				rootElement.setAttributeNode(attrName);
 			}
@@ -368,12 +396,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						dataset.setAttribute("timezone", "${timezone}");
 						
 						dataset.setAttribute("frequency", timeConstraintCur.getOozieFreq());
-						dataset.setAttribute("initial-instance", initialInstance);
+						dataset.setAttribute("initial-instance", initialInstance+"Z");
 
 
 						Element uriTemplate= doc.createElement("uri-template");
 						uriTemplate.appendChild(doc
-								.createTextNode(datasetCur.getPath()));
+								.createTextNode("${"+OozieManager.prop_namenode+"}"+datasetCur.getPath()));
 						dataset.appendChild(uriTemplate);
 						datasets.appendChild(dataset);
 
@@ -474,7 +502,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							Element dataIn = doc.createElement("data-out");
 							dataIn.setAttribute("name", cur.getComponentId());
 							autoVariables.put(cur.getComponentId(), "${coord:dataOut('"+cur.getComponentId()+"')}");
-							dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());
+							dataIn.setAttribute("dataset", cur.getComponentId());
 							
 							Element instance= doc.createElement("instance");
 							instance.appendChild(doc
@@ -491,11 +519,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Element workflow = doc.createElement("workflow");
 			
 			Element appPath = doc.createElement("app-path");
-			appPath.appendChild(doc.createTextNode("/user/${userName}/.redsqirl/jobs/"+df.getName()+"/"+coordinator.getName()));
+			appPath.appendChild(doc.createTextNode("${"+OozieManager.prop_namenode+"}"+hdfsCoordPath));
 			workflow.appendChild(appPath);
 			
 			Element configuration = doc.createElement("configuration");
-			
+			autoVariables.putAll(OozieManager.defaultMap(hdfsCoordPath, null));
 			Iterator<Entry<String,String>> it = autoVariables.entrySet().iterator();
 			while(it.hasNext()){
 				Entry<String,String> cur = it.next();

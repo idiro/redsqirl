@@ -123,6 +123,13 @@
                     "property": "oozie_coord_xmlns",
                     "scope": "system",
                     "type": "STRING"
+                },
+                {
+                    "default": "uri:oozie:bundle:0.1",
+                    "optional": "true",
+                    "property": "oozie_bundle_xmlns",
+                    "scope": "system",
+                    "type": "STRING"
                 }
             ]
         },

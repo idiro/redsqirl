@@ -2718,11 +2718,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public boolean isSchelule() throws RemoteException {
 		boolean ans = false;
-		Iterator<DataFlowElement> it = element.iterator();
-		while(it.hasNext() && !ans){
-			Iterator<DFEOutput> itOut = it.next().getDFEOutput().values().iterator();
-			while(itOut.hasNext() && !ans){
-				ans = PathType.TEMPLATE.equals(itOut.next().getPathType());
+		Iterator<DataFlowCoordinator> itCoo = coordinators.iterator();
+		while(itCoo.hasNext() && !ans){
+			ans = itCoo.next().getTimeCondition().getUnit() != null;
+		}
+		if(!ans){
+			Iterator<DataFlowElement> itDfe = element.iterator();
+			while(itDfe.hasNext() && !ans){
+				Iterator<DFEOutput> itOut = itDfe.next().getDFEOutput().values().iterator();
+				while(itOut.hasNext() && !ans){
+					ans = PathType.TEMPLATE.equals(itOut.next().getPathType());
+				}
 			}
 		}
 		return ans;
