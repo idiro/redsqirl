@@ -1141,14 +1141,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 
 		waLogger.debug("writeProcess 1");
+		writeOozieActionFiles(files);
+		waLogger.debug("writeProcess 2");
 
 		Map<String,Element>  ans = oozieAction.createOozieElements(oozieXmlDoc, actionName, fileNames);
 		Set<String> lastRun = new LinkedHashSet<String>();
 		lastRun.addAll(ans.keySet());
 		setLastRunOozieElementNames(lastRun);
-		waLogger.debug("writeProcess 2");
 
-		writeOozieActionFiles(files);
 
 		waLogger.debug("writeProcess 3");
 		lastTimeRun = System.currentTimeMillis();

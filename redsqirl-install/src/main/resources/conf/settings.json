@@ -90,9 +90,16 @@
                     "type": "STRING"
                 },
                 {
-                    "default": "GMT+00:00",
+                    "default": "GMT+0000",
                     "optional": "true",
-                    "property": "timezone",
+                    "property": "processing_timezone",
+                    "scope": "system",
+                    "type": "STRING"
+                },
+                {
+                    "default": "Europe/Dublin",
+                    "optional": "true",
+                    "property": "user_timezone",
                     "scope": "any",
                     "type": "STRING"
                 },
@@ -118,14 +125,14 @@
                     "type": "STRING"
                 },
                 {
-                    "default": "uri:oozie:coordinator:0.1",
+                    "default": "uri:oozie:coordinator:0.2",
                     "optional": "true",
                     "property": "oozie_coord_xmlns",
                     "scope": "system",
                     "type": "STRING"
                 },
                 {
-                    "default": "uri:oozie:bundle:0.1",
+                    "default": "uri:oozie:bundle:0.2",
                     "optional": "true",
                     "property": "oozie_bundle_xmlns",
                     "scope": "system",

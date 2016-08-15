@@ -423,7 +423,6 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			String wfPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode) + hdfsWfPath;
 			logger.debug("Workflow path: " + wfPath);
 			Properties conf = addProperties(oc.createConfiguration(), defaultMap(hdfsWfPath,bundle));
-			/* //TODO uncomment to run the workflow
 			try {
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
@@ -431,7 +430,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				logger.error(e,e);
 				error = LanguageManagerWF.getText("ooziemanager.launchjob",
 						new Object[] { e.getMessage() });
-			}*/
+			}
 		}
 
 		if (error != null) {
@@ -640,26 +639,28 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				+ hdfsWfPath);
 		properties.put(prop_user,System.getProperty("user.name"));
 		properties.put(prop_timezone,
-				WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_timezone));
-		switch(bundle){
-		case BUNDLE:
-			properties.put(OozieClient.BUNDLE_APP_PATH,
-					propSys.getProperty(WorkflowPrefManager.sys_namenode)
-					+ hdfsWfPath);
-			break;
-		case COORDINATOR:
-			properties.put(OozieClient.COORDINATOR_APP_PATH,
-					propSys.getProperty(WorkflowPrefManager.sys_namenode)
-					+ hdfsWfPath);
-			break;
-		case WORKFLOW:
-			properties.put(OozieClient.APP_PATH,
-					propSys.getProperty(WorkflowPrefManager.sys_namenode)
-					+ hdfsWfPath);
-			break;
-		default:
-			break;
-		
+				WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone));
+		if(bundle != null){
+			switch(bundle){
+			case BUNDLE:
+				properties.put(OozieClient.BUNDLE_APP_PATH,
+						propSys.getProperty(WorkflowPrefManager.sys_namenode)
+						+ hdfsWfPath);
+				break;
+			case COORDINATOR:
+				properties.put(OozieClient.COORDINATOR_APP_PATH,
+						propSys.getProperty(WorkflowPrefManager.sys_namenode)
+						+ hdfsWfPath);
+				break;
+			case WORKFLOW:
+				properties.put(OozieClient.APP_PATH,
+						propSys.getProperty(WorkflowPrefManager.sys_namenode)
+						+ hdfsWfPath);
+				break;
+			default:
+				break;
+
+			}
 		}
 		properties.put("oozie.use.system.libpath", "true");
 

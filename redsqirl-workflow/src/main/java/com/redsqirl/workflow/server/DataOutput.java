@@ -877,13 +877,5 @@ DFEOutput {
 	public final CoordinatorTimeConstraint getFrequency() {
 		return frequency;
 	}
-
-	public final String getInitialInstance() {
-		return initialInstance;
-	}
-
-	public final void setInitialInstance(String initialInstance) {
-		this.initialInstance = initialInstance;
-	}
 	
 }

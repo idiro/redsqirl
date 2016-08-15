@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -227,7 +228,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Element path = doc.createElement("app-path");
 				path.appendChild(doc.createTextNode("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName()+"/"+coordinatorFile));
 				coordinator.appendChild(path);
-				
+				/*
 				Map<String,String> autoVariables = OozieManager.defaultMap("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName(), null);
 				Element configuration = doc.createElement("configuration");
 				Iterator<Entry<String,String>> itAutoVariable = autoVariables.entrySet().iterator();
@@ -244,6 +245,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					configuration.appendChild(prop);
 				}
 				coordinator.appendChild(configuration);
+				*/
 				rootElement.appendChild(coordinator);
 			}
 
@@ -276,9 +278,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 		logger.debug("create coordinator Xml");
 		String filename = "coordinator.xml";
+		String job = "job.properties";
 		String hdfsCoordPath = WorkflowPrefManager.getHDFSPathJobs()+"/"+oozieFileName+"/"+coordinator.getName();
 		String error = null;
-
 		directory.mkdirs();
 		try {
 			
@@ -292,13 +294,15 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			doc.appendChild(rootElement);
 
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+			dateFormat.setTimeZone(TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 			CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
 			if(coordinatorTimeConstraint.getUnit() == null){
 				coordinatorTimeConstraint = coordinator.getDefaultTimeConstraint(df);
 			}
-			Date startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime());
 			
+			Date startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime());
 
 			{
 				Attr attrName = doc.createAttribute("name");
@@ -331,16 +335,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			{
 				Attr attrName = doc.createAttribute("start");
-				attrName.setValue(dateFormat.format(startDate)+"Z");
+				attrName.setValue(dateFormat.format(startDate));
 				rootElement.setAttributeNode(attrName);
 			}
 			
 			{
 				Attr attrName = doc.createAttribute("end");
 				if(endDate != null && !endDate.isEmpty()){
-					attrName.setValue(endDate+"Z");
+					attrName.setValue(endDate);
 				}else{
-					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate))+"Z");
+					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate)));
 				}
 				rootElement.setAttributeNode(attrName);
 			}
@@ -364,16 +368,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						if(inputsDone.add(datasetCur.getPath())){
 							
 							nameDataset = cur.getComponentId();
-							
-							if(datasetCur.getFrequency().getOozieFreq() == null ||
-									datasetCur.getFrequency().getOozieFreq().isEmpty() ||
-									datasetCur.getInitialInstance() == null ||
-									datasetCur.getInitialInstance().isEmpty()){
+							timeConstraintCur = datasetCur.getFrequency();
+							if(timeConstraintCur.getOozieFreq() == null ||
+									timeConstraintCur.getOozieFreq().isEmpty() ||
+									timeConstraintCur.getInitialInstance() == null){
 								timeConstraintCur = coordinatorTimeConstraint;
-								initialInstance = dateFormat.format(startDate);
+								initialInstance = dateFormat.format(coordinatorTimeConstraint.getInitialInstance());
 							}else{
-								timeConstraintCur = datasetCur.getFrequency();
-								initialInstance = datasetCur.getInitialInstance();
+								initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 							}
 						}
 					}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty() ){
@@ -385,7 +387,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								if(timeConstraintCur.getUnit() == null){
 									timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
 								}
-								initialInstance = dateFormat.format(startDate);
+								initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 							}
 						}
 					}
@@ -396,7 +398,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						dataset.setAttribute("timezone", "${timezone}");
 						
 						dataset.setAttribute("frequency", timeConstraintCur.getOozieFreq());
-						dataset.setAttribute("initial-instance", initialInstance+"Z");
+						dataset.setAttribute("initial-instance", initialInstance);
 
 
 						Element uriTemplate= doc.createElement("uri-template");
@@ -467,6 +469,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}
 				controls.appendChild(execution);
 			}
+			/* Create errors...
 			{
 				Element concurrency = doc.createElement("concurrency");
 				concurrency.appendChild(doc.createTextNode("1"));
@@ -482,6 +485,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				throttle.appendChild(doc.createTextNode("12"));
 				controls.appendChild(throttle);
 			}
+			*/
 			rootElement.appendChild(controls);
 			
 			
@@ -568,6 +572,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			StreamResult result = new StreamResult(new File(directory,
 					filename));
 			transformer.transform(source, result);
+			
+			OozieManager.writeWorkflowProp(new File(directory,job), 
+					hdfsCoordPath+"/"+filename, 
+					OozieManager.Type.COORDINATOR);
 		} catch (Exception e) {
 			error =" "+ LanguageManagerWF.getText(
 					"ooziexmlforkjoinpaired.createxml.fail",
