@@ -1735,7 +1735,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);"
+					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]); updateVoranoiAllPolygonTitle(data[6]);"
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
@@ -1776,7 +1776,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="console.log('renameTab'); closeCurrentTabWithoutCallingBackend();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="console.log('renameTab'); closeCurrentTabWithoutCallingBackend();addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateVoranoiAllPolygonTitle(data[6]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 

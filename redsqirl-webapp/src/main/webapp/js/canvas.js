@@ -3356,14 +3356,20 @@ function updateVoranoiAllPolygonTitle(listNames) {
 			
 	        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
 	        	value.getChildren()[0].setText(listNamesArrays[i][1]);
-	        	console.log("update text");
+	        	console.log("update text " + listNamesArrays[i][1]);
+	        	value.getChildren()[0].setOpacity(1);
+				value.on('mouseover', function(e) {
+					document.body.style.cursor = 'pointer';
+				});
 	        	
-	        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(i, v) {
+	        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
 	        		
 	        		console.log("update4 " + v.getName());
 	        		
 	        		if (v.getName() == listNamesArrays[i][0]) {
-	        			if(colour == "" || colour == undefined){
+	        			v.voronoiTitle = listNamesArrays[i][1];
+	        			
+	        			/*if(colour == "" || colour == undefined){
 	        				colour = v.getFill();
 	        				newName = listNamesArrays[i][1];
 	        				console.log("update4 yes " + colour);
@@ -3371,9 +3377,11 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	        				if(newName == listNamesArrays[i][1]){
 	        					console.log("update4 not " + colour);
 	        					v.setFill(colour);
-	        					
+	        				}else{
+	        					v.setFill(coloursList[i%7]);
 	        				}
-	        			}
+	        			}*/
+	        			
 	        		}
 	        		
 	        	});
@@ -3383,6 +3391,8 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	    });
 
 	}
+	
+	canvasArray[selectedCanvas].voronoiLayer = removeVoronoiDuplicateColour(canvasArray[selectedCanvas].voronoiLayer);
 	
 	canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
 	
@@ -3407,6 +3417,7 @@ function removeVoronoiButtonDuplicate(voronoiButtonLayer){
 	var newTitle;
 	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value){
 		if(newTitle == value.getChildren()[0].getText()){
+			console.log("newTitle " + newTitle);
 			value.getChildren()[0].setOpacity(0);
 			value.on('mouseover', function(e) {
 				document.body.style.cursor = 'default';
@@ -3415,6 +3426,28 @@ function removeVoronoiButtonDuplicate(voronoiButtonLayer){
 		newTitle = value.getChildren()[0].getText();
 	});
 	return voronoiButtonLayer;
+}
+
+function removeVoronoiDuplicateColour(voronoiLayer){
+	var newTitle;
+	var colour;
+	var i = 0;
+	jQuery.each(voronoiLayer.getChildren(), function(index, value){
+		
+		console.log("removeVoronoiDuplicateColour " + value.voronoiTitle);
+		
+		if(newTitle == value.voronoiTitle){
+			console.log("removeVoronoiDuplicateColour yes ");
+			value.setFill(colour);
+		}else{
+			console.log("removeVoronoiDuplicateColour no ");
+			value.setFill(coloursList[i%7]);
+			i++;
+		}
+		newTitle = value.voronoiTitle;
+		colour = value.getFill();
+	});
+	return voronoiLayer;
 }
 
 function undoRedoVoronoi(){
