@@ -22,9 +22,12 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -282,7 +285,7 @@ public class SyncSource extends AbstractSource {
 		return error;
 	}
 	
-	protected String getInitialInstance(String realPath, String templatePathStr){
+	protected Date getInitialInstance(String realPath, String templatePathStr) throws RemoteException{
 		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
 		Matcher m = p.matcher(templatePathStr);
 		Date now = new Date();
@@ -330,8 +333,20 @@ public class SyncSource extends AbstractSource {
 			}catch(Exception e){
 			}
 		}
-		
-		return year+"-"+month+"-"+day+"T"+hour+":"+minute;
+		Calendar cl = new GregorianCalendar(
+				TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		SimpleDateFormat formatterOut = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		formatterOut.setTimeZone(TimeZone.getTimeZone(
+				WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		try{
+			Date dateStr = formatter.parse(year+"-"+month+"-"+day+"T"+hour+":"+minute);
+			cl.setTime(dateStr);
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		return cl.getTime();
 	}
 	
 	@Override
@@ -371,7 +386,7 @@ public class SyncSource extends AbstractSource {
 			templateOut.setSavingState(SavingState.RECORDED);
 			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));
 			templateOut.getFrequency().setUnit(TimeTemplate.valueOf(unit.getValue()));
-			templateOut.setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
+			templateOut.getFrequency().setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
 		}
 		return error;
 	}

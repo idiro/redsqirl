@@ -29,6 +29,10 @@ public interface CoordinatorTimeConstraint extends Remote{
 	
 	int getFreqInMinutes() throws RemoteException;
 	
+	Date getInitialInstance() throws RemoteException;
+	
+	void setInitialInstance(Date initialInstance) throws RemoteException;
+	
 	Date getStartTime(Date executionTime) throws RemoteException;
 	
 	Date getDefaultEndTime(Date startDate) throws RemoteException;

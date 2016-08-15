@@ -161,9 +161,6 @@ public class SyncSink extends DataflowAction{
 		out.setPath(templatePath.getValue());
 		out.setPathType(PathType.TEMPLATE);
 		out.setSavingState(SavingState.RECORDED);
-		DistcpAction distcp = ((DistcpAction) getOozieAction());
-		distcp.setInput("${"+OozieManager.prop_namenode+"}"+in.getPath());
-		distcp.setOutput("${"+getComponentId()+"}");
 			
 		return error;
 	}
@@ -177,6 +174,10 @@ public class SyncSink extends DataflowAction{
 	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
+		DFEOutput in = getDFEInput().get(key_input).get(0);
+		DistcpAction distcp = ((DistcpAction) getOozieAction());
+		distcp.setInput("${"+OozieManager.prop_namenode+"}"+in.getPath());
+		distcp.setOutput("${"+getComponentId()+"}");
 		return true;
 	}
 

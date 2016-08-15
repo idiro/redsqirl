@@ -598,7 +598,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = null;
 		List<RunnableElement> toRun = null;
 
-		if(!isSchelule()){
+		if(isSchelule()){
+			cleanProject();
+		}else{
 			try {
 				toRun = subsetToRun(dataFlowElement);
 			} catch (Exception e) {
@@ -638,9 +640,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				DataFlowElement cur = it.next();
 				cur.setRunningStatus("UNKNOWN");
 			}
-			Iterator<RunnableElement> itRun = toRun.iterator();
-			while(itRun.hasNext()){
-				itRun.next().resetCache();
+			if(toRun != null){
+				Iterator<RunnableElement> itRun = toRun.iterator();
+				while(itRun.hasNext()){
+					itRun.next().resetCache();
+				}
 			}
 		}
 

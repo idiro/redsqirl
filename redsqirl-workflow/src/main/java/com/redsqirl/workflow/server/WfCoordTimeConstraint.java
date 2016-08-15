@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,6 +23,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	int frequency;
 	String frequencyStr = "";
 	TimeTemplate unit = null;
+	Date initialInstance = null;
 
 	protected WfCoordTimeConstraint() throws RemoteException {
 		super();
@@ -98,9 +101,11 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		return tc2.getFreqInMinutes() == 0 || (tc1.getFreqInMinutes() < tc2.getFreqInMinutes() && tc1.getFreqInMinutes() != 0) ? tc1 : tc2;
 	}
 	
-	public Date getStartTime(Date executionTime){
+	public Date getStartTime(Date executionTime) throws RemoteException{
 		Date now = new Date();
-		Calendar cl = Calendar.getInstance();
+		Calendar cl = new GregorianCalendar(
+				TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone)));
 		if(executionTime == null){
 			cl.setTime(now);
 			cl.add(Calendar.MINUTE, 2);
@@ -137,11 +142,14 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 				break;
 			}
 		}
+		
 		return ans;
 	}
 	
-	public Date getDefaultEndTime(Date startDate){
-		Calendar cl = Calendar.getInstance();
+	public Date getDefaultEndTime(Date startDate) throws RemoteException{
+		Calendar cl = new GregorianCalendar(
+				TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 		cl.setTime(startDate);
 		if(unit == null){
 			cl.add(Calendar.MINUTE, 3);
@@ -192,6 +200,16 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 			}
 		}
 		return ans*getFrequency();
+	}
+
+	@Override
+	public Date getInitialInstance() throws RemoteException {
+		return initialInstance;
+	}
+
+	@Override
+	public void setInitialInstance(Date initialInstance) throws RemoteException {
+		this.initialInstance = initialInstance;
 	}
 
 }

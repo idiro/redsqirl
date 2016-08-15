@@ -241,7 +241,9 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Oozie bundle xml schema location */
 			sys_oozie_bundle_xmlns = core_settings_oozie+".oozie_bundle_xmlns",
 			/** Oozie coordinator xml schema location */
-			sys_oozie_timezone = core_settings_oozie+".timezone",
+			sys_oozie_processing_timezone = core_settings_oozie+".processing_timezone",
+			/** Oozie coordinator xml schema location */
+			sys_oozie_user_timezone = core_settings_oozie+".user_timezone",
 			/** namenode path */
 			sys_namenode = core_settings+".namenode",
 			/** The Hadoop Home Folder (with /bin and /conf inside */

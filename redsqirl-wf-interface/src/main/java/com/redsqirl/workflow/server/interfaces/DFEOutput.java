@@ -418,8 +418,4 @@ public interface DFEOutput extends Remote {
 	 * @throws RemoteException
 	 */
 	public CoordinatorTimeConstraint getFrequency() throws RemoteException;
-	
-	public String getInitialInstance() throws RemoteException;
-
-	public void setInitialInstance(String initialInstance) throws RemoteException;
 }
