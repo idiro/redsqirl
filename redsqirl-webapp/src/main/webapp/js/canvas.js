@@ -920,15 +920,13 @@ function deleteAllElements() {
 	iter=-1;
 	jQuery.each(layer.getChildren(), function(index, value) {
         if (value !== undefined && value.isArrow == true) {
+        	removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
             toDelete[++iter] = value;
         }
     });
 	for(iter = 0; iter <  toDelete.length;++iter){
         toDelete[iter].destroy();
     }
-	
-	//deleteAllVoronoi();
-	undoRedoVoronoi();
 	
 	//layer.draw();
 	//polygonLayer.draw();
@@ -1689,7 +1687,8 @@ function mountObj(canvasName) {
 
                 // GROUP
                 var result = createPolygon(
-                    imgTab, posInitX,
+                    imgTab, 
+                    posInitX,
                     poxInitY,
                     numSides,
                     canvasName);
@@ -1832,7 +1831,7 @@ function changeFooter(canvasName) {
 	
 	var type = getWorkflowType(canvasName);
 	
-	//alert(stageArrayTab.length);
+	//console.log(stageArrayTab.length);
 	
 	for (var int = 0; int < stageArrayTab.size(); int++) {
 		var list = stageArrayTab[int].getChildren()[0].getChildren();
@@ -1840,7 +1839,7 @@ function changeFooter(canvasName) {
 		for ( var i = 0; i < list.length; i++) {
 			
 			var e = list[i];
-			//alert(e.name);
+			//console.log(e.name);
 			
 			if(type == "S"){
 				
@@ -1849,11 +1848,21 @@ function changeFooter(canvasName) {
 					e.setOpacity(1);
 				}
 				
+				if(e.name == "synchronuous_sink" || e.name == "synchronuous_source"	|| e.name == "synchronuous_source_filter"){
+					e.setDraggable(false);
+					e.setOpacity(0.4);
+				}
+				
 			}else{
 				
 				if(e.name == "superactioninput" || e.name == "superactionoutput"){
 					e.setDraggable(false);
 					e.setOpacity(0.4);
+				}
+				
+				if(e.name == "synchronuous_sink" || e.name == "synchronuous_source"	|| e.name == "synchronuous_source_filter"){
+					e.setDraggable(true);
+					e.setOpacity(1);
 				}
 				
 			}
@@ -2077,7 +2086,7 @@ function createLink(circleGp){
         
         var arrow = canvasArray[selectedCanvas].arrow;
         
-        console.log(arrow);
+        //console.log(arrow);
 
         if (canvasArray[selectedCanvas].down) {
             canvasArray[selectedCanvas].down = false;
@@ -2087,10 +2096,11 @@ function createLink(circleGp){
             var output = arrow.output.getChildren()[4].getText();
             var input = circleGp.getParent().getChildren()[4].getText();
             var arrowClone = addLink(selectedCanvas, output, input);
-            canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
+            canvasArray[selectedCanvas].commandHistory.execute(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
-            //alert("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
+            console.log("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
+            console.log("END");
 
         } else {
             var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
@@ -2675,9 +2685,13 @@ function polygonOnClick(obj,e, canvasName){
 				var output = arrow.output.getChildren()[4].getText();
 				var input = obj.getParent().getChildren()[4].getText();
 				var arrowClone = addLink(canvasName, output, input);
-				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
-				//alert("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
+				console.log("polygonOnClick A");
+				
+				canvasArray[canvasName].commandHistory.execute(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
+				
+				console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
+				
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}else{

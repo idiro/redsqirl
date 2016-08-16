@@ -1913,7 +1913,7 @@
 			<a4j:region>
 			
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatusRebuildJS();"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4]); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
 					reRender="tabFlowchart" />
 			
 				<a4j:jsFunction name="updateAllArcsStatusRebuildJS"
@@ -2135,6 +2135,29 @@
 
 				<a4j:jsFunction name="undoRedoVoronoiJS" data="#{canvasBean.voronoi}"
 					oncomplete="updateVoranoiAllPolygonTitle(data[0]);" />
+			</a4j:region>
+			
+			<a4j:region>
+
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="cloneVoronoi"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+
+				<a4j:jsFunction name="replaceWFByCloneVoronoi" action="#{canvasBean.replaceWFByClone}" oncomplete="rebuildJS();"
+					reRender="errorTable,tabFlowchart">
+					<a4j:actionparam name="selectedItens" />
+					<a4j:actionparam name="idCloneMap" />
+					<a4j:actionparam name="keepClone" />
+				</a4j:jsFunction>
+
 			</a4j:region>
 			
 

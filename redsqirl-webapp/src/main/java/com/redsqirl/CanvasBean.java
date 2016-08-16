@@ -346,7 +346,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			DataFlow df = getDf();
 			
-			//save voronoi history polygon
+			/*//save voronoi history polygon
 			JSONArray jsonVoronoiNamesOld = new JSONArray();
 			Map<String, String> mId = getReverseIdMap();
 			if (df != null && df.getElement() != null) {
@@ -358,7 +358,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			setVoronoiNames(jsonVoronoiNamesOld.toString());
 			
-
+*/
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
@@ -367,7 +367,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			//voronoi polygon
 			JSONArray jsonVoronoiNames = new JSONArray();
-			//Map<String, String> mId = getReverseIdMap();
+			Map<String, String> mId = getReverseIdMap();
 			if (df != null && df.getElement() != null) {
 				for (DataFlowElement e : df.getElement()) {
 					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
@@ -399,11 +399,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 			DataFlow df = getDf();
 			
-			if(getVoronoiNames() != null && !getVoronoiNames().isEmpty()){
+			/*if(getVoronoiNames() != null && !getVoronoiNames().isEmpty()){
 				String aux = getVoronoiNames();
 				setVoronoiNames(null);
 				return new String[] { aux };
-			}
+			}*/
 
 			//voronoi polygon
 			JSONArray jsonVoronoiNames = new JSONArray();
