@@ -44,6 +44,29 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	protected Map<String,String> variables = new LinkedHashMap<String,String>();
 	protected Date executionTime = null;
 	
+	public class WfDefaultConstraint implements DataFlowCoordinator.DefaultConstraint{
+		protected CoordinatorTimeConstraint constraint;
+		protected int offset;
+		
+		public WfDefaultConstraint(CoordinatorTimeConstraint constraint, int offset) {
+			super();
+			this.constraint = constraint;
+			this.offset = offset;
+		}
+		public final CoordinatorTimeConstraint getConstraint() {
+			return constraint;
+		}
+		public final void setConstraint(CoordinatorTimeConstraint constraint) {
+			this.constraint = constraint;
+		}
+		public final int getOffset() {
+			return offset;
+		}
+		public final void setOffset(int offset) {
+			this.offset = offset;
+		}
+	}
+	
 	protected WorkflowCoordinator() throws RemoteException {
 		super();
 	}
@@ -576,9 +599,10 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		return timeCondition;
 	}
 	
-	public CoordinatorTimeConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException {
+	public DefaultConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException {
 		Iterator<DataFlowElement> itDfe = elements.iterator();
 		CoordinatorTimeConstraint minCT = null;
+		int offset = 0;
 		while(itDfe.hasNext()){
 			DataFlowElement cur = itDfe.next();
 			
@@ -587,6 +611,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			while(itOutputs.hasNext()){
 				DFEOutput datasetCur = itOutputs.next();
 				CoordinatorTimeConstraint curTimeConstraint = null;
+				int tmpOffset = 0;
 				if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
 					curTimeConstraint = datasetCur.getFrequency();
 				}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty()){
@@ -595,20 +620,30 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 							(curTimeConstraint == null || curTimeConstraint.getUnit() == null)){
 						curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
 						if(curTimeConstraint.getUnit() == null){
-							curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
+							DefaultConstraint prevConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
+							curTimeConstraint = prevConstraint.getConstraint();
+							if(prevConstraint.getOffset() > 0){
+								tmpOffset = prevConstraint.getOffset();
+							}
 						}
+						tmpOffset += datasetCur.getNumberMaterializedPath() - 1;
 					}
 				}
 				if(curTimeConstraint != null){
 					if(minCT == null){
 						minCT = curTimeConstraint;
+						offset = tmpOffset;
 					}else{
 						minCT = WfCoordTimeConstraint.getMostFrequent(minCT,curTimeConstraint);
+						if(minCT == curTimeConstraint){
+							offset = tmpOffset;
+						}
 					}
 				}
 			}
+			
 		}
-		return minCT;
+		return new WfDefaultConstraint(minCT,offset);
 	}
 
 	@Override

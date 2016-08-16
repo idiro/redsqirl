@@ -308,6 +308,7 @@ if [[ "$DISTRIBUTION" == "hdp" ]]; then
     change_rs_prop "core.namenode=hdfs\://${MASTER_HOSTNAME}\:8020"
     change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8050"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.oozie.applications_url=http\://${MASTER_HOSTNAME}\:8088/cluster"
     change_rs_prop "core.hadoop_home=/usr/hdp/current/hadoop-client"
     change_rs_prop "core.hcatalog.metastore_uri=thrift\://${MASTER_HOSTNAME}\:9083"
     if [[ "${SECURE}" == 'y' ]]; then
@@ -322,6 +323,7 @@ elif [[ "$DISTRIBUTION" == "cloudera" ]]; then
     change_rs_prop "core.jobtracker=${MASTER_HOSTNAME}\:8032"
     change_rs_prop "core.hcatalog.metastore_uri=thrift\://${MASTER_HOSTNAME}\:9083"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.oozie.applications_url=http\://${MASTER_HOSTNAME}\:8088/cluster"
     change_rs_prop "core.hadoop_home=/usr/lib/hadoop"
     if [[ "${SECURE}" == 'y' ]]; then
         change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:9083/default;principal=hive/${MASTER_HOSTNAME}@${REALM}"
@@ -337,6 +339,7 @@ elif [[ "$DISTRIBUTION" == "mapr" ]]; then
     change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000/default"
     change_rs_prop "core.hcatalog.metastore_uri=thrift\://${MASTER_HOSTNAME}\:9083"
     change_rs_prop "core.oozie.oozie_url=http\://${MASTER_HOSTNAME}\:11000/oozie"
+    change_rs_prop "core.oozie.applications_url=http\://${MASTER_HOSTNAME}\:8088/cluster"
     change_rs_prop "core.hadoop_home=/opt/mapr"
     if [[ "${SECURE}" == 'y' ]]; then
         change_rs_prop "core.hcatalog.hive_url=jdbc\:hive2\://${MASTER_HOSTNAME}\:10000/default;principal=hive/${MASTER_HOSTNAME}@${REALM}"

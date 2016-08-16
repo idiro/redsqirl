@@ -37,6 +37,7 @@ public class HCatStore extends Storage{
 			key_table = "table",
 			key_part = "partition";
 
+	public static final String partitionDelimiter = ";";
 	protected static HCatConnection conn = new HCatConnection();
 	protected static Map<String,HCatDatabase> databases = new LinkedHashMap<String,HCatDatabase>();
 	protected static Map<String,HCatTable> tables = new LinkedHashMap<String,HCatTable>();
@@ -224,7 +225,7 @@ public class HCatStore extends Storage{
 			ans = "DROP TABLE "+pathArray[0]+"."+pathArray[1];
 		}else if(pathArray.length == 3){
 			ans = "ALTER TABLE "+pathArray[0]+"."+pathArray[1]+
-					" DROP PARTITION ("+pathArray[2].replaceAll("=", "='").replaceAll(",", "',")+"')";
+					" DROP PARTITION ("+pathArray[2].replaceAll("=", "='").replaceAll(partitionDelimiter, "',")+"')";
 		}
 		return ans;
 	}
@@ -252,7 +253,7 @@ public class HCatStore extends Storage{
 	}
 	
 	protected static String reformatPartition(String partition){
-		String patternStr = "(,|^)[^=]+=";
+		String patternStr = "("+partitionDelimiter+"|^)[^=]+=";
 		Pattern p = Pattern.compile(patternStr);
 		Matcher m = p.matcher(partition);
 		StringBuffer sb = new StringBuffer();
@@ -264,14 +265,14 @@ public class HCatStore extends Storage{
 		return sb.toString();
 	}
 	
-	protected static Set<String> getPartitionNames(String partitionStr){
-		String patternStr = "(,|^)[^=]+=";
+	public static Set<String> getPartitionNames(String partitionStr){
+		String patternStr = "("+partitionDelimiter+"|^)[^=]+=";
 		Pattern p = Pattern.compile(patternStr);
 		Matcher m = p.matcher(partitionStr);
 		Set<String> ans = new LinkedHashSet<String>();
 		while (m.find()){
 			String cur = m.group();
-			if(cur.startsWith(",")){
+			if(cur.startsWith(partitionDelimiter)){
 				cur = cur.substring(1);
 			}
 			cur = cur.substring(0,cur.length()-1);
@@ -359,6 +360,7 @@ public class HCatStore extends Storage{
 					Set<String> pathPartName = getPartitionNames(dbTableAndPartition[2]);
 					if(logger.isDebugEnabled()){
 						logger.debug("Check partition in path");
+						logger.debug(dbTableAndPartition[2]);
 						logger.debug(partName);
 						logger.debug(pathPartName);
 					}
@@ -409,12 +411,12 @@ public class HCatStore extends Storage{
 		if(pathArray.length == 3){
 			List<String> cols = Arrays.asList(getDescription(pathArray).get(JdbcStore.key_describe).replaceAll(",[^;]+($|;)", ",").split(","));
 			logger.debug("columns (incl. partitions): "+cols);
-			filter += " WHERE "+pathArray[2].replaceAll("=", "='").replaceAll(",", "' AND ")+"' ";
+			filter += " WHERE "+pathArray[2].replaceAll("=", "='").replaceAll(partitionDelimiter, "' AND ")+"' ";
 			colDisplay = "";
 			Iterator<String> it = cols.iterator();
 			while(it.hasNext()){
 				String cur = it.next();
-				if( !pathArray[2].matches("(^|.+,)"+cur+"=.+")){
+				if( !pathArray[2].matches("(^|.+"+partitionDelimiter+")"+cur+"=.+")){
 					if(colDisplay.isEmpty()){
 						colDisplay = cur;
 					}else{

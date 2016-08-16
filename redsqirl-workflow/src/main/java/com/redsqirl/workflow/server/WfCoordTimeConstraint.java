@@ -19,6 +19,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	 * 
 	 */
 	private static final long serialVersionUID = -9222678978810373856L;
+	public static final int numberDefaultIteration = 10;
 	
 	int frequency;
 	String frequencyStr = "";
@@ -101,52 +102,73 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		return tc2.getFreqInMinutes() == 0 || (tc1.getFreqInMinutes() < tc2.getFreqInMinutes() && tc1.getFreqInMinutes() != 0) ? tc1 : tc2;
 	}
 	
-	public Date getStartTime(Date executionTime) throws RemoteException{
+	public Date getStartTime(Date executionTime,int offset) throws RemoteException{
+		Date tmpDate = null;
 		Date now = new Date();
 		Calendar cl = new GregorianCalendar(
 				TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone)));
 		if(executionTime == null){
 			cl.setTime(now);
-			cl.add(Calendar.MINUTE, 2);
-			return cl.getTime();
+			tmpDate = cl.getTime();
+		}else{
+			tmpDate = executionTime;
+			cl.setTime(tmpDate);
+			while(true){
+				long search = (tmpDate.getTime() - now.getTime())/60000;
+				switch(unit){
+				case DAY:
+					cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1)* 24 * frequency));
+					break;
+				case HOUR:
+					cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1) * frequency));
+					break;
+				case MINUTE:
+					cl.add(Calendar.MINUTE, (int)((search < 0 ? 1:-1) * frequency));
+					break;
+				case MONTH:
+					cl.add(Calendar.MONTH, (int)((search < 0 ? 1:-1)* frequency));
+					break;
+				case YEAR:
+					cl.add(Calendar.YEAR, (int)((search < 0 ? 1:-1)* frequency));
+					break;
+
+				}
+				long newSearch = (cl.getTime().getTime() - now.getTime());
+				if(newSearch*search < 1){
+					if(newSearch > 1){
+						tmpDate  = cl.getTime();
+					}
+					break;
+				}
+			}
+			cl.setTime(tmpDate);
 		}
-		
-		Date ans = executionTime;
-		cl.setTime(ans);
-		while(true){
-			long search = (ans.getTime() - now.getTime())/60000;
+		if( unit != null && offset > 0){
 			switch(unit){
 			case DAY:
-				cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1)* 24 * frequency));
+				cl.add(Calendar.HOUR, 24 * frequency * offset);
 				break;
 			case HOUR:
-				cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1) * frequency));
+				cl.add(Calendar.HOUR, frequency * offset);
 				break;
 			case MINUTE:
-				cl.add(Calendar.MINUTE, (int)((search < 0 ? 1:-1) * frequency));
+				cl.add(Calendar.MINUTE, frequency * offset);
 				break;
 			case MONTH:
-				cl.add(Calendar.MONTH, (int)((search < 0 ? 1:-1)* frequency));
+				cl.add(Calendar.MONTH, frequency * offset);
 				break;
 			case YEAR:
-				cl.add(Calendar.YEAR, (int)((search < 0 ? 1:-1)* frequency));
+				cl.add(Calendar.YEAR, frequency * offset);
 				break;
 
 			}
-			long newSearch = (cl.getTime().getTime() - now.getTime());
-			if(newSearch*search < 1){
-				if(newSearch > 1){
-					ans  = cl.getTime();
-				}
-				break;
-			}
 		}
 		
-		return ans;
+		return cl.getTime();
 	}
 	
-	public Date getDefaultEndTime(Date startDate) throws RemoteException{
+	public Date getDefaultEndTime(Date startDate,int offset) throws RemoteException{
 		Calendar cl = new GregorianCalendar(
 				TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
@@ -156,19 +178,19 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		}else{
 			switch(unit){
 			case DAY:
-				cl.add(Calendar.HOUR, 24 * frequency);
+				cl.add(Calendar.HOUR, 24 * frequency * (numberDefaultIteration - offset));
 				break;
 			case HOUR:
-				cl.add(Calendar.HOUR, frequency);
+				cl.add(Calendar.HOUR, frequency * (numberDefaultIteration - offset));
 				break;
 			case MINUTE:
-				cl.add(Calendar.MINUTE, frequency);
+				cl.add(Calendar.MINUTE, frequency * (numberDefaultIteration - offset));
 				break;
 			case MONTH:
-				cl.add(Calendar.MONTH, frequency);
+				cl.add(Calendar.MONTH, frequency * (numberDefaultIteration - offset));
 				break;
 			case YEAR:
-				cl.add(Calendar.YEAR, frequency);
+				cl.add(Calendar.YEAR, frequency * (numberDefaultIteration - offset));
 				break;
 			}
 		}

@@ -29,6 +29,8 @@ import javax.faces.context.FacesContext;
 import org.apache.log4j.Logger;
 import org.richfaces.model.Ordering;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
+
 public class ProcessManagerBean extends BaseBean implements Serializable{
 	
 	private static Logger logger = Logger.getLogger(ProcessManagerBean.class);
@@ -78,6 +80,10 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 
 	public String getOozieUrl() throws Exception{
 		return getOozie() != null ? getOozie().getUrl() : oozieUrl;
+	}
+	
+	public String getApplicationUrl() throws Exception{
+		return WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_applications);
 	}
 	
 	public void setOozieUrl(String oozieUrl) {

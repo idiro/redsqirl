@@ -90,6 +90,13 @@
                     "type": "STRING"
                 },
                 {
+                    "default": "http://namenode:8088/cluster",
+                    "optional": "true",
+                    "property": "applications_url",
+                    "scope": "system",
+                    "type": "STRING"
+                },
+                {
                     "default": "GMT+0000",
                     "optional": "true",
                     "property": "processing_timezone",

@@ -234,6 +234,8 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_oozie_action_queue= core_settings_oozie+".oozie_action_queue",
 			/** Oozie URL */
 			sys_oozie = core_settings_oozie+".oozie_url",
+			/** Application URL */
+			sys_applications = core_settings_oozie+".applications_url",
 			/** Oozie xml schema location */
 			sys_oozie_xmlns = core_settings_oozie+".oozie_xmlns",
 			/** Oozie coordinator xml schema location */

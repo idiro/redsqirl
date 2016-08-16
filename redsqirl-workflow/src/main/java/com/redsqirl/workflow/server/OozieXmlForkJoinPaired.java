@@ -50,7 +50,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieManager.Type;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
@@ -202,7 +201,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 		directory.mkdirs();
 		String hdfsBundlePath = WorkflowPrefManager.getHDFSPathJobs()+"/"+directory.getName();
-		String jobFile = "job.properties";
+		//String jobFile = "job.properties";
 		String coordinatorFile = "coordinator.xml";
 		try {
 			
@@ -298,11 +297,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			dateFormat.setTimeZone(TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 			CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
+			int offset = 0;
 			if(coordinatorTimeConstraint.getUnit() == null){
-				coordinatorTimeConstraint = coordinator.getDefaultTimeConstraint(df);
+				DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
+				coordinatorTimeConstraint = constraint.getConstraint();
+				offset = constraint.getOffset();
 			}
 			
-			Date startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime());
+			Date startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),offset);
 
 			{
 				Attr attrName = doc.createAttribute("name");
@@ -344,7 +346,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				if(endDate != null && !endDate.isEmpty()){
 					attrName.setValue(endDate);
 				}else{
-					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate)));
+					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate,offset)));
 				}
 				rootElement.setAttributeNode(attrName);
 			}
@@ -385,7 +387,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								nameDataset = inputsDfe.get(0).getComponentId();
 								timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
 								if(timeConstraintCur.getUnit() == null){
-									timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
+									timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
 								}
 								initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 							}
@@ -469,7 +471,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}
 				controls.appendChild(execution);
 			}
-			/* Create errors...
 			{
 				Element concurrency = doc.createElement("concurrency");
 				concurrency.appendChild(doc.createTextNode("1"));
@@ -485,7 +486,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				throttle.appendChild(doc.createTextNode("12"));
 				controls.appendChild(throttle);
 			}
-			*/
 			rootElement.appendChild(controls);
 			
 			

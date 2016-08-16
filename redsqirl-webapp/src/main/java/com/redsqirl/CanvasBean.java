@@ -1195,11 +1195,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		DataFlow df = getDf();
 		String name = "";
 		boolean running = false;
+		boolean scheduled = false;
 		if(df != null){
 			name = df.getName();
 			running = df.isrunning();
+			scheduled = df.isSchelule();
 			//logger.warn(df.getName()+" running: "+running);
-			if(running){
+			if(running && !scheduled){
 				try {
 					setTotalProgressBar(getOozie().getNbElement(getDf()));
 					runningElements = getOozie().getElementsRunning(getDf());

@@ -11,6 +11,17 @@ import org.w3c.dom.Element;
 
 public interface DataFlowCoordinator extends Remote{
 
+
+	public interface DefaultConstraint{
+		CoordinatorTimeConstraint getConstraint();
+		
+		void setConstraint(CoordinatorTimeConstraint constraint);
+		
+		int getOffset();
+		
+		void setOffset(int offset);
+	}
+
 	List<DataFlowElement> getElements() throws RemoteException;
 	
 	List<String> getComponentIds() throws RemoteException;
@@ -45,6 +56,6 @@ public interface DataFlowCoordinator extends Remote{
 
 	void setExecutionTime(Date executionTime) throws RemoteException;
 
-	CoordinatorTimeConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;
+	DefaultConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;
 	
 }

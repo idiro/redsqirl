@@ -24,7 +24,7 @@ public class HCatTable extends HCatObject{
 		try{
 			ResultSet rs = getHiveConnection().executeQuery("SHOW PARTITIONS "+databaseName+"."+tableName);
 			while(rs.next()){
-				ans.add(rs.getString(1).replaceAll("\\Q"+"/"+"\\E", ","));
+				ans.add(rs.getString(1).replaceAll("\\Q"+"/"+"\\E", HCatStore.partitionDelimiter));
 			}
 			rs.close();
 		}catch(Exception e){

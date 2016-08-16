@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
@@ -34,6 +35,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
@@ -41,6 +44,8 @@ import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
@@ -215,7 +220,9 @@ public class SyncSource extends AbstractSource {
 		String buildingStr = "";
 		int prevIndex = 0;
 		int found = 0;
+		logger.debug(realPath);
 		while(m.find() && error == null){
+			logger.debug(buildingStr);
 			++found;
 			boolean match = true;
 			buildingStr += templatePathStr.substring(prevIndex, m.start());
@@ -269,9 +276,11 @@ public class SyncSource extends AbstractSource {
 			}
 		}
 		if(prevIndex < realPath.length()){
-			buildingStr += realPath.substring(prevIndex);
+			buildingStr += realPath.substring(buildingStr.length());
 		}
-		
+
+		logger.debug(buildingStr);
+		logger.debug(realPath);
 		if(error == null){
 			if(found == 0){
 				error = "No template specified.";
@@ -280,8 +289,6 @@ public class SyncSource extends AbstractSource {
 			} 
 		}
 		
-		System.out.println("building: "+buildingStr);
-		System.out.println("real path: "+realPath);
 		return error;
 	}
 	
@@ -360,6 +367,27 @@ public class SyncSource extends AbstractSource {
 			updateUnit();
 		}
 	}
+	
+	public FieldList getNewFields(DFEOutput in) throws RemoteException{
+		FieldList ans = null;
+		FieldList inF = in.getFields();
+		if(!new HCatalogType().getTypeName().equals(in.getTypeName())){
+			ans = inF;
+		}else{
+			ans = new OrderedFieldList();
+			Iterator<String> it = inF.getFieldNames().iterator();
+			while(it.hasNext()){
+				String cur = it.next();
+				ans.addField(cur, inF.getFieldType(cur));
+			}
+			String[] pathOut = HCatStore.getDatabaseTableAndPartition(templatePath.getValue());
+			it = HCatStore.getPartitionNames(pathOut[2]).iterator();
+			while(it.hasNext()){
+				ans.addField(it.next(), FieldType.STRING);
+			}
+		}
+		return ans;
+	}
 
 	@Override
 	public String updateOut() throws RemoteException {
@@ -381,7 +409,7 @@ public class SyncSource extends AbstractSource {
 			}else{
 				templateOut.setPath(WorkflowPrefManager.getProperty(hcat_metastore_key).replaceAll("thrift", "hcat")+templatePathStr.replaceAll(",", ";"));
 			}
-			templateOut.setFields(startInstance.getFields());
+			templateOut.setFields(getNewFields(startInstance));
 			templateOut.setPathType(PathType.TEMPLATE);
 			templateOut.setSavingState(SavingState.RECORDED);
 			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));

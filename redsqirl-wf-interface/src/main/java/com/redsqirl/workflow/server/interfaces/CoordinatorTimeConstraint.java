@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 
 public interface CoordinatorTimeConstraint extends Remote{
-
+	
 	int getFrequency() throws RemoteException;
 	
 	void setFrequency(int frequency) throws RemoteException;
@@ -33,7 +33,7 @@ public interface CoordinatorTimeConstraint extends Remote{
 	
 	void setInitialInstance(Date initialInstance) throws RemoteException;
 	
-	Date getStartTime(Date executionTime) throws RemoteException;
+	Date getStartTime(Date executionTime,int offset) throws RemoteException;
 	
-	Date getDefaultEndTime(Date startDate) throws RemoteException;
+	Date getDefaultEndTime(Date startDate,int offset) throws RemoteException;
 }
