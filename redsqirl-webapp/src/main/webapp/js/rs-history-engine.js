@@ -258,7 +258,7 @@ CommandAddObj.prototype.redo = function(){
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].stage.draw();
 	
-	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(cn, tmpCommandObj.elementId, gi); }, 1000);
+	setTimeout(function(){ undoRedoVoronoi(); }, 1000);
 	
 	canvasArray[this.canvasName].polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");

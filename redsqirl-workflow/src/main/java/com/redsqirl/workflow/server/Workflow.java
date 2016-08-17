@@ -2027,7 +2027,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	protected String addElement(String waName, String componentId)
 			throws Exception {
-		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+		DataFlowCoordinator dfC = new WorkflowCoordinator(componentId);
 		String error = addElement(waName, componentId, dfC);
 		coordinators.add(dfC);
 		
