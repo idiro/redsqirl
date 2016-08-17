@@ -114,6 +114,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean progressBarEnabled;
 	private boolean runningElementsToggle;
 	private boolean doneElementsToggle;
+	private String voronoiNames;
 
 	private String firstTime;
 
@@ -344,7 +345,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 
 			DataFlow df = getDf();
-
+			
+			/*//save voronoi history polygon
+			JSONArray jsonVoronoiNamesOld = new JSONArray();
+			Map<String, String> mId = getReverseIdMap();
+			if (df != null && df.getElement() != null) {
+				for (DataFlowElement e : df.getElement()) {
+					jsonVoronoiNamesOld.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
+					logger.warn("mid element " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + e.getComponentId());
+				}
+			}
+			setVoronoiNames(jsonVoronoiNamesOld.toString());
+			
+*/
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
@@ -358,10 +372,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				for (DataFlowElement e : df.getElement()) {
 					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
 					logger.warn("mid element " + mId.get(e.getComponentId()));
-					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + e.getComponentId());
 				}
 			}
-
 
 			ans = new String[] { getParamNameLink(), nameElementA, nameElementB, jsonVoronoiNames.toString() };
 			setNameOutput(nameElementA);
@@ -385,6 +398,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		try {
 			DataFlow df = getDf();
+			
+			/*if(getVoronoiNames() != null && !getVoronoiNames().isEmpty()){
+				String aux = getVoronoiNames();
+				setVoronoiNames(null);
+				return new String[] { aux };
+			}*/
 
 			//voronoi polygon
 			JSONArray jsonVoronoiNames = new JSONArray();
@@ -393,7 +412,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				for (DataFlowElement e : df.getElement()) {
 					jsonVoronoiNames.put(new Object[] { mId.get(e.getComponentId()) , e.getCoordinatorName()});
 					logger.warn("mid element " + mId.get(e.getComponentId()));
-					logger.warn("mid coordinator " + mId.get(e.getComponentId()));
+					logger.warn("mid coordinator " + e.getCoordinatorName());
 				}
 			}
 			
@@ -2296,7 +2315,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			return new String[] { workflowName, df.getPath(),
 					jsonElements.toString(), jsonLinks.toString(), selecteds,
-					getMapWorkflowType().get(workflowName) };
+					getMapWorkflowType().get(workflowName), getVoronoi()[0] };
 
 		} catch (Exception e) {
 			logger.warn("Error " + e + " - " + e.getMessage());
@@ -3231,6 +3250,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setInputNameModel(String inputNameModel) {
 		this.inputNameModel = inputNameModel;
+	}
+
+	public String getVoronoiNames() {
+		return voronoiNames;
+	}
+
+	public void setVoronoiNames(String voronoiNames) {
+		this.voronoiNames = voronoiNames;
 	}
 
 }

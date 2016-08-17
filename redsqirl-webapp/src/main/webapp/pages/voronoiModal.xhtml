@@ -13,6 +13,14 @@
 			<table>
 				<tr>
 					<td>
+						<h:outputText value="#{messages.label_voronoi_name}" title="#{messages.title_voronoi_name}" />
+					</td>
+					<td>
+						<h:inputText value="#{voronoiBean.name}" id="voronoiName" maxlength="255" style="width:395px;" styleClass="interModal" />
+					</td>
+				</tr>
+				<tr>
+					<td>
 						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
 					</td>
 					<td>
@@ -109,7 +117,7 @@
 		<rich:panel columns="2" style="border:none; float:right;">
 		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
 		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{voronoiBean.apply}" 
-		    	oncomplete="#{rich:component('voronoiModal')}.hide();" reRender="msnError, errorTable" />
+		    	oncomplete="#{rich:component('voronoiModal')}.hide();undoRedoVoronoiJS();" reRender="msnError, errorTable" />
 		</rich:panel>
 	
 	</h:form>

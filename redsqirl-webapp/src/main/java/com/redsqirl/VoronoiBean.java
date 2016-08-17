@@ -32,6 +32,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private String selectedSchedulingOption;
 	private String[] voronoiNewName;
 	private DataFlowCoordinator dataFlowCoordinator;
+	private String name;
 
 
 	public void openVoronoi() throws RemoteException{
@@ -71,20 +72,24 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		for (TimeTemplate tt : TimeTemplate.values()) {
 			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
 		}
+		if(!schedulingOptions.isEmpty()){
+			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
+		}
 
 	}
 
 
 	public void apply() throws RemoteException{
-
-		logger.warn("date to start " + startDate);
-		logger.warn("selected " + selectedSchedulingOption);
+		logger.warn("apply");
 
 		for (VoronoiType voronoiType : tableList) {
 			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
 		}
 		dataFlowCoordinator.setExecutionTime(startDate);
-
+		dataFlowCoordinator.setName(name);
+		
+		logger.warn("apply " + getSelectedSchedulingOption());
+		
 	}
 
 	public void deleteLine(){
@@ -173,5 +178,11 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

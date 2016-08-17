@@ -258,7 +258,7 @@ CommandAddObj.prototype.redo = function(){
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].stage.draw();
 	
-	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(cn, tmpCommandObj.elementId, gi); }, 1000);
+	setTimeout(function(){ undoRedoVoronoi(); }, 1000);
 	
 	canvasArray[this.canvasName].polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");
@@ -277,6 +277,7 @@ function CommandAddArrow(canvasName, outId, inId, name) {
 	this.outId = outId;
 	this.inId = inId;
 	this.name = name;
+	this.cloneId = "";
 };
 
 CommandAddArrow.prototype = Object.create(Command.prototype);
@@ -284,17 +285,38 @@ CommandAddArrow.prototype.constructor = CommandAddArrow;
 
 CommandAddArrow.prototype.undo = function(){
     console.timeStamp("CommandAddArrow.undo begin");
-	deleteElementsJS("", this.name);
+	//deleteElementsJS("", this.name);
+	
+    
+    console.log("undo a " + this.cloneId);
+    
+	deleteAllElements();
+	replaceWFByCloneVoronoi("",this.cloneId, false);
+	
 	console.timeStamp("CommandAddArrow.undo end");
 };
 
 CommandAddArrow.prototype.redo = function(){
-    console.timeStamp("CommandAddArrow.redo begin");
-    //!ADD A LINK ON BACK-END
-    addLinkBt();
-	addLink(this.canvasName, this.outId, this.inId);
-	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
-	console.timeStamp("CommandAddArrow.redo end");
+    //console.timeStamp("CommandAddArrow.redo begin");
+    
+    console.log("redo clone A ");
+    
+    tmpCommandObj = this;
+    cloneVoronoi(getAllIconPositions());
+    
+    console.log("redo clone B ");
+    
+    setTimeout(function(){  
+    
+        //!ADD A LINK ON BACK-END
+        addLinkBt();
+    	addLink(this.canvasName, this.outId, this.inId);
+    	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
+
+    
+    }, 1000);
+	
+	//console.timeStamp("CommandAddArrow.redo end");
 };
 
 CommandAddArrow.prototype.getName = function(){
