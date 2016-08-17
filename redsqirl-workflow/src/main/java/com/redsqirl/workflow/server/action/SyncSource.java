@@ -65,7 +65,6 @@ public class SyncSource extends AbstractSource {
 	private static final long serialVersionUID = 7519928238030041208L;
 
 	private static Logger logger = Logger.getLogger(SyncSource.class);
-	public static final String hcat_metastore_key = WorkflowPrefManager.core_settings_hcatalog+".metastore_uri";
 	public final static String out_template = "template",
 			inter_template = "template_path",
 			inter_unit = "unit",
@@ -275,8 +274,8 @@ public class SyncSource extends AbstractSource {
 				error = m.group(1)+" is not a template variable accepted, it should be YEAR, MONTH, DAY, HOUR or MINUTE";
 			}
 		}
-		if(prevIndex < realPath.length()){
-			buildingStr += realPath.substring(buildingStr.length());
+		if(prevIndex < templatePathStr.length()){
+			buildingStr += templatePathStr.substring(prevIndex);
 		}
 
 		logger.debug(buildingStr);
@@ -404,11 +403,7 @@ public class SyncSource extends AbstractSource {
 				output.put(out_template, DataOutput.getOutput(startInstance.getTypeName()));
 			}
 			DFEOutput templateOut = output.get(out_template);
-			if(new HDFSInterface().getBrowserName().equals(startInstance.getBrowserName())){
-				templateOut.setPath(templatePathStr);
-			}else{
-				templateOut.setPath(WorkflowPrefManager.getProperty(hcat_metastore_key).replaceAll("thrift", "hcat")+templatePathStr.replaceAll(",", ";"));
-			}
+			templateOut.setPath(templatePathStr);
 			templateOut.setFields(getNewFields(startInstance));
 			templateOut.setPathType(PathType.TEMPLATE);
 			templateOut.setSavingState(SavingState.RECORDED);

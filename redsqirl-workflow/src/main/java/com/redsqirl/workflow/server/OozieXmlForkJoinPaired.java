@@ -50,6 +50,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
@@ -404,18 +406,22 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 
 						Element uriTemplate= doc.createElement("uri-template");
-						uriTemplate.appendChild(doc
-								.createTextNode("${"+OozieManager.prop_namenode+"}"+datasetCur.getPath()));
 						dataset.appendChild(uriTemplate);
+						if(new MapRedTextType().getBrowserName().equals(datasetCur.getBrowserName())){
+							uriTemplate.appendChild(doc
+									.createTextNode("${"+OozieManager.prop_namenode+"}"+datasetCur.getPath()));
+						}else{
+							uriTemplate.appendChild(doc
+									.createTextNode(WorkflowPrefManager.getProperty(HCatStore.hcat_metastore_key).replaceAll("thrift", "hcat")+datasetCur.getPath()));
+							Element doneFlag = doc.createElement("done-flag");
+							dataset.appendChild(doneFlag);
+						}
 						datasets.appendChild(dataset);
 
 					}
 				}
 			}
 
-
-			
-			
 			
 			//Define the input events
 			Element inputEvent = doc.createElement("input-events");
@@ -431,7 +437,15 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					if(PathType.MATERIALIZED.equals(out.getPathType())){
 
 						Element dataIn = doc.createElement("data-in");
-						autoVariables.put(cur.getComponentId(), "${coord:dataIn('"+cur.getComponentId()+"')}");
+						if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
+							autoVariables.put(cur.getComponentId(), "${coord:dataIn('"+cur.getComponentId()+"')}");
+						}else{
+							autoVariables.put("DATABASE_"+cur.getComponentId(), "${coord:databaseIn('"+cur.getComponentId()+"')}");
+							autoVariables.put("TABLE_"+cur.getComponentId(), "${coord:tableIn('"+cur.getComponentId()+"')}");
+							autoVariables.put("FILTER_HIVE_"+cur.getComponentId(), "${coord:dataInPartitionFilter('"+cur.getComponentId()+"','hive')}");
+							autoVariables.put("FILTER_PIG_"+cur.getComponentId(), "${coord:dataInPartitionFilter('"+cur.getComponentId()+"','pig')}");
+							autoVariables.put("FILTER_JAVA_"+cur.getComponentId(), "${coord:dataInPartitionFilter('"+cur.getComponentId()+"','java')}");
+						}
 						dataIn.setAttribute("name", cur.getComponentId());
 						dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());	
 						if(out.getNumberMaterializedPath() == 1){
@@ -472,20 +486,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				controls.appendChild(execution);
 			}
 			{
-				Element concurrency = doc.createElement("concurrency");
-				concurrency.appendChild(doc.createTextNode("1"));
-				controls.appendChild(concurrency);
-			}
-			{
-				Element timeout = doc.createElement("timeout");
-				timeout.appendChild(doc.createTextNode("-1"));
-				controls.appendChild(timeout);
-			}
-			{
 				Element throttle = doc.createElement("throttle");
 				throttle.appendChild(doc.createTextNode("12"));
 				controls.appendChild(throttle);
 			}
+			/*{
+			Element concurrency = doc.createElement("concurrency");
+			concurrency.appendChild(doc.createTextNode("1"));
+			controls.appendChild(concurrency);
+		}
+		{
+			Element timeout = doc.createElement("timeout");
+			timeout.appendChild(doc.createTextNode("-1"));
+			controls.appendChild(timeout);
+		}*/
 			rootElement.appendChild(controls);
 			
 			
@@ -505,7 +519,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						if(PathType.TEMPLATE.equals(out.getPathType())){
 							Element dataIn = doc.createElement("data-out");
 							dataIn.setAttribute("name", cur.getComponentId());
-							autoVariables.put(cur.getComponentId(), "${coord:dataOut('"+cur.getComponentId()+"')}");
+							if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
+								autoVariables.put(cur.getComponentId(), "${coord:dataOut('"+cur.getComponentId()+"')}");
+							}else{
+								autoVariables.put("DATABASE_"+cur.getComponentId(), "${coord:databaseOut('"+cur.getComponentId()+"')}");
+								autoVariables.put("TABLE_"+cur.getComponentId(), "${coord:tableOut('"+cur.getComponentId()+"')}");
+								autoVariables.put("PARTITION_"+cur.getComponentId(), "${coord:dataOutPartitions('"+cur.getComponentId()+"')}");
+							}
+							
 							dataIn.setAttribute("dataset", cur.getComponentId());
 							
 							Element instance= doc.createElement("instance");

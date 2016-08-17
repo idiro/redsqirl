@@ -359,7 +359,7 @@ public class HCatalogType extends DataOutput{
 	
 	@Override
 	public String isPathValid(String path) throws RemoteException {
-		return hcatS.isPathValid(path, path != null && path.equals(getPath())? getFields():null);
+		return hcatS.isPathValid(path, path != null && path.equals(getPath())? getFields():null,getPathType());
 	}
 	
 	@Override
@@ -470,7 +470,7 @@ public class HCatalogType extends DataOutput{
 		if(ok){
 			logger.info("Write queries in file: " + sqlFile.getAbsolutePath());
 			try {
-				writeFile(sqlFile, hcatS.getDeleteStatement(getPath()));
+				writeFile(sqlFile, hcatS.getDeleteStatement(getPath())+";" );
 			} catch (Exception e) {
 				ok = false;
 			}

@@ -18,12 +18,14 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.DSParamProperty;
 import com.redsqirl.workflow.server.connect.Storage;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcHiveStore;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcStoreConnection;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class HCatStore extends Storage{
@@ -32,6 +34,10 @@ public class HCatStore extends Storage{
 	 * The logger.
 	 */
 	private static Logger logger = Logger.getLogger(JdbcStore.class);
+	
+
+	public static final String hcat_metastore_key = WorkflowPrefManager.core_settings_hcatalog+".metastore_uri";
+	
 	public static final String key_type = "type",
 			key_db = "database",
 			key_table = "table",
@@ -297,7 +303,7 @@ public class HCatStore extends Storage{
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	public String isPathValid(String path, FieldList fields) throws RemoteException {
+	public String isPathValid(String path, FieldList fields,PathType pathType) throws RemoteException {
 		String error = null;
 		if(path == null){
 			return "Path cannot be null";
@@ -313,7 +319,7 @@ public class HCatStore extends Storage{
 				if (path.startsWith("/") && dbTableAndPartition.length > 3) {
 					return "The path has to point to a table";
 				}
-				boolean tableExists = exists(path);
+				boolean tableExists = exists("/"+dbTableAndPartition[0]+"/"+dbTableAndPartition[1]);
 				if (tableExists && fields != null && dbTableAndPartition.length == 2) {
 					logger.info("path : " + path + " , " + fields.getFieldNames());
 					String desc = JdbcHiveStore.getDescription(dbAndTable).get(
@@ -361,8 +367,9 @@ public class HCatStore extends Storage{
 					if(logger.isDebugEnabled()){
 						logger.debug("Check partition in path");
 						logger.debug(dbTableAndPartition[2]);
-						logger.debug(partName);
-						logger.debug(pathPartName);
+						logger.debug("Partition from db:"+partName);
+						logger.debug("Partition from path:"+pathPartName);
+						logger.debug("columns: "+cols);
 					}
 					if(!partName.containsAll(pathPartName)){
 						error = LanguageManagerWF.getText(
@@ -380,7 +387,9 @@ public class HCatStore extends Storage{
 						}
 						List<String> fieldExpected = new LinkedList<String>();
 						fieldExpected.addAll(cols);
-						fieldExpected.removeAll(partName);
+						if(!PathType.TEMPLATE.equals(pathType)){
+							fieldExpected.removeAll(partName);
+						}
 						if(fields.getSize() != fieldExpected.size() || !fieldsStr.containsAll(fieldExpected)){
 							error = LanguageManagerWF.getText(
 									"hcatstore.featsnotasexpected",

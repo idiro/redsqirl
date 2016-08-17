@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
+import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
@@ -26,7 +27,6 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
-import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -74,12 +74,31 @@ public class SyncSink extends DataflowAction{
 
 			@Override
 			public String check(DFEInteraction interaction) throws RemoteException {
-				return checkTemplatePathInt();
+				String error = checkTemplatePathInt();
+				if(error == null){
+					error = checkFields(getDFEInput().get(key_input).get(0),templatePath.getValue());
+				}
+				return error;
 			}
 		});
 		page1.addInteraction(templatePath);
 	}
 	
+	protected String checkFields(DFEOutput in, String templatePathStr) throws RemoteException{
+		String error = updateOut();
+		
+		if(error == null && new HCatalogType().getTypeName().equals(in.getTypeName())){
+			String[] pathOut = HCatStore.getDatabaseTableAndPartition(templatePathStr);
+			
+			if(in.getFields().getFieldNames().removeAll(HCatStore.getPartitionNames(pathOut[2]))){
+				error = "Input dataset shouldn't includes partitions.";
+			}else{
+				error = getDFEOutput().get(key_output).isPathValid();
+			}
+		}
+		
+		return error;
+	}
 	
 	protected static String checkTemplatePath(String templatePathStr){
 		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
@@ -176,20 +195,26 @@ public class SyncSink extends DataflowAction{
 		
 		logger.info("Fields "+new_field.getFieldNames());
 		DFEOutput in = getDFEInput().get(key_input).get(0);
-		if(new HCatalogType().getTypeName().equals(in.getTypeName())){
-			output.put(key_output, new HCatalogType());
-			oozieAction = new HiveAction();
-		}else{
-			output.put(key_output, new MapRedTextType());
-			oozieAction = new DistcpAction();
+		DFEOutput out = output.get(key_output);
+		if(out == null || !in.getTypeName().equals(out.getTypeName())){
+			out = DataOutput.getOutput(in.getTypeName());
+			output.put(key_output,out);
 		}
 
-		DFEOutput out = output.get(key_output);
 		out.setFields(new_field);
 		out.setPath(templatePath.getValue());
 		out.setPathType(PathType.TEMPLATE);
 		out.setSavingState(SavingState.RECORDED);
 			
+		if(new HCatalogType().getTypeName().equals(in.getTypeName())){
+			oozieAction = new HiveAction();
+			HiveAction hiveAction = (HiveAction) getOozieAction();
+			hiveAction.addVariable("DATABASE_"+getComponentId());
+			hiveAction.addVariable("TABLE_"+getComponentId());
+			hiveAction.addVariable("PARTITION_"+getComponentId());
+		}else{
+			oozieAction = new DistcpAction();
+		}
 		return error;
 	}
 
@@ -209,8 +234,6 @@ public class SyncSink extends DataflowAction{
 			distcp.setOutput("${"+getComponentId()+"}");
 			return true;
 		}
-		HiveAction hiveAction = (HiveAction) getOozieAction();
-		hiveAction.addVariable(getComponentId());
 		
 		File sqlFile = files[0];
 		boolean ok = true;
@@ -237,21 +260,18 @@ public class SyncSink extends DataflowAction{
 				}
 				logger.info("Jdbc Outputs: "+path.toString());
 			}
-			writeFile(sqlFile,getQuery(in));
+			writeFile(sqlFile,getQuery(in)+";");
 		}
 		
 		return true;
 	}
 	
-	protected String getQuery(DFEOutput in) throws RemoteException{
-		DFEOutput out = getDFEOutput().get(key_output);
-		String[] outPath = HCatStore.getDatabaseTableAndPartition(out.getPath());
+	protected String getQuery(DFEOutput in) throws RemoteException {
 		String[] inPath = HCatStore.getDatabaseTableAndPartition(in.getPath());
 		FieldList ifl = in.getFields();
 		String query = "";
 		
-		query += "INSERT OVERWRITE TABLE ${DATABASE_"+getComponentId()+"}.${TABLE_"+getComponentId()+"} PARTITION ("+
-				outPath[2].replaceAll("=", "='").replaceAll(HCatStore.partitionDelimiter, "', ")+"')";
+		query += "INSERT OVERWRITE TABLE ${DATABASE_"+getComponentId()+"}.${TABLE_"+getComponentId()+"} PARTITION (${PARTITION_"+getComponentId()+"})";
 		
 		query += " SELECT ";
 		Iterator<String> it = ifl.getFieldNames().iterator();

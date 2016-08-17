@@ -224,7 +224,6 @@ public class JdbcStoreConnection extends JdbcConnection{
 						if (name != null && !name.isEmpty()
 								&& !name.contains("#") && type != null) {
 							++parts;
-							fieldsStr += ";" + name.trim() + "," + type.trim();
 							if(partsStr.isEmpty()){
 								partsStr += name.trim();
 							} else {
