@@ -211,7 +211,11 @@ public class SyncSink extends DataflowAction{
 			HiveAction hiveAction = (HiveAction) getOozieAction();
 			hiveAction.addVariable("DATABASE_"+getComponentId());
 			hiveAction.addVariable("TABLE_"+getComponentId());
-			hiveAction.addVariable("PARTITION_"+getComponentId());
+			Iterator<String> parts = HCatStore.getPartitionNames(HCatStore.getDatabaseTableAndPartition(out.getPath())[2]).iterator();
+			while(parts.hasNext()){
+				String partCur = parts.next();
+				hiveAction.addVariable("PARTITION_"+getComponentId()+"_"+partCur);
+			}
 		}else{
 			oozieAction = new DistcpAction();
 		}
@@ -260,7 +264,7 @@ public class SyncSink extends DataflowAction{
 				}
 				logger.info("Jdbc Outputs: "+path.toString());
 			}
-			writeFile(sqlFile,getQuery(in)+";");
+			writeFile(sqlFile,getQuery(in)+";\n");
 		}
 		
 		return true;
@@ -271,9 +275,16 @@ public class SyncSink extends DataflowAction{
 		FieldList ifl = in.getFields();
 		String query = "";
 		
-		query += "INSERT OVERWRITE TABLE ${DATABASE_"+getComponentId()+"}.${TABLE_"+getComponentId()+"} PARTITION (${PARTITION_"+getComponentId()+"})";
-		
-		query += " SELECT ";
+		query += "INSERT OVERWRITE TABLE ${DATABASE_"+getComponentId()+"}.${TABLE_"+getComponentId()+"} PARTITION (";
+		Iterator<String> parts = HCatStore.getPartitionNames(HCatStore.getDatabaseTableAndPartition(getDFEOutput().get(key_output).getPath())[2]).iterator();
+		while(parts.hasNext()){
+			String partCur = parts.next();
+			query += partCur+"='${PARTITION_"+getComponentId()+"_"+partCur+"}'";
+			if(parts.hasNext()){
+				query += ",";
+			}
+		}
+		query += ") SELECT ";
 		Iterator<String> it = ifl.getFieldNames().iterator();
 		while(it.hasNext()){
 			String cur = it.next();

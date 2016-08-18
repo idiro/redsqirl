@@ -193,19 +193,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			File clonesFolder = new File(WorkflowPrefManager.getPathClonefolder());
 			clonesFolder.mkdir();
 			FileOutputStream output = new FileOutputStream(new File(path));
-
-			logger.warn("cloneToFile 1");
 			
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bos);
-
-			logger.warn("cloneToFile 2 ");
 			
 			// Serialize it
 			out.writeObject(this);
 			byte[] bytes = bos.toByteArray();
-			
-			logger.warn("cloneToFile 3");
 			
 			IOUtils.write(bytes, output);
 			bos.close();
@@ -2417,6 +2411,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		if (error != null) {
 			logger.debug("Error when add link " + error);
+		}else{
+			logger.debug("No error when adding the link");
 		}
 		return error;
 	}
@@ -2444,7 +2440,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		logger.debug("componentIdOut " + componentIdOut);
 		logger.debug("componentIdIn " + componentIdIn);
 		logger.debug("in " + in.getName());
-		logger.debug("out" + out.getName());
+		logger.debug("out " + out.getName());
 
 		if (out == null || in == null) {
 			error = LanguageManagerWF

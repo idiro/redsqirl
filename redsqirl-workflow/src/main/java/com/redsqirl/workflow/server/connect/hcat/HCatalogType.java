@@ -470,7 +470,7 @@ public class HCatalogType extends DataOutput{
 		if(ok){
 			logger.info("Write queries in file: " + sqlFile.getAbsolutePath());
 			try {
-				writeFile(sqlFile, hcatS.getDeleteStatement(getPath())+";" );
+				writeFile(sqlFile, hcatS.getDeleteStatement(getPath())+";\n" );
 			} catch (Exception e) {
 				ok = false;
 			}

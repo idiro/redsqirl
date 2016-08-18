@@ -525,6 +525,13 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								autoVariables.put("DATABASE_"+cur.getComponentId(), "${coord:databaseOut('"+cur.getComponentId()+"')}");
 								autoVariables.put("TABLE_"+cur.getComponentId(), "${coord:tableOut('"+cur.getComponentId()+"')}");
 								autoVariables.put("PARTITION_"+cur.getComponentId(), "${coord:dataOutPartitions('"+cur.getComponentId()+"')}");
+								Iterator<String> parts = HCatStore.getPartitionNames(HCatStore.getDatabaseTableAndPartition(out.getPath())[2]).iterator();
+								while(parts.hasNext()){
+									String partCur = parts.next();
+									autoVariables.put("PARTITION_"+cur.getComponentId()+"_"+partCur, 
+											"${coord:dataOutPartitionValue('"+cur.getComponentId()+"','"+partCur+"')}");
+								}
+								autoVariables.put("PARTITION_"+cur.getComponentId(), "${coord:dataOutPartitions('"+cur.getComponentId()+"')}");
 							}
 							
 							dataIn.setAttribute("dataset", cur.getComponentId());
