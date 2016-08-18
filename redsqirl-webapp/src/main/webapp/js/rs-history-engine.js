@@ -307,15 +307,10 @@ CommandAddArrow.prototype.redo = function(){
     
     console.log("redo clone B ");
     
-    setTimeout(function(){  
-    
-        //!ADD A LINK ON BACK-END
-        addLinkBt();
-    	addLink(this.canvasName, this.outId, this.inId);
-    	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
-
-    
-    }, 1000);
+    //!ADD A LINK ON BACK-END
+    addLinkBt();
+	addLink(this.canvasName, this.outId, this.inId);
+	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
 	
 	//console.timeStamp("CommandAddArrow.redo end");
 };
