@@ -258,7 +258,7 @@ CommandAddObj.prototype.redo = function(){
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].stage.draw();
 	
-	setTimeout(function(){ undoRedoVoronoi(); }, 1000);
+	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(cn, tmpCommandObj.elementId, gi); }, 1000);
 	
 	canvasArray[this.canvasName].polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");
@@ -278,6 +278,8 @@ function CommandAddArrow(canvasName, outId, inId, name) {
 	this.inId = inId;
 	this.name = name;
 	this.cloneId = "";
+	
+	tmpCommandObj = this;
 };
 
 CommandAddArrow.prototype = Object.create(Command.prototype);
@@ -302,7 +304,6 @@ CommandAddArrow.prototype.redo = function(){
     console.log("redo clone A ");
     
     tmpCommandObj = this;
-    cloneVoronoi(getAllIconPositions());
     
     console.log("redo clone B ");
     

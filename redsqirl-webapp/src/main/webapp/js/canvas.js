@@ -2096,7 +2096,7 @@ function createLink(circleGp){
             var output = arrow.output.getChildren()[4].getText();
             var input = circleGp.getParent().getChildren()[4].getText();
             var arrowClone = addLink(selectedCanvas, output, input);
-            canvasArray[selectedCanvas].commandHistory.execute(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
+            canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
             console.log("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
@@ -2688,10 +2688,11 @@ function polygonOnClick(obj,e, canvasName){
 				
 				console.log("polygonOnClick A");
 				
-				canvasArray[canvasName].commandHistory.execute(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
+				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
 				console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				
+				cloneVoronoi(getAllIconPositions());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}else{

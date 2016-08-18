@@ -115,6 +115,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean runningElementsToggle;
 	private boolean doneElementsToggle;
 	private String voronoiNames;
+	private DataFlowCoordinator dataFlowCoordinatorLastInserted;
 
 	private String firstTime;
 
@@ -237,6 +238,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					msg = "NULL POINTER";
 				}
 			}
+			
+			setDataFlowCoordinatorLastInserted(getworkFlowInterface().getWorkflow(getNameWorkflow()).getCoordinator(idLastElementInserted));
 
 		} catch (Exception e) {
 			logger.info(e,e);
@@ -3258,6 +3261,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setVoronoiNames(String voronoiNames) {
 		this.voronoiNames = voronoiNames;
+	}
+
+	public DataFlowCoordinator getDataFlowCoordinatorLastInserted() {
+		return dataFlowCoordinatorLastInserted;
+	}
+
+	public void setDataFlowCoordinatorLastInserted(
+			DataFlowCoordinator dataFlowCoordinatorLastInserted) {
+		this.dataFlowCoordinatorLastInserted = dataFlowCoordinatorLastInserted;
 	}
 
 }

@@ -14,6 +14,7 @@ import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.VoronoiType;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
@@ -66,13 +67,24 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			}
 
 			setStartDate(dataFlowCoordinator.getExecutionTime());
+			setName(dataFlowCoordinator.getName());
+			if(dataFlowCoordinator.getTimeCondition() != null && dataFlowCoordinator.getTimeCondition().getUnit() != null){
+				setSelectedSchedulingOption(dataFlowCoordinator.getTimeCondition().getUnit().toString());
+			}else{
+				setSelectedSchedulingOption(null);
+			}
+			
+		}else{
+			setName(null);
+			setStartDate(null);
+			setSelectedSchedulingOption(null);
 		}
 
 		schedulingOptions = new LinkedList<SelectItem>();
 		for (TimeTemplate tt : TimeTemplate.values()) {
 			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
 		}
-		if(!schedulingOptions.isEmpty()){
+		if(getSelectedSchedulingOption() == null && !schedulingOptions.isEmpty()){
 			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
 		}
 
@@ -87,9 +99,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}
 		dataFlowCoordinator.setExecutionTime(startDate);
 		dataFlowCoordinator.setName(name);
+		dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
 		
 		logger.warn("apply " + getSelectedSchedulingOption());
-		
 	}
 
 	public void deleteLine(){
@@ -115,9 +127,14 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
 			String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
 			String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
-
-			//voronoi polygon
-			String voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
+			
+			String voranoiPolygonTitle;
+			CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
+			if(canvasBean != null && canvasBean.getDataFlowCoordinatorLastInserted() != null){
+				voranoiPolygonTitle = canvasBean.getDataFlowCoordinatorLastInserted().getName();
+			}else{
+				voranoiPolygonTitle = getworkFlowInterface().getWorkflow(canvasName).getElement(idElement).getCoordinatorName();
+			}
 
 			setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
 
