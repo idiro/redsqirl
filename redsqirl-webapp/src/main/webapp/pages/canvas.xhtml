@@ -1846,8 +1846,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="runWorkflow" data="#{canvasBean.checkIfSchelule}" 
-					oncomplete="if(data[3] == 'true'){ runWorkflow2(data[0],data[1],data[2]);}else{ #{rich:component('scheluleModal')}.show(); }" reRender="msnError">
+				<a4j:jsFunction name="runWorkflow" data="#{canvasBean.checkIfSchelule}"
+					oncomplete="if(data[3] == 'false'){ runWorkflow2(data[0],data[1],data[2]);}else{ #{rich:component('scheluleModal')}.show(); }" reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
