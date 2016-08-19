@@ -27,6 +27,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -45,12 +46,14 @@ import org.w3c.dom.NodeList;
 
 import com.idiro.Log;
 import com.idiro.check.FileChecker;
+import com.redsqirl.workflow.server.connect.WorkflowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -117,8 +120,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	private Long lastTimeRun;
 	
 	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();
-	
-	private Set<String> requiredVariables = new LinkedHashSet<String>();
 	
 	protected String coordinatorName = "";
 
@@ -280,22 +281,61 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Check if the entry are correct or not for this action.
 	 * 
+	 * @param wfName The workflow name
 	 * @return null if OK, or a description of the error.
 	 * @throws RemoteException
 	 */
-	public String checkEntry() throws RemoteException {
+	public String checkEntry(String wfName) throws RemoteException {
 		String ans = checkIn();
 		if (ans == null) {
 			ans = "";
 		}
+		
 		if (ans.isEmpty()) {
 			ans = checkIntegrationUserVariables();
 			if (ans != null && ans.isEmpty()) {
 				ans = null;
 			}
 		}
+		
+		if(wfName != null){
+			ans = checkVariables(wfName);
+		}
 
 		return ans;
+	}
+	
+	/**
+	 * Check if all the variables required are into the coordinator.
+	 * 
+	 * @param wfName The workflow name
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String checkVariables(String wfName) throws RemoteException{
+		String ans = null;
+		DataFlowCoordinator wCoord = WorkflowInterface.getInstance().getWorkflow(wfName).getCoordinator(getCoordinatorName());
+		Set<String> vars = getRequiredVariables();
+		Iterator<String> itVars = vars.iterator();
+		while(itVars.hasNext() && ans == null){
+			String cur = itVars.next();
+			if(!wCoord.getVariables().containsKey(cur)){
+				ans = "Variable '"+cur+"' is not defined in the coordinator";
+			}
+		}
+		if(getOozieAction() != null && vars != null){
+			getOozieAction().addAllVariables(vars);
+		}
+		return ans;
+	}
+	
+	public Set<String> getRequiredVariables() throws RemoteException{
+		Set<String> vars = new HashSet<String>();
+		Iterator<DFEPage> it = getPageList().iterator();
+		while(it.hasNext()){
+			vars.addAll(it.next().getVariablesUsed());
+		}
+		return vars;
 	}
 
 	/**
@@ -1319,42 +1359,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	@Override
 	public void setLastRunOozieElementNames(Set<String> lastRunOozieElementNames) throws RemoteException{
 		this.lastRunOozieElementNames = lastRunOozieElementNames;
-	}
-
-	/**
-	 * @return the requiredVariables
-	 */
-	@Override
-	public Set<String> getRequiredVariables() {
-		return requiredVariables;
-	}
-	
-	/**
-	 * Add a variable into the list of required variables
-	 * @param variable
-	 * @return
-	 */
-	@Override
-	public boolean addRequiredVariable(String variable){
-		return requiredVariables.add(variable);
-	}
-	
-	/**
-	 * Add all the given variables into the list of required variables
-	 * @param variables
-	 * @return
-	 */
-	@Override
-	public boolean addRequiredVariables(Set<String> variables){
-		return requiredVariables.addAll(variables);
-	}
-
-	/**
-	 * @param requiredVariables the requiredVariables to set
-	 */
-	@Override
-	public void setRequiredVariables(Set<String> requiredVariables) {
-		this.requiredVariables = requiredVariables;
 	}
 
 	public final String getCoordinatorName() {

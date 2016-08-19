@@ -285,7 +285,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (!toCheck) {
 				listToNotCheck.add(wa);
 			} else {
-				String locError = wa.checkEntry();
+				String locError = wa.checkEntry(this.name);
 				if (locError != null) {
 					error += LanguageManagerWF.getText("workflow.check",
 							new Object[] { wa.getComponentId(), locError })

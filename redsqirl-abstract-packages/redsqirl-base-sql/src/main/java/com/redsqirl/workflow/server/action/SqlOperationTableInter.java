@@ -45,12 +45,14 @@ public abstract class SqlOperationTableInter  extends TableInteraction{
 	public SqlOperationTableInter(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
+		setVariableDisable(false);
 	}
 
 	public SqlOperationTableInter(String id, String name, String legend,
 			String texttip, int column, int placeInColumn)
 			throws RemoteException {
 		super(id, name, legend, texttip, column, placeInColumn);
+		setVariableDisable(false);
 	}
 
 	protected abstract SqlDictionary getDictionary() throws RemoteException;

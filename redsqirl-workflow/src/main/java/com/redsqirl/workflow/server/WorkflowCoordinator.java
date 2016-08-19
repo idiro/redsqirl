@@ -616,8 +616,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 					curTimeConstraint = datasetCur.getFrequency();
 				}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty()){
 					List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
-					if(!inputsDfe.get(0).getCoordinatorName().equals(getName()) && 
-							(curTimeConstraint == null || curTimeConstraint.getUnit() == null)){
+					if(!inputsDfe.get(0).getCoordinatorName().equals(getName())){
 						curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
 						if(curTimeConstraint.getUnit() == null){
 							DefaultConstraint prevConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);

@@ -47,6 +47,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	/** Key for arithmetic operation */
 	protected static final String arithmeticOperators = "arithmeticOperators";
 
+	protected boolean variableDisable = true;
+	
+	protected Character[] sqlStringQuotes = new Character[]{'\'','"'};
+	
 	/**
 	 * Constructor
 	 */
@@ -56,6 +60,11 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	
 	protected AbstractSQLLikeDictionary(boolean init) {
 		super(init);
+	}
+	
+	protected AbstractSQLLikeDictionary(boolean init, boolean variableDisable) {
+		super(init);
+		this.variableDisable = variableDisable;
 	}
 	
 	/**
@@ -189,37 +198,52 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		}
 
 		String type = null;
-		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
-			logger.debug("expression is boolean: " + expr);
-			type = "BOOLEAN";
-		} else if (expr.startsWith("'")) {
-			if (expr.endsWith("'") && expr.length() == 3) {
-				type = "CHAR";
-			} else if (expr.endsWith("'") && expr.length() > 1) {
-				type = "STRING";
+		for(int quoteIdx=0; quoteIdx < sqlStringQuotes.length;++quoteIdx){
+			String quoteCur = sqlStringQuotes[quoteIdx].toString();
+			if(expr.startsWith(quoteCur)){
+				if (expr.endsWith(quoteCur) && expr.length() == 3) {
+					type = "CHAR";
+				} else if (expr.endsWith(quoteCur) && expr.length() > 1) {
+					type = "STRING";
+				} else {
+					String error = "string quote "+quoteCur+" not closed in expression "+expr;
+					logger.debug(error);
+					throw new Exception(error);
+				}
+				break;
+			}
+		}
+		if(type == null){
+			if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+				logger.debug("expression is boolean: " + expr);
+				type = "BOOLEAN";
+			} else if(!variableDisable && expr.startsWith("${") && expr.endsWith("}") ){
+				logger.debug("variable?");
+				String varName = expr.substring(2,expr.length()-1);
+				logger.debug("Var name: "+varName);
+				String pattern = "[a-zA-Z][a-zA-Z0-9_\\-]+";
+				if(varName.matches(pattern)){
+					type = "ANY";
+				}
 			} else {
-				String error = "string quote \"'\" not closed in expression "+expr;
-				logger.debug(error);
-				throw new Exception(error);
-			}
-		} else {
-			try {
-				Integer.valueOf(expr);
-				type = "INT";
-			} catch (Exception e) {
-			}
-			if (type == null) {
 				try {
-					Float.valueOf(expr);
-					type = "FLOAT";
+					Integer.valueOf(expr);
+					type = "INT";
 				} catch (Exception e) {
 				}
-			}
-			if (type == null) {
-				try {
-					Double.valueOf(expr);
-					type = "DOUBLE";
-				} catch (Exception e) {
+				if (type == null) {
+					try {
+						Float.valueOf(expr);
+						type = "FLOAT";
+					} catch (Exception e) {
+					}
+				}
+				if (type == null) {
+					try {
+						Double.valueOf(expr);
+						type = "DOUBLE";
+					} catch (Exception e) {
+					}
 				}
 			}
 		}
@@ -350,7 +374,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 						logger.debug(condition);
 						logger.debug(argType);
 						if (!check("BOOLEAN", getReturnType(condition, fields))) {
-							String error = "Expression '"+condition+" should return boolean";
+							String error = "Expression '"+condition+"' should return boolean";
 							logger.debug(error);
 							throw new Exception(error);
 						}
@@ -596,7 +620,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @return <code>true</code> if expression is a logical operation else
 	 *         <code>false</code>
 	 */
-	protected static boolean isLogicalOperation(String expr) {
+	protected boolean isLogicalOperation(String expr) {
 		if (expr.trim().isEmpty()) {
 			return false;
 		}
@@ -604,7 +628,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		if (trimExp.startsWith("(") && trimExp.endsWith(")")) {
 			trimExp = trimExp.substring(1, trimExp.length() - 1);
 		}
-		String pattern = "( OR | AND )(?=([^']*'[^']*')*[^']*$)";
+		String quotes = getSqlStringQuotesStr();
+		String pattern = "( OR | AND )(?=([^"+quotes+"]*'[^"+quotes+"]*')*[^"+quotes+"]*$)";
 		String cleanUp = removeBracketContent(trimExp);
 		return cleanUp.startsWith("NOT ") || cleanUp.split(pattern).length > 1;
 	}
@@ -619,7 +644,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @throws Exception
 	 */
 	protected boolean runLogicalOperation(String expr, FieldList fields, Set<String> aggregFeat) throws Exception {
-		String pattern = "( OR | AND )(?=([^']*'[^']*')*[^']*$)";
+		String quotes = getSqlStringQuotesStr();
+		String pattern = "( OR | AND )(?=([^"+quotes+"]*'[^"+quotes+"]*')*[^"+quotes+"]*$)";
 		logger.debug("logical operator ");
 		String[] split = expr.split(pattern);
 		boolean ok = true;
@@ -1199,4 +1225,29 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	public EditorInteraction generateEditor(Tree<String> help, FieldList inFeat) throws RemoteException {
 		return generateEditor(help, inFeat, null);
 	}
+
+	public final boolean isVariableDisable() {
+		return variableDisable;
+	}
+
+	public final void setVariableDisable(boolean variableDisable) {
+		this.variableDisable = variableDisable;
+	}
+
+	public final Character[] getSqlStringQuotes() {
+		return sqlStringQuotes;
+	}
+
+	public final void setSqlStringQuotes(Character[] sqlStringQuotes) {
+		this.sqlStringQuotes = sqlStringQuotes;
+	}
+	
+	public final String getSqlStringQuotesStr() {
+		String ans = "";
+		for(int i =0; i < sqlStringQuotes.length; ++i){
+			ans += sqlStringQuotes[i];
+		}
+		return ans;
+	}
+	
 }

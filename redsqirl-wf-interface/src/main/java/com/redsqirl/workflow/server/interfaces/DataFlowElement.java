@@ -122,10 +122,11 @@ public interface DataFlowElement extends RunnableElement{
 	/**
 	 * Check if the entries (input AND output) are correct or not for this action.
 	 * 
+	 * @param wfName The workflow name (optional)
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
-	String checkEntry() throws RemoteException;
+	String checkEntry(String wfName) throws RemoteException;
 
 
 	/**
@@ -329,26 +330,7 @@ public interface DataFlowElement extends RunnableElement{
 	/**
 	 * @return the requiredVariables
 	 */
-	public Set<String> getRequiredVariables() throws RemoteException;
-	
-	/**
-	 * Add a variable into the list of required variables
-	 * @param variable
-	 * @return
-	 */
-	public boolean addRequiredVariable(String variable) throws RemoteException;
-	
-	/**
-	 * Add all the given variables into the list of required variables
-	 * @param variables
-	 * @return
-	 */
-	public boolean addRequiredVariables(Set<String> variables) throws RemoteException;
-
-	/**
-	 * @param requiredVariables the requiredVariables to set
-	 */
-	public void setRequiredVariables(Set<String> requiredVariables) throws RemoteException;
+	Set<String> getRequiredVariables() throws RemoteException;
 	
 	String getCoordinatorName() throws RemoteException;
 

@@ -23,11 +23,13 @@ package com.redsqirl.workflow.server;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -149,6 +151,19 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 		this.legend = legend;
 		this.textTip = textTip;
 		this.nbColumn = nbColumn;
+	}
+	
+	public Set<String> getVariablesUsed() throws RemoteException{
+		Set<String> ans = new HashSet<String>();
+		Iterator<DFEInteraction> it = getInteractions().iterator();
+		while(it.hasNext()){
+			DFEInteraction interCur = it.next();
+			Set<String> curVar = interCur.getVariablesUsed();
+			if(curVar != null && !curVar.isEmpty()){
+				ans.addAll(curVar);
+			}
+		}
+		return ans;
 	}
 
 	/**

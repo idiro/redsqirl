@@ -1,6 +1,9 @@
 package com.redsqirl.workflow.server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,6 +18,8 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 	 */
 	private static final long serialVersionUID = -4050182914018968247L;
 
+	protected Set<String> variables = new HashSet<String>();
+	
 	/**
 	 * Default Conception
 	 * @throws RemoteException
@@ -98,5 +103,29 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 	public String getVar(String varName){
 		return "${"+varName+"}";
 	}
-	
+
+
+	public boolean addVariable(String arg0) {
+		return variables.add(arg0);
+	}
+
+	public boolean addAllVariables(Collection<? extends String> arg0) {
+		return variables.addAll(arg0);
+	}
+
+	public void clearVariables() {
+		variables.clear();
+	}
+
+	public boolean containsVariable(Object arg0) {
+		return variables.contains(arg0);
+	}
+
+	public boolean removeVariable(Object arg0) {
+		return variables.remove(arg0);
+	}
+
+	public final Set<String> getVariables() {
+		return variables;
+	}
 }

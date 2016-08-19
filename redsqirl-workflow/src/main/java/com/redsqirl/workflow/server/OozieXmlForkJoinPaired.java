@@ -229,24 +229,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Element path = doc.createElement("app-path");
 				path.appendChild(doc.createTextNode("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName()+"/"+coordinatorFile));
 				coordinator.appendChild(path);
-				/*
-				Map<String,String> autoVariables = OozieManager.defaultMap("${"+OozieManager.prop_namenode+"}"+hdfsBundlePath+"/"+cur.getName(), null);
-				Element configuration = doc.createElement("configuration");
-				Iterator<Entry<String,String>> itAutoVariable = autoVariables.entrySet().iterator();
-				while(itAutoVariable.hasNext()){
-					Entry<String,String> curVariable = itAutoVariable.next();
-					Element prop = doc.createElement("property");
-					Element propName = doc.createElement("name");
-					propName.appendChild(doc.createTextNode(curVariable.getKey()));
-					prop.appendChild(propName);
-					Element propValue = doc.createElement("value");
-					propValue.appendChild(doc.createTextNode(curVariable.getValue()));
-					prop.appendChild(propValue);
-					
-					configuration.appendChild(prop);
-				}
-				coordinator.appendChild(configuration);
-				*/
+
 				rootElement.appendChild(coordinator);
 			}
 
@@ -502,9 +485,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		}*/
 			rootElement.appendChild(controls);
 			
-			
-			rootElement.appendChild(datasets);
-			rootElement.appendChild(inputEvent);
+			if(datasets.hasChildNodes()){
+				rootElement.appendChild(datasets);
+			}
+			if(inputEvent.hasChildNodes()){
+				rootElement.appendChild(inputEvent);
+			}
 			
 			//Define the output events
 			Element outputEvent = doc.createElement("output-events");
@@ -545,7 +531,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					}
 				}
 			}
-			rootElement.appendChild(outputEvent);
+			if(outputEvent.hasChildNodes()){
+				rootElement.appendChild(outputEvent);
+			}
 			
 			Element action = doc.createElement("action");
 			Element workflow = doc.createElement("workflow");

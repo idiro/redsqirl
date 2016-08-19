@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class to store interactions for a page
@@ -39,6 +40,13 @@ public interface DFEPage extends Remote {
 	 * @throws RemoteException
 	 */
 	public String checkPage() throws RemoteException;
+	
+	/**
+	 * Get all the variables used by the interactions of this page
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Set<String> getVariablesUsed() throws RemoteException;
 
 	/**
 	 * Check if a page is correctly set up.

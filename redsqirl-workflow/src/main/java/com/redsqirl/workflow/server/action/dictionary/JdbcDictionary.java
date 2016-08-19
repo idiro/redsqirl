@@ -68,7 +68,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	protected String dictionaryName;
 	private Map<String,List<String[]>> jdbcDeclaredFcts = null;
 	public JdbcDictionary(String dictionaryName){
-		super(false);
+		super(false,false);
 		this.dictionaryName = dictionaryName;
 		if(this.dictionaryName != null){
 			init();
@@ -76,7 +76,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 	}
 	
 	public JdbcDictionary(String dictionaryName, Map<String,List<String[]>> fctL){
-		super(false);
+		super(false,false);
 		this.dictionaryName = dictionaryName;
 		logger.info("Create new dictionary");
 		this.jdbcDeclaredFcts = fctL;

@@ -1678,7 +1678,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			try{
 				Map<String, String> inverseIdMap = new LinkedHashMap<String, String>();
-				for (Entry<String, String> e : idMap.get(nameWorkflow).entrySet()) {
+				String wfName = nameWorkflow;
+				for (Entry<String, String> e : idMap.get(wfName).entrySet()) {
 					inverseIdMap.put(e.getValue(), e.getKey());
 				}
 
@@ -1689,7 +1690,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String curId = elSels.next();
 					if (elements.containsKey(curId)) {
 						DataFlowElement dfe = dfCur.getElement(curId);
-						result[++i] = getOutputStatus(dfe, elements.get(curId),checkStatus,inverseIdMap);
+						result[++i] = getOutputStatus(wfName,dfe, elements.get(curId),checkStatus,inverseIdMap);
 					}
 				}
 
@@ -1702,7 +1703,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return result;
 	}
 
-	private Object[] getOutputStatus(DataFlowElement dfe, String groupId, boolean checkRuningstatus,Map<String,String> inverseIdMap)
+	private Object[] getOutputStatus(String wfName, DataFlowElement dfe, String groupId, boolean checkRuningstatus,Map<String,String> inverseIdMap)
 			throws RemoteException {
 
 		logger.info("getOutputStatus");
@@ -1748,7 +1749,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			try {
-				errorOut = dfe.checkEntry();
+				errorOut = dfe.checkEntry(wfName);
 				if(errorOut == null){
 					errorOut = dfe.updateOut();
 				}
@@ -2005,7 +2006,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			Map<String, String> inverseIdMap = new LinkedHashMap<String, String>();
-			for (Entry<String, String> e : idMap.get(nameWorkflow).entrySet()) {
+			String wfName = nameWorkflow;
+			for (Entry<String, String> e : idMap.get(wfName).entrySet()) {
 				inverseIdMap.put(e.getValue(), e.getKey());
 			}
 
@@ -2019,7 +2021,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			while (allCompIt.hasNext() && !end) {
 				String compCur = allCompIt.next();
 				if (els.contains(compCur)) {
-					ans[++i] = getOutputStatus(getDf().getElement(compCur),	gIds.get(compCur), checkStatus,inverseIdMap);
+					ans[++i] = getOutputStatus(wfName,getDf().getElement(compCur),	gIds.get(compCur), checkStatus,inverseIdMap);
 					end = !Boolean.valueOf(ans[i][5].toString());
 				}
 			}

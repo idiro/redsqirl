@@ -690,6 +690,21 @@ public class TableInteraction extends UserInteraction {
 		}
 		return values;
 	}
+	
+	public Set<String> getVariablesUsed() throws RemoteException{
+		if(variableDisable){
+			return null;
+		}
+		
+		Set<String> ans = new HashSet<String>();
+		Iterator<Map<String,String>> values = getValues().iterator();
+		while(values.hasNext()){
+			ans.addAll(getVariablesUsed(values.next().values()));
+		}
+		
+		return ans;
+	}
+	
 	/**
 	 * Set values in the to the interaction
 	 * @param values list of values

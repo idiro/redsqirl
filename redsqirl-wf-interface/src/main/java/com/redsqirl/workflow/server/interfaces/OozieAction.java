@@ -21,8 +21,10 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,5 +55,16 @@ public interface OozieAction extends Remote{
 	 * @throws RemoteException
 	 */
 	String[] getFileExtensions() throws RemoteException;
-	
+
+	boolean addVariable(String arg0) throws RemoteException;
+
+	boolean addAllVariables(Collection<? extends String> arg0) throws RemoteException;
+
+	void clearVariables() throws RemoteException;
+
+	boolean containsVariable(Object arg0) throws RemoteException;
+
+	boolean removeVariable(Object arg0) throws RemoteException;
+
+	Set<String> getVariables() throws RemoteException;
 }

@@ -23,9 +23,12 @@ package com.redsqirl.workflow.server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -37,6 +40,7 @@ import org.w3c.dom.NodeList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -132,6 +136,8 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * Enable replacement by default
 	 */
 	protected boolean replaceDisable = false;
+	
+	protected boolean variableDisable = true;
 
 	/**
 	 * Unique constructor
@@ -200,7 +206,61 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		this.placeInColumn = placeInColumn;
 		logger.debug("Init interaction "+name);
 	}
+	
+	public Set<String> getVariablesUsed() throws RemoteException{
+		if(variableDisable){
+			return null;
+		}
+		Set<String> ans = null;
+		String error = null;
+		switch(display){
+		case input:
+			try{
+				String value = null;
+				try{
+					if(getTree().getFirstChild("input").getFirstChild("output") != null){
+						value = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
+					}
+				}catch(Exception e){
+					value = "";
+				}
+				ans = getVariablesUsed(value);
+			}catch(Exception e){
+				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
+				logger.error(error);
+				logger.error(e,e);
+			}
+		default:
+			break;
 
+		}
+		return ans;
+	}
+
+	public Set<String> getVariablesUsed(Iterable<String> value){
+		if(variableDisable){
+			return null;
+		}
+		Set<String> ans = new HashSet<String>();
+		Iterator<String> it = value.iterator();
+		while(it.hasNext()){
+			ans.addAll(getVariablesUsed(it.next()));
+		}
+		return ans;
+	}
+	
+	public Set<String> getVariablesUsed(String value){
+		if(variableDisable){
+			return null;
+		}
+		Set<String> ans = new HashSet<String>();
+		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		Matcher m = p.matcher(value);
+		while(m.find()){
+			ans.add(m.group(1));
+		}
+		return ans;
+	}
 
 	/**
 	 * Write the properties of this action into a file
@@ -482,7 +542,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 						getTree().getFirstChild("input").getFirstChild("regex").getFirstChild() != null){
 					regex = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 				}
-				if(regex != null){
+				if(regex != null && (variableDisable || getVariablesUsed(value).isEmpty())){
 					logger.debug("regex " + regex);
 					if(value == null){
 						error = LanguageManagerWF.getText("UserInteraction.valueMatch", new String[]{regex});
@@ -658,6 +718,14 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public void setTextTip(String tip) throws RemoteException {
 		this.textTip = tip;
+	}
+
+	public final boolean isVariableDisable() {
+		return variableDisable;
+	}
+
+	public final void setVariableDisable(boolean variableDisable) {
+		this.variableDisable = variableDisable;
 	}
 
 

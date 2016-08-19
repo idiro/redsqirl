@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -179,6 +180,13 @@ public interface DFEInteraction extends Remote {
 	 * @throws RemoteException
 	 */
 	public void setReplaceDisable(boolean replaceDisable) throws RemoteException;
+	
+	/**
+	 * Get coordinator variable used
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Set<String> getVariablesUsed() throws RemoteException;
 
 	
 

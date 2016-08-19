@@ -59,6 +59,7 @@ public abstract class SqlFilterInteraction extends EditorInteraction {
 				.getText("sql.filter_interaction.title"), SqlLanguageManager
 				.getText("sql.filter_interaction.legend"), column,
 				placeInColumn);
+		setVariableDisable(false);
 		this.el = el;
 	}
 	/**

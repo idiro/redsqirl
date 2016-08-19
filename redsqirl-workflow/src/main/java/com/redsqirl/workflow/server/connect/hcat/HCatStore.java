@@ -228,10 +228,10 @@ public class HCatStore extends Storage{
 		String[] pathArray = getDatabaseTableAndPartition(path);
 		String ans = null;
 		if(pathArray.length == 2){
-			ans = "DROP TABLE "+pathArray[0]+"."+pathArray[1];
+			ans = "DROP TABLE IF EXISTS "+pathArray[0]+"."+pathArray[1];
 		}else if(pathArray.length == 3){
 			ans = "ALTER TABLE "+pathArray[0]+"."+pathArray[1]+
-					" DROP PARTITION ("+pathArray[2].replaceAll("=", "='").replaceAll(partitionDelimiter, "',")+"')";
+					" DROP PARTITION IF EXISTS ("+pathArray[2].replaceAll("=", "='").replaceAll(partitionDelimiter, "',")+"')";
 		}
 		return ans;
 	}

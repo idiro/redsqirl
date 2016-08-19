@@ -61,6 +61,7 @@ public abstract class SqlUnionConditions extends TableInteraction {
 	public SqlUnionConditions(String id, String name, String legend,
 			int column, int placeInColumn, SqlElement hu) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
+		setVariableDisable(false);
 		this.hu = hu;
 		buildRootTable();
 
