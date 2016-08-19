@@ -517,6 +517,8 @@ public interface DataFlow extends Remote, Cloneable{
 	public String cleanSelectedAction(List<String> ids) throws RemoteException;
 
 	public void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
+	
+	public String addElement(String waName, String componentId)	throws Exception;
 
 	
 }

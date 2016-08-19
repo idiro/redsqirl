@@ -830,9 +830,9 @@ function checkIfExistID(nameId, listIds) {
 
 function deleteElementsJS(listIds, listArrowsIds) {
 	
-	//console.log("deleteElementsJS");
+	console.log("deleteElementsJS");
 	
-	//alert(listIds);
+	console.log(listIds);
 	//alert(listArrowsIds);
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
@@ -842,7 +842,8 @@ function deleteElementsJS(listIds, listArrowsIds) {
         var toDelete = []; 
         var iter=-1;
 	    jQuery.each(polygonLayer.get('.group1'), function(index, value) {
-		    var group = this;
+	    	var group = this;
+	    	console.log("a " + group.getId());
 		    if(checkIfExistID(group.getId(),listIds)){
 			     deleteLayerChildren(selectedCanvas, group.getId());
 			     toDelete[++iter] = group;
@@ -1751,16 +1752,29 @@ function mountObj(canvasName) {
                     var mousePosStage = stage.getMousePosition();
                     if (mousePosStage !== undefined){
                     
-                        canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
+                    	var idx = "group" + (+canvasArray[selectedCanvas].countObj++);
+                    	
+                        canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddObj(selectedCanvas,
                                 nameObj,
                                 srcImageText,
                                 mousePosStage.x - 30,
                                 mousePosStage.y - 30,
                                 numSides,
-                                "group" + (+canvasArray[selectedCanvas].countObj++),
+                                idx,
                                 "",
                                 priv)
                         );
+                        
+                        addElementFirstTime(
+                        		selectedCanvas,
+                        		nameObj,
+                                srcImageText,
+                                mousePosStage.x - 30,
+                                mousePosStage.y - 30,
+                                numSides,
+                                idx,
+                                "",
+                                priv);
                         
                     }
                     document.body.style.cursor = 'default';
@@ -1823,6 +1837,28 @@ function mountObj(canvasName) {
 	// END for divs
 
 	changeFooter(canvasName);
+}
+
+function addElementFirstTime(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds,privilege){
+	
+	addElement(canvasName,
+			elementType,
+			elementImg,
+			posx,
+			posy,
+			numSides,
+			groupId,
+			selecteds,
+			privilege
+		);
+    
+    addElementBt(elementType,groupId,'');
+    updateTypeObj(canvasName, groupId, groupId);
+	canvasArray[canvasName].stage.draw();
+	
+	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(canvasName, tmpCommandObj.elementId, groupId); }, 1000);
+	
+	canvasArray[canvasName].polygonLayer.draw();
 }
 
 function changeFooter(canvasName) {

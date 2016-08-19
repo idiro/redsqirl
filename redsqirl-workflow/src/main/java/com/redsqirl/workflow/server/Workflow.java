@@ -122,12 +122,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	protected static ActionManager actionManager = null;
 	protected static String userName = System.getProperty("user.name");
-	
+
 	/**
 	 * The current Action in the workflow.
 	 */
 	private LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
-	
+
 	/**
 	 * The coordinators
 	 */
@@ -144,11 +144,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected boolean saved = false;
 
 	protected int nbOozieRunningActions;
-	
+
 	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count", "right", "left", "sample");
 
 	protected String path;
-	
+
 	/**
 	 * Default Constructor
 	 * 
@@ -170,7 +170,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		init();
 		this.name = name;
 	}
-	
+
 	private void init() throws RemoteException {
 		if(actionManager == null){
 			actionManager = new ActionManager();
@@ -178,9 +178,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	public boolean cloneToFile(String cloneId) throws CloneNotSupportedException {
-		
+
 		logger.warn("cloneToFile");
-		
+
 		boolean clonedok = true;
 
 		try {
@@ -189,23 +189,23 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String path = WorkflowPrefManager.getPathClonefolder() + "/" + cloneId;
 
 			logger.warn("path " + path);
-			
+
 			File clonesFolder = new File(WorkflowPrefManager.getPathClonefolder());
 			clonesFolder.mkdir();
 			FileOutputStream output = new FileOutputStream(new File(path));
-			
+
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bos);
-			
+
 			// Serialize it
 			out.writeObject(this);
 			byte[] bytes = bos.toByteArray();
-			
+
 			IOUtils.write(bytes, output);
 			bos.close();
 			out.close();
 			output.close();
-			
+
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			return false;
@@ -246,10 +246,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String check() throws RemoteException {
 		return check(element);
 	}
-	
+
 	protected String check(List<DataFlowElement> dfEl) throws RemoteException {
 		String error = "";
-		
+
 		//Need to add the sources
 		List<DataFlowElement> elToCheck = new LinkedList<DataFlowElement>();
 		elToCheck.addAll(dfEl);
@@ -266,7 +266,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						elToCheck.add(cur);
 					}
 				}
-				
+
 			}
 		}
 
@@ -356,17 +356,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.error(e,e);
 			throw new Exception(e);
 		}
-		
+
 		elementToRun = subsetElementToRun(dataFlowElements);
-		
+
 		if(elementToRun != null && !elementToRun.isEmpty()) {
-			
+
 			String error = check(elementToRun);
 			if(error != null){
 				throw new Exception(error);
 			}
 			nbOozieRunningActions = elementToRun.size();
-			
+
 			toRun = new ArrayList<RunnableElement>(elementToRun.size());
 			Iterator<DataFlowElement> it = elementToRun.iterator();
 			Map<String,Boolean> endOfThread = new HashMap<String,Boolean>(elementToRun.size());
@@ -381,7 +381,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				//3. If it is an optimiser and it is the end of a thread, write it.
 				DFEOptimiser oldOpt = null;
 				DFEOptimiser newOpt = null;
-				
+
 				if(cur.getAllInputComponent().size() == 1){
 					DataFlowElement prev = cur.getAllInputComponent().get(0);
 					if(endOfThread.containsKey(prev.getComponentId()) && !endOfThread.get(prev.getComponentId())){
@@ -398,7 +398,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						}
 					}
 				}
-				
+
 				boolean stopOptimiser = cur.getDFEOutput().size() > 1 ||
 						cur.getAllOutputComponent().size() == 0;
 				if(!stopOptimiser){
@@ -413,7 +413,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						stopOptimiser = descOfSuccs.size() != 1;
 					}
 				}
-				
+
 				Iterator<String> itOut = cur.getDFEOutput().keySet().iterator();
 				while(itOut.hasNext()){
 					String outName = itOut.next();
@@ -427,7 +427,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 				logger.debug("Stop Optimiser "+stopOptimiser);
 				endOfThread.put(cur.getComponentId(), stopOptimiser);
-				
+
 				newOpt = cur.getDFEOptimiser();
 				if(newOpt != null){
 					newOpt.resetElementList();
@@ -454,7 +454,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}else{
 					newOpt.addElement(cur);
 				}
-				
+
 				if(newOpt != null && stopOptimiser){
 					logger.debug("End of thread");
 					if(newOpt.getElements().size() > 1){
@@ -467,7 +467,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return toRun;
 	}
-	
+
 	protected List<DataFlowElement> subsetElementToRun(List<String> dataFlowElements)
 			throws Exception {
 
@@ -568,7 +568,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			}
 		}
-		
+
 		List<DataFlowElement> toRunSort = null;
 		if(toRun != null){
 			toRunSort = new LinkedList<DataFlowElement>();
@@ -580,7 +580,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 		}
-		
+
 		return toRunSort;
 
 	}
@@ -621,12 +621,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				logger.debug("setOozieJobId error: " + error, e);
 			}
 		}
-		
-		
+
+
 		if(error == null && !isrunning()){
 			error = LanguageManagerWF.getText("workflow.notrunning");
 		}
-		
+
 
 		if(error == null){
 			Iterator<DataFlowElement> it = getElement().iterator();
@@ -688,7 +688,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return err;
 	}
-	
+
 	/**
 	 * Clean the Selected Actions
 	 * 
@@ -700,25 +700,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Iterator<DataFlowElement> it = element.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
-			
+
 			if(ids.contains(cur.getComponentId())){
-				
+
 				String curErr = cur.cleanDataOut();
 				if (curErr != null) {
 					err = err
 							+ LanguageManagerWF.getText("workflow.cleanProject",
 									new Object[] { cur.getComponentId(), curErr });
 				}
-				
+
 			}
-			
+
 		}
 		if (err.isEmpty()) {
 			err = null;
 		}
 		return err;
 	}
-	
+
 	/**
 	 * setOutputType
 	 * 
@@ -824,7 +824,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				String bckPath = getBackupName(createBackupDir());
 				FileUtil.copy(fs, new Path(filePath), fs, new Path(bckPath), false,NameNodeVar.getConf());
 				cleanUpBackup();
-				
+
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
@@ -843,7 +843,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	protected Document saveInXML() throws ParserConfigurationException,
-			IOException {
+	IOException {
 		String error = null;
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory
 				.newInstance();
@@ -883,7 +883,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Element wfComment = doc.createElement("wfcomment");
 		wfComment.appendChild(doc.createTextNode(comment));
 		rootElement.appendChild(wfComment);
-		
+
 		Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
 		while(itCoord.hasNext() && error == null){
 			DataFlowCoordinator coordCur = itCoord.next();
@@ -927,11 +927,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			for (FileStatus stat : fsA) {
 				if (pathToRemove.size() < numberToRemove) {
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				} else if (min > stat.getModificationTime()) {
 					pathToRemove.remove(pathMin);
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				}
 				if (min > stat.getModificationTime()) {
 					min = stat.getModificationTime();
@@ -964,11 +964,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String getBackupName(String path) throws RemoteException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
-		
+
 		if(getName() != null && getName().matches("-\\d{14}$")){
 			setName(getName().substring(0, getName().length()-15));
 		}
-		
+
 		if (getName() != null && !getName().isEmpty()) {
 			path += "/" + getName() + "-" + dateFormat.format(date) + ".rs";
 		} else {
@@ -976,7 +976,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return path;
 	}
-	
+
 	protected String createBackupDir(){
 		String path = WorkflowPrefManager.getBackupPath();
 		try {
@@ -1014,7 +1014,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return path;
 	}
-	
+
 	public String backupAllWorkflowsBeforeClose() throws RemoteException {
 		String path = WorkflowPrefManager.getBackupPath();
 		try {
@@ -1028,7 +1028,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		path = getBackupName(path);
 		boolean save_swp = isSaved();
 		String error = save(path);
-		
+
 		saved = save_swp;
 
 		try {
@@ -1043,7 +1043,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn(e.getMessage());
 			logger.warn("Failed cleaning up backup directory");
 		}
-		
+
 		return path;
 	}
 
@@ -1187,14 +1187,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				Node coordCur = compList.item(temp);
 				String nameCoord = ((Element) coordCur).getElementsByTagName("name").item(0)
 						.getChildNodes().item(0).getNodeValue();
-				
+
 				getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this);
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		return error;
 	}
 
@@ -1341,7 +1341,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String removeElement(String componentId) throws RemoteException,
-			Exception {
+	Exception {
 		logger.debug("remove element: " + componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -1376,6 +1376,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 
 			element.remove(element.indexOf(dfe));
+
+			DataFlowCoordinator coord = getCoordinator(dfe.getCoordinatorName());
+			coord.removeElement(dfe);
+			if(coord.getElements().isEmpty()){
+				coordinators.remove(coord);
+			}
+
 		}
 		return error;
 	}
@@ -1394,9 +1401,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DataFlowElement cur = it.next();
 			cur.setPosition(cur.getX()-min_x+offset_x, cur.getY()-min_y+offset_y);
 		}
-		
+
 	}
-	
+
 	public SubDataFlow createSA(List<String> componentIds,
 			String subworkflowName, String subworkflowComment,
 			Map<String, Entry<String, String>> inputs,
@@ -1468,8 +1475,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						Tree<String> dataTypeTree = input.getInteraction(
 								Source.key_datatype).getTree();
 						dataTypeTree.getFirstChild("list")
-								.getFirstChild("output")
-								.add(constraint.getBrowserName());
+						.getFirstChild("output")
+						.add(constraint.getBrowserName());
 
 						logger.debug("Update Data Type");
 
@@ -1516,8 +1523,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 												.getInputNamePerOutput()
 												.get(inputs.get(inputName)
 														.getValue())
-												.get(curEl.getComponentId()),
-										curEl.getComponentId());
+														.get(curEl.getComponentId()),
+														curEl.getComponentId());
 
 								String newAlias = sw
 										.getElement(curEl.getComponentId())
@@ -1527,17 +1534,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 										.getAliasesPerComponentInput()
 										.get(inputs.get(inputName).getKey())
 										.getKey();
-								
+
 
 								sw.getElement(curEl.getComponentId())
-										.replaceInAllInteraction(
-												"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
+								.replaceInAllInteraction(
+										"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
 
 								positionSuperActionInput.move(
 										(int) positionSuperActionInput.getX()
-												+ curEl.getX(),
+										+ curEl.getX(),
 										(int) positionSuperActionInput.getY()
-												+ curEl.getY());
+										+ curEl.getY());
 								++numberOfInput;
 							}
 						}
@@ -1582,7 +1589,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		sw.moveToTopRightCorner(50, 50);
-		
+
 		return sw;
 	}
 
@@ -1657,7 +1664,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		Map<String, String> replaceInternalActions = new LinkedHashMap<String, String>();
-		
+
 		//Get the average position so that we can repositionned relatively in the canvas.
 		int pos_x = 0;
 		int pos_y = 0;
@@ -1668,7 +1675,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		pos_x /= sw.getComponentIds().size();
 		pos_y /= sw.getComponentIds().size(); 
-		
+
 		// Change Name?
 		logger.debug("Change SubWorkflow ids and link");
 		for (String id : sw.getComponentIds()) {
@@ -1676,7 +1683,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.debug(id);
 			if (!(new SubWorkflowInput().getName()).equals(df.getName())
 					&& !(new SubWorkflowOutput().getName())
-							.equals(df.getName())) {
+					.equals(df.getName())) {
 
 				boolean exist = getElement(df.getComponentId()) != null;
 				// Change Action Name
@@ -1768,27 +1775,27 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 											+ componentWithNamePerOutputs.get(
 													elCur.getComponentId())
 													.get(elOutput) + " "
-											+ df.getComponentId());
+													+ df.getComponentId());
 									getElement(elOutput).addInputComponent(
 											componentWithNamePerOutputs.get(
 													elCur.getComponentId())
 													.get(elOutput), df);
 									// Add alias to replace
 									replaceAliases
-											.put(copy.getElement(elOutput).getAliasesPerComponentInput()
-													.get(elementToExpand.getComponentId())
-													.getKey(),
-													getElement(elOutput).getAliasesPerComponentInput()
-													.get(df.getComponentId())
-													.getKey()
-													);
+									.put(copy.getElement(elOutput).getAliasesPerComponentInput()
+											.get(elementToExpand.getComponentId())
+											.getKey(),
+											getElement(elOutput).getAliasesPerComponentInput()
+											.get(df.getComponentId())
+											.getKey()
+											);
 								}
 							} catch (Exception e) {
 								// Expected if the output is not used in another
 								// element
 							}
 							df.getOutputComponent().get(outputName)
-									.remove(elCur);
+							.remove(elCur);
 						}
 					}
 				}
@@ -1844,7 +1851,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				positionSuperAction.move((int) positionSuperAction.getX()
 						+ getElement(id).getX(),
 						(int) positionSuperAction.getY()
-								+ getElement(id).getY());
+						+ getElement(id).getY());
 				removeElement(id);
 			}
 		} catch (Exception e) {
@@ -1872,7 +1879,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		DataFlowElement newSA = getElement(idSA);
 		newSA.setPosition((int) positionSuperAction.getX(),
 				(int) positionSuperAction.getY());
-		
+
 		logger.debug("Elements after aggregating: " + getComponentIds());
 		Iterator<String> entries = inputs.keySet().iterator();
 		while (entries.hasNext() && error == null) {
@@ -1913,15 +1920,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 										.getInputNamePerOutput()
 										.get(outputs.get(outputName).getValue())
 										.get(curEl.getComponentId()) + ","
-								+ curEl.getComponentId());
+										+ curEl.getComponentId());
 					}
 					error = addLink(
 							outputName,
 							idSA,
 							copy.getElement(outputs.get(outputName).getKey())
-									.getInputNamePerOutput()
-									.get(outputs.get(outputName).getValue())
-									.get(curEl.getComponentId()),
+							.getInputNamePerOutput()
+							.get(outputs.get(outputName).getValue())
+							.get(curEl.getComponentId()),
 							curEl.getComponentId());
 
 					if (error == null) {
@@ -1931,16 +1938,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								.getKey();
 						String oldAlias = curEl.getAliasesPerComponentInput()
 								.get(outputs.get(outputName).getKey()).getKey();
-						
+
 						getElement(curEl.getComponentId())
-								.replaceInAllInteraction(
-										"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
+						.replaceInAllInteraction(
+								"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
 					}
 
 				}
 			}
 		}
-		
+
 
 		{
 			//Generate name for all the outputs
@@ -1964,7 +1971,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 
 	}
-	
+
 
 
 	@Override
@@ -1977,7 +1984,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 	}
-	
+
 	@Override
 	public Set<String> getSADependencies() throws RemoteException {
 		Set<String> ans = new LinkedHashSet<String>();
@@ -2019,15 +2026,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @return null if OK, or a description of the error.
 	 * @throws Exception
 	 */
-	protected String addElement(String waName, String componentId)
-			throws Exception {
+	public String addElement(String waName, String componentId)	throws Exception {
 		DataFlowCoordinator dfC = new WorkflowCoordinator(componentId);
 		String error = addElement(waName, componentId, dfC);
 		coordinators.add(dfC);
-		
+
 		return error;
 	}
-	
+
 	protected String addElement(String waName, String componentId, DataFlowCoordinator dfC)
 			throws Exception {
 		String error = null;
@@ -2071,7 +2077,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					logger.debug(error, e);
 				}
 			}
-			
+
 			if(new_wa != null){
 				dfC.addElement(new_wa);
 			}
@@ -2109,7 +2115,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return ans;
 	}
-	
+
 	/**
 	 * Get the Coordinator corresponding to the name.
 	 * 
@@ -2133,15 +2139,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return ans;
 	}
-	
+
 	public DataFlowCoordinator getFirstCoordinator(){
 		return coordinators.getFirst();
 	}
-	
+
 	public List<DataFlowCoordinator> getCoordinators(){
 		return coordinators;
 	}
-	
+
 	public String checkCoordinatorMergeConflict(DataFlowCoordinator coord1, DataFlowCoordinator coord2) throws RemoteException{
 		DataFlowCoordinator coordCheck = null;
 		DataFlowCoordinator coordOther = null;
@@ -2168,22 +2174,22 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return coordErr;
 	}
-	
+
 	public String mergeCoordinator(String coordinatorName1, String coordinatorName2) throws RemoteException{
 		//Check if the two coordinators are already linked
 		DataFlowCoordinator coordinator1 = getCoordinator(coordinatorName1);
 		DataFlowCoordinator coordinator2 = getCoordinator(coordinatorName2);
 		String error = checkCoordinatorMergeConflict(coordinator1,coordinator2);
-		
+
 		if(error == null){
 			//Merge Coordinator
 			coordinator1.merge(coordinator2);
 			coordinators.remove(coordinator2);
 		}
-		
+
 		return error;
 	}
-	
+
 	public String splitCoordinator(String coordinatorName, List<String> elements) throws RemoteException{
 		String coordErr = null;
 		if(elements.isEmpty()){
@@ -2215,12 +2221,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						coordErr = "Coordinator conflict: cannot split the coordinator due to the links between them";
 					}
 				}
-				
+
 				if(coordErr == null){
 					coordCheck.split(dfeToMove);
 				}
 			}
-				
+
 		}
 		return coordErr;
 	}
@@ -2283,7 +2289,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
-			throws RemoteException {
+					throws RemoteException {
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
@@ -2359,7 +2365,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 									in.getComponentId(), in.getName(),
 									out.getName());
 				} else {
-					
+
 					//Check if they are in the same coordinator
 					DataFlowCoordinator coordIn = null;
 					boolean coordInFirst = false;
@@ -2381,7 +2387,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						logger.debug("Out Class: "+out.getClass().toString());
 						if(!in.getClass().equals(SyncSourceFilter.class) || !out.getClass().equals(SyncSink.class)){
 							error = checkCoordinatorMergeConflict(coordIn,coordOut);
-							
+
 							if(error == null){
 								//Merge Coordinator
 								if(coordInFirst){
@@ -2394,7 +2400,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							}
 						}
 					}
-					
+
 					if(error == null){
 						out.addOutputComponent(outName, in);
 						error = in.addInputComponent(inName, out);
@@ -2467,7 +2473,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return true;
 	}
-	
+
 
 
 	/**
@@ -2518,7 +2524,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public List<String> getComponentIds() throws RemoteException {
 		return getComponentIds(element);
 	}
-	
+
 	public List<String> getComponentIds(List<DataFlowElement> dfeL) throws RemoteException {
 		List<String> ans = new LinkedList<String>();
 		Iterator<DataFlowElement> it = dfeL.iterator();
