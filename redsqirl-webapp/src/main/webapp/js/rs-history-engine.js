@@ -226,6 +226,8 @@ function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides
 	this.selecteds = selecteds;
 	this.elementId = '';
 	this.privilege = privilege;
+	
+	tmpCommandObj = this;
 };
 
 CommandAddObj.prototype = Object.create(Command.prototype);
@@ -233,7 +235,10 @@ CommandAddObj.prototype.constructor = CommandAddObj;
 
 CommandAddObj.prototype.undo = function(){
     console.timeStamp("CommandAddObj.undo begin");
-	deleteElementsJS(this.groupId, "");
+	
+    console.log("undo add " + this.groupId);
+    
+    deleteElementsJS(this.groupId, "");
 	console.timeStamp("CommandAddObj.undo end");
 };
 
@@ -254,7 +259,7 @@ CommandAddObj.prototype.redo = function(){
     var cn = this.canvasName;
     var gi = this.groupId;
     
-    addElementBt(this.elementType,this.groupId,this.elementId);
+    addElementBt(this.elementType,this.groupId,this.elementId, true);
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].stage.draw();
 	
@@ -691,4 +696,45 @@ CommandExpand.prototype.clean = function(){
 
 function undoRedoExpand(selectedSAIcons){
 	canvasArray[selectedCanvas].commandHistory.execute(new CommandExpand(selectedSAIcons));
+}
+
+/********************************************************************/
+/********************************************************************/
+/********************* CommandCoordinator ***************************/
+function CommandCoordinator(obj) {
+    Command.call(this);
+    this.nameOld = obj[0]; 
+    this.startDateOld = obj[1];
+    this.selectedSchedulingOptionOld = obj[2];
+    this.positionsArraysOld = obj[3];
+    this.name = obj[4];
+    this.startDate = obj[5];
+    this.selectedSchedulingOption = obj[6];
+    this.positionsArrays = obj[7];
+};
+
+CommandCoordinator.prototype = Object.create(Command.prototype);
+CommandCoordinator.prototype.constructor = CommandCoordinator;
+
+CommandCoordinator.prototype.undo = function(){
+	applyUndoRedoCoordinator(this.nameOld, this.startDateOld, this.selectedSchedulingOptionOld, this.positionsArraysOld);
+};
+
+CommandCoordinator.prototype.redo = function(){
+	applyUndoRedoCoordinator(this.name, this.startDate, this.selectedSchedulingOption, this.positionsArrays);
+};
+
+CommandCoordinator.prototype.getName = function(){
+	return msg_coordinator_command;
+};
+
+CommandCoordinator.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function undoRedoCoordinator(obj){
+	console.log(obj);
+	if(obj != null){
+		canvasArray[selectedCanvas].commandHistory.push_command(new CommandCoordinator(obj));
+	}
 }

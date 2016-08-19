@@ -74,7 +74,8 @@
         var msg_refresh='#{messages.msg_refresh}';
         var msg_recover_backup='#{messages.msg_recover_backup}';
         var msg_newpackage_notification_footer_beg='#{messages.msg_newpackage_notification_footer_beg}';
-        var msg_newpackage_notification_footer_end='#{messages.msg_newpackage_notification_footer_end}'; 
+        var msg_newpackage_notification_footer_end='#{messages.msg_newpackage_notification_footer_end}';
+        var msg_coordinator_command='#{messages.msg_coordinator_command}';
         
 		           
 		 var contTabCanvas = 1;
@@ -1590,6 +1591,7 @@
 					<a4j:actionparam name="paramNameElement" />
 					<a4j:actionparam name="paramGroupID" />
 					<a4j:actionparam name="paramIdElement" />
+					<a4j:actionparam name="isUndoRedo" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -2148,6 +2150,16 @@
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
+				
+						
+				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" 
+					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiStartDate,voronoiScheduling">
+					<a4j:actionparam name="name" />
+					<a4j:actionparam name="startDate" />
+					<a4j:actionparam name="selectedSchedulingOption" />
+					<a4j:actionparam name="list" />
+				</a4j:jsFunction>
+				
 
 			</a4j:region>
 			

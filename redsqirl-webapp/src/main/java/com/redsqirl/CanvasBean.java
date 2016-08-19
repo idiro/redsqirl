@@ -211,7 +211,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String nameElement = params.get("paramNameElement");
 		String paramGroupID = params.get("paramGroupID");
 		String paramIdElement = params.get("paramIdElement");
-
+		String isUndoRedo = params.get("isUndoRedo");
+		
 		//logger.info("nameElement " + nameElement);
 		//logger.info("paramGroupID " + paramGroupID);
 		//logger.info("paramidElement " + paramIdElement);
@@ -221,14 +222,25 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (df == null) {
 				msg = "The workflow '" + nameWorkflow + "' has not been initialised!";
 			} else if (nameElement != null && paramGroupID != null) {
-				idLastElementInserted = df.addElement(nameElement);
-				if (paramIdElement != null && !paramIdElement.isEmpty()
-						&& !paramIdElement.equalsIgnoreCase("undefined")) {
-					if (df.changeElementId(idLastElementInserted,
-							paramIdElement) == null) {
+				
+				if (paramIdElement != null && !paramIdElement.isEmpty() && !paramIdElement.equalsIgnoreCase("undefined")) {
+					idLastElementInserted = paramIdElement;
+				}
+				
+				if(isUndoRedo != null && isUndoRedo.equals("true")){
+					idLastElementInserted = df.addElement(nameElement, idLastElementInserted);
+					logger.info("addElement A");
+				}else{
+					idLastElementInserted = df.addElement(nameElement);
+					logger.info("addElement B");
+				}
+				
+				/*if (paramIdElement != null && !paramIdElement.isEmpty() && !paramIdElement.equalsIgnoreCase("undefined")) {
+					if (df.changeElementId(idLastElementInserted, paramIdElement) == null) {
 						idLastElementInserted = paramIdElement;
 					}
-				}
+				}*/
+				
 				if (idLastElementInserted != null) {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,	idLastElementInserted);
 					if(nameElement.startsWith(">")){
@@ -241,6 +253,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 			
 			setDataFlowCoordinatorLastInserted(getworkFlowInterface().getWorkflow(getNameWorkflow()).getCoordinator(idLastElementInserted));
 
+			List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(getNameWorkflow()).getCoordinators();
+			int i = 0;
+			for (DataFlowCoordinator dtFlowCoordinator : l) {
+				logger.info("addElement Coordinator index:" + i + " value " + dtFlowCoordinator.getName());
+				i++;
+			}
+			
+			logger.info("addElement " + idLastElementInserted);
+			
 		} catch (Exception e) {
 			logger.info(e,e);
 			msg = e.getMessage();
