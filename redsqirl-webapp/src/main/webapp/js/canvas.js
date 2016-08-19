@@ -685,16 +685,16 @@ function dragAndDropGroup(canvasName, obj, e) {
 
         		if (newX < 5) {
         			newX = 5;
-        		} else if (newX + 200 > xCanvas) {
-        			stage.setWidth(xCanvas + 200);
+        		} else if (newX + 300 > xCanvas) {
+        			stage.setWidth(xCanvas + 300);
         			background.setWidth(stage.getWidth());
         			xCanvas = stage.getWidth();
         		}
 
         		if (newY < 5) {
         			newY = 5;
-        		} else if (newY + 200 > yCanvas) {
-        			stage.setHeight(yCanvas + 200);
+        		} else if (newY + 300 > yCanvas) {
+        			stage.setHeight(yCanvas + 300);
         			background.setHeight(stage.getHeight());
         			yCanvas = stage.getHeight();
         		}
@@ -1161,9 +1161,9 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newX;
     if (pos.x < 5) {
         newX = 5;
-    } else if (pos.x + valueX + 200 > xCanvas) {
+    } else if (pos.x + valueX + 300 > xCanvas) {
         newX = pos.x;
-        stage.setWidth(xCanvas + 200);
+        stage.setWidth(xCanvas + 300);
         background.setWidth(stage.getWidth());
     } else {
         newX = pos.x;
@@ -1172,9 +1172,9 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newY;
     if (pos.y < 5) {
         newY = 5;
-    } else if (pos.y + valueY + 200 > yCanvas) {
+    } else if (pos.y + valueY + 300 > yCanvas) {
         newY = pos.y;
-        stage.setHeight(yCanvas + 200);
+        stage.setHeight(yCanvas + 300);
         background.setHeight(stage.getHeight());
     } else {
         newY = pos.y;
@@ -1205,9 +1205,9 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newX = 5;
     } else if (valueX != null && pos.x < valueX) {
         newX = valueX;
-    } else if (pos.x + 200 > xCanvas) {
+    } else if (pos.x + 300 > xCanvas) {
         newX = pos.x;
-        stage.setWidth(xCanvas + 200);
+        stage.setWidth(xCanvas + 300);
         background.setWidth(stage.getWidth());
     }
 
@@ -1215,9 +1215,9 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newY = 5;
     } else if (valueY != null && pos.y < valueY) {
         newY = valueY;
-    } else if (pos.y + 200 > yCanvas) {
+    } else if (pos.y + 300 > yCanvas) {
         newY = pos.y;
-        stage.setHeight(yCanvas + 200);
+        stage.setHeight(yCanvas + 300);
         background.setHeight(stage.getHeight());
     }
 
