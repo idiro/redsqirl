@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.VoronoiType;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 
 public class VoronoiBean extends BaseBean implements Serializable {
@@ -51,15 +52,13 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
 		String canvasName = context.getExternalContext().getRequestParameterMap().get("paramSelectedTab");
 
-
 		Map<String,String> mapVariables;
-		List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(canvasName).getCoordinators();
-		for (DataFlowCoordinator dtFlowCoordinator : l) {
-			if(dtFlowCoordinator.getName().equalsIgnoreCase(groupId)){
-				dataFlowCoordinator = dtFlowCoordinator;
-				break;
-			}
+		if(groupId != null && !groupId.isEmpty()){
+			dataFlowCoordinator = getworkFlowInterface().getWorkflow(canvasName).getCoordinator(groupId);
+		}else{
+			dataFlowCoordinator = getworkFlowInterface().getWorkflow(canvasName).getCoordinators().get(0);
 		}
+		
 		if(dataFlowCoordinator != null){
 			mapVariables = dataFlowCoordinator.getVariables();
 
@@ -140,10 +139,21 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			jsonLinks.put(jsonObj.toString());
 		}
 		
-		if(name != nameOld || startDateOld != startDate.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ){
-			setUndoRedo(new String[] {nameOld, startDateOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, dateFormat.format(startDate), getSelectedSchedulingOption(), jsonLinks.toString() });
+		FacesContext context = FacesContext.getCurrentInstance();
+		CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
+		DataFlow df = canvasBean.getDf();
+		String isSchedule = "false";
+		if(df != null && df.isSchelule()){
+			isSchedule = "true";
+		}
+		logger.info("apply isSchedule " + isSchedule);
+		
+		
+		if(name != nameOld || startDateOld != startDate.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ||
+				compereJSONArray(jsonLinksOld, jsonLinks) ){
+			setUndoRedo(new String[] {"true", nameOld, startDateOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, dateFormat.format(startDate), getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
 		}else{
-			setUndoRedo(null);
+			setUndoRedo(new String[] {"false", "", "", "", "", "", "", "", "", isSchedule });
 		}
 	}
 	
@@ -176,25 +186,25 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		
 	}
 
-	/*public boolean compereJSONArray(JSONArray jsonLinksOld, JSONArray jsonLinks) throws JSONException{
+	public boolean compereJSONArray(JSONArray jsonLinksOld, JSONArray jsonLinks) throws JSONException{
 		
-		List<String> listOld = new ArrayList<String>();
-		for(int i=0; i<jsonLinksOld.length(); i++){
-			 listOld.add( jsonLinksOld.getString(i) );			 
+		if(jsonLinksOld.length() != jsonLinks.length() ){
+			return true;
 		}
 		
-		List<String> list = new ArrayList<String>();
-		for(int i=0; i<jsonLinks.length(); i++){
-			 list.add( jsonLinks.getString(i) );			 
+		for (int i = 0; i < jsonLinksOld.length(); i++) {
+			JSONObject jsonObjOld = new JSONObject(jsonLinksOld.get(i).toString());
+			for (int j = 0; j < jsonLinks.length(); j++) {
+				JSONObject jsonObjLinks = new JSONObject(jsonLinks.get(j).toString());
+				if(i == j && (jsonObjOld.getString("key") != jsonObjLinks.getString("key") || 
+						jsonObjOld.getString("value") != jsonObjLinks.getString("value") )){
+					return true;
+				}
+			}
 		}
 		
-		for (int i = 0; i < listOld.size(); i++) {
-			String string = listOld.get(i);
-			
-		}
-		
-		
-	}*/
+		return false;
+	}
 	
 	public void deleteLine(){
 		for (Iterator<VoronoiType> iterator = tableList.iterator(); iterator.hasNext();) {

@@ -1735,8 +1735,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		StringBuffer tooltip = new StringBuffer();
 		String errorOut = null;
 		String[][] arrows = null;
-
 		String externalLink = null;
+		boolean isSchelule = false;
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
 			String elementName = dfe.getName();
@@ -1904,13 +1904,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 			//logger.info("element " + dfe.getComponentId());
 			//logger.info("state " + outputType);
 			//logger.info("pathExists " + String.valueOf(pathExistsStr));
+			
+			isSchelule = df.isSchelule();
+			
 		}
 		logger.info("output status result " + groupId + " - " + outputType
 				+ " - " + pathExistsStr + " - " + runningStatus);
 
 		return new Object[]{ groupId, outputType, pathExistsStr,
 				runningStatus, tooltip.toString(),
-				Boolean.toString(errorOut == null), arrows, externalLink };
+				Boolean.toString(errorOut == null), arrows, externalLink, isSchelule };
 	}
 
 	/**
