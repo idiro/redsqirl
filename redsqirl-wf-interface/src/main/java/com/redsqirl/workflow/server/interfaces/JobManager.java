@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 /**
@@ -70,11 +71,14 @@ public interface JobManager extends Remote{
 	 * Run a job with specified DataFlow and List of DataFlowElements
 	 * @param df
 	 * @param list
+	 * @param startTime
+	 * @param endTime
+	 * 
 	 * @return Job ID
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
-	public String run(DataFlow df, List<RunnableElement> list) throws RemoteException, Exception;
+	public String run(DataFlow df, List<RunnableElement> list, Date startTime, Date endTime) throws RemoteException, Exception;
 	/**
 	 * Get the URL for the Console
 	 * @param df

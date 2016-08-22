@@ -35,6 +35,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -345,7 +346,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @return ID of the Job
 	 * @throws Exception
 	 */
-	public String run(DataFlow df, List<RunnableElement> list) throws Exception {
+	public String run(DataFlow df, List<RunnableElement> list, Date startTime, Date endTime) throws Exception {
 
 		logger.debug("run");
 
@@ -353,7 +354,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String error = null;
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
-		Type bundle = df.isSchelule() ? Type.BUNDLE : Type.WORKFLOW;
+		Type bundle = df.isSchedule() ? Type.BUNDLE : Type.WORKFLOW;
 		File parentDir = new File(WorkflowPrefManager.getPathooziejob() + "/"
 				+ fileName);
 		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs() + "/"
@@ -380,7 +381,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			logger.debug("run list " + list);
 			logger.debug("run parentDir " + parentDir);
 
-			error = xmlCreator.createXml(df, list, parentDir);
+			error = xmlCreator.createXml(df, list, parentDir,startTime,endTime);
 
 			if (error == null) {
 				try {

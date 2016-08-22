@@ -67,11 +67,11 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		}
 	}
 	
-	protected WorkflowCoordinator() throws RemoteException {
+	public WorkflowCoordinator() throws RemoteException {
 		super();
 	}
 	
-	protected WorkflowCoordinator(String name) throws RemoteException {
+	public WorkflowCoordinator(String name) throws RemoteException {
 		super();
 		this.name = name;
 	}

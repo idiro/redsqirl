@@ -101,8 +101,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 */
 	@Override
 	public String createXml(DataFlow df, List<RunnableElement> list,
-			File directory) throws RemoteException {
-		String error = createMainXml(df, list,directory,null);
+			File directory, Date startTime, Date endTime) throws RemoteException {
+		String error = createMainXml(df, list,directory,startTime,endTime);
 		
 		if(error == null && list != null){
 			error = createSubXmls(df,list,directory);
@@ -150,10 +150,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	}
 	
 	public String createMainXml(DataFlow df, List<RunnableElement> list,
-			File directory,String endTime) throws RemoteException {
+			File directory,Date startTime, Date endTime) throws RemoteException {
 
 
-		boolean scheduleJob = df.isSchelule();
+		boolean scheduleJob = df.isSchedule();
 		Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
 		String error = null;
 		if(scheduleJob){
@@ -165,6 +165,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				error = createCoordinatorXml(df.getName(),df, cur,
 						directory.getName(),
 						dirCoordinator,
+						startTime,
 						endTime);
 				if(error == null){
 					try {
@@ -257,7 +258,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	public String createCoordinatorXml(String wfId,DataFlow df, DataFlowCoordinator coordinator,
 			String oozieFileName,
 			File directory,
-			String endDate) throws RemoteException {
+			Date startDate,
+			Date endDate) throws RemoteException {
 		
 
 		logger.debug("create coordinator Xml");
@@ -289,7 +291,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				offset = constraint.getOffset();
 			}
 			
-			Date startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),offset);
+			if(startDate == null){
+				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),offset);
+			}
 
 			{
 				Attr attrName = doc.createAttribute("name");
@@ -328,8 +332,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			{
 				Attr attrName = doc.createAttribute("end");
-				if(endDate != null && !endDate.isEmpty()){
-					attrName.setValue(endDate);
+				if(endDate != null){
+					attrName.setValue(dateFormat.format(endDate));
 				}else{
 					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate,offset)));
 				}
@@ -356,13 +360,17 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							
 							nameDataset = cur.getComponentId();
 							timeConstraintCur = datasetCur.getFrequency();
-							if(timeConstraintCur.getOozieFreq() == null ||
-									timeConstraintCur.getOozieFreq().isEmpty() ||
-									timeConstraintCur.getInitialInstance() == null){
-								timeConstraintCur = coordinatorTimeConstraint;
-								initialInstance = dateFormat.format(coordinatorTimeConstraint.getInitialInstance());
-							}else{
+							if(timeConstraintCur.getOozieFreq() != null &&
+									!timeConstraintCur.getOozieFreq().isEmpty() &&
+									timeConstraintCur.getInitialInstance() != null){
 								initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
+							}else{
+								timeConstraintCur = coordinatorTimeConstraint;
+								if(coordinatorTimeConstraint.getInitialInstance() != null){
+									initialInstance = dateFormat.format(coordinatorTimeConstraint.getInitialInstance());
+								}else{
+									initialInstance = dateFormat.format(startDate);
+								}
 							}
 						}
 					}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty() ){
@@ -385,6 +393,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						dataset.setAttribute("timezone", "${timezone}");
 						
 						dataset.setAttribute("frequency", timeConstraintCur.getOozieFreq());
+						if(timeConstraintCur.getOozieFreq() == null ||
+								timeConstraintCur.getOozieFreq().isEmpty()){
+							throw new Exception("Frequency for the dataset "+nameDataset+" not specified");
+						}
 						dataset.setAttribute("initial-instance", initialInstance);
 
 

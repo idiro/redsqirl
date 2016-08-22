@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -48,6 +49,7 @@ import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
+import com.redsqirl.workflow.server.WorkflowCoordinator;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
@@ -57,6 +59,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -388,10 +391,16 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 						cloneFrom.removeElement(itDel.next());
 					}
 					cloneFrom.regeneratePaths(null);
+					Map<String,String> coordinators = new HashMap<String,String>();
 					Iterator<DataFlowElement> copyElIt = cloneFrom.getElement().iterator();
 					while(copyElIt.hasNext()){
 						DataFlowElement cur = copyElIt.next();
-						to.addElement(cur);
+						if(coordinators.containsKey(cur.getCoordinatorName())){
+							to.addElement(cur,coordinators.get(cur.getCoordinatorName()));
+						}else{
+							coordinators.put(cur.getCoordinatorName(), cur.getComponentId());
+							to.addElement(cur,cur.getComponentId());
+						}
 					}
 
 				}else{

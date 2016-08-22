@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.interfaces;
 import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,6 +73,15 @@ public interface DataFlow extends Remote, Cloneable{
 	public String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
+	 * Run a bundle job on a period of time
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String run(Date startTime,Date endTime) throws RemoteException;
+	
+	/**
 	 * List the elements to run, removing the actions that already produced the data
 	 * @param dataFlowElements
 	 * @return List the elements to run
@@ -92,7 +102,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public boolean isSchelule() throws RemoteException;
+	public boolean isSchedule() throws RemoteException;
 	
 	/**
 	 * 
@@ -204,7 +214,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param dfe
 	 * @throws RemoteException
 	 */
-	public void addElement(DataFlowElement dfe) throws RemoteException;
+	public void addElement(DataFlowElement dfe, String coordinatorName) throws RemoteException;
 	
 	/**
 	 * Change the id of an element
