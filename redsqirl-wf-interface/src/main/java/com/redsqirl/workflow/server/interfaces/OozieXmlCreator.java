@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.interfaces;
 import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +41,8 @@ public interface OozieXmlCreator  extends Remote{
 	 */
 	String createXml(DataFlow df, 
 			List<RunnableElement> list,
-			File directory) throws RemoteException;
+			File directory,
+			Date startTime,
+			Date endTime) throws RemoteException;
 	
 }

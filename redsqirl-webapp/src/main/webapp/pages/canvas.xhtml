@@ -1851,16 +1851,25 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="runWorkflow" data="#{canvasBean.checkIfSchelule}"
-					oncomplete="if(data[3] == 'false'){ runWorkflow2(data[0],data[1],data[2]);}else{ #{rich:component('scheluleModal')}.show(); }" reRender="msnError">
+				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfSchedule}"
+					oncomplete="if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="runWorkflow2"
+				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
+					reRender="msnError">
+					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="savedFile" />
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="runScheduleWorkflow"
+					action="#{canvasBean.runScheduleWorkflow}"
+					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
@@ -2116,7 +2125,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();"
-					reRender="modalVoronoi,voronoiName,voronoiStartDate,voronoiScheduling">
+					reRender="modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
@@ -2156,7 +2165,7 @@
 				
 						
 				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" 
-					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiStartDate,voronoiScheduling">
+					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling">
 					<a4j:actionparam name="name" />
 					<a4j:actionparam name="startDate" />
 					<a4j:actionparam name="selectedSchedulingOption" />
@@ -2332,7 +2341,7 @@
 
 									<rich:menuItem id="runMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runitems}"
-										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflowBtnFct(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
@@ -2340,7 +2349,7 @@
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
-										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()));"
+										onclick="runWorkflowBtnFct(getIconPositions(),getPathFile(getSelectedByName()));"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
@@ -2862,15 +2871,15 @@
 	</a4j:region>
 	
 	<a4j:region>
-		<rich:modalPanel id="scheluleModal" width="800" height="600" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+		<rich:modalPanel id="scheduleModal" width="800" height="600" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
 			
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('scheluleModal')}.hide();" />
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('scheduleModal')}.hide();" />
 			</f:facet>
 
 			<h:panelGroup>
-				<a4j:include viewId="/pages/scheluleModal.xhtml" ajaxRendered="false" />
+				<a4j:include viewId="/pages/scheduleModal.xhtml" ajaxRendered="false" />
 			</h:panelGroup>
 
 		</rich:modalPanel>

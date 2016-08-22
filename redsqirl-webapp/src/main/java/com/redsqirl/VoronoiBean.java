@@ -33,8 +33,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private static Logger logger = Logger.getLogger(VoronoiBean.class);
 
 	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
-	private Date startDate;
-	private Date endDate;
+	private Date executionTime;
 	private String repeat;
 	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
 	private String selectedSchedulingOption;
@@ -72,7 +71,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				tableList.add(v);
 			}
 
-			setStartDate(dataFlowCoordinator.getExecutionTime());
+			setExecutionTime(dataFlowCoordinator.getExecutionTime());
 			setName(dataFlowCoordinator.getName());
 			if(dataFlowCoordinator.getTimeCondition() != null && dataFlowCoordinator.getTimeCondition().getUnit() != null){
 				setSelectedSchedulingOption(dataFlowCoordinator.getTimeCondition().getUnit().toString());
@@ -82,7 +81,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			
 		}else{
 			setName(null);
-			setStartDate(null);
+			setExecutionTime(null);
 			setSelectedSchedulingOption(null);
 		}
 
@@ -113,9 +112,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		if(dataFlowCoordinator.getName() != null){
 			nameOld = dataFlowCoordinator.getName();
 		}
-		String startDateOld = null;
+		String executionTimeOld = null;
 		if(dataFlowCoordinator.getExecutionTime() != null){
-			startDateOld = dateFormat.format(dataFlowCoordinator.getExecutionTime());
+			executionTimeOld = dateFormat.format(dataFlowCoordinator.getExecutionTime());
 		}
 		String selectedSchedulingOptionOld = null;
 		if(dataFlowCoordinator.getTimeCondition() != null && dataFlowCoordinator.getTimeCondition().getUnit() != null){
@@ -126,7 +125,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		for (VoronoiType voronoiType : tableList) {
 			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
 		}
-		dataFlowCoordinator.setExecutionTime(startDate);
+		dataFlowCoordinator.setExecutionTime(executionTime);
 		dataFlowCoordinator.setName(name);
 		dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
 		
@@ -143,15 +142,15 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
 		DataFlow df = canvasBean.getDf();
 		String isSchedule = "false";
-		if(df != null && df.isSchelule()){
+		if(df != null && df.isSchedule()){
 			isSchedule = "true";
 		}
 		logger.info("apply isSchedule " + isSchedule);
 		
 		
-		if(name != nameOld || startDateOld != startDate.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ||
+		if(name != nameOld || executionTimeOld != executionTime.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ||
 				compereJSONArray(jsonLinksOld, jsonLinks) ){
-			setUndoRedo(new String[] {"true", nameOld, startDateOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, dateFormat.format(startDate), getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
+			setUndoRedo(new String[] {"true", nameOld, executionTimeOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, dateFormat.format(executionTime), getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
 		}else{
 			setUndoRedo(new String[] {"false", "", "", "", "", "", "", "", "", isSchedule });
 		}
@@ -163,12 +162,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 		String name = context.getExternalContext().getRequestParameterMap().get("name");
-		String startDate = context.getExternalContext().getRequestParameterMap().get("startDate");
+		String executionTime = context.getExternalContext().getRequestParameterMap().get("executionTime");
 		String selectedSchedulingOption = context.getExternalContext().getRequestParameterMap().get("selectedSchedulingOption");
 		String list = context.getExternalContext().getRequestParameterMap().get("list");
 		
 		logger.info("name " + name);
-		logger.info("startDate " + startDate);
+		logger.info("executionTime " + executionTime);
 		logger.info("selectedSchedulingOption " + selectedSchedulingOption);
 		logger.info("list " + list);
 		
@@ -181,7 +180,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}
 		dataFlowCoordinator.setName(name);
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-		dataFlowCoordinator.setExecutionTime(!startDate.equals("null") ? dateFormat.parse(startDate) : null );
+		dataFlowCoordinator.setExecutionTime(!executionTime.equals("null") ? dateFormat.parse(executionTime) : null );
 		dataFlowCoordinator.getTimeCondition().setUnit(!selectedSchedulingOption.equals("null") ? TimeTemplate.valueOf(selectedSchedulingOption) : null);
 		
 	}
@@ -257,11 +256,11 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	public void setTableList(List<VoronoiType> tableList) {
 		this.tableList = tableList;
 	}
-	public Date getStartDate() {
-		return startDate;
+	public Date getExecutionTime() {
+		return executionTime;
 	}
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setExecutionTime(Date executionTime) {
+		this.executionTime = executionTime;
 	}
 	public String getRepeat() {
 		return repeat;
@@ -292,12 +291,6 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setDataFlowCoordinator(DataFlowCoordinator dataFlowCoordinator) {
 		this.dataFlowCoordinator = dataFlowCoordinator;
-	}
-	public Date getEndDate() {
-		return endDate;
-	}
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
 	}
 	public String getName() {
 		return name;

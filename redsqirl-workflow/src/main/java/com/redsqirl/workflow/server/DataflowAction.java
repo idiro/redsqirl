@@ -53,6 +53,7 @@ import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
@@ -314,12 +315,17 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	public String checkVariables(String wfName) throws RemoteException{
 		String ans = null;
-		DataFlowCoordinator wCoord = WorkflowInterface.getInstance().getWorkflow(wfName).getCoordinator(getCoordinatorName());
+		
+		DataFlow df = WorkflowInterface.getInstance().getWorkflow(wfName);
+		DataFlowCoordinator wCoord = null;
+		if(df != null){
+			wCoord = df.getCoordinator(getCoordinatorName());
+		}
 		Set<String> vars = getRequiredVariables();
 		Iterator<String> itVars = vars.iterator();
 		while(itVars.hasNext() && ans == null){
 			String cur = itVars.next();
-			if(!wCoord.getVariables().containsKey(cur)){
+			if(wCoord != null && !wCoord.getVariables().containsKey(cur)){
 				ans = "Variable '"+cur+"' is not defined in the coordinator";
 			}
 		}

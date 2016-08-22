@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -130,6 +131,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private ModelManager modelMan;
 
 	private String userName;
+
+	private Date runningStartDate;
+	private Date runningEndDate;
 
 	/**
 	 * 
@@ -1106,6 +1110,46 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "REPLACEALL");
 	}
 
+	public void runScheduleWorkflow() throws Exception {
+		logger.info("runScheduleWorkflow");
+		getDf().setName(getNameWorkflow());
+		logger.info("getNameWorkflow: " + getNameWorkflow());
+		updatePosition();
+
+		String error = getDf().run(runningStartDate,runningEndDate);
+		logger.info("Run error:" + error);
+		if (error == null){
+			final String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
+			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty() 
+					&& !savedFile.equals("null") && !savedFile.equals("undefined")) {
+				logger.info("Save the workflow in " + savedFile);
+				logger.info(df.getOozieJobId());
+				new Thread() {
+					public void run() {
+						try {
+							getDf().save(savedFile);
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
+			}else{
+				new Thread() {
+					public void run() {
+						try {
+							df.backup();
+						} catch (Exception e) {
+							logger.warn(e,e);
+						}
+					}  
+				}.start();
+			}
+			calcWorkflowUrl();
+		}
+		displayErrorMessage(error, "RUNWORKFLOW");
+	}
+	
+	
 	public void runWorkflow() throws Exception {
 		logger.info("runWorkflow");
 
@@ -1173,14 +1217,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "RUNWORKFLOW");
 	}
 
-	public String[] getCheckIfSchelule() throws RemoteException {
+	public String[] getCheckIfSchedule() throws RemoteException {
 
 		String positions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("positions");
 		String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 
 		DataFlow df = getDf();
-		if(df.isSchelule()){
+		if(df.isSchedule()){
 			return new String[] {positions, savedFile, select, "true"};
 		}else{
 			return new String[] {positions, savedFile, select, "false"};
@@ -1242,7 +1286,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(df != null){
 			name = df.getName();
 			running = df.isrunning();
-			scheduled = df.isSchelule();
+			scheduled = df.isSchedule();
 			//logger.warn(df.getName()+" running: "+running);
 			if(running && !scheduled){
 				try {
@@ -2833,7 +2877,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						error = modelMan.installSA(new ModelManager().getUserModel(userName, modelName), sw,null);
 					}catch(Exception e){
 						logger.error(e,e);
-						error = e.getMessage();
+						error = "Unexpected error in creating the super action "+e.getMessage();
 					}
 
 					if(error == null){
@@ -3296,6 +3340,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void setDataFlowCoordinatorLastInserted(
 			DataFlowCoordinator dataFlowCoordinatorLastInserted) {
 		this.dataFlowCoordinatorLastInserted = dataFlowCoordinatorLastInserted;
+	}
+
+	public final Date getRunningStartDate() {
+		return runningStartDate;
+	}
+
+	public final void setRunningStartDate(Date runningStartDate) {
+		this.runningStartDate = runningStartDate;
+	}
+
+	public final Date getRunningEndDate() {
+		return runningEndDate;
+	}
+
+	public final void setRunningEndDate(Date runningEndDate) {
+		this.runningEndDate = runningEndDate;
 	}
 
 }

@@ -680,7 +680,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 	
 	@Override
-	public boolean isSchelule() throws RemoteException {
+	public boolean isSchedule() throws RemoteException {
 		return false;
 	}
 

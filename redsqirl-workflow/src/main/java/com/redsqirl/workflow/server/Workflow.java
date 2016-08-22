@@ -303,14 +303,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-	/**
-	 * Run a workflow
-	 * 
-	 * @return An error message
-	 * @throws Exception
-	 */
-	@Override
-	public String run() throws RemoteException {
+	public String run(Date startTime,Date endTime) throws RemoteException {
 		LinkedList<String> elToRun = new LinkedList<String>();
 		Iterator<DataFlowElement> it = getElement().iterator();
 		while (it.hasNext()) {
@@ -339,7 +332,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 		}
-		return run(elToRun);
+		return run(elToRun,startTime,endTime);
+	}
+	
+	
+	/**
+	 * Run a workflow
+	 * 
+	 * @return An error message
+	 * @throws Exception
+	 */
+	@Override
+	public String run() throws RemoteException {
+		return run(null,null);
 	}
 
 	public List<RunnableElement> subsetToRun(List<String> dataFlowElements)
@@ -472,7 +477,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			throws Exception {
 
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
-		if (!isSchelule() && dataFlowElements.size() < element.size()) {
+		if (!isSchedule() && dataFlowElements.size() < element.size()) {
 			Iterator<DataFlowElement> itIn = getEls(dataFlowElements)
 					.iterator();
 			while (itIn.hasNext()) {
@@ -584,15 +589,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return toRunSort;
 
 	}
-
+	
 	public String run(List<String> dataFlowElement) throws RemoteException {
+		return run(dataFlowElement,null,null);
+	}
+
+	protected String run(List<String> dataFlowElement, Date startTime, Date endTime) throws RemoteException {
 
 		logger.debug("runWF ");
 
 		String error = null;
 		List<RunnableElement> toRun = null;
 
-		if(isSchelule()){
+		if(isSchedule()){
 			cleanProject();
 		}else{
 			try {
@@ -614,7 +623,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		if (error == null) {
 			try {
-				setOozieJobId(OozieManager.getInstance().run(this, toRun));
+				setOozieJobId(OozieManager.getInstance().run(this, toRun,startTime,endTime));
 				logger.debug("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
 				error = "Unexpected error: " + e.getMessage();
@@ -1329,8 +1338,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return addElement(waName, newId);
 	}
 
-	public void addElement(DataFlowElement dfe) throws RemoteException {
+	public void addElement(DataFlowElement dfe, String coordinatorName) throws RemoteException {
 		element.add(dfe);
+		DataFlowCoordinator coord = getCoordinator(coordinatorName);
+		if(coord != null){
+			coord.addElement(dfe);
+		}else{
+			DataFlowCoordinator coordCur = new WorkflowCoordinator(coordinatorName);
+			coordCur.addElement(dfe);
+			coordinators.add(coordCur);
+		}
 	}
 
 	/**
@@ -1442,13 +1459,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		if (error == null) {
+			Map<String,String> coordinatorName = new HashMap<String,String>();
 			Iterator<String> idIt = componentIds.iterator();
 			while (idIt.hasNext()) {
 				String cur = idIt.next();
+				DataFlowElement newEl = copy.getElement(cur);
 				logger.debug("To copy: " + cur);
-				sw.addElement(copy.getElement(cur));
-				DataFlowElement newEl = sw.getElement(cur);
-				newEl.setPosition(newEl.getX() + posIncr, newEl.getY());
+				if(coordinatorName.containsKey(newEl.getCoordinatorName())){
+					sw.addElement(newEl,coordinatorName.get(newEl.getCoordinatorName()));
+				}else{
+					coordinatorName.put(newEl.getCoordinatorName(), newEl.getComponentId());
+					sw.addElement(newEl,newEl.getComponentId());
+				}
 			}
 
 			try {
@@ -1604,6 +1626,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					+ getElement(superActionId).getName() + ").";
 		}
 
+		
 		SubWorkflow sw = new SubWorkflow(getElement(superActionId).getName());
 		sw.readFromLocal(sw.getInstalledMainFile());
 		if (sw.getPrivilege() != null) {
@@ -1622,7 +1645,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		// List inputs and outputs element
 		logger.debug("List inputs and outputs element");
-		DataFlowElement elementToExpand = copy.getElement(superActionId); 
+		DataFlowElement elementToExpand = copy.getElement(superActionId);
 		Map<String, Map<String, String>> componentWithNamePerInputs = new LinkedHashMap<String, Map<String, String>>();
 		Iterator<DataFlowElement> it = elementToExpand
 				.getAllInputComponent().iterator();
@@ -1654,6 +1677,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> replaceAliases = new LinkedHashMap<String, String>();
 
 		// Remove element SuperAction
+		String superActioncoordinatorName = elementToExpand.getCoordinatorName();
 		logger.debug("Remove Super Action: " + superActionId);
 		try {
 			removeElement(superActionId);
@@ -1677,7 +1701,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		pos_y /= sw.getComponentIds().size(); 
 
 		// Change Name?
-		logger.debug("Change SubWorkflow ids and link");
+		logger.debug("Change SubWorkflow ids and link"); 
 		for (String id : sw.getComponentIds()) {
 			DataFlowElement df = sw.getElement(id);
 			logger.debug(id);
@@ -1810,7 +1834,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							"$1"+replaceInternalActions.get(key)+"$3",true);
 				}
 				df.setPosition(Math.max(10,df.getX()-pos_x+elementToExpand.getX()), Math.max(10,df.getY()-pos_y+elementToExpand.getY()));
-				addElement(df);
+				
+				addElement(df,superActioncoordinatorName);
 			}
 		}
 
@@ -2135,7 +2160,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		if (ans == null) {
-			logger.debug("Component " + coordinatorName + " not found");
+			logger.debug("Coordinator " + coordinatorName + " not found");
 		}
 		return ans;
 	}
@@ -2722,7 +2747,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	@Override
-	public boolean isSchelule() throws RemoteException {
+	public boolean isSchedule() throws RemoteException {
 		boolean ans = false;
 		Iterator<DataFlowCoordinator> itCoo = coordinators.iterator();
 		while(itCoo.hasNext() && !ans){

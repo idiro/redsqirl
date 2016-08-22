@@ -24,7 +24,7 @@
 						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
 					</td>
 					<td>
-			    		<rich:calendar id="voronoiStartDate" value="#{voronoiBean.startDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
+			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
 			    		<f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
