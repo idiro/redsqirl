@@ -3176,7 +3176,7 @@ function getPolygonTextPosition(list){
 	
 	for (;list[i];) {
 		
-		console.log(list[i][0]);
+		//console.log(list[i][0]);
 		
 		if(list[i][0] < x && list[i][1] < y){
 			if(ans == undefined){
@@ -3377,74 +3377,80 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	
 	console.log("updateVoranoiAllPolygonTitle");
 	
-	var listNamesArrays = JSON.parse(listNames);
-	var colour;
-	var newName;
-	
-	for (var i = 0; i < listNamesArrays.length; i++) {
-		 
-		console.log("update1 " + listNamesArrays[i][0]);
-		console.log("update2 " + listNamesArrays[i][1]);
+	if(canvasArray[canvasName].isSchedule == 'true'){
 		
-		jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value){
+		var listNamesArrays = JSON.parse(listNames);
+		var colour;
+		var newName;
+		
+		for (var i = 0; i < listNamesArrays.length; i++) {
+			 
+			console.log("update1 " + listNamesArrays[i][0]);
+			console.log("update2 " + listNamesArrays[i][1]);
 			
-			console.log("update3 " + value.getChildren()[0].getName());
-			
-	        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
-	        	value.getChildren()[0].setText(listNamesArrays[i][1]);
-	        	console.log("update text " + listNamesArrays[i][1]);
-	        	value.getChildren()[0].setOpacity(1);
-				value.on('mouseover', function(e) {
-					document.body.style.cursor = 'pointer';
-				});
-	        	
-	        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
-	        		
-	        		console.log("update4 " + v.getName());
-	        		
-	        		if (v.getName() == listNamesArrays[i][0]) {
-	        			v.voronoiTitle = listNamesArrays[i][1];
-	        			
-	        			/*if(colour == "" || colour == undefined){
-	        				colour = v.getFill();
-	        				newName = listNamesArrays[i][1];
-	        				console.log("update4 yes " + colour);
-	        			}else{
-	        				if(newName == listNamesArrays[i][1]){
-	        					console.log("update4 not " + colour);
-	        					v.setFill(colour);
-	        				}else{
-	        					v.setFill(coloursList[i%7]);
-	        				}
-	        			}*/
-	        			
-	        		}
-	        		
-	        	});
-	        	colour = "";
-	        	
-	        }
-	    });
+			jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value){
+				
+				console.log("update3 " + value.getChildren()[0].getName());
+				
+		        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
+		        	value.getChildren()[0].setText(listNamesArrays[i][1]);
+		        	console.log("update text " + listNamesArrays[i][1]);
+		        	value.getChildren()[0].setOpacity(1);
+					value.on('mouseover', function(e) {
+						document.body.style.cursor = 'pointer';
+					});
+		        	
+		        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
+		        		
+		        		console.log("update4 " + v.getName());
+		        		
+		        		if (v.getName() == listNamesArrays[i][0]) {
+		        			v.voronoiTitle = listNamesArrays[i][1];
+		        			
+		        			/*if(colour == "" || colour == undefined){
+		        				colour = v.getFill();
+		        				newName = listNamesArrays[i][1];
+		        				console.log("update4 yes " + colour);
+		        			}else{
+		        				if(newName == listNamesArrays[i][1]){
+		        					console.log("update4 not " + colour);
+		        					v.setFill(colour);
+		        				}else{
+		        					v.setFill(coloursList[i%7]);
+		        				}
+		        			}*/
+		        			
+		        		}
+		        		
+		        	});
+		        	colour = "";
+		        	
+		        }
+		    });
+	
+		}
+		
+		canvasArray[selectedCanvas].voronoiLayer = removeVoronoiDuplicateColour(canvasArray[selectedCanvas].voronoiLayer);
+		
+		canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
+		
+		canvasArray[selectedCanvas].voronoiButtonLayer.draw();
+		canvasArray[selectedCanvas].voronoiLayer.draw();
+		
+		for ( var i = 0; i < listNamesArrays.length; i++) {
+			jQuery.each(canvasArray[selectedCanvas].polygonLayer.getChildren(), function(index, value) {
+				
+				console.log("updatePoly " + value.getId() );
+				
+		        if (value.getId() == listNamesArrays[i][0]) {
+		        	value.voronoiTitle = listNamesArrays[i][1];
+		        	console.log("update group text");
+		        }
+		    });
+		}
 
-	}
-	
-	canvasArray[selectedCanvas].voronoiLayer = removeVoronoiDuplicateColour(canvasArray[selectedCanvas].voronoiLayer);
-	
-	canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
-	
-	canvasArray[selectedCanvas].voronoiButtonLayer.draw();
-	canvasArray[selectedCanvas].voronoiLayer.draw();
-	
-	for ( var i = 0; i < listNamesArrays.length; i++) {
-		jQuery.each(canvasArray[selectedCanvas].polygonLayer.getChildren(), function(index, value) {
-			
-			console.log("updatePoly " + value.getId() );
-			
-	        if (value.getId() == listNamesArrays[i][0]) {
-	        	value.voronoiTitle = listNamesArrays[i][1];
-	        	console.log("update group text");
-	        }
-	    });
+	}else{
+		console.log("updateVoranoiAllPolygonTitle false ");
 	}
 	
 }
@@ -3499,13 +3505,18 @@ function undoRedoVoronoi(){
     });
     
 	startVoronoi(selectedCanvas, "", "");
-	undoRedoVoronoiJS();
+	
+	if(canvasArray[canvasName].isSchedule == 'true'){
+		undoRedoVoronoiJS();
+	}else{
+		console.log("undoRedoVoronoi false");
+	}
 }
 
 function checkIfSchedule(value){
 	
 	console.log("isSchedule " + value);
-	canvasArray[selectedCanvas].isSchedule = value;
+	canvasArray[selectedCanvas].isSchedule = value+"";
 	undoRedoVoronoi();
 	
 }

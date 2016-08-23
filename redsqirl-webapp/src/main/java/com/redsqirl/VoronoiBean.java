@@ -89,9 +89,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		for (TimeTemplate tt : TimeTemplate.values()) {
 			schedulingOptions.add(new SelectItem(tt.toString(), tt.toString()));
 		}
-		if(getSelectedSchedulingOption() == null && !schedulingOptions.isEmpty()){
+		/*if(getSelectedSchedulingOption() == null && !schedulingOptions.isEmpty()){
 			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
-		}
+		}*/
 
 	}
 
@@ -127,7 +127,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}
 		dataFlowCoordinator.setExecutionTime(executionTime);
 		dataFlowCoordinator.setName(name);
-		dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
+		if(getSelectedSchedulingOption() != null && !getSelectedSchedulingOption().isEmpty()){
+			dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
+		}
 		
 
 		JSONArray jsonLinks = new JSONArray();
@@ -140,17 +142,13 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 		CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
-		DataFlow df = canvasBean.getDf();
-		String isSchedule = "false";
-		if(df != null && df.isSchedule()){
-			isSchedule = "true";
-		}
+		String isSchedule = canvasBean.getCheckIfSchedule();
 		logger.info("apply isSchedule " + isSchedule);
 		
 		
 		if(name != nameOld || executionTimeOld != executionTime.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ||
 				compereJSONArray(jsonLinksOld, jsonLinks) ){
-			setUndoRedo(new String[] {"true", nameOld, executionTimeOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, dateFormat.format(executionTime), getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
+			setUndoRedo(new String[] {"true", nameOld, executionTimeOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, executionTime != null ? dateFormat.format(executionTime) : "", getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
 		}else{
 			setUndoRedo(new String[] {"false", "", "", "", "", "", "", "", "", isSchedule });
 		}

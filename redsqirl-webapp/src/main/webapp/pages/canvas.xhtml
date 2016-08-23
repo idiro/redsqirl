@@ -1851,7 +1851,7 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfSchedule}"
+				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}"
 					oncomplete="if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
@@ -1874,6 +1874,10 @@
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="checkIfScheduleJS" data="#{canvasBean.checkIfSchedule}"
+					oncomplete="checkIfSchedule(data);" reRender="msnError">
 				</a4j:jsFunction>
 				
 			</a4j:region>
