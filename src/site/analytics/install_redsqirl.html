@@ -1,0 +1,471 @@
+<html>
+<head>
+
+<title>Red Sqirl - Install Red Sqirl</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link rel="stylesheet" href="css/table-style.css" type="text/css" />
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+<script src="javascript/jquery.min.js"></script>
+<script src="javascript/bootstrap.min.js"></script>
+<script src="javascript/analytics.js"></script>
+<script type="text/javascript" src="javascript/move-top.js"></script>
+<script type="text/javascript" src="javascript/easing.js"></script>
+
+
+</head>
+<body>
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W9TJXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W9TJXX');</script>
+<!-- End Google Tag Manager -->
+
+<script>
+
+$(document).ready(function() {
+
+	$('#menudiv').load('menu.html');
+
+	setTimeout(function(){
+		checkMenu();
+	},200);
+
+	$().UItoTop({ easingType: 'easeOutQuart' });
+
+	$('#part1').on('show.bs.collapse', function () {
+		$('#textPart1').html('&#9662; 1. What you\'ll need');
+	});
+	$('#part1').on('hidden.bs.collapse', function () {
+		$('#textPart1').html('&#9656; 1. What you\'ll need');
+	});
+
+	$('#part2').on('show.bs.collapse', function () {
+		$('#textPart2').html('&#9662; 2. Architecture');
+	});
+	$('#part2').on('hidden.bs.collapse', function () {
+		$('#textPart2').html('&#9656; 2. Architecture');
+	});
+
+	$('#part3').on('show.bs.collapse', function () {
+		$('#textPart3').html('&#9662; 3. Steps to install');
+	});
+	$('#part3').on('hidden.bs.collapse', function () {
+		$('#textPart3').html('&#9656; 3. Steps to install');
+	});
+
+	$('#Kerberized').on('show.bs.collapse', function () {
+		$('#textKerberized').html('&#9662; Kerberized Hadoop');
+	});
+	$('#Kerberized').on('hidden.bs.collapse', function () {
+		$('#textKerberized').html('&#9656; Kerberized Hadoop');
+	});
+
+
+
+	$('#part1off').on('show.bs.collapse', function () {
+		$('#textPart1off').html('&#9662; 1. What you\'ll need');
+	});
+	$('#part1off').on('hidden.bs.collapse', function () {
+		$('#textPart1off').html('&#9656; 1. What you\'ll need');
+	});
+
+	$('#part2off').on('show.bs.collapse', function () {
+		$('#textPart2off').html('&#9662; 2. Architecture');
+	});
+	$('#part2off').on('hidden.bs.collapse', function () {
+		$('#textPart2off').html('&#9656; 2. Architecture');
+	});
+
+	$('#part3off').on('show.bs.collapse', function () {
+		$('#textPart3off').html('&#9662; 3. Steps to install');
+	});
+	$('#part3off').on('hidden.bs.collapse', function () {
+		$('#textPart3off').html('&#9656; 3. Steps to install');
+	});
+
+	$('#Kerberizedoff').on('show.bs.collapse', function () {
+		$('#textKerberizedoff').html('&#9662; Kerberized Hadoop');
+	});
+	$('#Kerberizedoff').on('hidden.bs.collapse', function () {
+		$('#textKerberizedoff').html('&#9656; Kerberized Hadoop');
+	});
+
+
+});
+
+</script>
+
+<div id="menudiv"></div>
+
+<div>
+
+	<center>
+		<span style="font-size:60px;">Install Red Sqirl</span>
+		<br/>
+		<img src="images/red-sqirl-logo.png" style="width:300px"><br/>
+	</center>
+
+	<div style="padding:0 15%;">
+	<span style="font-size:1.4em">
+		Red Sqirl is a web-based application, meaning that once you've installed Red Sqirl onto your Hadoop cluster you 		can simply perform all your data analytics activities in your browser using the intuitive drag and drop interface.
+		Red Sqirl has packages that give you an easy to use, intuitive interface for the Hadoop algorithms and software
+		that you already have on your Hadoop cluster. You just install the package for Spark, Pig, Hama etc. from within
+		Red Sqirl, and use these packages to analyse your data. There are two ways to use Red Sqirl on your Hadoop 			cluster, Online and Offline..
+	</span>
+	</div>
+<br/><br/>
+
+</div>
+
+<!-- START ON LINE -->
+
+<div class="services" tyle="padding:0;" >
+	<div class="container" style="width:100%;" >
+		<div class="row" style="min-height:400px;">
+
+			<div class="clients" style="display:inline-block;width:45%;min-width:300px;vertical-align:top;text-align:start;padding:25px;">
+				<center><h3 style="font-family:Open Sans !important;">Online Red Sqirl</h3></center>
+
+				<div style="padding:0 10%;">
+				<span style="font-size:1.4em" >
+				Online Red Sqirl can be set up in less than 10 minutes and gives you the ability to download software packages instantly from inside the application.
+				</span>
+				</div>
+
+<br/><br/>
+<a href="#part1" data-toggle="collapse" style="text-decoration:none;color:#000000;">
+<span style="font-size:25px;" id="textPart1" >&#9656; 1. What you'll need</span>
+</a>
+<br/>
+
+
+<div id="part1" class="collapse">
+
+<span style="font-size:1.4em" >
+<br/>
+To use Red Sqirl Online there are a few things you'll need to have first <br/><br/>
+
+-A Linux web server <br/>
+-An Apache Hadoop cluster with Apache Oozie installed <br/>
+-An account on the server (or using LDAP) for every Red Sqirl user <br/>
+-SSH on the web server with password authentication enabled for localhost <br/>
+-HDFS Home directory for each user (/user/$user) <br/>
+-A direct connection to internet and white list redsqirl.com on your firewall <br/>
+-At least one of the following installed on your Hadoop cluster <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Hive <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Pig <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Hama <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Spark <br/> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        To use Spark in Red Sqirl you will need the following python libraries on all data nodes:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        -python-dateutil<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        -numpy (used by Spark for machine learning: official documentation) <br/>
+
+<br/>
+If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker here
+</span>
+
+
+
+<br/><br/>
+<a href="#Kerberized" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textKerberized" >&#9656; Kerberized Hadoop</span>
+</a>
+<br/>
+<div id="Kerberized" class="collapse">
+
+<span style="font-size:1.4em" >
+<br/>
+Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
+<br/><br/>
+The principal should follow the format _USER/_HOST@_REALM for example, myuser/myhost.example.com@EXAMPLE.COM
+<br/><br/>
+All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
+By default, Red Sqirl is expecting the keytab files at /etc/security/keytabs/redsqirl/user-_USER.keytab
+<br/><br/>
+In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
+</span>
+
+</div>
+
+
+
+</div>
+
+
+
+
+<br/><br/>
+<a href="#part2" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textPart2" >&#9656; 2. Architecture</span>
+</a>
+<br/><br/>
+<div id="part2" class="collapse">
+
+<span style="font-size:1.4em" >
+Red Sqirl uses Tomcat as a web service. When you are logging in, it will create another process owned by the logged in user and make key components available on RMI. Every action on the application is run through the users' process to avoid permission conflicts.
+</span>
+
+</div>
+
+
+<br/>
+<a href="#part3" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textPart3" >&#9656; 3. Steps to install</span>
+</a>
+<br/>
+
+<div id="part3" class="collapse">
+
+
+<span style="font-size:1.4em" >
+<br/>
+Step 1: Click the Red Sqirl download for the version of Hadoop that you are running<br/><br/>
+
+
+
+Step 2: Unzip the download where you want to install it through the Tomcat user <br/><br/>
+Step 3: Run the script bin/install.sh. It will ask for your Tomcat webapps port and directory if necessary. This is going to start the Tomcat <br/><br/>
+Step 4: Go http://myserver:portNumber/redsqirl, in your browser, where you should see a login page <br/><br/>
+Step 5: Create a Red Sqirl Analytics Store admin user account, confirm the registration through your email and sign in with your new credentials <br/><br/>
+Step 6: You will then be asked to install the recommended default package and any other packages you want <br/><br/>
+Step 7: Set up the settings from the Settings tab <br/><br/>
+Step 8: You can then sign out from the admin page and sign in to Red Sqirl using your server account details (OS name and password) <br/>
+
+<br/>
+<center>Congratulations you now have Red Sqirl installed</center>
+<br/>
+
+</span>
+
+</div>
+
+
+
+			</div>
+			&nbsp;
+			&nbsp;
+
+<!-- START OFF LINE -->
+
+
+			<div class="clients" style="display:inline-block;width:45%;min-width:300px;vertical-align:top;text-align:start;padding:25px;">
+				<center><h3 style="font-family:Open Sans !important;">Offline Red Sqirl</h3></center>
+
+				<div style="padding:0 10%;">
+				<span style="font-size:1.4em" >
+				Offline Red Sqirl gives you the ability to use Red Sqirl separate from a network connection. This may take slightly longer than the Online Red Sqirl installation. 
+				</span>
+				</div>
+				
+
+<br/><br/>
+<a href="#part1off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textPart1off" >&#9656; 1. What you'll need</span>
+</a>
+<br/>
+<div id="part1off" class="collapse">
+<span style="font-size:1.4em" >
+<br/>
+To use Red Sqirl Online there are a few things you'll need to have first<br/>
+<br/>
+-A Linux web server<br/>
+-An Apache Hadoop cluster with Apache Oozie installed<br/>
+-An account on the server (or using LDAP) for every Red Sqirl user<br/>
+-SSH on the web server with password authentication enabled for localhost<br/>
+-HDFS Home directory for each user (/user/$user)<br/>
+-At least one of the following installed on your Hadoop cluster<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Hive <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Pig <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Hama <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Apache Spark <br/> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+To use Spark in Red Sqirl you will need the following python libraries on all data nodes: <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-python-dateutil <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-numpy (used by Spark for machine learning: official documentation) <br/>
+<br/><br/>
+If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker here
+
+</span>
+
+<br/><br/>
+<a href="#Kerberizedoff" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textKerberizedoff" >&#9656; Kerberized Hadoop</span>
+</a>
+<br/>
+<div id="Kerberizedoff" class="collapse">
+<span style="font-size:1.4em" >
+<br/>
+Red Sqirl now supports Hadoop secure mode. If your cluster is kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
+<br/><br/>
+The principal should follow the format _USER/_HOST@_REALM for example, myuser/myhost.example.com@EXAMPLE.COM
+<br/><br/>
+All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
+By default, Red Sqirl is expecting the keytab files at /etc/security/keytabs/redsqirl/user-_USER.keytab
+<br/><br/>
+In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
+</span>
+
+</div>
+
+</div>
+
+
+
+
+
+<br/><br/>
+<a href="#part2off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textPart2off" >&#9656; 2. Architecture</span>
+<br/><br/>
+<div id="part2off" class="collapse">
+<span style="font-size:1.4em" >
+
+
+Red Sqirl uses Tomcat as a web service. When you are logging in, it will create another process owned by the logged in user and make key components available on RMI. Every action on the application is run through the users' process to avoid permission conflicts.
+
+</span>
+</div>
+
+
+<br/>
+<a href="#part3off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<span style="font-size:25px;" id="textPart3off" >&#9656; 3. Steps to install</span>
+</a>
+<br/>
+<div id="part3off" class="collapse">
+<span style="font-size:1.4em" >
+
+<br/>
+Step 1: Click the Red Sqirl download for the version of Hadoop that you are running <br/>
+
+
+
+Step 2: Unzip the download where you want to install it through the Tomcat user <br/><br/>
+Step 3: Run the script bin/install.sh. It will ask for your Tomcat webapps port and directory if necessary. This is going to start the Tomcat <br/><br/>
+Step 4: Before you can use Red Sqirl Offline, you'll need to create a Red Sqirl user account on redsqirl.com in order to receive the licence keys and download packages. Go to redsqirl.com and click register on the top right of the menu <br/><br/>
+Step 5: Once logged in, click on 'request new software key' and fill the form. You'll need to choose the Red Sqirl version you downloaded. Your licence key will be generated automatically <br/><br/>
+Step 6: The next page will show you the packages available. You'll need to download the Red Sqirl package for each of the Hadoop technologies that you have on your Hadoop cluster. For example, choose the Red Sqirl Pig package (redsqirl-pig) and generate the package key if you have Apache Pig on your Hadoop cluster. <br/><br/>
+Step 7: Once you've generated the package key, you'll then need to download the package itself and the keys you just generated from the Module Key Manager page <br/><br/>
+Step 8: Now you're ready to set up Offline Red Sqirl, go to http://myserver:portNumber/redsqirl <br/><br/>
+Step 9: Sign into Red Sqirl using your server account details (OS name and password) <br/><br/>
+Step 10: On the License key page you'll need to upload your license key file (licenseKey.properties), after pressing ok you'll be redirected to the Packages page <br/><br/>
+Step 11: Upload the Red Sqirl package (.zip) and any other packages you've downloaded on this page <br/><br/>
+Step 12: Set up the settings from the Settings tab <br/><br/>
+Step 13: You'll then need to sign out and sign in again with your server account details (OS name and password) <br/>
+
+<br/>
+<center>Congratulations you now have Red Sqirl installed</center>
+<br/>
+
+</span>
+</div>
+
+
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<!-- tutorial -->
+
+<div>
+	<div class="container" style="width:100%;" >
+		<div class="row" style="min-height:400px;padding-bottom: 30px;">
+
+			<div class="clients" style="display:inline-block;width:100%;min-width:300px;vertical-align:top;text-align:start;padding:25px;">
+				<center><h3 style="font-family:Open Sans !important;">Tutorials</h3></center>
+
+				<div style="padding:0 10%;">
+				<span style="font-size:1.4em" >
+Now that you have Red Sqirl installed, you can follow Step 8: Now you're ready to set up Offline Red Sqirl, go along with our video and written tutorials here 
+				</span>
+				</div>
+<center>
+<table style="width: 30%">
+	<tr>
+		<td height="50">
+			<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration: none;" >
+			<input type="submit" class="contentButtonSubPages" value="Video Tutorials" style="width: 170px;" >
+			</a>
+		</td>
+	<td>
+		<a href="help/main.html" style="text-decoration: none;" >
+			<input type="submit" class="contentButtonSubPages" value="Documentation" style="width: 170px;" >
+		</a>
+	</td>
+	</tr>
+		<td>
+			<a href="help/buildingworkflow.html" style="text-decoration: none;" >
+				<input type="submit" class="contentButtonSubPages" value="Written Tutorials" style="width: 170px;" >
+			</a>
+		</td>
+		<td>
+			<a href="product.html" style="text-decoration: none;" >
+				<input type="submit" class="contentButtonSubPages" value="Products" style="width: 170px;" >
+			</a>
+		</td>
+	</tr>
+</table>
+</center>
+			</div>
+			
+
+		</div>
+	</div>
+</div>
+
+
+
+<!---->
+<div class="footer">
+	<div class="container">
+				
+		<p class="footer-grid">&copy; Copyright <a href="http://www.redsqirl.com">Red Sqirl</a> 2016. All rights reserved.
+
+		<a href="https://twitter.com/RedSqirl" target="_blank" style="text-decoration: none" >
+		<img src="images/twitterLogo.png" style="width:50px">
+		</a>
+
+		<a href="https://www.linkedin.com/company/red-sqirl" target="_blank" style="text-decoration: none" >
+		<img src="images/linkedinLogo.png" style="width:40px">
+		</a>
+
+		<a href="mailsupport.html" style="float:left;margin-top:15px;" >Contact us</a>
+
+		</p>
+
+	</div>
+
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+
+	<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
+
+</div>
+
+
+</body>
+</html>
