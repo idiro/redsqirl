@@ -398,6 +398,7 @@ public abstract class AbstractSource extends DataflowAction {
 								out.setPath(null);
 								out.setFields(null);
 								out.removeAllProperties();
+								out.clearCache();
 							} catch (Exception e) {
 							}
 							Iterator<String> propsIt = props.keySet()
@@ -408,11 +409,15 @@ public abstract class AbstractSource extends DataflowAction {
 							}
 
 							// Update the field list only if it looks good
-							out.setFields(outF);
-							logger.debug(out.getFields().getFieldNames());
-							logger.debug("Setpath : " + path);
-							out.setPath(path);
-							logger.debug(out.getFields().getFieldNames());
+							try {
+								out.setFields(outF);
+								logger.debug(out.getFields().getFieldNames());
+								logger.debug("Setpath : " + path);
+								out.setPath(path);
+								logger.debug(out.getFields().getFieldNames());
+							} catch (Exception e) {
+								error = e.getMessage();
+							}
 						}
 						
 						boolean updatable = false;

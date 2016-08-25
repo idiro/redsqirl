@@ -283,21 +283,28 @@ public abstract class MapRedHdfs extends DataOutput{
 		logger.debug("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
-		try {
-			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
-			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
-			
-			List<String[]> schemaList = getSchemaList();
-			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
-			
-			if (lines != null) {
-				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
-				for (String line : lines) {
-					boolean full = true;
-					if (!line.trim().isEmpty()) {
+		Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
+		Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
+
+		List<String[]> schemaList = getSchemaList();
+		Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
+
+		if (lines != null) {
+			int nbField = 0;
+			logger.trace("key_delimiter: " + Pattern.quote(delimiter));
+			for (String line : lines) {
+				boolean full = true;
+				if (!line.trim().isEmpty()) {
+					String[] fields = line.split(Pattern
+							.quote(delimiter),-1);
+					if(nbField != 0 && nbField != fields.length){
+						String error = "Number of field inconsistent within the dataset or incorrect delimiter.";
+						logger.error(error);
+						throw new RemoteException(error);
+					}else{
+						nbField = fields.length;
 						int cont = 0;
-						for (String s : line.split(Pattern
-								.quote(delimiter),-1)) {
+						for (String s : fields) {
 
 							String nameColumn;
 							if (schemaList != null && !schemaList.isEmpty() 
@@ -305,7 +312,7 @@ public abstract class MapRedHdfs extends DataOutput{
 								nameColumn = schemaList.get(cont)[0];
 								String typeColumn = schemaList.get(cont++)[1].toUpperCase();
 								FieldType fieldType;
-								
+
 								if (typeColumn.equalsIgnoreCase("CHARARRAY")) {
 									fieldType = FieldType.STRING;
 								} else if (typeColumn.equalsIgnoreCase("NUMBER")) {
@@ -313,13 +320,13 @@ public abstract class MapRedHdfs extends DataOutput{
 								} else {
 									fieldType = FieldType.valueOf(typeColumn);
 								}
-								
+
 								schemaTypeMap.put(nameColumn, fieldType);
 							}
 							else{
 								nameColumn = generateColumnName(cont++);
 							}
-							
+
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
 								nbValueMap.put(nameColumn, 0);
@@ -333,21 +340,19 @@ public abstract class MapRedHdfs extends DataOutput{
 
 						}
 					}
-					if(full){
-						break;
-					}
 				}
-				
-				Iterator<String> valueIt = valueMap.keySet().iterator();
-				while(valueIt.hasNext()){
-					String cat = valueIt.next();
-					fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat), schemaTypeMap.get(cat)));
+				if(full){
+					break;
 				}
-
 			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} 
+
+			Iterator<String> valueIt = valueMap.keySet().iterator();
+			while(valueIt.hasNext()){
+				String cat = valueIt.next();
+				fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat), schemaTypeMap.get(cat)));
+			}
+
+		}
 		return fl;
 
 	}

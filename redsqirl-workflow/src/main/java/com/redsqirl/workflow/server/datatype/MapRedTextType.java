@@ -175,11 +175,11 @@ public class MapRedTextType extends MapRedDir {
 						}
 						ans.add(cur);
 					} else {
-						logger.error("The line size (" + line.length
+						String error = "The line size (" + line.length
 								+ ") is not compatible to the number of fields ("
 								+ fieldNames.size() + "). " + "The splitter is '"
-								+ getChar(getProperty(key_delimiter)) + "'.");
-						logger.error("Error line: " + l);
+								+ getChar(getProperty(key_delimiter)) + "'. The line is '"+l+"'.";
+						logger.error(error);
 						ans = null;
 						break;
 					}
