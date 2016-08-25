@@ -97,7 +97,7 @@ public interface DataFlowInterface extends Remote{
 	 * available to browse
 	 * @return The names of the browsers available to the user
 	 */
-	public Set<String> getBrowsersName() throws RemoteException;;
+	Set<String> getBrowsersName() throws RemoteException;;
 	
 	/**
 	 * Return the given datastore
@@ -105,16 +105,21 @@ public interface DataFlowInterface extends Remote{
 	 * @return The store requested.
 	 * @throws RemoteException
 	 */
-	public DataStore getBrowser(String browserName) throws RemoteException;
+	DataStore getBrowser(String browserName) throws RemoteException;
 	
 	/**
 	 * Clone a data flow
 	 * @param wfName The name of the workflow to copy
 	 * @return The clone Id
 	 */
-	public String cloneDataFlow(String wfName) throws RemoteException;
+	String cloneDataFlow(String wfName) throws RemoteException;
 	
-	public void eraseClone(String cloneId) throws RemoteException;
+	/**
+	 * Erase a clone from the map
+	 * @param cloneId
+	 * @throws RemoteException
+	 */
+	void eraseClone(String cloneId) throws RemoteException;
 	
 	/**
 	 * Copy a subset of a workflow into another.
@@ -123,7 +128,7 @@ public interface DataFlowInterface extends Remote{
 	 * @param to The id of the workflow to copy to
 	 * @return string
 	 */
-	public String copy(String from, List<String> elements, String to) throws RemoteException;
+	String copy(String from, List<String> elements, String to) throws RemoteException;
 	
 	/**
 	 * Replace an existing workflow by a clone.
@@ -132,26 +137,68 @@ public interface DataFlowInterface extends Remote{
 	 * @param keepClone false erase the clone
 	 * @throws RemoteException
 	 */
-	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException;
+	void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException;
 	
 	/**
 	 * Get the last files that have been cbacked up in bunch (with a backupAll)
 	 * @return List<String[]>
 	 * @throws RemoteException
 	 */
-	public List<String[]> getLastBackedUp() throws RemoteException;
+	List<String[]> getLastBackedUp() throws RemoteException;
 	
-	public void setWorkflowPath(String name, String path) throws RemoteException;
+	/**
+	 * Set the path of a workflow without saving it.
+	 * @param name
+	 * @param path
+	 * @throws RemoteException
+	 */
+	void setWorkflowPath(String name, String path) throws RemoteException;
 
+	/**
+	 * Creates a new workflow on the fly without adding it to the map
+	 * @return
+	 * @throws RemoteException
+	 */
 	DataFlow getNewWorkflow() throws RemoteException;
 
+	/**
+	 * Creates a new sub-workflow on the fly without adding it to the map
+	 * @return
+	 * @throws RemoteException
+	 */
 	SubDataFlow getNewSubWorkflow() throws RemoteException;
 	
+	/**
+	 * Remove all auto-generated data of a given type
+	 * @param type
+	 * @throws RemoteException
+	 */
 	void removeAllTmpInType(String type) throws RemoteException;
 	
+	/**
+	 * Remove all auto-generated data of a given store
+	 * @param browserName
+	 * @throws RemoteException
+	 */
 	void removeAllTmpInBrowser(String browserName) throws RemoteException;
 	
+	/**
+	 * Remove all auto-generated data
+	 * @throws RemoteException
+	 */
 	void removeAllTmp() throws RemoteException;
 	
+	/**
+	 * For every data store, list the different data types.
+	 * @return
+	 * @throws RemoteException
+	 */
 	Map<String,Set<String>> getTypesPerDataStore() throws RemoteException;
+	
+	/**
+	 * Get all the data output of all opened workflows.
+	 * @return
+	 * @throws RemoteException
+	 */
+	List<String> getAllNonRecordedDataOutputPath() throws RemoteException;
 }
