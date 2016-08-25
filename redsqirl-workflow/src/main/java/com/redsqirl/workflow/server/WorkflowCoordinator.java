@@ -655,9 +655,17 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			throws RemoteException {
 		String error = null;
 		if(error == null){
+			if(logger.isDebugEnabled()){
+				logger.debug("Add variable "+name+"="+value+" to "+this.name);
+			}
 			variables.put(name,value);
 		}
 		return error;
+	}
+	
+	@Override
+	public void addVariables(Map<String,String> variables){
+		this.variables.putAll(variables);
 	}
 
 	public final Date getExecutionTime() {
