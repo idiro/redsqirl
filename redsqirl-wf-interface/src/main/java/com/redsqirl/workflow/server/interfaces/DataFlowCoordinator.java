@@ -42,6 +42,8 @@ public interface DataFlowCoordinator extends Remote{
 	
 	String addVariable(String name, String value, boolean force) throws RemoteException;
 
+	void addVariables(Map<String, String> variables) throws RemoteException;
+
 	void merge(DataFlowCoordinator coord) throws RemoteException;
 
 	DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException;

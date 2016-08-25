@@ -24,7 +24,6 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -40,6 +39,8 @@ import org.w3c.dom.NodeList;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataflowAction;
+import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.AbstractSource;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -64,14 +65,16 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	private static final long serialVersionUID = 4061277134086282971L;
 
 	private static Logger logger = Logger.getLogger(SuperAction.class);
-
+	
 	private Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 	private Map<LinkedList<String>, DFEOutput> tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
 	private Set<String> superElementDependencies = null;
+	private Map<String,String> subWorkflowVariables = null;
 	private String name = null;
 	private String errorInstall = null;
-
 	private Boolean privilege = null;
+	private Page page;
+	private SuperActionVariableTable variablesTable;
 	
 	public SuperAction() throws RemoteException {
 		super(new SubWorkflowAction());
@@ -106,6 +109,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			logger.error("Fail to read Super Action Meta data: "+e,e);
 		}
 	}
+	
 	public void readMetadataSuperElement(){
 		try{
 			SubWorkflow saw = new SubWorkflow(name);
@@ -117,6 +121,21 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				output = saw.getOutputSuperAction();
 				privilege = saw.getPrivilege();
 				superElementDependencies = saw.getSuperElementDependencies();
+				subWorkflowVariables = saw.getCoordinators().get(0).getVariables();
+				logger.debug("Sub-workflow variables: "+subWorkflowVariables);
+				
+				if(page == null && subWorkflowVariables != null && !subWorkflowVariables.isEmpty()){
+					page = addPage(LanguageManagerWF.getText("superaction_page.title"),
+							LanguageManagerWF.getText("superaction_page.legend"), 1);
+					
+					variablesTable = new SuperActionVariableTable();
+					
+					page.addInteraction(variablesTable);
+				}
+				
+				if(variablesTable != null){
+					variablesTable.updateColumnConstraint(subWorkflowVariables);
+				}
 			}else{
 				logger.info("Error when reading the metadata: "+errorInstall);
 			}
@@ -388,6 +407,9 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	public String updateOut() throws RemoteException {
 		if(errorInstall == null){
 			((OozieSubWorkflowAction) oozieAction).setSuperElement(this);
+			if(variablesTable != null){
+				variablesTable.updateOozieAction((SubWorkflowAction) oozieAction, subWorkflowVariables);
+			}
 		}
 		return errorInstall; 
 	}

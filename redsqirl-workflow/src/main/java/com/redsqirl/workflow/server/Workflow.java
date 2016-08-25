@@ -1179,8 +1179,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		if(compList == null || compList.getLength() == 0){
 			Element wf = (Element) doc.getElementsByTagName("workflow").item(0);
 			WorkflowCoordinator coord = new WorkflowCoordinator();
+			coord.setName(this.name != null && !this.name.isEmpty()? this.name:"Coordinator");
 			coord.readInXml(doc, wf, this);
 			coord.readInXmlLinks(doc, (Element) wf, this);
+			coordinators.add(coord);
 			logger.debug("loads links...");
 		}else{
 			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
@@ -1200,9 +1202,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this);
 			}
 		}
-
-
-
 
 		return error;
 	}
@@ -1431,6 +1430,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// Create subworkflow object
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
 		sw.setComment(subworkflowComment);
+		Map<String,String> subWfVars = new HashMap<String,String>();
 
 		// Copy Elements
 		Workflow copy = null;
@@ -1449,7 +1449,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						logger.debug("To remove: " + cur);
 						copy.removeElement(cur);
 					}else{
-						getElement(cur).cleanDataOut();
+						DataFlowElement curEl = getElement(cur);
+						curEl.cleanDataOut();
+						Set<String> varRequired = curEl.getRequiredVariables();
+						if(varRequired != null && !varRequired.isEmpty()){
+							Map<String,String> coordVars = copy.getCoordinator(curEl.getCoordinatorName()).getVariables();
+							Iterator<String> varIt = varRequired.iterator();
+							while(varIt.hasNext()){
+								String varCur = varIt.next();
+								subWfVars.put(varCur, coordVars.get(varCur));
+							}
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -1599,7 +1609,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 
 				logger.debug("createSA " + error);
-
+				sw.getCoordinators().get(0).addVariables(subWfVars);
 			} catch (Exception e) {
 				error = "Fail to create an input or output super action";
 				logger.error(error, e);

@@ -20,13 +20,16 @@
 package com.redsqirl.workflow.server.oozie;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.OozieManager;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -52,6 +55,8 @@ public class SubWorkflowAction extends OozieUniqueActionAbs implements OozieSubW
 	
 	private SuperElement superElement;
 	
+	private Map<String,String> superActionVariables;
+	
 	public SubWorkflowAction() throws RemoteException {
 		super();
 	}
@@ -75,6 +80,25 @@ public class SubWorkflowAction extends OozieUniqueActionAbs implements OozieSubW
 		
 		Element propElement = oozieXmlDoc.createElement("propagate-configuration");
 		subWfElement.appendChild(propElement);
+		
+		if(superActionVariables != null && !superActionVariables.isEmpty()){
+			Element configuration = oozieXmlDoc.createElement("configuration");
+			Iterator<Entry<String,String>> itVariables = superActionVariables.entrySet().iterator();
+			while(itVariables.hasNext()){
+				Entry<String,String> var = itVariables.next();
+				Element confName = oozieXmlDoc.createElement("name");
+				confName.appendChild(oozieXmlDoc.createTextNode(var.getKey()));
+				Element confValue = oozieXmlDoc.createElement("value");
+				confValue.appendChild(oozieXmlDoc.createTextNode(var.getValue()));
+
+				Element property = oozieXmlDoc.createElement("property");
+				property.appendChild(confName);
+				property.appendChild(confValue);
+
+				configuration.appendChild(property);
+			}
+			subWfElement.appendChild(configuration);
+		}
 		
 		action.appendChild(subWfElement);
 	}
@@ -124,6 +148,14 @@ public class SubWorkflowAction extends OozieUniqueActionAbs implements OozieSubW
 	 */
 	public void setSuperElement(SuperElement superElement) {
 		this.superElement = superElement;
+	}
+
+	public final Map<String, String> getSuperActionVariables() {
+		return superActionVariables;
+	}
+
+	public final void setSuperActionVariables(Map<String, String> superActionVariables) {
+		this.superActionVariables = superActionVariables;
 	}
 
 }
