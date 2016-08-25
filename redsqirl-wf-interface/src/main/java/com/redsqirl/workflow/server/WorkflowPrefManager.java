@@ -509,7 +509,6 @@ public class WorkflowPrefManager extends BlockManager {
 				logger.info("createUserFooter " + file.toString());
 
 				PrintWriter s = new PrintWriter(file);
-
 				s.println("menu:Utils");
 				s.println("source");
 				s.println("hcatalog_source");
@@ -518,6 +517,10 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("superactionoutput");
 				s.println("convert_file_text");
 				s.println("send_email");
+				s.println("menu:Schedule");
+				s.println("synchronuous_source");
+				s.println("synchronuous_source_filter");
+				s.println("synchronuous_sink");
 				s.close();
 
 			} catch (Exception e) {
