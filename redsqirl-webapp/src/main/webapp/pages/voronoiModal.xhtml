@@ -7,6 +7,46 @@
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
+<script>
+//<![CDATA[
+
+function openVoronoihPopUp(){
+	if(jQuery('[id$="selectedScheduling"]').is(':checked')){
+		
+	}else{
+		jQuery('[id$="selectedScheduling"]').attr('checked',false);
+		jQuery('[id$="voronoiExecutionTimeInputDate"]').attr('disabled','disabled');
+		jQuery('[id$="voronoiExecutionTimePopupButton"]').hide();
+		jQuery('[id$="voronoiSchedulingCombobox"]').attr('disabled','true');
+		jQuery('[id$="voronoiPeriodic"]').attr('readonly','readonly');
+	}
+}
+
+function selectedScheduling(){
+	if(jQuery('[id$="selectedScheduling"]').is(':checked')){
+		jQuery('[id$="voronoiExecutionTimeInputDate"]').removeAttr("disabled");
+		jQuery('[id$="voronoiExecutionTimePopupButton"]').show();
+		jQuery('[id$="voronoiSchedulingCombobox"]').removeAttr("disabled");
+		jQuery('[id$="voronoiPeriodic"]').removeAttr("readonly");
+		
+		jQuery('[id$="voronoiSchedulingCombobox"]').val('DAY').change();
+		jQuery('[id$="voronoiPeriodic"]').val('1');
+	}else{
+		jQuery('[id$="voronoiExecutionTimeInputDate"]').attr('disabled','disabled');
+		jQuery('[id$="voronoiExecutionTimePopupButton"]').hide();
+		jQuery('[id$="voronoiSchedulingCombobox"]').attr('disabled','true');
+		jQuery('[id$="voronoiPeriodic"]').attr('readonly','readonly');
+		//clear inputs
+		jQuery('[id$="voronoiExecutionTimeInputDate"]').val('');
+		jQuery('[id$="voronoiSchedulingCombobox"]').val('');
+		jQuery('[id$="voronoiPeriodic"]').val('');
+	}
+}
+
+//]]>
+</script>
+
+
 	<h:form>
 		<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
 		
@@ -16,15 +56,24 @@
 						<h:outputText value="#{messages.label_voronoi_name}" title="#{messages.title_voronoi_name}" />
 					</td>
 					<td>
-						<h:inputText value="#{voronoiBean.name}" id="voronoiName" maxlength="255" style="width:395px;" styleClass="interModal" />
+						<h:inputText value="#{voronoiBean.name}" id="voronoiName" maxlength="255" style="width:395px;" />
 					</td>
 				</tr>
+			</table>
+			
+			<h1>
+			<h:selectBooleanCheckbox id="selectedScheduling" value="#{voronoiBean.scheduling}" title="#{messages.title_voronoi_scheduling}" onclick="selectedScheduling();" />
+			<h:outputText value="#{messages.label_voronoi_scheduling}" title="#{messages.title_voronoi_scheduling}" />
+			</h1>
+			<center><h:outputText value="#{messages.label_voronoi_scheduling_desc}" title="#{messages.title_voronoi_scheduling_desc}"/></center>
+			
+			<table>
 				<tr>
 					<td>
-						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
+						<h:outputText value="#{messages.label_voronoi_executionTime}" title="#{messages.title_voronoi_executionTime}" />
 					</td>
 					<td>
-			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
+			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_executionTime}" >
 			    		<f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
@@ -35,7 +84,7 @@
 					</td>
 					<td>
 				    	<h:panelGroup style="max-width:100px;" layout="block" id="voronoiScheduling" >
-	                     	<select onchange="updatedComboboxListScheduling(this);" style="max-width:100px;">
+	                     	<select onchange="updatedComboboxListScheduling(this);" style="max-width:100px;" id="voronoiSchedulingCombobox">
 	                     		<option></option>
 				            	<a4j:repeat value="#{voronoiBean.schedulingOptions}" var="idx"  >
 									<h:outputText rendered="#{voronoiBean.selectedSchedulingOption == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
@@ -48,17 +97,29 @@
 							</div>
 							
 							<a4j:jsFunction name="reLoadlistSchedulingInputHidden" reRender="selectedListSchedulingHidden" />
+							
 						</h:panelGroup>
 				    	
 					</td>
 				</tr>
+				<tr>
+				<td>
+					<h:outputText value="#{messages.label_voronoi_periodic}" title="#{messages.title_voronoi_periodic}" />
+				</td>
+				<td>
+					<h:inputText value="#{voronoiBean.periodic}" id="voronoiPeriodic" style="width:35px;" title="#{messages.title_voronoi_periodic}"/>
+				</td>
+				</tr>
 			</table>
 			
 			
+			 <h1><h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/></h1>
+			 <center><h:outputText value="#{messages.label_voronoi_variables_desc}" title="#{messages.title_voronoi_variables_desc}"/></center>
+			 
 			
 			<a4j:commandLink title="#{messages.label_add_new_line}" action="#{voronoiBean.addNewLine}" reRender="tableVoronoi" >
             	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
-           </a4j:commandLink>
+			</a4j:commandLink>
 			
 			<rich:dataTable id="tableVoronoi" value="#{voronoiBean.tableList}" var="rowItem" rowKeyVar="rowNb" width="100%" 
 				style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" 

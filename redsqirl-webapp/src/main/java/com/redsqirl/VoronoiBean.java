@@ -41,6 +41,8 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	private DataFlowCoordinator dataFlowCoordinator;
 	private String name;
 	private String[] undoRedo;
+	private Integer periodic;
+	private Boolean scheduling;
 
 
 	public void openVoronoi() throws RemoteException{
@@ -129,6 +131,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		dataFlowCoordinator.setName(name);
 		if(getSelectedSchedulingOption() != null && !getSelectedSchedulingOption().isEmpty()){
 			dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
+			dataFlowCoordinator.getTimeCondition().setFrequency(periodic);
 		}
 		
 
@@ -301,6 +304,18 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	}
 	public void setUndoRedo(String[] undoRedo) {
 		this.undoRedo = undoRedo;
+	}
+	public Integer getPeriodic() {
+		return periodic;
+	}
+	public void setPeriodic(Integer periodic) {
+		this.periodic = periodic;
+	}
+	public Boolean getScheduling() {
+		return scheduling;
+	}
+	public void setScheduling(Boolean scheduling) {
+		this.scheduling = scheduling;
 	}
 	
 }
