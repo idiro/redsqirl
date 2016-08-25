@@ -62,6 +62,7 @@ import com.idiro.utils.XmlUtils;
 import com.redsqirl.keymanager.ciphers.Decrypter;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
+import com.redsqirl.workflow.server.WorkflowCoordinator;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -104,6 +105,8 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	private Boolean privilege;
 
 	private Set<String> superElementDependencies;
+	
+	private Map<String,String> coordinatorVariables;
 
 	public SubWorkflow() throws RemoteException {
 		super();
@@ -488,7 +491,17 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			}
 
 		}
-
+		
+		logger.debug("read sub-workflow variables");
+		NodeList coordList = doc.getElementsByTagName("coordinator");
+		if(coordList != null && coordList.getLength() > 0){
+			Element coordEl = (Element) coordList.item(0);
+			WorkflowCoordinator coord = new WorkflowCoordinator();
+			coord.readInMeta(doc, coordEl);
+			coordinatorVariables = coord.getVariables();
+			logger.debug("variables: "+coordinatorVariables);
+		}
+		
 
 		// Init element
 		compList = doc.getElementsByTagName("component");
@@ -519,7 +532,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 						newList.addFirst(id);
 						tmpOutput.put(newList, curTmpOut.getValue());
 					}
-					removeElement(id);
 				}
 			}else if(name.equals(saIn.getName())){
 				addElement(name, id);
@@ -535,6 +547,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 				}
 
 			}
+			removeElement(id);
 		}
 
 		// Link and data
@@ -682,6 +695,22 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	@Override
 	public boolean isSchedule() throws RemoteException {
 		return false;
+	}
+
+
+	/**
+	 * @return the coordinatorVariables
+	 */
+	public Map<String,String> getCoordinatorVariables() {
+		return coordinatorVariables;
+	}
+
+
+	/**
+	 * @param coordinatorVariables the coordinatorVariables to set
+	 */
+	public void setCoordinatorVariables(Map<String,String> coordinatorVariables) {
+		this.coordinatorVariables = coordinatorVariables;
 	}
 
 }

@@ -20,7 +20,7 @@ public class SuperActionVariableTable extends TableInteraction{
 	
 	private static String variable_name_title = LanguageManagerWF.getText("superaction.variabletable.name_column");
 	private static String variable_value_title = LanguageManagerWF.getText("superaction.variabletable.value_column");
-	private static boolean init = false;
+	private boolean init = false;
 
 	public SuperActionVariableTable()
 			throws RemoteException {

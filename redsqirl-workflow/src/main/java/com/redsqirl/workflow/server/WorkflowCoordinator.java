@@ -280,8 +280,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		return error;
 	}
 	
-	public String readInXml(Document doc, Element parent, DataFlow df) throws Exception{
-		String error = null;
+	public void readInMeta(Document doc, Element parent){
 		try{
 			name = parent.getElementsByTagName("name").item(0)
 					.getChildNodes().item(0).getNodeValue();
@@ -299,7 +298,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		}
 		try{
 			NodeList props = ((Element) parent.getElementsByTagName("configuration").item(0)).getElementsByTagName("property");
-			for (int temp = 0; temp < props.getLength() && error == null; ++temp) {
+			for (int temp = 0; temp < props.getLength(); ++temp) {
 				Node compCur = props.item(temp);
 				String key = ((Element) compCur).getElementsByTagName("name").item(0)
 						.getChildNodes().item(0).getNodeValue();
@@ -309,6 +308,11 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			}
 		}catch(Exception e){
 		}
+	}
+	
+	public String readInXml(Document doc, Element parent, DataFlow df) throws Exception{
+		String error = null;
+		readInMeta(doc, parent);
 		
 		if(error == null){
 			error = readElements(doc,parent,df);
@@ -421,7 +425,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 								.get(nameIn);
 						if (lwa == null) {
 							lwa = new LinkedList<DataFlowElement>();
-							elInputComponent.put(name, lwa);
+							elInputComponent.put(nameIn, lwa);
 						}
 						lwa.add(getElement(id));
 					}
@@ -484,7 +488,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 									.get(nameOut);
 							if (lwa == null) {
 								lwa = new LinkedList<DataFlowElement>();
-								elOutputComponent.put(name, lwa);
+								elOutputComponent.put(nameOut, lwa);
 							}
 							lwa.add(getElement(id));
 						}

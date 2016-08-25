@@ -1189,8 +1189,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				Node coordCur = compList.item(temp);
 				WorkflowCoordinator coord = new WorkflowCoordinator();
-				coord.readInXml(doc, (Element) coordCur, this);
 				coordinators.add(coord);
+				coord.readInXml(doc, (Element) coordCur, this);
 			}
 			logger.debug("loads coordinator links...");
 			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
@@ -1451,6 +1451,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}else{
 						DataFlowElement curEl = getElement(cur);
 						curEl.cleanDataOut();
+						//curEl.setPosition(curEl.getX() + posIncr, curEl.getY());
 						Set<String> varRequired = curEl.getRequiredVariables();
 						if(varRequired != null && !varRequired.isEmpty()){
 							Map<String,String> coordVars = copy.getCoordinator(curEl.getCoordinatorName()).getVariables();
@@ -1581,7 +1582,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							}
 						}
 						input.setPosition(
-								(int) (positionSuperActionInput.getX() / numberOfInput),
+								(int) (positionSuperActionInput.getX() / numberOfInput) - posIncr,
 								(int) (positionSuperActionInput.getY() / numberOfInput));
 					}
 				}

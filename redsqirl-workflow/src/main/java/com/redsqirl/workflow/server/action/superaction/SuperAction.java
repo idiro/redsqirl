@@ -121,8 +121,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				output = saw.getOutputSuperAction();
 				privilege = saw.getPrivilege();
 				superElementDependencies = saw.getSuperElementDependencies();
-				subWorkflowVariables = saw.getCoordinators().get(0).getVariables();
-				logger.debug("Sub-workflow variables: "+subWorkflowVariables);
+				subWorkflowVariables = saw.getCoordinatorVariables();
 				
 				if(page == null && subWorkflowVariables != null && !subWorkflowVariables.isEmpty()){
 					page = addPage(LanguageManagerWF.getText("superaction_page.title"),
