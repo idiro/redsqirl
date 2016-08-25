@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -50,6 +51,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.AuthOozieClient;
+import org.apache.oozie.client.CoordinatorAction;
+import org.apache.oozie.client.CoordinatorAction.Status;
+import org.apache.oozie.client.CoordinatorJob;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
@@ -605,6 +609,57 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			}
 		}
 		return found;
+	}
+	
+	public String getBundleJobInfo(String jobId){
+		String ans = "{";
+		try{
+		Iterator<CoordinatorJob> cJobIt = oc.getBundleJobInfo(jobId).getCoordinators().iterator();
+		SimpleDateFormat format = new SimpleDateFormat();
+		while(cJobIt.hasNext()){
+			CoordinatorJob cur = cJobIt.next();
+			ans+="{";
+			ans+= "\"name\":\""+cur.getAppName()+"\",";
+			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
+			ans+= "\"next-action\":\""+format.format(cur.getNextMaterializedTime())+"\",";
+			int counterError = 0;
+			int counterOK = 0;
+			boolean runs = false;
+			List<CoordinatorAction> cAct = cur.getActions();
+			Iterator<CoordinatorAction> cActIt = cAct.iterator();
+			while(cActIt.hasNext()){
+				CoordinatorAction cActCur = cActIt.next();
+				Status statusCAct = cActCur.getStatus();
+				ans +="{";
+				ans+= "\"nominal-time\":\""+format.format(cActCur.getNominalTime())+"\",";
+				ans+= "\"job-id\":\""+cActCur.getJobId()+"\",";
+				ans+= "\"status\":\""+statusCAct+"\"";
+				if(Status.FAILED.equals(statusCAct) || 
+						Status.KILLED.equals(statusCAct) || 
+						Status.TIMEDOUT.equals(statusCAct)){
+					++counterError;
+				}else if(Status.SUCCEEDED.equals(statusCAct)){
+					++counterOK;
+				}else{
+					runs |= Status.RUNNING.equals(statusCAct);
+				}
+				ans +="},";
+			}
+			ans+= "\"actions\":\""+cAct.size()+"\",";
+			ans+= "\"ok\":\""+counterOK+"\",";
+			ans+= "\"errors\":\""+counterError+"\",";
+			ans+= "\"running\":\""+runs+"\",";
+			ans+="}";
+			if(cJobIt.hasNext()){
+				ans+=",";
+			}
+		}
+		ans+="}";
+		}catch(Exception e){
+			logger.error(e,e);
+			ans="";
+		}
+		return ans;
 	}
 
 	/**

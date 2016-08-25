@@ -51,11 +51,15 @@ import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowCoordinator;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.SyncSink;
+import com.redsqirl.workflow.server.action.SyncSource;
+import com.redsqirl.workflow.server.action.SyncSourceFilter;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -356,6 +360,30 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 										curEl instanceof SubWorkflowOutput
 										)){
 							check = false;
+							error = LanguageManagerWF.getText("copy_subDataFlow_to_workflow");
+						}
+					}
+				}else{
+					Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
+					while(cloneElIt.hasNext() && check){
+						DataFlowElement curEl = cloneElIt.next();
+						if(elements.contains(curEl.getComponentId()) &&
+								( curEl instanceof SyncSourceFilter ||
+										curEl instanceof SyncSource ||
+										curEl instanceof SyncSink
+										)){
+							check = false;
+							error = LanguageManagerWF.getText("copy_workflow_to_subDataFlow");
+						}else{
+							Iterator<DFEOutput> itOut = curEl.getDFEOutput().values().iterator();
+							while(itOut.hasNext()){
+								DFEOutput curOut = itOut.next();
+								if(PathType.TEMPLATE.equals(curOut.getPathType())||
+										PathType.MATERIALIZED.equals(curOut.getPathType())){
+									check = false;
+									error = LanguageManagerWF.getText("copy_workflow_to_subDataFlow");
+								}
+							}
 						}
 					}
 				}
@@ -403,9 +431,6 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 						}
 					}
 
-				}else{
-					//error SubWorkflow
-					return LanguageManagerWF.getText("copy_subDataFlow_to_workflow");
 				}
 
 			} catch (Exception e) {
