@@ -48,6 +48,8 @@ public interface DataFlowCoordinator extends Remote{
 
 	DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException;
 	
+	void readInMeta(Document doc, Element parent) throws RemoteException;
+	
 	String readInXml(Document doc, Element parent, DataFlow wf) throws RemoteException, Exception;
 	
 	String saveInXml(Document doc, Element rootElement) throws RemoteException;

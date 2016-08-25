@@ -101,4 +101,11 @@ public interface SubDataFlow extends DataFlow{
 	 * @throws RemoteException
 	 */
 	Set<String> getSuperElementDependencies() throws RemoteException;
+	
+	/**
+	 * Get variables that can be parsed from workflow
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,String> getCoordinatorVariables() throws RemoteException;
 }
