@@ -36,6 +36,7 @@
 					<td>
 				    	<h:panelGroup style="max-width:100px;" layout="block" id="voronoiScheduling" >
 	                     	<select onchange="updatedComboboxListScheduling(this);" style="max-width:100px;">
+	                     		<option></option>
 				            	<a4j:repeat value="#{voronoiBean.schedulingOptions}" var="idx"  >
 									<h:outputText rendered="#{voronoiBean.selectedSchedulingOption == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
 							    	<h:outputText rendered="#{voronoiBean.selectedSchedulingOption != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
@@ -117,7 +118,7 @@
 		<rich:panel columns="2" style="border:none; float:right;">
 		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
 		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{voronoiBean.apply}" data="#{voronoiBean.undoRedo}"
-		    	oncomplete="#{rich:component('voronoiModal')}.hide();undoRedoVoronoiJS(); undoRedoCoordinator(data);" reRender="msnError, errorTable" />
+		    	oncomplete="#{rich:component('voronoiModal')}.hide();checkIfSchedule(data[9], true); undoRedoCoordinator(data);" reRender="msnError, errorTable" />
 		</rich:panel>
 	
 	</h:form>

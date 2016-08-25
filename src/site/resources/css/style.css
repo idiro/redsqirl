@@ -842,7 +842,7 @@ img.red {
 .item-right p {
 	font-size: 1.2em;
 }
-.about,.team,.services,.clients,.portfolio-top,.test,.contact{
+.about,.team,.services,.portfolio-top,.test,.contact{ //.clients,
 	padding: 3em 0;
 }
 .clients {

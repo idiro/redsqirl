@@ -703,14 +703,14 @@ function undoRedoExpand(selectedSAIcons){
 /********************* CommandCoordinator ***************************/
 function CommandCoordinator(obj) {
     Command.call(this);
-    this.nameOld = obj[0]; 
-    this.startDateOld = obj[1];
-    this.selectedSchedulingOptionOld = obj[2];
-    this.positionsArraysOld = obj[3];
-    this.name = obj[4];
-    this.startDate = obj[5];
-    this.selectedSchedulingOption = obj[6];
-    this.positionsArrays = obj[7];
+    this.nameOld = obj[1]; 
+    this.startDateOld = obj[2];
+    this.selectedSchedulingOptionOld = obj[3];
+    this.positionsArraysOld = obj[4];
+    this.name = obj[5];
+    this.startDate = obj[6];
+    this.selectedSchedulingOption = obj[7];
+    this.positionsArrays = obj[8];
 };
 
 CommandCoordinator.prototype = Object.create(Command.prototype);
@@ -734,7 +734,7 @@ CommandCoordinator.prototype.clean = function(){
 
 function undoRedoCoordinator(obj){
 	console.log(obj);
-	if(obj != null){
+	if(obj[0] == 'true'){
 		canvasArray[selectedCanvas].commandHistory.push_command(new CommandCoordinator(obj));
 	}
 }

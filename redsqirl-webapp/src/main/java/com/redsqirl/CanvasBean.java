@@ -1217,17 +1217,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "RUNWORKFLOW");
 	}
 
-	public String[] getCheckIfSchedule() throws RemoteException {
+	public String[] getCheckIfScheduleBeforeRun() throws RemoteException {
 
 		String positions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("positions");
 		String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 
+		return new String[] {positions, savedFile, select, getCheckIfSchedule()};
+	}
+	
+	public String getCheckIfSchedule() throws RemoteException {
 		DataFlow df = getDf();
 		if(df.isSchedule()){
-			return new String[] {positions, savedFile, select, "true"};
+			return "true";
 		}else{
-			return new String[] {positions, savedFile, select, "false"};
+			return "false";
 		}
 	}
 
@@ -1779,8 +1783,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		StringBuffer tooltip = new StringBuffer();
 		String errorOut = null;
 		String[][] arrows = null;
-
 		String externalLink = null;
+		boolean isSchedule = false;
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
 			String elementName = dfe.getName();
@@ -1948,13 +1952,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 			//logger.info("element " + dfe.getComponentId());
 			//logger.info("state " + outputType);
 			//logger.info("pathExists " + String.valueOf(pathExistsStr));
+			
+			isSchedule = df.isSchedule();
+			
 		}
 		logger.info("output status result " + groupId + " - " + outputType
 				+ " - " + pathExistsStr + " - " + runningStatus);
 
 		return new Object[]{ groupId, outputType, pathExistsStr,
 				runningStatus, tooltip.toString(),
-				Boolean.toString(errorOut == null), arrows, externalLink };
+				Boolean.toString(errorOut == null), arrows, externalLink, isSchedule };
 	}
 
 	/**
