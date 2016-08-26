@@ -611,15 +611,15 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		return found;
 	}
 	
-	public String getBundleJobInfo(String jobId){
+	public String getBundleJobInfo(String jobId) throws RemoteException{
 		String ans = "{";
 		try{
 		Iterator<CoordinatorJob> cJobIt = oc.getBundleJobInfo(jobId).getCoordinators().iterator();
 		SimpleDateFormat format = new SimpleDateFormat();
 		while(cJobIt.hasNext()){
 			CoordinatorJob cur = cJobIt.next();
+			ans+= "\""+cur.getAppName()+"\":";
 			ans+="{";
-			ans+= "\"name\":\""+cur.getAppName()+"\",";
 			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
 			ans+= "\"next-action\":\""+format.format(cur.getNextMaterializedTime())+"\",";
 			int counterError = 0;
@@ -648,7 +648,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			ans+= "\"actions\":\""+cAct.size()+"\",";
 			ans+= "\"ok\":\""+counterOK+"\",";
 			ans+= "\"errors\":\""+counterError+"\",";
-			ans+= "\"running\":\""+runs+"\",";
+			ans+= "\"running\":\""+runs+"\"";
 			ans+="}";
 			if(cJobIt.hasNext()){
 				ans+=",";

@@ -135,6 +135,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Date runningStartDate;
 	private Date runningEndDate;
 
+	private String lastActionScheduling;
+	private String nextActionScheduling;
+	private String actionsScheduling;
+	private String okScheduling;
+	private String errorsScheduling;
+	private String runningScheduling;
+
 	/**
 	 * 
 	 * @return
@@ -216,7 +223,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String paramGroupID = params.get("paramGroupID");
 		String paramIdElement = params.get("paramIdElement");
 		String isUndoRedo = params.get("isUndoRedo");
-		
+
 		//logger.info("nameElement " + nameElement);
 		//logger.info("paramGroupID " + paramGroupID);
 		//logger.info("paramidElement " + paramIdElement);
@@ -226,11 +233,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (df == null) {
 				msg = "The workflow '" + nameWorkflow + "' has not been initialised!";
 			} else if (nameElement != null && paramGroupID != null) {
-				
+
 				if (paramIdElement != null && !paramIdElement.isEmpty() && !paramIdElement.equalsIgnoreCase("undefined")) {
 					idLastElementInserted = paramIdElement;
 				}
-				
+
 				if(isUndoRedo != null && isUndoRedo.equals("true")){
 					idLastElementInserted = df.addElement(nameElement, idLastElementInserted);
 					logger.info("addElement A");
@@ -238,13 +245,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 					idLastElementInserted = df.addElement(nameElement);
 					logger.info("addElement B");
 				}
-				
+
 				/*if (paramIdElement != null && !paramIdElement.isEmpty() && !paramIdElement.equalsIgnoreCase("undefined")) {
 					if (df.changeElementId(idLastElementInserted, paramIdElement) == null) {
 						idLastElementInserted = paramIdElement;
 					}
 				}*/
-				
+
 				if (idLastElementInserted != null) {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,	idLastElementInserted);
 					if(nameElement.startsWith(">")){
@@ -254,7 +261,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					msg = "NULL POINTER";
 				}
 			}
-			
+
 			setDataFlowCoordinatorLastInserted(getworkFlowInterface().getWorkflow(getNameWorkflow()).getCoordinator(idLastElementInserted));
 
 			List<DataFlowCoordinator> l = getworkFlowInterface().getWorkflow(getNameWorkflow()).getCoordinators();
@@ -263,9 +270,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("addElement Coordinator index:" + i + " value " + dtFlowCoordinator.getName());
 				i++;
 			}
-			
+
 			logger.info("addElement " + idLastElementInserted);
-			
+
 		} catch (Exception e) {
 			logger.info(e,e);
 			msg = e.getMessage();
@@ -373,7 +380,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 
 			DataFlow df = getDf();
-			
+
 			/*//save voronoi history polygon
 			JSONArray jsonVoronoiNamesOld = new JSONArray();
 			Map<String, String> mId = getReverseIdMap();
@@ -385,8 +392,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 			setVoronoiNames(jsonVoronoiNamesOld.toString());
-			
-*/
+
+			 */
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
@@ -423,10 +430,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[] getVoronoi() {
 
 		String error = null;
-		
+
 		try {
 			DataFlow df = getDf();
-			
+
 			/*if(getVoronoiNames() != null && !getVoronoiNames().isEmpty()){
 				String aux = getVoronoiNames();
 				setVoronoiNames(null);
@@ -443,16 +450,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 					logger.warn("mid coordinator " + e.getCoordinatorName());
 				}
 			}
-			
+
 			return new String[] { jsonVoronoiNames.toString() };
-			
+
 		} catch (RemoteException e) {
 			logger.error(e,e);
 			error = getMessageResources("msg_error_oops");
 		}
-		
+
 		displayErrorMessage(error, "GETVORONOI");
-		
+
 		return new String[] { };
 	}
 
@@ -1112,6 +1119,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void runScheduleWorkflow() throws Exception {
 		logger.info("runScheduleWorkflow");
+
 		getDf().setName(getNameWorkflow());
 		logger.info("getNameWorkflow: " + getNameWorkflow());
 		updatePosition();
@@ -1148,8 +1156,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		displayErrorMessage(error, "RUNWORKFLOW");
 	}
-	
-	
+
+
 	public void runWorkflow() throws Exception {
 		logger.info("runWorkflow");
 
@@ -1198,7 +1206,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						} catch (Exception e) {
 							logger.warn(e,e);
 						}
-					}  
+					}
 				}.start();
 			}else{
 				new Thread() {
@@ -1208,7 +1216,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						} catch (Exception e) {
 							logger.warn(e,e);
 						}
-					}  
+					}
 				}.start();
 			}
 			calcWorkflowUrl();
@@ -1225,7 +1233,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return new String[] {positions, savedFile, select, getCheckIfSchedule()};
 	}
-	
+
 	public String getCheckIfSchedule() throws RemoteException {
 		DataFlow df = getDf();
 		if(df.isSchedule()){
@@ -1304,6 +1312,46 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}else{
 			logger.debug("isRunning");
+		}
+		return new String[]{Boolean.toString(running),name};
+	}
+
+	public String[] getRunningAndUpdateScheduling() throws RemoteException, JSONException {
+		DataFlow df = getDf();
+		String name = "";
+		boolean running = false;
+		boolean scheduled = false;
+		if(df != null){
+			name = df.getName();
+			running = df.isrunning();
+			scheduled = df.isSchedule();
+
+			if(running && scheduled){
+
+
+				String json = getOozie().getBundleJobInfo(getDf().getOozieJobId());
+				logger.info(json);
+
+				JSONObject jsonObj = new JSONObject(json);
+				
+				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
+					String nameObj = (String) iterator.next();
+					
+					JSONObject obj = (JSONObject) jsonObj.get(nameObj);
+					
+					setLastActionScheduling(obj.getString("last-action"));
+					setNextActionScheduling(obj.getString("next-action"));
+					setActionsScheduling(obj.getString("actions"));
+					setOkScheduling(obj.getString("ok"));
+					setErrorsScheduling(obj.getString("errors"));
+					setRunningScheduling(obj.getString("running"));
+					
+				}
+
+			}
+
+		}else{
+			logger.debug("isRunningScheduling");
 		}
 		return new String[]{Boolean.toString(running),name};
 	}
@@ -1952,9 +2000,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			//logger.info("element " + dfe.getComponentId());
 			//logger.info("state " + outputType);
 			//logger.info("pathExists " + String.valueOf(pathExistsStr));
-			
+
 			isSchedule = df.isSchedule();
-			
+
 		}
 		logger.info("output status result " + groupId + " - " + outputType
 				+ " - " + pathExistsStr + " - " + runningStatus);
@@ -3360,6 +3408,54 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public final void setRunningEndDate(Date runningEndDate) {
 		this.runningEndDate = runningEndDate;
+	}
+
+	public String getLastActionScheduling() {
+		return lastActionScheduling;
+	}
+
+	public void setLastActionScheduling(String lastActionScheduling) {
+		this.lastActionScheduling = lastActionScheduling;
+	}
+
+	public String getNextActionScheduling() {
+		return nextActionScheduling;
+	}
+
+	public void setNextActionScheduling(String nextActionScheduling) {
+		this.nextActionScheduling = nextActionScheduling;
+	}
+
+	public String getActionsScheduling() {
+		return actionsScheduling;
+	}
+
+	public void setActionsScheduling(String actionsScheduling) {
+		this.actionsScheduling = actionsScheduling;
+	}
+
+	public String getOkScheduling() {
+		return okScheduling;
+	}
+
+	public void setOkScheduling(String okScheduling) {
+		this.okScheduling = okScheduling;
+	}
+
+	public String getErrorsScheduling() {
+		return errorsScheduling;
+	}
+
+	public void setErrorsScheduling(String errorsScheduling) {
+		this.errorsScheduling = errorsScheduling;
+	}
+
+	public String getRunningScheduling() {
+		return runningScheduling;
+	}
+
+	public void setRunningScheduling(String runningScheduling) {
+		this.runningScheduling = runningScheduling;
 	}
 
 }

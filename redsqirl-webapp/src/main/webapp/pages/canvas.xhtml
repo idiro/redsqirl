@@ -812,34 +812,83 @@
 
 	     
 	     function blockRunningWorkflowJS(){
-	     	 //<![CDATA[
-	         unblockRunningWorkflowJS();
+	     	//<![CDATA[
+	        unblockRunningWorkflowJS();
 	         
-             lastBlockedRunningWorkflow = getSelectedById();
+            lastBlockedRunningWorkflow = getSelectedById();
              
-	    	 console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
+	    	console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
 
 			try{
-	    	 var origDiv = document.getElementById('domMessageRunning');
-	    	 var newDiv = document.createElement("div");
-	    	 newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
-	    	 newDiv.style.display = "none";
-	    	 if(copyRunningMsgIdx == 1){
-	    	     origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
-	    	 }
-	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
-             jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
-	     	 }catch(exception){
-		     	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
-		     }
+		    	var origDiv = document.getElementById('domMessageRunning');
+		    	var newDiv = document.createElement("div");
+		    	newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
+		    	newDiv.style.display = "none";
+		    	if(copyRunningMsgIdx == 1){
+		    		origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
+		    	}
+		    	newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
+	            jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
+	     	}catch(exception){
+		    	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
+		    }
              
-             resizeBlockUICanvas();
+            resizeBlockUICanvas();
 
-             runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
-             setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
+            runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
+            setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
              
-             //]]>
+            //]]>
          }
+	     
+	     function blockRunningSchedulingWorkflowJS(){
+		     	//<![CDATA[
+		        unblockRunningSchedulingWorkflowJS();
+		         
+	            lastBlockedRunningWorkflow = getSelectedById();
+	             
+		    	console.log("blockRunningSchedulingWorkflowJS" , lastBlockedRunningWorkflow);
+
+				try{
+		            
+		            jQuery('#'+lastBlockedRunningWorkflow).block({ message: jQuery('#domMessageSchedulingRunning') });
+		            
+		     	}catch(exception){
+			    	console.log("error " + lastBlockedRunningWorkflow + " " + exception);
+			    }
+	             
+	            resizeBlockUICanvas();
+
+	            runningIntervalID = setInterval(function(){ updateSchedulingStatus(); },1500);
+	            setTimeout(function(){ updateSchedulingStatus(); }, 100);
+	             
+	            //]]>
+	         }
+	     
+	     function unblockRunningSchedulingWorkflowJS(){
+		     	//<![CDATA[
+			         
+		         if(lastBlockedRunningWorkflow){
+		        	 console.log("unblockRunningSchedulingWorkflowJS ", lastBlockedRunningWorkflow);
+		             
+		        	 jQuery('#'+lastBlockedRunningWorkflow).unblock();
+
+		             //remove star if necessary
+		             var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		             if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+		 				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+		 				updateCanvasNameStar();
+		 			 }
+		             
+		         }else{
+			    	 console.log("unblockRunningSchedulingWorkflowJS");
+			     }
+
+		         lastBlockedRunningWorkflow = null;
+		         clearInterval(runningIntervalID);
+		         
+		     	//]]>
+		     }
 	     
 	     function selectTab(tabIndex){
 
@@ -1286,7 +1335,6 @@
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
 	<a4j:region renderRegionOnly="true">
-				
 					
 		<div id="domMessageRunning" style="display: none;">
 			<h:form>
@@ -1335,6 +1383,35 @@
 		</div>
 	
 	</a4j:region>
+	
+	
+	
+	
+	<a4j:region renderRegionOnly="true">
+					
+		<div id="domMessageSchedulingRunning" style="display: none;">
+			<h:form>
+			
+				<a4j:jsFunction name="updateSchedulingStatus" 
+					reRender="lastActionScheduling, nextActionScheduling, actionsScheduling, okScheduling, errorsScheduling, runningScheduling" 
+					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="console.log('a');" />
+			
+				<img src="../image/icons/waiting.gif" />
+				
+				<h:outputText value="#{canvasBean.lastActionScheduling}" id="lastActionScheduling" />
+				<h:outputText value="#{canvasBean.nextActionScheduling}" id="nextActionScheduling" />
+				<h:outputText value="#{canvasBean.actionsScheduling}" id="actionsScheduling" />
+				<h:outputText value="#{canvasBean.okScheduling}" id="okScheduling" />
+				<h:outputText value="#{canvasBean.errorsScheduling}" id="errorsScheduling" />
+				<h:outputText value="#{canvasBean.runningScheduling}" id="runningScheduling" />
+				
+			</h:form>
+		</div>
+	
+	</a4j:region>
+	
+	
+	
 
 	<div id="invisible"></div>
 
@@ -1869,7 +1946,7 @@
 				
 				<a4j:jsFunction name="runScheduleWorkflow"
 					action="#{canvasBean.runScheduleWorkflow}"
-					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
+					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningSchedulingWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />

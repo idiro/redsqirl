@@ -119,6 +119,14 @@ public interface JobManager extends Remote{
 	 * @throws Exception
 	 */
 	public String getElementStatus(DataFlow df, DataFlowElement e) throws RemoteException, Exception;
+	
+	/**
+	 * Get a JSON with coordinators info
+	 * @param jobId
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String getBundleJobInfo(String jobId) throws RemoteException;
 
 	/**
 	 * Get the number of element to run in this workflow
