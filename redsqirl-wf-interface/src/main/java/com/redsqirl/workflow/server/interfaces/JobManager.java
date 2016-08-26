@@ -67,6 +67,30 @@ public interface JobManager extends Remote{
 	 * @throws Exception
 	 */
 	public void suspend(String jobId) throws RemoteException, Exception;
+	
+	/**
+	 *
+	 * @param jobId
+	 * @param rerunType
+	 * @param scope
+	 * @param refresh
+	 * @param noCleanup
+	 * @throws RemoteException
+	 */
+	public void reRunCoord(String jobId, String rerunType, String scope, boolean refresh,
+			boolean noCleanup) throws RemoteException;
+
+	/**
+	 * 
+	 * @param jobId
+	 * @param coordScope
+	 * @param dateScope
+	 * @param refresh
+	 * @param noCleanup
+	 * @throws RemoteException
+	 */
+	public void reRunBundle(String jobId, String coordScope, String dateScope, boolean refresh, boolean noCleanup) throws RemoteException;
+	
 	/**
 	 * Run a job with specified DataFlow and List of DataFlowElements
 	 * @param df

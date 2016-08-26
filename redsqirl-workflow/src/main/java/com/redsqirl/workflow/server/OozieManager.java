@@ -680,6 +680,28 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 		return ans;
 	}
+	
+	
+
+	public void reRunCoord(String jobId, String rerunType, String scope, boolean refresh,
+			boolean noCleanup) throws RemoteException {
+		try{
+			oc.reRunCoord(jobId, rerunType, scope, refresh, noCleanup);
+		}catch(Exception e){
+			logger.error(e,e);
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public void reRunBundle(String jobId, String coordScope, String dateScope, boolean refresh, boolean noCleanup)
+			 throws RemoteException {
+		try{
+			oc.reRunBundle(jobId, coordScope, dateScope, refresh, noCleanup);
+		}catch(Exception e){
+			logger.error(e,e);
+			throw new RemoteException(e.getMessage());
+		}
+	}
 
 	/**
 	 * Get the OozieClietn
