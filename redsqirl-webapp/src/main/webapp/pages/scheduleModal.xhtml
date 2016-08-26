@@ -40,7 +40,7 @@
 		<rich:panel columns="2" style="border:none; float:right;">
 		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('scheduleModal')}.hide();" />
 		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" 
-		    	oncomplete="runScheduleWorkflow(getIconPositions(),getPathFile(getSelectedByName()));#{rich:component('scheduleModal')}.hide();" reRender="msnError, errorTable" />
+		    	oncomplete="runScheduleWorkflow(getCanvasStatus(),getPathFile(getSelectedByName()));#{rich:component('scheduleModal')}.hide();" reRender="msnError, errorTable" />
 		</rich:panel>
 	
 	</h:form>

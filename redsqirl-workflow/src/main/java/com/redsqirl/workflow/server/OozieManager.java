@@ -615,18 +615,36 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String ans = "{";
 		try{
 		Iterator<CoordinatorJob> cJobIt = oc.getBundleJobInfo(jobId).getCoordinators().iterator();
-		SimpleDateFormat format = new SimpleDateFormat();
 		while(cJobIt.hasNext()){
 			CoordinatorJob cur = cJobIt.next();
 			ans+= "\""+cur.getAppName()+"\":";
-			ans+="{";
+			ans+= getCoordinatorJobInfo(cur.getId());
+			if(cJobIt.hasNext()){
+				ans+=",";
+			}
+		}
+		ans+="}";
+		}catch(Exception e){
+			logger.error(e,e);
+			ans="";
+		}
+		return ans;
+	}
+	
+	public String getCoordinatorJobInfo(String jobId) throws RemoteException{
+		String ans = "{";
+		try{
+			SimpleDateFormat format = new SimpleDateFormat();
+			CoordinatorJob cur = oc.getCoordJobInfo(jobId);
 			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
 			ans+= "\"next-action\":\""+format.format(cur.getNextMaterializedTime())+"\",";
 			int counterError = 0;
 			int counterOK = 0;
+			int counterSkipped = 0;
 			boolean runs = false;
 			List<CoordinatorAction> cAct = cur.getActions();
 			Iterator<CoordinatorAction> cActIt = cAct.iterator();
+			ans +="\"jobs\":[";
 			while(cActIt.hasNext()){
 				CoordinatorAction cActCur = cActIt.next();
 				Status statusCAct = cActCur.getStatus();
@@ -640,21 +658,22 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					++counterError;
 				}else if(Status.SUCCEEDED.equals(statusCAct)){
 					++counterOK;
+				}else if(Status.SKIPPED.equals(statusCAct)){
+					++counterSkipped;
 				}else{
 					runs |= Status.RUNNING.equals(statusCAct);
 				}
-				ans +="},";
+				if(cActIt.hasNext()){
+					ans +="},";
+				}
 			}
+			ans +="}],";
 			ans+= "\"actions\":\""+cAct.size()+"\",";
 			ans+= "\"ok\":\""+counterOK+"\",";
+			ans+= "\"skipped\":\""+counterSkipped+"\",";
 			ans+= "\"errors\":\""+counterError+"\",";
 			ans+= "\"running\":\""+runs+"\"";
 			ans+="}";
-			if(cJobIt.hasNext()){
-				ans+=",";
-			}
-		}
-		ans+="}";
 		}catch(Exception e){
 			logger.error(e,e);
 			ans="";
