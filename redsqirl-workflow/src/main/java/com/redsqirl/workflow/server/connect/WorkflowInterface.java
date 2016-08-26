@@ -440,6 +440,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 		return error;
 	}
+	
 	/**
 	 * Read the clone file
 	 * @param cloneId
@@ -770,6 +771,26 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				}
 			}
 		}
+	}
+	
+	public final List<String> getAllNonRecordedDataOutputPath() throws RemoteException{
+		List<String> ans = new LinkedList<String>(); 
+		Iterator<DataFlow> itDf = wf.values().iterator();
+		while(itDf.hasNext()){
+			DataFlow curDf = itDf.next();
+			Iterator<DataFlowElement> dfeIt = curDf.getElement().iterator();
+			while(dfeIt.hasNext()){
+				DataFlowElement curDfe = dfeIt.next();
+				Iterator<DFEOutput> outIt = curDfe.getDFEOutput().values().iterator();
+				while(outIt.hasNext()){
+					DFEOutput curOut = outIt.next();
+					if(!SavingState.RECORDED.equals(curOut.getSavingState()) && curOut.getPath() != null && !curOut.getPath().isEmpty() ){
+						ans.add(curOut.getPath());
+					}
+				}
+			}
+		}
+		return ans;
 	}
 
 	public Map<String,Set<String>> getTypesPerDataStore() {

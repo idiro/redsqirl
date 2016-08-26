@@ -82,6 +82,7 @@ import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.action.superaction.SuperAction;
+import com.redsqirl.workflow.server.connect.WorkflowInterface;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
@@ -1145,6 +1146,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = null;
 		doc.getDocumentElement().normalize();
 		Node jobId = doc.getElementsByTagName("job-id").item(0);
+		List<String> pathsUsed = WorkflowInterface.getInstance().getAllNonRecordedDataOutputPath();
 		try {
 			String jobIdContent = jobId.getChildNodes().item(0).getNodeValue();
 			if (!jobIdContent.isEmpty()) {
@@ -1176,12 +1178,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// for link all the element
 		logger.debug("loads elements...");
 		NodeList compList = doc.getElementsByTagName("coordinator");
+		boolean runs = isrunning();
 		if(compList == null || compList.getLength() == 0){
 			Element wf = (Element) doc.getElementsByTagName("workflow").item(0);
 			WorkflowCoordinator coord = new WorkflowCoordinator();
 			coord.setName(this.name != null && !this.name.isEmpty()? this.name:"Coordinator");
 			coord.readInXml(doc, wf, this);
-			coord.readInXmlLinks(doc, (Element) wf, this);
+			error = coord.readInXmlLinks(doc, (Element) wf, this,pathsUsed,runs);
 			coordinators.add(coord);
 			logger.debug("loads links...");
 		}else{
@@ -1199,7 +1202,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				String nameCoord = ((Element) coordCur).getElementsByTagName("name").item(0)
 						.getChildNodes().item(0).getNodeValue();
 
-				getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this);
+				error = getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this,pathsUsed,runs);
 			}
 		}
 
