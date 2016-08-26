@@ -809,31 +809,42 @@
 	     
 	     function blockRunningWorkflowJS(){
 	     	//<![CDATA[
-	        unblockRunningWorkflowJS();
-	         
-            lastBlockedRunningWorkflow = getSelectedById();
-             
-	    	console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
-
-			try{
-		    	var origDiv = document.getElementById('domMessageRunning');
-		    	var newDiv = document.createElement("div");
-		    	newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
-		    	newDiv.style.display = "none";
-		    	if(copyRunningMsgIdx == 1){
-		    		origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
-		    	}
-		    	newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
-	            jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
-	     	}catch(exception){
-		    	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
-		    }
-             
-            resizeBlockUICanvas();
-
-            runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
-            setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
-             
+	     	           
+			console.log("blockRunningWorkflowJS " + selectedCanvas);
+			console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
+	     	           
+	     	if(isIfISchedule(selectedCanvas) == true){
+	     		console.log("blockRunningWorkflowJS A");
+	     		blockRunningSchedulingWorkflowJS();
+	     	}else{
+	     		console.log("blockRunningWorkflowJS B");
+	     		
+		        unblockRunningWorkflowJS();
+		         
+	            lastBlockedRunningWorkflow = getSelectedById();
+	             
+		    	console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
+	
+				try{
+			    	var origDiv = document.getElementById('domMessageRunning');
+			    	var newDiv = document.createElement("div");
+			    	newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
+			    	newDiv.style.display = "none";
+			    	if(copyRunningMsgIdx == 1){
+			    		origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
+			    	}
+			    	newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
+		            jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
+		     	}catch(exception){
+			    	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
+			    }
+	             
+	            resizeBlockUICanvas();
+	
+	            runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
+	            setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
+	     	}
+            
             //]]>
          }
 	     
@@ -1925,7 +1936,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}"
-					oncomplete="if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
+					oncomplete="setIfISchedule(selectedCanvas,data[3]);if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -1942,7 +1953,7 @@
 				
 				<a4j:jsFunction name="runScheduleWorkflow"
 					action="#{canvasBean.runScheduleWorkflow}"
-					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningSchedulingWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
+					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
