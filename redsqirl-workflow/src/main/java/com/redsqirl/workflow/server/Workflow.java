@@ -149,6 +149,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count", "right", "left", "sample");
 
 	protected String path;
+	
+	protected boolean changed = true;
 
 	/**
 	 * Default Constructor
@@ -829,11 +831,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 
-				saved = true;
-
-				String bckPath = getBackupName(createBackupDir());
-				FileUtil.copy(fs, new Path(filePath), fs, new Path(bckPath), false,NameNodeVar.getConf());
-				cleanUpBackup();
+				if(filePath.startsWith(WorkflowPrefManager.getBackupPath())){
+					saved = false;
+					this.path = null;
+				}else{
+					this.path = filePath;
+					saved = true;
+					changed = false;
+					String bckPath = getBackupName(createBackupDir());
+					FileUtil.copy(fs, new Path(filePath), fs, new Path(bckPath), false,NameNodeVar.getConf());
+					cleanUpBackup();
+				}
 
 				logger.debug("file saved successfully");
 			}
@@ -1025,38 +1033,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return path;
 	}
 
-	public String backupAllWorkflowsBeforeClose() throws RemoteException {
-		String path = WorkflowPrefManager.getBackupPath();
-		try {
-			FileSystem fs = NameNodeVar.getFS();
-			fs.mkdirs(new Path(path));
-			// fs.close();
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-			logger.warn("Fail creating backup directory");
-		}
-		path = getBackupName(path);
-		boolean save_swp = isSaved();
-		String error = save(path);
-
-		saved = save_swp;
-
-		try {
-			if (error != null) {
-				logger.warn("Fail to back up: " + error);
-				FileSystem fs = NameNodeVar.getFS();
-				fs.delete(new Path(path), false);
-			}
-			logger.debug("Clean up back up");
-			cleanUpBackup();
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-			logger.warn("Failed cleaning up backup directory");
-		}
-
-		return path;
-	}
-
 	/**
 	 * Check if the workflow has been saved
 	 * 
@@ -1095,7 +1071,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			// clean temporary files
 			xmlFile.delete();
-
+			
+			if(filePath.startsWith(WorkflowPrefManager.getBackupPath())){
+				saved = false;
+				this.path = null;
+			}else{
+				this.path = filePath;
+			}
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("workflow.read_failXml");
 			logger.error(error, e);
@@ -1127,8 +1109,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			error = readFromXml(doc);
 			tmpFile.delete();
 			// This workflow has been saved
+			
 			saved = true;
-
+			changed = false;
 		} catch (Exception e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				error = LanguageManagerWF.getText("workflow.read_failXml");
@@ -2777,6 +2760,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		return ans;
+	}
+	public boolean isChanged() throws RemoteException{
+		return changed;
+	}
+	
+	public void setChanged() throws RemoteException{
+		changed = true;
 	}
 
 }

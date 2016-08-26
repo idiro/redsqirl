@@ -422,67 +422,6 @@ public class MapRedTextFileType extends MapRedHdfs {
 		return ans;
 	}
 	
-	/**
-	 * Generate a fields list from the data in the current path
-	 * 
-	 * @return FieldList
-	 * @throws RemoteException
-	 */
-	protected FieldList generateFieldsMap(String delimiter,List<String> lines) throws RemoteException {
-
-		logger.debug("generateFieldsMap --");
-		
-		FieldList fl = new OrderedFieldList();
-		try {
-			
-			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
-			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
-			
-			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
-			
-			if (lines != null) {
-				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
-				for (String line : lines) {
-					boolean full = true;
-					if (!line.trim().isEmpty()) {
-						int cont = 0;
-						for (String s : line.split(Pattern
-								.quote(delimiter),-1)) {
-
-							String nameColumn = generateColumnName(cont++);
-							
-							if(!valueMap.containsKey(nameColumn)){
-								valueMap.put(nameColumn, new LinkedHashSet<String>());
-								nbValueMap.put(nameColumn, 0);
-							}
-
-							if(valueMap.get(nameColumn).size() < 101){
-								full = false;
-								valueMap.get(nameColumn).add(s.trim());
-								nbValueMap.put(nameColumn,nbValueMap.get(nameColumn)+1);
-							}
-
-						}
-					}
-					if(full){
-						break;
-					}
-				}
-				
-				Iterator<String> valueIt = valueMap.keySet().iterator();
-				while(valueIt.hasNext()){
-					String cat = valueIt.next();
-					fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat), schemaTypeMap.get(cat)));
-				}
-
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} 
-		return fl;
-
-	}
-	
 	@Override
 	public boolean allowDirectories(){
 		return false;

@@ -2040,11 +2040,14 @@ function getSelectedArrowsCommaDelimited(){
 }
 
 
-function getIconPositions(){
+function getCanvasStatus(){
 	
-	//console.log("getIconPositions");
+	console.log("getCanvasStatus");
 	
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var canvas={}
+    var canvasNameStar = jQuery('#canvasNameStar-'+selectedCanvas).text();
+    canvas["modified"]= canvasNameStar[canvasNameStar.length-1] == "*"?"true":"false";
     var positions = {};
 
     // update element positions
@@ -2052,17 +2055,22 @@ function getIconPositions(){
         var element = polygonLayer.getChildren()[i];
         positions[element.getId()] = [ element.getX(), element.getY() ];
     }
-    return JSON.stringify(positions);
+    canvas["positions"] = positions;
+    return JSON.stringify(canvas);
 }
 
-function getAllIconPositions(){
+function getAllCanvasesStatus(){
 	
-	//console.log("getAllIconPositions");
+	console.log("getAllCanvasesStatus");
 	
     var canvasPos = {};
     
     jQuery.each(canvasArray, function(index, value) {
         var polygonLayer = value.polygonLayer;
+        var canvas={}
+        var canvasNameStar = jQuery('#canvasNameStar-'+index).text();
+        canvas["modified"]= canvasNameStar[canvasNameStar.length-1] == "*"?"true":"false";
+        console.log(JSON.stringify(canvas));
         var positions = {};
         // update element positions
         if(polygonLayer){
@@ -2071,8 +2079,11 @@ function getAllIconPositions(){
                 positions[element.getId()] = [ element.getX(), element.getY() ];
             }
         }
-        canvasPos[index] = positions;
+        canvas["positions"] = positions;
+        canvasPos[index] = canvas;
+        console.log(JSON.stringify(canvas));
     });
+    console.log(JSON.stringify(canvasPos));
     return JSON.stringify(canvasPos);
 }
 
@@ -2082,7 +2093,7 @@ function save(path) {
 	
     setSaved(selectedCanvas, true);
     setPathFile(selectedCanvas, path);
-    saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited(), getWorkflowType(selectedCanvas));
+    saveWorkflow(selectedCanvas, path, getCanvasStatus(), getSelectedIconsCommaDelimited(), getWorkflowType(selectedCanvas));
     jQuery(".tooltipCanvas").remove();
     curToolTip = null;
 }
@@ -2731,7 +2742,7 @@ function polygonOnClick(obj,e, canvasName){
 				
 				console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				
-				cloneVoronoi(getAllIconPositions());
+				cloneVoronoi(getAllCanvasesStatus());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}else{
