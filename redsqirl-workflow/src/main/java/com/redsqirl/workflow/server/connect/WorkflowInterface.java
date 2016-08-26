@@ -504,16 +504,6 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	public DataFlow getWorkflow(String name){
 		return wf.get(name);
 	}
-	
-	public void setWorkflowPath(String name, String path){
-		try {
-			wf.get(name).setPath(path);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-	}
-
-
 
 	@Override
 	public String addSubWorkflow(String name) throws RemoteException {
@@ -580,18 +570,17 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			String workflowNameCur = itWorkflow.next();
 			logger.debug("backup "+workflowNameCur);
 			try {
-				if(!wf.get(workflowNameCur).getElement().isEmpty()){
-					wf.get(workflowNameCur).setName(workflowNameCur);
-					wf.get(workflowNameCur).setPath(wf.get(workflowNameCur).backup());
+				DataFlow wfCur = wf.get(workflowNameCur); 
+				if(!wfCur.getElement().isEmpty()){
+					wfCur.setName(workflowNameCur);
+					
+					if(wfCur.isChanged()|| wfCur.getPath() == null){
+						wfCur.setPath(wfCur.backup());
+					}
 
-					if(wf.get(workflowNameCur).getPath() != null){
-						
-						logger.debug("backup path check " + wf.get(workflowNameCur).getPath());
-						
-						mapCanvasToOpen.put(workflowNameCur, wf.get(workflowNameCur).getPath());
-					}else{
-						String path = wf.get(workflowNameCur).backupAllWorkflowsBeforeClose();
-						mapCanvasToOpen.put(workflowNameCur, path);
+					if(wfCur.getPath() != null){
+						logger.debug("backup path check " + wfCur.getPath());
+						mapCanvasToOpen.put(workflowNameCur, wfCur.getPath());
 					}
 				}
 			} catch (Exception e) {
@@ -645,7 +634,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				br.close();
 				
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e,e);
 			}
 		}
 

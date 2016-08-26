@@ -515,8 +515,6 @@ public interface DataFlow extends Remote, Cloneable{
 	 */
 	public boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
-
-	public String backupAllWorkflowsBeforeClose() throws RemoteException;
 	
 	public String getPath() throws RemoteException;
 
@@ -529,6 +527,10 @@ public interface DataFlow extends Remote, Cloneable{
 	public void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
 	
 	public String addElement(String waName, String componentId)	throws Exception;
+	
+	public boolean isChanged() throws RemoteException;
+	
+	public void setChanged() throws RemoteException;
 
 	
 }

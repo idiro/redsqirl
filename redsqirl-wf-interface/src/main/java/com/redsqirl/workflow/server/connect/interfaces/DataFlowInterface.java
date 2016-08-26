@@ -145,14 +145,6 @@ public interface DataFlowInterface extends Remote{
 	 * @throws RemoteException
 	 */
 	List<String[]> getLastBackedUp() throws RemoteException;
-	
-	/**
-	 * Set the path of a workflow without saving it.
-	 * @param name
-	 * @param path
-	 * @throws RemoteException
-	 */
-	void setWorkflowPath(String name, String path) throws RemoteException;
 
 	/**
 	 * Creates a new workflow on the fly without adding it to the map

@@ -479,16 +479,12 @@
 					console.log("load: "+status[i][1]);
 					unblockRunningWorkflowJS();
 					
-					/* if(i == status.length - 1){
-					   console.log("last element");
-					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
-					}else{
-					   addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
-					   setSaved(status[i][0], false);
-					} */
-					
 					addElementJS(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5],false);
-					setSaved(status[i][0], false);
+					if(status[i][1] != null && status[i][1]  !== 'undefined' && status[i][1] != "null"){
+						setSaved(status[i][0], true);
+					}else{
+						setSaved(status[i][0], false);
+					}
 					
 				}
 				rerenderCanvasTab();
@@ -1369,7 +1365,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="cloneBeforeExpand" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('cloneBeforeExpand'); tmpCommandObj.cloneId = data;expand(tmpCommandObj.selectedSAIcons);">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 			
 				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" 
@@ -1385,8 +1381,8 @@
 			</a4j:region>
 
 			<a4j:region renderRegionOnly="true">
-				<a4j:jsFunction name="saveAllPositions" action="#{canvasBean.updateAllPosition}">
-					<a4j:actionparam name="allpositions" />
+				<a4j:jsFunction name="saveAllCanvasesStatus" action="#{canvasBean.updateAllCanvasesStatus}">
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1611,7 +1607,7 @@
 					oncomplete="if(#{requestScope['msnError'] == null}){renameTab();}">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
-					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="selecteds" />
 					<a4j:actionparam name="workflowType" />
 				</a4j:jsFunction>
@@ -1853,7 +1849,7 @@
 
 				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}"
 					oncomplete="if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
-					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
@@ -1862,7 +1858,7 @@
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
-					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
@@ -1871,7 +1867,7 @@
 					action="#{canvasBean.runScheduleWorkflow}"
 					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
 					reRender="msnError">
-					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
@@ -1906,7 +1902,7 @@
 				<a4j:jsFunction name="deleteElements"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('deleteElements'); tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="replaceWFByClone"
@@ -1993,7 +1989,7 @@
 				<a4j:jsFunction name="replaceJS"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('replaceJS'); tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel, tmpCommandObj.regex );">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -2007,13 +2003,13 @@
 				<a4j:jsFunction name="cloneBeforeUpdateElement"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('cloneBeforeUpdateElement'); cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="cloneAfterUpdateElement"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('cloneAfterUpdateElement'); stackUpdateElement('#{canvasModalBean.idGroup}', cloneCommandUpdateElementBuffer,data);">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -2039,7 +2035,7 @@
 				<a4j:jsFunction name="pasteCloneWorkflow"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="console.log('pasteCloneWorkflow'); tmpCommandObj.cloneId = data;">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="undoPasteCloneWorkflow"
@@ -2065,7 +2061,7 @@
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
-					oncomplete="console.log('pasteJS'); saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
+					oncomplete="console.log('pasteJS'); saveAllCanvasesStatus(getAllCanvasesStatus());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllCanvasesStatus());" />
 			</a4j:region>
 			<a4j:region>
 
@@ -2157,7 +2153,7 @@
 				<a4j:jsFunction name="cloneVoronoi"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="tmpCommandObj.cloneId = data;">
-					<a4j:actionparam name="allpositions" />
+					<a4j:actionparam name="allCanvasesStatus" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="replaceWFByCloneVoronoi" action="#{canvasBean.replaceWFByClone}" oncomplete="rebuildJS();"
@@ -2274,7 +2270,7 @@
 									<rich:menuSeparator />
 									<rich:menuItem id="copyMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_copy}"
-										onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());">
+										onclick="saveAllCanvasesStatus(getAllCanvasesStatus());copy(getSelectedIconsCommaDelimited());">
 										<h:outputText value="Ctrl+Shift+C" class="menuItemHotKey"/>
 									</rich:menuItem>
 									<rich:menuItem id="pasteMenuItem" submitMode="ajax"
@@ -2345,7 +2341,7 @@
 
 									<rich:menuItem id="runMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runitems}"
-										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflowBtnFct(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
@@ -2353,7 +2349,7 @@
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
-										onclick="runWorkflowBtnFct(getIconPositions(),getPathFile(getSelectedByName()));"
+										onclick="runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()));"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
@@ -2442,7 +2438,7 @@
 
 									<a4j:commandButton value="#{messages.label_menu_signout}"
 										styleClass="signoutButton"
-										onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();"
+										onclick="saveAllCanvasesStatus(getAllCanvasesStatus());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();"
 										ajax="true" />
 
 
@@ -2457,7 +2453,7 @@
 		
 								<rich:menuItem submitMode="ajax"
 									value="#{messages.label_menu_signout}"
-									onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
+									onclick="saveAllCanvasesStatus(getAllCanvasesStatus());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
 	
 								<rich:menuItem submitMode="ajax"
 									value="#{messages.label_menu_restart}"
@@ -2527,7 +2523,7 @@
 						</span> <span style="cursor: pointer;"> <img
 							src="../image/icons/button-copy.gif" alt="copy"
 							class="shortMenuIcon"
-							onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());"
+							onclick="saveAllCanvasesStatus(getAllCanvasesStatus());copy(getSelectedIconsCommaDelimited());"
 							title="#{messages.label_menu_copy}" />
 						</span> <span style="cursor: pointer;"> <img
 							src="../image/icons/button-paste.gif" alt="paste"

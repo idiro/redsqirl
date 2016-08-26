@@ -189,7 +189,7 @@ CommandDelete.prototype.undo = function(){
 
 CommandDelete.prototype.redo = function(){
 	tmpCommandObj = this;
-	deleteElements(getAllIconPositions());
+	deleteElements(getAllCanvasesStatus());
 };
 
 CommandDelete.prototype.getName = function(){
@@ -394,7 +394,7 @@ CommandReplaceAll.prototype.undo = function(){
 CommandReplaceAll.prototype.redo = function(){
     console.timeStamp("CommandReplaceAll.prototype.redo begin");
 	tmpCommandObj = this;
-	replaceJS(getAllIconPositions());
+	replaceJS(getAllCanvasesStatus());
 	console.timeStamp("CommandReplaceAll.prototype.redo end");
 };
 
@@ -641,7 +641,7 @@ CommandAggregate.prototype.redo = function(){
     console.timeStamp("CommandAggregate.prototype.redo begin");
 	//alert("redo");
 	tmpCommandObj = this;
-	cloneBeforeAggregate(getAllIconPositions());
+	cloneBeforeAggregate(getAllCanvasesStatus());
 	console.timeStamp("CommandAggregate.prototype.redo end");
 };
 
@@ -682,7 +682,7 @@ CommandExpand.prototype.undo = function(){
 CommandExpand.prototype.redo = function(){
     console.timeStamp("CommandExpand.prototype.redo begin");
 	tmpCommandObj = this;
-	cloneBeforeExpand(getAllIconPositions());
+	cloneBeforeExpand(getAllCanvasesStatus());
 	console.timeStamp("CommandExpand.prototype.redo end");
 };
 

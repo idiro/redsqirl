@@ -326,13 +326,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void updatePosition(String workflowName, String paramGroupID, String posX, String posY) {
 
-		logger.info("updatePosition");
-
-		//logger.info("canvas Name: " + getIdMap().keySet());
-		//logger.info("getIdMap1 :" + getIdMap());
-		//logger.info("getIdMap2 :" + getIdMap().get(workflowName));
-		//logger.info("getIdMap3 :" + paramGroupID);
-		//logger.info("posX " + posX + " posY " + posY);
+		if(logger.isDebugEnabled()){
+			logger.debug("updatePosition internal");
+			logger.debug("canvas Name: " + getIdMap().keySet());
+			logger.debug("getIdMap1 :" + getIdMap());
+			logger.debug("getIdMap2 :" + getIdMap().get(workflowName));
+			logger.debug("getIdMap3 :" + paramGroupID);
+			logger.debug("posX " + posX + " posY " + posY);
+		}
 
 		if (getIdMap().get(workflowName) != null) {
 			String componentId = getIdMap().get(workflowName).get(paramGroupID); 
@@ -681,7 +682,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 			if (error == null) {
-				dfi.setWorkflowPath(newWfName, path);
 				df = dfi.getWorkflow(newWfName);
 				logger.warn("read " + path);
 				error = df.read(path);
@@ -735,14 +735,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 	/**
 	 * Push the object position on the backend
 	 */
-	protected void updatePosition() {
+	protected void updateCanvasStatus() {
 
-		logger.info("updatePosition");
+		logger.info("updateCanvasStatus");
 
-		String positions = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("positions");
+		String canvasStatus = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("canvasStatus");
+		
+		logger.info(canvasStatus);
+		
 		try {
-			JSONObject positionsArray = new JSONObject(positions);
+			JSONObject canvas = new JSONObject(canvasStatus);
+			if(canvas.get("modified").toString().equalsIgnoreCase("true")){
+				getDf().setChanged();
+			}
+			JSONObject positionsArray = new JSONObject(canvas.get("positions").toString());
 			Iterator it = positionsArray.keys();
 			while (it.hasNext()) {
 				String groupId = (String) it.next();
@@ -756,32 +763,38 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 			}
-		} catch (JSONException e) {
-			logger.warn("Error updating positions",e);
+		} catch (Exception e) {
+			logger.warn("Error updating canvasStatus",e);
 		}
 	}
 
 	/**
 	 * Push the object position on the backend for all workflows
 	 */
-	public void updateAllPosition() {
+	public void updateAllCanvasesStatus() {
 
 		logger.info("updateAllPosition");
 
-		String allPositions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("allpositions");
+		String allCanvasStatus = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("allCanvasesStatus");
 
-		//logger.info(allPositions);
+		logger.info(allCanvasStatus);
 		//logger.info(workflowMap.keySet());
 
-		if (allPositions != null && !allPositions.isEmpty()
-				&& !allPositions.equalsIgnoreCase("undefined")) {
+		if (allCanvasStatus != null && !allCanvasStatus.isEmpty()
+				&& !allCanvasStatus.equalsIgnoreCase("undefined")) {
 			try {
-				JSONObject allPositionsArray = new JSONObject(allPositions);
-				Iterator itWorkflow = allPositionsArray.keys();
+				JSONObject canvasStatus = new JSONObject(allCanvasStatus);
+				Iterator itWorkflow = canvasStatus.keys();
 				while (itWorkflow.hasNext()) {
 					String workflowId = (String) itWorkflow.next();
+					JSONObject canvas = new JSONObject(
+							canvasStatus.get(workflowId).toString());
+					if(canvas.get("modified").toString().equalsIgnoreCase("true")){
+						getWorkflowMap().get(workflowId).setChanged();
+					}
 					JSONObject positionsArray = new JSONObject(
-							allPositionsArray.get(workflowId).toString());
+							canvas.get("positions").toString());
+					
 					Iterator it = positionsArray.keys();
 					while (it.hasNext()) {
 						String groupId = (String) it.next();
@@ -800,7 +813,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 					}
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				logger.warn("Error updating positions",e);
 			}
 		}
@@ -837,7 +850,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void backupAll() {
 		logger.info("backupAll");
-		updateAllPosition();
+		updateAllCanvasesStatus();
 		try {
 			getworkFlowInterface().backupAll();
 
@@ -848,7 +861,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void backupAndCloseAll() {
 		logger.info("backupAndCloseAll");
-		updateAllPosition();
+		updateAllCanvasesStatus();
 		try {
 			getworkFlowInterface().backupAll();
 			closeAll();
@@ -915,7 +928,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		// Update the object positions
-		updatePosition();
+		updateCanvasStatus();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
 
@@ -1114,7 +1127,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("runScheduleWorkflow");
 		getDf().setName(getNameWorkflow());
 		logger.info("getNameWorkflow: " + getNameWorkflow());
-		updatePosition();
+		updateCanvasStatus();
 
 		String error = getDf().run(runningStartDate,runningEndDate);
 		logger.info("Run error:" + error);
@@ -1161,7 +1174,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		getDf().setName(getNameWorkflow());
 		logger.info("getNameWorkflow: " + getNameWorkflow());
 
-		updatePosition();
+		updateCanvasStatus();
 
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 		logger.info("Select: " + select);
@@ -2443,7 +2456,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void cloneWorkflow() throws Exception {
 		logger.info("cloneWorkflow");
 		String nameWf = getNameWorkflow();
-		updateAllPosition();
+		updateAllCanvasesStatus();
 		String wfClone = getworkFlowInterface().cloneDataFlow(getNameWorkflow());
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
