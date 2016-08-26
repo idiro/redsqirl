@@ -813,7 +813,7 @@
 			console.log("blockRunningWorkflowJS " + selectedCanvas);
 			console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
 	     	           
-	     	if(isIfISchedule(selectedCanvas) == true){
+	     	if(isIfISchedule(selectedCanvas) == 'true'){
 	     		console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
@@ -1411,6 +1411,9 @@
 				<h:outputText value="#{canvasBean.okScheduling}" id="okScheduling" />
 				<h:outputText value="#{canvasBean.errorsScheduling}" id="errorsScheduling" />
 				<h:outputText value="#{canvasBean.runningScheduling}" id="runningScheduling" />
+				
+				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Kill Process"
+					action="#{canvasBean.stopRunningWorkflow}" oncomplete="unblockRunningSchedulingWorkflowJS();" />
 				
 			</h:form>
 		</div>
