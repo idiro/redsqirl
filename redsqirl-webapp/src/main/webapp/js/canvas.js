@@ -43,6 +43,7 @@ function Canvas(name){
     this.isSchedule = 'false';
     this.defaultVoronoi = false;
     this.changeTitle = false;
+    this.ifISchedule = false;
 }
 
 var selectedCanvas = "canvas-1";
@@ -3392,8 +3393,6 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	if(canvasArray[selectedCanvas].isSchedule == 'true'){
 		
 		var listNamesArrays = JSON.parse(listNames);
-		var colour;
-		var newName;
 		
 		for (var i = 0; i < listNamesArrays.length; i++) {
 			 
@@ -3412,19 +3411,19 @@ function updateVoranoiAllPolygonTitle(listNames) {
 						document.body.style.cursor = 'pointer';
 					});
 		        	
-		        	jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
-		        		
-		        		console.log("update4 " + v.getName());
-		        		
-		        		if (v.getName() == listNamesArrays[i][0]) {
-		        			v.voronoiTitle = listNamesArrays[i][1];
-		        		}
-		        		
-		        	});
-		        	colour = "";
 		        	
 		        }
 		    });
+			
+			jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
+        		
+        		console.log("update4 " + v.getName());
+        		
+        		if (v.getName() == listNamesArrays[i][0]) {
+        			v.voronoiTitle = listNamesArrays[i][1];
+        		}
+        		
+        	});
 	
 		}
 		
@@ -3645,4 +3644,14 @@ function getWorkflowType(canvasName){
 
 function getSelectedWorkflowType(){
     return getWorkflowType(selectedCanvas);
+}
+
+function setIfISchedule(canvasName, value){
+	console.log(canvasName);
+	console.log(value);
+    canvasArray[canvasName].ifISchedule = value;
+}
+
+function isIfISchedule(canvasName){
+    return canvasArray[canvasName].ifISchedule;
 }
