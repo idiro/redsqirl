@@ -287,19 +287,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String checkEntry(String wfName) throws RemoteException {
+		waLogger.debug("Check "+getComponentId());
 		String ans = checkIn();
 		if (ans == null) {
 			ans = "";
 		}
 		
 		if (ans.isEmpty()) {
+			waLogger.debug("Check interactions...");
 			ans = checkIntegrationUserVariables();
 			if (ans != null && ans.isEmpty()) {
 				ans = null;
 			}
 		}
 		
-		if(wfName != null){
+		if(ans == null){
+			waLogger.debug("Check variables...");
 			ans = checkVariables(wfName);
 		}
 
@@ -325,11 +328,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		Iterator<String> itVars = vars.iterator();
 		while(itVars.hasNext() && ans == null){
 			String cur = itVars.next();
-			if(wCoord != null && !wCoord.getVariables().containsKey(cur)){
+			if(wCoord != null && !wCoord.getVariables().getKeys().contains(cur)){
 				ans = "Variable '"+cur+"' is not defined in the coordinator";
 			}
 		}
 		if(getOozieAction() != null && vars != null){
+			if(waLogger.isDebugEnabled()){
+				waLogger.debug("Add variables: "+vars);
+			}
 			getOozieAction().addAllVariables(vars);
 		}
 		return ans;

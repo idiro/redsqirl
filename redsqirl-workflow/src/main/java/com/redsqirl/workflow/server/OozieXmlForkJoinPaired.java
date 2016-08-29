@@ -126,7 +126,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if(cur.getOozieAction() instanceof OozieSubWorkflowAction){
 				OozieSubWorkflowAction oswa = (OozieSubWorkflowAction) cur.getOozieAction();
 				try{
-					error = createSubXml(oswa.getWfId(),oswa.getSubWf(),oswa.getSubWf().subsetToRun(oswa.getSubWf().getComponentIds()),directory);
+					error = oswa.getSubWf().check();
+					if(error == null){
+						error = createSubXml(oswa.getWfId(),oswa.getSubWf(),oswa.getSubWf().subsetToRun(oswa.getSubWf().getComponentIds()),directory);
+					}
 				}catch(Exception e){
 					logger.error(e,e);
 					error = e.getMessage();
@@ -569,7 +572,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				
 				configuration.appendChild(prop);
 			}
-			it = coordinator.getVariables().entrySet().iterator();
+			it = coordinator.getVariables().getKeyValues().entrySet().iterator();
 			while(it.hasNext()){
 				Entry<String,String> cur = it.next();
 				Element prop = doc.createElement("property");
@@ -603,7 +606,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			OozieManager.writeWorkflowProp(new File(directory,job), 
 					hdfsCoordPath+"/"+filename, 
-					OozieManager.Type.COORDINATOR);
+					OozieManager.Type.COORDINATOR,null);
 		} catch (Exception e) {
 			error =" "+ LanguageManagerWF.getText(
 					"ooziexmlforkjoinpaired.createxml.fail",

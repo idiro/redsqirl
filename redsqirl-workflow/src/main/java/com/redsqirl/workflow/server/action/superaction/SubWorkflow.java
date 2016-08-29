@@ -20,14 +20,11 @@
 package com.redsqirl.workflow.server.action.superaction;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -35,7 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -55,11 +51,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idiro.Log;
-import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
-import com.redsqirl.keymanager.ciphers.Decrypter;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowCoordinator;
@@ -72,8 +66,8 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
-import com.redsqirl.workflow.utils.RedSqirlModel;
 import com.redsqirl.workflow.utils.ModelManager;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 
 /**
  * 
@@ -421,7 +415,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 
 	public String readMetaData(File xmlFile) throws Exception{
-		String userName = System.getProperty("user.name");
 		tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
 		outputSuperAction = new LinkedHashMap<String,DFEOutput>();
 		inputSuperAction = new LinkedHashMap<String, DFELinkProperty>();
@@ -498,7 +491,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			Element coordEl = (Element) coordList.item(0);
 			WorkflowCoordinator coord = new WorkflowCoordinator();
 			coord.readInMeta(doc, coordEl);
-			coordinatorVariables = coord.getVariables();
+			coordinatorVariables = coord.getVariables().getKeyValues();
 			logger.debug("variables: "+coordinatorVariables);
 		}
 		

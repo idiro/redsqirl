@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -20,11 +19,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.VoronoiType;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
-import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 
 public class VoronoiBean extends BaseBean implements Serializable {
 
@@ -53,7 +52,6 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
 		String canvasName = context.getExternalContext().getRequestParameterMap().get("paramSelectedTab");
 
-		Map<String,String> mapVariables;
 		if(groupId != null && !groupId.isEmpty()){
 			dataFlowCoordinator = getworkFlowInterface().getWorkflow(canvasName).getCoordinator(groupId);
 		}else{
@@ -61,15 +59,17 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}
 		
 		if(dataFlowCoordinator != null){
-			mapVariables = dataFlowCoordinator.getVariables();
+			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 
 			tableList = new ArrayList<VoronoiType>();
-			Iterator<String> ans = mapVariables.keySet().iterator();
+			Iterator<String> ans = vars.getKeyValues().keySet().iterator();
 			while(ans.hasNext()){
 				String key = ans.next();
+				DataFlowCoordinatorVariable var = vars.getVariable(key);
 				VoronoiType v = new VoronoiType();
 				v.setKey(key);
-				v.setValue(mapVariables.get(key));
+				v.setValue(var.getValue());
+				v.setDescription(var.getDescription());
 				tableList.add(v);
 			}
 
@@ -102,12 +102,13 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		logger.info("apply");
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-		
+		DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 		JSONArray jsonLinksOld = new JSONArray();
-		for (String key : dataFlowCoordinator.getVariables().keySet()) {
+		for (String key : vars.getKeyValues().keySet()) {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("key", key);
-			jsonObj.put("value", dataFlowCoordinator.getVariables().get(key));
+			jsonObj.put("value", vars.getVariable(key).getValue());
+			jsonObj.put("description", vars.getVariable(key).getDescription());
 			jsonLinksOld.put(jsonObj.toString());
 		}
 		String nameOld = null;
@@ -123,9 +124,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			selectedSchedulingOptionOld = dataFlowCoordinator.getTimeCondition().getUnit().toString();
 		}
 
-		
+		dataFlowCoordinator.getVariables().removeAllVariables();
 		for (VoronoiType voronoiType : tableList) {
-			dataFlowCoordinator.addVariable(voronoiType.getKey(), voronoiType.getValue(), false);
+			dataFlowCoordinator.getVariables().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
 		}
 		dataFlowCoordinator.setExecutionTime(executionTime);
 		dataFlowCoordinator.setName(name);
@@ -140,6 +141,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("key" , voronoiType.getKey());
 			jsonObj.put("value", voronoiType.getValue());
+			jsonObj.put("description", voronoiType.getDescription());
 			jsonLinks.put(jsonObj.toString());
 		}
 		
@@ -173,10 +175,11 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		logger.info("list " + list);
 		
 		if(list != null && !list.equals("null") && !list.equals("[]")){
+			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 			JSONArray json = new JSONArray(list);
 			for (int i = 0; i < json.length(); i++) {
 				JSONObject jsonObj = new JSONObject(json.get(i).toString());
-				dataFlowCoordinator.addVariable(jsonObj.getString("key"), jsonObj.getString("value"), false);
+				vars.addVariable(jsonObj.getString("key"), jsonObj.getString("value"), jsonObj.getString("description"), false);
 			}
 		}
 		dataFlowCoordinator.setName(name);
@@ -196,8 +199,9 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			JSONObject jsonObjOld = new JSONObject(jsonLinksOld.get(i).toString());
 			for (int j = 0; j < jsonLinks.length(); j++) {
 				JSONObject jsonObjLinks = new JSONObject(jsonLinks.get(j).toString());
-				if(i == j && (jsonObjOld.getString("key") != jsonObjLinks.getString("key") || 
-						jsonObjOld.getString("value") != jsonObjLinks.getString("value") )){
+				if(i == j && ( !jsonObjOld.getString("key").equals(jsonObjLinks.getString("key")) || 
+						!jsonObjOld.getString("value").equals(jsonObjLinks.getString("value")) || 
+								!jsonObjOld.getString("description").equals(jsonObjLinks.getString("description")) )){
 					return true;
 				}
 			}

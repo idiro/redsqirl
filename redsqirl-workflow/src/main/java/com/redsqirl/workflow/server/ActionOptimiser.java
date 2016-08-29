@@ -65,6 +65,9 @@ DFEOptimiser {
 		boolean ans = isSupported(dfe);
 		if(ans){
 			elementList.add(dfe);
+			if(dfe.getOozieAction() != null){
+				oozieAction.addAllVariables(dfe.getOozieAction().getVariables());
+			}
 		}
 		return ans;
 	}
@@ -75,6 +78,11 @@ DFEOptimiser {
 			ans &= isSupported(dfe);
 		}
 		if(ans){
+			for(DataFlowElement dfe : list){
+				if(dfe.getOozieAction() != null){
+					oozieAction.addAllVariables(dfe.getOozieAction().getVariables());
+				}
+			}
 			elementList.addAll(list);
 		}
 		return ans;

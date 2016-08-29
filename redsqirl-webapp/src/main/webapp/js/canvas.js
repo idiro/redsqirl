@@ -689,16 +689,16 @@ function dragAndDropGroup(canvasName, obj, e) {
 
         		if (newX < 5) {
         			newX = 5;
-        		} else if (newX + 300 > xCanvas) {
-        			stage.setWidth(xCanvas + 300);
+        		} else if (newX + 200 > xCanvas) {
+        			stage.setWidth(xCanvas + 200);
         			background.setWidth(stage.getWidth());
         			xCanvas = stage.getWidth();
         		}
 
         		if (newY < 5) {
         			newY = 5;
-        		} else if (newY + 300 > yCanvas) {
-        			stage.setHeight(yCanvas + 300);
+        		} else if (newY + 200 > yCanvas) {
+        			stage.setHeight(yCanvas + 200);
         			background.setHeight(stage.getHeight());
         			yCanvas = stage.getHeight();
         		}
@@ -1166,9 +1166,9 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newX;
     if (pos.x < 5) {
         newX = 5;
-    } else if (pos.x + valueX + 300 > xCanvas) {
+    } else if (pos.x + valueX + 200 > xCanvas) {
         newX = pos.x;
-        stage.setWidth(xCanvas + 300);
+        stage.setWidth(xCanvas + 200);
         background.setWidth(stage.getWidth());
     } else {
         newX = pos.x;
@@ -1177,9 +1177,9 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
     var newY;
     if (pos.y < 5) {
         newY = 5;
-    } else if (pos.y + valueY + 300 > yCanvas) {
+    } else if (pos.y + valueY + 200 > yCanvas) {
         newY = pos.y;
-        stage.setHeight(yCanvas + 300);
+        stage.setHeight(yCanvas + 200);
         background.setHeight(stage.getHeight());
     } else {
         newY = pos.y;
@@ -1210,9 +1210,9 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newX = 5;
     } else if (valueX != null && pos.x < valueX) {
         newX = valueX;
-    } else if (pos.x + 300 > xCanvas) {
+    } else if (pos.x + 200 > xCanvas) {
         newX = pos.x;
-        stage.setWidth(xCanvas + 300);
+        stage.setWidth(xCanvas + 200);
         background.setWidth(stage.getWidth());
     }
 
@@ -1220,9 +1220,9 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
         newY = 5;
     } else if (valueY != null && pos.y < valueY) {
         newY = valueY;
-    } else if (pos.y + 300 > yCanvas) {
+    } else if (pos.y + 200 > yCanvas) {
         newY = pos.y;
-        stage.setHeight(yCanvas + 300);
+        stage.setHeight(yCanvas + 200);
         background.setHeight(stage.getHeight());
     }
 
@@ -1320,15 +1320,15 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
 	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
 	
-    if(canvasArray[canvasName].stage.getWidth()  < posx +  300){
+    if(canvasArray[canvasName].stage.getWidth()  < posx +  500){
        console.log("Make X bigger: " + posx +", "+ canvasArray[canvasName].stage.getWidth());
-       canvasArray[canvasName].stage.setWidth(posx + 300);
-       canvasArray[canvasName].background.setWidth(posx + 300);
+       canvasArray[canvasName].stage.setWidth(posx + 500);
+       canvasArray[canvasName].background.setWidth(posx + 500);
     }
-    if(canvasArray[canvasName].stage.getHeight() < posy+ 300 ){
+    if(canvasArray[canvasName].stage.getHeight() < posy+ 500 ){
        console.log("Make Y bigger: " + posy +", "+ canvasArray[canvasName].stage.getHeight());
-       canvasArray[canvasName].stage.setHeight(posy + 300);
-       canvasArray[canvasName].background.setHeight(posy + 300);
+       canvasArray[canvasName].stage.setHeight(posy + 500);
+       canvasArray[canvasName].background.setHeight(posy + 500);
     }
     
     
@@ -3336,6 +3336,20 @@ function updateVoronoi(canvasName, idElement){
     
 	startVoronoi(canvasName, idElement, voranoiPolygonTitle);
 	
+}
+/**
+ * Get the list of the element ids inside a coordinator.
+ * @param coordinatorTitle
+ */
+function getIdsFromVoronoi(coordinatorTitle){
+	var ans = "";
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+        if(value !== undefined && value.getParent().getId() !== undefined && coordinatorTitle == value.voronoiTitle){
+        	ans += ","+value.getParent().getChildren()[4].getText();
+        }
+    });
+	return ans.substring(1);
 }
 
 function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
