@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,6 +57,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -64,7 +66,6 @@ import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.WorkflowJob;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -74,6 +75,7 @@ import com.idiro.Log;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SyncSink;
@@ -89,6 +91,8 @@ import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.ElementManager;
 import com.redsqirl.workflow.server.interfaces.RunnableElement;
@@ -96,6 +100,7 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.RedSqirlModel;
 
 /**
  * Class that manages a workflow.
@@ -1405,7 +1410,92 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 	}
+	
+	public String generateHelp(String wfName, String description,Map<String,DFEOutput> inputs,Map<String,DFEOutput> outputs,DataFlowCoordinatorVariables vars) throws RemoteException{
+		String help = "<h1>"+WordUtils.capitalizeFully(wfName.replace("_", " "))+"</h1>";
+		Collection<DataFlowCoordinatorVariable> varList = vars.getVariables();
+		if(description != null && !description.isEmpty()){
+			help+="<p>"+description+"</p>";
+		}
+		
+		help+="<p>"+wfName+" takes ";
+		if(inputs.isEmpty()){
+			help+="no inputs";
+		}else{
+			help+=inputs.size()+" input";
+			if(inputs.size() > 1){
+				help+="s";
+			}
+		}
+		if(varList.isEmpty()){
+			help +=" and ";
+		}else{
+			help +=", ";
+		}
+		if(outputs.isEmpty()){
+			help+="no outputs";
+		}else{
+			help+=inputs.size()+" output";
+			if(outputs.size() > 1){
+				help+="s";
+			}
+		}
+		if(!varList.isEmpty()){
+			help +=" and "+varList.size()+" variable";
+			if(varList.size() > 1){
+				help+="s";
+			}
+		}
+		help+=".</p>";
 
+		String tableCellStyle=" style='border: 1px solid;	border-collapse: collapse;' ";
+		if(!inputs.isEmpty()){
+			help +="<h2>Inputs</h2>";
+			for(Entry<String,DFEOutput> input : inputs.entrySet()){
+				help+="<h3>"+input.getKey()+"</h3>";
+				help+=input.getKey()+" is a <b>"+input.getValue().getTypeName()+"</b> dataset.";
+				FieldList fl = input.getValue().getFields();
+				if(fl != null && !fl.getFieldNames().isEmpty()){
+					help+="<table"+tableCellStyle+">";
+					help+="<tr><td"+tableCellStyle+">Field Name</td><td"+tableCellStyle+">Type</td><td"+tableCellStyle+">Description</td></tr>";
+					for(String fieldName : fl.getFieldNames()){
+						help+="<tr><td"+tableCellStyle+">"+fieldName+"</td><td"+tableCellStyle+">"+fl.getFieldType(fieldName)+"</td><td"+tableCellStyle+"></td></tr>";
+					}
+					help+="</table>";
+				}
+			}
+		}
+		
+		if(!outputs.isEmpty()){
+			help +="<h2>Outputs</h2>";
+			for(Entry<String,DFEOutput> output : outputs.entrySet()){
+				help+="<h3>"+output.getKey()+"</h3>";
+				help+=output.getKey()+" is a <b>"+output.getValue().getTypeName()+"</b> dataset.";
+				FieldList fl = output.getValue().getFields();
+				if(fl != null && !fl.getFieldNames().isEmpty()){
+					help+="<table"+tableCellStyle+">";
+					help+="<tr><td"+tableCellStyle+">Field Name</td><td"+tableCellStyle+">Type</td><td"+tableCellStyle+">Description</td></tr>";
+					for(String fieldName : fl.getFieldNames()){
+						help+="<tr><td"+tableCellStyle+">"+fieldName+"</td><td"+tableCellStyle+">"+fl.getFieldType(fieldName)+"</td><td"+tableCellStyle+"></td></tr>";
+					}
+					help+="</table>";
+				}
+			}
+		}
+		
+		if(!varList.isEmpty()){
+			help += "<h2>Variables</h2>";
+			help+="<table"+tableCellStyle+">";
+			help+="<tr><td"+tableCellStyle+">Variable Name</td><td"+tableCellStyle+">Default Value</td><td"+tableCellStyle+">Description</td></tr>";
+			for(DataFlowCoordinatorVariable varCur : varList){
+				help+="<tr><td"+tableCellStyle+">"+varCur.getKey()+"</td><td"+tableCellStyle+">"+varCur.getValue()+"</td><td"+tableCellStyle+">"+varCur.getDescription()+"</td></tr>";
+			}
+			help+="</table>";
+		}
+		
+		return help;
+	}
+	
 	public SubDataFlow createSA(List<String> componentIds,
 			String subworkflowName, String subworkflowComment,
 			Map<String, Entry<String, String>> inputs,
@@ -1415,8 +1505,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = null;
 		// Create subworkflow object
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
-		sw.setComment(subworkflowComment);
-		Map<String,String> subWfVars = new HashMap<String,String>();
+		
+		DataFlowCoordinatorVariables subWfVars = new WfCoordVariables();
 
 		// Copy Elements
 		Workflow copy = null;
@@ -1440,11 +1530,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						//curEl.setPosition(curEl.getX() + posIncr, curEl.getY());
 						Set<String> varRequired = curEl.getRequiredVariables();
 						if(varRequired != null && !varRequired.isEmpty()){
-							Map<String,String> coordVars = copy.getCoordinator(curEl.getCoordinatorName()).getVariables();
+							DataFlowCoordinatorVariables coordVars = copy.getCoordinator(curEl.getCoordinatorName()).getVariables();
 							Iterator<String> varIt = varRequired.iterator();
 							while(varIt.hasNext()){
 								String varCur = varIt.next();
-								subWfVars.put(varCur, coordVars.get(varCur));
+								subWfVars.addVariable(coordVars.getVariable(varCur));
 							}
 						}
 					}
@@ -1456,23 +1546,22 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		if (error == null) {
-			Map<String,String> coordinatorName = new HashMap<String,String>();
+			String coordinatorName = null;
 			Iterator<String> idIt = componentIds.iterator();
 			while (idIt.hasNext()) {
 				String cur = idIt.next();
 				DataFlowElement newEl = copy.getElement(cur);
 				logger.debug("To copy: " + cur);
-				if(coordinatorName.containsKey(newEl.getCoordinatorName())){
-					sw.addElement(newEl,coordinatorName.get(newEl.getCoordinatorName()));
-				}else{
-					coordinatorName.put(newEl.getCoordinatorName(), newEl.getComponentId());
-					sw.addElement(newEl,newEl.getComponentId());
+				if(coordinatorName == null){
+					coordinatorName =newEl.getCoordinatorName();
 				}
+				sw.addElement(newEl,coordinatorName);
 			}
 
 			try {
 				// Create Action inputs
 				Iterator<String> entries = inputs.keySet().iterator();
+				Map<String,DFEOutput> inputsForHelp = new HashMap<String,DFEOutput>();
 				while (entries.hasNext() && error == null) {
 					String inputName = entries.next();
 
@@ -1481,7 +1570,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							.getElement(inputs.get(inputName).getKey())
 							.getDFEOutput()
 							.get(inputs.get(inputName).getValue());
-
+					inputsForHelp.put(inputName, constraint);
 					String tmpId = sw.addElement((new SubWorkflowInput())
 							.getName());
 					error = sw.changeElementId(tmpId, inputName);
@@ -1577,6 +1666,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				// Create Action outputs
 				entries = outputs.keySet().iterator();
+				Map<String,DFEOutput> outputsForHelp = new HashMap<String,DFEOutput>();
 				while (entries.hasNext() && error == null) {
 					String outputName = entries.next();
 
@@ -1592,11 +1682,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								outputName).getKey());
 						sw.getElement(outputName).setPosition(
 								in.getX() + posIncr, in.getY());
+						outputsForHelp.put(outputName, in.getDFEOutput().get(outputs.get(outputName).getValue()));
 					}
 				}
 
 				logger.debug("createSA " + error);
-				sw.getCoordinators().get(0).addVariables(subWfVars);
+				sw.getCoordinator(coordinatorName).getVariables().addAll(subWfVars);
+				sw.setComment(generateHelp(RedSqirlModel.getModelAndSW(subworkflowName)[1], subworkflowComment, inputsForHelp, outputsForHelp, subWfVars));
 			} catch (Exception e) {
 				error = "Fail to create an input or output super action";
 				logger.error(error, e);

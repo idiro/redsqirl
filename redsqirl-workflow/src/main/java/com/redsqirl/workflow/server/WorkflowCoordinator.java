@@ -27,6 +27,7 @@ import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -41,7 +42,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	protected CoordinatorTimeConstraint timeCondition = new WfCoordTimeConstraint();
 	protected String name;
 	protected List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
-	protected Map<String,String> variables = new LinkedHashMap<String,String>();
+	protected WfCoordVariables variables = new WfCoordVariables();
 	protected Date executionTime = null;
 	
 	public class WfDefaultConstraint implements DataFlowCoordinator.DefaultConstraint{
@@ -94,23 +95,12 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			elTime.appendChild(doc.createTextNode( Long.valueOf(executionTime.getTime()).toString()));
 			rootElement.appendChild(elTime);
 		}catch(Exception e){}
-		Element elConfiguration = doc.createElement("configuration");
-		Iterator<Entry<String,String>> itVar = variables.entrySet().iterator();
-		while(itVar.hasNext()){
-			Entry<String,String> curVar = itVar.next();
-			Element elProp = doc.createElement("property");
-			
-			Element elName = doc.createElement("name");
-			elName.appendChild(doc.createTextNode(curVar.getKey()));
-			elProp.appendChild(elName);
-
-			Element elValue = doc.createElement("value");
-			elValue.appendChild(doc.createTextNode(curVar.getValue()));
-			elProp.appendChild(elValue);
-			
-			elConfiguration.appendChild(elProp);
+		
+		if(error == null){
+			Element elConfiguration = doc.createElement("configuration");
+			error = variables.saveInXml(doc, elConfiguration);
+			rootElement.appendChild(elConfiguration);
 		}
-		rootElement.appendChild(elConfiguration);
 		
 		if(error == null){
 			Element elComp = doc.createElement("components");
@@ -296,16 +286,9 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 					.getChildNodes().item(0).getNodeValue()));
 		}catch(Exception e){
 		}
+		
 		try{
-			NodeList props = ((Element) parent.getElementsByTagName("configuration").item(0)).getElementsByTagName("property");
-			for (int temp = 0; temp < props.getLength(); ++temp) {
-				Node compCur = props.item(temp);
-				String key = ((Element) compCur).getElementsByTagName("name").item(0)
-						.getChildNodes().item(0).getNodeValue();
-				String value = ((Element) compCur).getElementsByTagName("value").item(0)
-						.getChildNodes().item(0).getNodeValue();
-				addVariable(key, value, true);
-			}
+			variables.readInXml(doc, (Element) parent.getElementsByTagName("configuration").item(0));
 		}catch(Exception e){
 		}
 	}
@@ -570,13 +553,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 		while(it.hasNext()){
 			addElement(it.next());
 		}
-		variables.putAll(coord.getVariables());
+		variables.addAll(coord.getVariables());
 	}
 	
 	@Override
 	public DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException {
 		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
-		dfC.getVariables().putAll(variables);
+		dfC.getVariables().addAll(variables);
 		Iterator<DataFlowElement> it = dfe.iterator();
 		while(it.hasNext()){
 			dfC.addElement(it.next());
@@ -662,26 +645,8 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	}
 
 	@Override
-	public Map<String, String> getVariables() throws RemoteException {
+	public DataFlowCoordinatorVariables getVariables() throws RemoteException{
 		return variables;
-	}
-
-	@Override
-	public String addVariable(String name, String value, boolean force)
-			throws RemoteException {
-		String error = null;
-		if(error == null){
-			if(logger.isDebugEnabled()){
-				logger.debug("Add variable "+name+"="+value+" to "+this.name);
-			}
-			variables.put(name,value);
-		}
-		return error;
-	}
-	
-	@Override
-	public void addVariables(Map<String,String> variables){
-		this.variables.putAll(variables);
 	}
 
 	public final Date getExecutionTime() {

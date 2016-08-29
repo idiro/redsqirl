@@ -146,7 +146,7 @@ function selectedScheduling(){
 	
 				</rich:column>
 	             
-				<rich:column style="border-bottom:0px;border-right:0px;" width="235px;">
+				<rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_voronoilist_key}" />
 			        </f:facet>
@@ -154,12 +154,20 @@ function selectedScheduling(){
 	              	<h:inputText value="#{rowItem.key}" />
 	              
 	            </rich:column>
-	            <rich:column style="border-bottom:0px;border-right:0px;" width="235px;">
+	            <rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_voronoilist_value}" />
 			        </f:facet>
 			        
 			        <h:inputText value="#{rowItem.value}" />
+			        
+	            </rich:column>
+	            <rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_voronoilist_description}" />
+			        </f:facet>
+			        
+			        <h:inputText value="#{rowItem.description}" />
 			        
 	            </rich:column>
              

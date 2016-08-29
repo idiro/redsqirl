@@ -4,9 +4,8 @@ public class VoronoiType {
 	
 	private String key;
 	private String value;
+	private String description;
 	protected boolean selected;
-	
-	
 	
 	public VoronoiType() {
 		super();
@@ -28,6 +27,12 @@ public class VoronoiType {
 	}
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

@@ -53,7 +53,6 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.Scheduling;
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.useful.WorkflowHelpUtils;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
@@ -2913,21 +2912,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
 				Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
-				Map<String,DFEOutput> inputsForHelp = new HashMap<String,DFEOutput>();
-				Map<String,DFEOutput> outputsForHelp = new HashMap<String,DFEOutput>();
 
 				for (String[] vet : getInputNamesList()) {
 					logger.info("openAggregate ansIn: " + inputReNames.get(vet[1]) + " " + vet[1] + " " + vet[2]);
 					inputs.put(inputReNames.get(vet[1]), new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-					inputsForHelp.put(inputReNames.get(vet[1]), getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
 
 				for (String[] vet : getOutputNamesList()) {
 					logger.info("openAggregate ansOut: " + outputReNames.get(vet[1]) + " " + vet[1] + " " + vet[2]);
 					outputs.put(outputReNames.get(vet[1]), new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-					outputsForHelp.put(outputReNames.get(vet[1]), getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
-
+				
 				//check inputname and outputname do not exist on workflow
 				List<String> outputNames = new ArrayList<String>(outputs.size());
 				outputNames.addAll(outputs.keySet());
@@ -2952,7 +2947,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					try{
 						SubDataFlow sw = getDf().createSA(getComponentIds(), 
 								fullName,
-								WorkflowHelpUtils.generateHelp(subWfName, subWfComment ,inputsForHelp, outputsForHelp), 
+								subWfComment, 
 								inputs, outputs);
 						error = modelMan.installSA(new ModelManager().getUserModel(userName, modelName), sw,null);
 					}catch(Exception e){

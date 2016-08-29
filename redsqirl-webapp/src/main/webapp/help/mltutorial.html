@@ -65,25 +65,9 @@
   PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo;</li>
   </ol>
 
-  <p>We add the action we use in the footer with the following.</p>
-  <ol>
-
-    <li>On the actions footer below click the actions property Icon.</li>
-
-    <li>Add a tab by clicking &ldquo;+&rdquo;</li>
-    <li>Type &ldquo;ML&rdquo; in the new row field.</li>
-
-    <li>Click on the &ldquo;...&rdquo;.</li>
-    <li>Select &ldquo;hama_logistic_regression&rdquo; or &ldquo;spark_logistic_regression&rdquo;
-    in the new window.</li>
-    <li>Click OK.</li>
-    <li>Click OK.</li>
-
-  </ol>
   <p>Finally we configure the model.</p>
   <ol>
-    <li>Make sure you are on the &ldquo;ML&rdquo; tab and drag your action to
-    the canvas.</li>
+    <li>Drag the logistic regression action to the canvas.</li>
 
     <li>Select the source &ldquo;iris_train&rdquo; and create a link to the
     new &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action.</li>
@@ -364,7 +348,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">SCORED</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">INT</td>
+		  collapse;">FLOAT</td>
 	  </tr>
 	 <tr style="border: 1px solid black;border-collapse: collapse;">
 	      <td style="border: 1px solid black;border-collapse:
@@ -372,7 +356,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">PREDICT</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">INT</td>
+		  collapse;">FLOAT</td>
 	  </tr>
 	 <tr style="border: 1px solid black;border-collapse: collapse;">
 	      <td style="border: 1px solid black;border-collapse:
@@ -397,7 +381,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">TOTAL_SCORED</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">INT</td>
+		  collapse;">FLOAT</td>
 	  </tr>
 	 <tr style="border: 1px solid black;border-collapse: collapse;">
 	      <td style="border: 1px solid black;border-collapse:
@@ -405,7 +389,7 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">TOTAL_PREDICT</td>
 	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">INT</td>
+		  collapse;">FLOAT</td>
 	  </tr>
 	 <tr style="border: 1px solid black;border-collapse: collapse;">
 	      <td style="border: 1px solid black;border-collapse:
@@ -451,8 +435,10 @@
       <li>Save the workflow.</li>
       <li>Note that if you click on the new action, a new page is displayed in the
       help tab</li>
-      <li>Go into the footer editor, click on &ldquo;...&rdquo; next to
-      &ldquo;ML&rdquo;, refresh the list of actions and add &ldquo;sa_evaluation10bin&rdquo;.</li>
+      <li>Go into the footer editor, create a new row with +. Name it eval.</li>
+      <li>click on &ldquo;...&rdquo; next to
+      &ldquo;eval&rdquo;, go in the choose default in the top drop-down menu and add &ldquo;sa_evaluation10bin&rdquo;.</li>
+      <li>Click OK.</li>
       <li>Click OK.</li>
   </ol>
 

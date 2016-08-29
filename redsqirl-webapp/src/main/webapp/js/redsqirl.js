@@ -512,10 +512,11 @@ function changeHelpAnchorPriv(index){
 	index++;
 
 	console.log("changeHelpAnchorPriv " + index);
-
-	jQuery("#divTabHelp").scrollTop( 0 );
-	if(jQuery("#page"+index).position()){
-		jQuery("#divTabHelp").animate({scrollTop: jQuery("#page"+index).position().top-jQuery("#helpButtons").height()-50}, 800);
+	if(! jQuery('#notMoveHelp').is(':checked')){
+		jQuery("#divTabHelp").scrollTop( 0 );
+		if(jQuery("#page"+index).position()){
+			jQuery("#divTabHelp").animate({scrollTop: jQuery("#page"+index).position().top-jQuery("#helpButtons").height()-50}, 800);
+		}
 	}
 }
 
