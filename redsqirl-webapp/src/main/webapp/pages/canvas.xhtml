@@ -1393,24 +1393,80 @@
 	
 	
 	
-	
 	<a4j:region renderRegionOnly="true">
 					
-		<div id="domMessageSchedulingRunning" style="display: none;">
+		<a4j:loadBundle basename="MessagesResources" var="messages" />
+					
+		<div id="domMessageSchedulingRunning" style="display:none;">
 			<h:form>
 			
 				<a4j:jsFunction name="updateSchedulingStatus" 
-					reRender="lastActionScheduling, nextActionScheduling, actionsScheduling, okScheduling, errorsScheduling, runningScheduling" 
-					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="console.log('a');" />
+					reRender="tableListScheduling, nameScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling" 
+					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="console.log(data[0]);if(data[0] == 'false'){unblockRunningSchedulingWorkflowJS();}" />
+			
+				<a4j:jsFunction name="openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
+					reRender="modalSchedulingRunning"
+					oncomplete="#{rich:component('modalSchedulingRunning')}.show();">
+					<a4j:actionparam name="selectedScheduling" />
+				</a4j:jsFunction>
 			
 				<img src="../image/icons/waiting.gif" />
+				<br/>
 				
-				<h:outputText value="#{canvasBean.lastActionScheduling}" id="lastActionScheduling" />
-				<h:outputText value="#{canvasBean.nextActionScheduling}" id="nextActionScheduling" />
-				<h:outputText value="#{canvasBean.actionsScheduling}" id="actionsScheduling" />
-				<h:outputText value="#{canvasBean.okScheduling}" id="okScheduling" />
-				<h:outputText value="#{canvasBean.errorsScheduling}" id="errorsScheduling" />
-				<h:outputText value="#{canvasBean.runningScheduling}" id="runningScheduling" />
+				
+				
+				
+				<div style="height:100px;overflow:auto;border:1px solid;" >
+				<rich:dataTable value="#{canvasBean.listScheduling}" id="tableListScheduling"
+                   var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+                   enableContextMenu="false" selectionMode="none" rowKeyVar="index"
+                   onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+                   rowClasses="even-row, odd-row" >
+                   
+					<rich:column>
+						<f:facet name="header">
+                        	<h:outputText value="#{messages.label_voronoi_nameScheduling}" title="#{messages.title_voronoi_nameScheduling_desc}" />
+						</f:facet>
+						<a4j:commandLink onclick="openModalSchedulingRunning('#{item.nameScheduling}');" >
+							<h:outputText value="#{item.nameScheduling}" id="nameScheduling"/>
+						</a4j:commandLink>
+					</rich:column>
+                    <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_actionsScheduling}" title="#{messages.title_voronoi_actionsScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item.actionsScheduling}" id="actionsScheduling" />
+					</rich:column>
+					 <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_okScheduling}" title="#{title_voronoi_okScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item.okScheduling}" id="okScheduling" />
+					</rich:column>
+					<rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_skippedScheduling}" title="#{messages.title_voronoi_skippedScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item.skippedScheduling}" id="skippedScheduling" />
+					</rich:column>
+					<rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_errorsScheduling}" title="#{messages.title_voronoi_errorsScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item.errorsScheduling}" id="errorsScheduling" />
+					</rich:column>
+					<rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_runningScheduling}" title="#{messages.title_voronoi_runningScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item.runningScheduling}" id="runningScheduling" />
+					</rich:column>
+                   
+                </rich:dataTable>
+				</div>
+				
+				
+				<br/>
 				
 				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Kill Process"
 					action="#{canvasBean.stopRunningWorkflow}" oncomplete="unblockRunningSchedulingWorkflowJS();" />
@@ -1418,8 +1474,122 @@
 			</h:form>
 		</div>
 	
-	</a4j:region>
+		<rich:modalPanel id="modalSchedulingRunning" width="600" height="430" style="overflow:hidden;" resizeable="false">
 	
+	        <f:facet name="header">Running</f:facet>
+	        <f:facet name="controls">
+	            <h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+	                onclick="#{rich:component('modalSchedulingRunning')}.hide();" />
+	        </f:facet>
+	        
+			<h:form>
+				<table style="width:100%;">
+					<tr class="odd-row">
+						<td>
+							<h:outputText value="#{messages.label_voronoi_nameScheduling}" title="#{messages.title_voronoi_nameScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.nameScheduling}" id="nameScheduling" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h:outputText value="#{messages.label_voronoi_lastActionScheduling}" title="#{messages.title_voronoi_lastActionScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.lastActionScheduling}" id="lastActionScheduling" />
+						</td>
+					</tr>
+					<tr class="odd-row">
+						<td>
+							<h:outputText value="#{messages.label_voronoi_nextActionScheduling}" title="#{messages.title_voronoi_nextActionScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.nextActionScheduling}" id="nextActionScheduling" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h:outputText value="#{messages.label_voronoi_actionsScheduling}" title="#{messages.title_voronoi_actionsScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.actionsScheduling}" id="actionsScheduling" />
+						</td>
+					</tr>
+					<tr class="odd-row">
+						<td>
+							<h:outputText value="#{messages.label_voronoi_okScheduling}" title="#{messages.title_voronoi_okScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.okScheduling}" id="okScheduling" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h:outputText value="#{messages.label_voronoi_skippedScheduling}" title="#{messages.title_voronoi_skippedScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.skippedScheduling}" id="skippedScheduling" />
+						</td>
+					</tr>
+					<tr class="odd-row" >
+						<td>
+							<h:outputText value="#{messages.label_voronoi_errorsScheduling}" title="#{messages.title_voronoi_errorsScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.errorsScheduling}" id="errorsScheduling" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h:outputText value="#{messages.label_voronoi_runningScheduling}" title="#{messages.title_voronoi_runningScheduling_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.runningScheduling}" id="runningScheduling" />
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<div style="height:200px;overflow:auto;border:1px solid;">
+				<rich:dataTable id="listJobsScheduling" value="#{canvasBean.selectedScheduling.listJobsScheduling}"
+                   var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+                   enableContextMenu="false" selectionMode="none" rowKeyVar="index"
+                   onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+                   rowClasses="even-row, odd-row" >
+                   
+                    <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_nominaltimeScheduling}" title="#{messages.title_voronoi_nominaltimeScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item[0]}" />
+                   </rich:column>
+                    <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_jobidScheduling}" title="#{messages.title_voronoi_jobidScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item[1]}" />
+                   </rich:column>
+                    <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_statusScheduling}" title="#{messages.title_voronoi_statusScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item[2]}" />
+                   </rich:column>
+                   
+                </rich:dataTable>
+				</div>
+				
+				<br/>
+				
+				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Close"
+					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
+	
+			</h:form>
+	
+	    </rich:modalPanel>
+    </a4j:region>
 	
 	
 
@@ -2691,8 +2861,7 @@
 							<div id="tabsFooter">
 								<ul class="canvasFooter" style="width: 100%; min-width: 400px;">
 
-									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
-										varStatus="status">
+									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 										<li class="locked footerTab"><a href="#tabFooter-#{tab}">#{tab}</a></li>
 									</ui:repeat>
 

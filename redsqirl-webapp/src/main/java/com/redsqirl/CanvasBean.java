@@ -51,6 +51,7 @@ import org.json.JSONObject;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
+import com.redsqirl.dynamictable.Scheduling;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.useful.WorkflowHelpUtils;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -117,7 +118,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean doneElementsToggle;
 	private String voronoiNames;
 	private DataFlowCoordinator dataFlowCoordinatorLastInserted;
-
 	private String firstTime;
 
 	/**
@@ -127,21 +127,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private long totalProgressBar;
 	private List<String> runningElements;
 	private List<String> doneElements;
-
 	private ModelManager modelMan;
-
 	private String userName;
-
 	private Date runningStartDate;
 	private Date runningEndDate;
-
-	private String lastActionScheduling;
-	private String nextActionScheduling;
-	private String actionsScheduling;
-	private String okScheduling;
-	private String errorsScheduling;
-	private String runningScheduling;
-
+	private List<Scheduling> listScheduling;
+	private Scheduling selectedScheduling;
+	
 	/**
 	 * 
 	 * @return
@@ -1341,24 +1333,37 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			if(running && scheduled){
 
-
 				String json = getOozie().getBundleJobInfo(getDf().getOozieJobId());
 				logger.info(json);
-
 				JSONObject jsonObj = new JSONObject(json);
-				
+				listScheduling = new ArrayList<Scheduling>();
 				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
 					String nameObj = (String) iterator.next();
 					
 					JSONObject obj = (JSONObject) jsonObj.get(nameObj);
 					
-					setLastActionScheduling(obj.getString("last-action"));
-					setNextActionScheduling(obj.getString("next-action"));
-					setActionsScheduling(obj.getString("actions"));
-					setOkScheduling(obj.getString("ok"));
-					setErrorsScheduling(obj.getString("errors"));
-					setRunningScheduling(obj.getString("running"));
+					Scheduling scheduling = new Scheduling();
 					
+					scheduling.setNameScheduling(nameObj);
+					scheduling.setLastActionScheduling(obj.getString("last-action"));
+					scheduling.setNextActionScheduling(obj.getString("next-action"));
+					scheduling.setActionsScheduling(obj.getString("actions"));
+					scheduling.setOkScheduling(obj.getString("ok"));
+					
+					List<String[]> listJobsScheduling = new ArrayList<String[]>();
+					JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
+					for (int i = 0; i < jsonArray.length(); i++) {
+						JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
+						String[] aux = new String[]{jObj.get("nominal-time").toString(), jObj.get("job-id").toString(), jObj.get("status").toString() };
+						listJobsScheduling.add(aux);
+					}
+					scheduling.setListJobsScheduling(listJobsScheduling);
+					
+					scheduling.setSkippedScheduling(obj.getString("skipped"));
+					scheduling.setErrorsScheduling(obj.getString("errors"));
+					scheduling.setRunningScheduling(obj.getString("running"));
+					
+					listScheduling.add(scheduling);
 				}
 
 			}
@@ -1367,6 +1372,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.debug("isRunningScheduling");
 		}
 		return new String[]{Boolean.toString(running),name};
+	}
+	
+	public void setSelectedScheduling() throws RemoteException, JSONException {
+		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
+		for (Scheduling scheduling : listScheduling) {
+			if(scheduling.getNameScheduling().equals(selectedScheduling)){
+				setSelectedScheduling(scheduling);
+				break;
+			}
+		}
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
@@ -3423,52 +3438,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.runningEndDate = runningEndDate;
 	}
 
-	public String getLastActionScheduling() {
-		return lastActionScheduling;
+	public List<Scheduling> getListScheduling() {
+		return listScheduling;
 	}
 
-	public void setLastActionScheduling(String lastActionScheduling) {
-		this.lastActionScheduling = lastActionScheduling;
+	public void setListScheduling(List<Scheduling> listScheduling) {
+		this.listScheduling = listScheduling;
 	}
 
-	public String getNextActionScheduling() {
-		return nextActionScheduling;
+	public Scheduling getSelectedScheduling() {
+		return selectedScheduling;
 	}
 
-	public void setNextActionScheduling(String nextActionScheduling) {
-		this.nextActionScheduling = nextActionScheduling;
+	public void setSelectedScheduling(Scheduling selectedScheduling) {
+		this.selectedScheduling = selectedScheduling;
 	}
-
-	public String getActionsScheduling() {
-		return actionsScheduling;
-	}
-
-	public void setActionsScheduling(String actionsScheduling) {
-		this.actionsScheduling = actionsScheduling;
-	}
-
-	public String getOkScheduling() {
-		return okScheduling;
-	}
-
-	public void setOkScheduling(String okScheduling) {
-		this.okScheduling = okScheduling;
-	}
-
-	public String getErrorsScheduling() {
-		return errorsScheduling;
-	}
-
-	public void setErrorsScheduling(String errorsScheduling) {
-		this.errorsScheduling = errorsScheduling;
-	}
-
-	public String getRunningScheduling() {
-		return runningScheduling;
-	}
-
-	public void setRunningScheduling(String runningScheduling) {
-		this.runningScheduling = runningScheduling;
-	}
-
+	
 }
