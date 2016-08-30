@@ -143,7 +143,8 @@
                     "optional": "true",
                     "property": "oozie_bundle_xmlns",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.OozieChecker"
                 }
             ]
         },

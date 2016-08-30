@@ -43,7 +43,7 @@ public interface SettingInt extends Remote{
 	
 	void deleteProperty(boolean user, boolean sys) throws RemoteException;
 
-	boolean valid() throws RemoteException;
+	String valid() throws RemoteException;
 	
 	String getSysPropetyValue() throws RemoteException;
 	
