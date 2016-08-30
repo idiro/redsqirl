@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:form>
+		<rich:panel id="modalReRunSchedule" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
+		
+			<table>
+				<tr>
+					<td>
+						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
+					</td>
+					<td>
+			    		<rich:calendar id="runningStartDate" value="#{canvasBean.reRunSchedulingStartDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
+			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
+			    		</rich:calendar>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h:outputText value="#{messages.label_voronoi_data_end}" title="#{messages.title_voronoi_data_end}" />
+					</td>
+					<td>
+			    		<rich:calendar id="runningEndDate" value="#{canvasBean.reRunSchedulingEndDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" >
+			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
+			    		</rich:calendar>
+					</td>
+				</tr>
+			</table>
+		
+		</rich:panel>
+		
+		<br/>
+		
+		<rich:panel columns="2" style="border:none; float:right;">
+		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('reRunScheduleModal')}.hide();" />
+		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasBean.reRunAllScheduling}"
+		    	oncomplete="#{rich:component('reRunScheduleModal')}.hide();" reRender="msnError, errorTable" />
+		</rich:panel>
+	
+	</h:form>
+
+</ui:composition>
