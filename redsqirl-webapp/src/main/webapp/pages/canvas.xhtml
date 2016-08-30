@@ -1477,7 +1477,7 @@
 			</h:form>
 		</div>
 	
-		<rich:modalPanel id="modalSchedulingRunning" width="600" height="430" style="overflow:hidden;" resizeable="false">
+		<rich:modalPanel id="modalSchedulingRunning" width="600" height="450" style="overflow:hidden;" resizeable="false">
 	
 	        <f:facet name="header">Running</f:facet>
 	        <f:facet name="controls">
@@ -1497,13 +1497,21 @@
 					</tr>
 					<tr>
 						<td>
+							<h:outputText value="#{messages.label_voronoi_jobid}" title="#{messages.title_voronoi_jobid_desc}" />
+						</td>
+						<td>
+							<h:outputText value="#{canvasBean.selectedScheduling.jobId}" id="jobidScheduling" />
+						</td>
+					</tr>
+					<tr class="odd-row">
+						<td>
 							<h:outputText value="#{messages.label_voronoi_lastActionScheduling}" title="#{messages.title_voronoi_lastActionScheduling_desc}" />
 						</td>
 						<td>
 							<h:outputText value="#{canvasBean.selectedScheduling.lastActionScheduling}" id="lastActionScheduling" />
 						</td>
 					</tr>
-					<tr class="odd-row">
+					<tr>
 						<td>
 							<h:outputText value="#{messages.label_voronoi_nextActionScheduling}" title="#{messages.title_voronoi_nextActionScheduling_desc}" />
 						</td>
@@ -1511,7 +1519,7 @@
 							<h:outputText value="#{canvasBean.selectedScheduling.nextActionScheduling}" id="nextActionScheduling" />
 						</td>
 					</tr>
-					<tr>
+					<tr class="odd-row">
 						<td>
 							<h:outputText value="#{messages.label_voronoi_actionsScheduling}" title="#{messages.title_voronoi_actionsScheduling_desc}" />
 						</td>
@@ -1519,7 +1527,7 @@
 							<h:outputText value="#{canvasBean.selectedScheduling.actionsScheduling}" id="actionsScheduling" />
 						</td>
 					</tr>
-					<tr class="odd-row">
+					<tr>
 						<td>
 							<h:outputText value="#{messages.label_voronoi_okScheduling}" title="#{messages.title_voronoi_okScheduling_desc}" />
 						</td>
@@ -1527,7 +1535,7 @@
 							<h:outputText value="#{canvasBean.selectedScheduling.okScheduling}" id="okScheduling" />
 						</td>
 					</tr>
-					<tr>
+					<tr class="odd-row">
 						<td>
 							<h:outputText value="#{messages.label_voronoi_skippedScheduling}" title="#{messages.title_voronoi_skippedScheduling_desc}" />
 						</td>
@@ -1535,7 +1543,7 @@
 							<h:outputText value="#{canvasBean.selectedScheduling.skippedScheduling}" id="skippedScheduling" />
 						</td>
 					</tr>
-					<tr class="odd-row" >
+					<tr>
 						<td>
 							<h:outputText value="#{messages.label_voronoi_errorsScheduling}" title="#{messages.title_voronoi_errorsScheduling_desc}" />
 						</td>
@@ -1543,7 +1551,7 @@
 							<h:outputText value="#{canvasBean.selectedScheduling.errorsScheduling}" id="errorsScheduling" />
 						</td>
 					</tr>
-					<tr>
+					<tr class="odd-row">
 						<td>
 							<h:outputText value="#{messages.label_voronoi_runningScheduling}" title="#{messages.title_voronoi_runningScheduling_desc}" />
 						</td>
@@ -1568,15 +1576,15 @@
 						</f:facet>
 						<h:selectBooleanCheckbox id="listJobsSchedulingSelected" value="#{item[0]}" />
                    </rich:column>
-                   <rich:column>
+                    <rich:column>
                        <f:facet name="header">
-                           <h:outputText value="#{messages.label_voronoi_nominaltimeScheduling}" title="#{messages.title_voronoi_nominaltimeScheduling_desc}" />
+                           <h:outputText value="#{messages.label_voronoi_actnbScheduling}" title="#{messages.title_voronoi_actnbScheduling_desc}" />
                        </f:facet>
                        <h:outputText value="#{item[1]}" />
                    </rich:column>
-                    <rich:column>
+                   <rich:column>
                        <f:facet name="header">
-                           <h:outputText value="#{messages.label_voronoi_jobidScheduling}" title="#{messages.title_voronoi_jobidScheduling_desc}" />
+                           <h:outputText value="#{messages.label_voronoi_nominaltimeScheduling}" title="#{messages.title_voronoi_nominaltimeScheduling_desc}" />
                        </f:facet>
                        <h:outputText value="#{item[2]}" />
                    </rich:column>

@@ -22,6 +22,7 @@ package com.redsqirl;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
@@ -53,6 +55,7 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.Scheduling;
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
@@ -1346,6 +1349,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					Scheduling scheduling = new Scheduling();
 
 					scheduling.setNameScheduling(nameObj);
+					scheduling.setJobId(obj.getString("job-id"));
 					scheduling.setLastActionScheduling(obj.getString("last-action"));
 					scheduling.setNextActionScheduling(obj.getString("next-action"));
 					scheduling.setActionsScheduling(obj.getString("actions"));
@@ -1355,7 +1359,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
 					for (int i = 0; i < jsonArray.length(); i++) {
 						JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
-						String[] aux = new String[]{"false", jObj.get("nominal-time").toString(), jObj.get("job-id").toString(), jObj.get("status").toString() };
+						String[] aux = new String[]{"false", jObj.get("action-number").toString(),jObj.get("nominal-time").toString(), jObj.get("status").toString() };
 						listJobsScheduling.add(aux);
 					}
 					scheduling.setListJobsScheduling(listJobsScheduling);
@@ -1386,33 +1390,63 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void reRunSelectedScheduling() throws RemoteException {
-		
+		String error = null;
+		logger.info("reRunSelectedScheduling");
 		if(df != null){
+			logger.info("df not null");
 			if(df.isrunning() && df.isSchedule()){
-				
+				logger.info("df running");
+				String actions = "";
 				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
 					if(value[0] == "true"){
 						logger.info(value[0]);
+						if(!actions.isEmpty()){
+							actions += ",";
+						}
+						actions += value[1];
 					}
 				}
-				
-				//getOozie().reRunCoord(coordinatorJobId, "action-id", "1,2", true, true);
+				if(actions.isEmpty()){
+					error = "No actions selected";
+				}else{
+					logger.info("rerun job for "+actions);
+					try{
+						getOozie().reRunCoord(getSelectedScheduling().getJobId(), "action", actions, true, true);
+					}catch(Exception e){
+						error = e.getMessage();
+					}
+				}
+			}else{
+				error = "Job is not running.";
 			}
 		}
-		
+		displayErrorMessage(error,"RERUN_COORDINATOR");
 	}
 
 	public void reRunAllScheduling() throws RemoteException {
-		
-		//getReRunSchedulingStartDate()
-		//getReRunSchedulingEndDate();
+		String error = null;
+		logger.info("reRunAllScheduling");
+		Date startDate = getReRunSchedulingStartDate();
+		Date endDate = getReRunSchedulingEndDate();
 		
 		if(df != null){
+			logger.info("df not null");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+			dateFormat.setTimeZone(TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+			
 			if(df.isrunning() && df.isSchedule()){
-				//getOozie().reRunBundle(df.getOozieJobId(), null, "2009-01-01T01:00Z::2009-05-31T23:59Z", true, true);
+				logger.info("df running");
+				try{
+					getOozie().reRunBundle(df.getOozieJobId(), null, dateFormat.format(startDate)+"::"+dateFormat.format(endDate), true, true);
+				}catch(Exception e){
+					error = e.getMessage();
+				}
+			}else{
+				error = "Job is not running.";
 			}
 		}
-
+		displayErrorMessage(error,"RERUN_BUNDLE");
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
