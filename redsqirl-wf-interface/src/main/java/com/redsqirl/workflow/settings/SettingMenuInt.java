@@ -54,4 +54,8 @@ public interface SettingMenuInt extends Remote{
 	SettingMenuInt goTo(String subMenu) throws RemoteException;
 
 	Setting.Scope getScopeMenu() throws RemoteException;
+	
+	public String validate() throws RemoteException;
+	
+	public boolean isValidationEnabled() throws RemoteException;
 }

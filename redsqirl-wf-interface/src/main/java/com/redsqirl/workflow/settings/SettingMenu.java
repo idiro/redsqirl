@@ -45,6 +45,7 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 	protected Map<String,SettingMenuInt> menu = new LinkedHashMap<String,SettingMenuInt>();
 	private static Logger logger = Logger.getLogger(SettingMenu.class);
 	protected Setting.Scope scopeMenu;
+	protected boolean validationEnabled = false;
 	
 	public SettingMenu() throws RemoteException{
 		super();
@@ -213,6 +214,7 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 	protected void readSettings(JSONArray settingArray, String path, 
 			Properties sysProperties, Properties userProperties, Properties langProperties){
 		scopeMenu = Setting.Scope.USER;
+		validationEnabled = false;
 		for(int i = 0; i < settingArray.length();++i){
 			
 			try{
@@ -222,7 +224,8 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 				Setting.Scope scope =  readScope(settingObj);
 				Setting.Type type =  readType(settingObj);
 				Setting.Checker validator = readChecker(settingObj);
-
+				validationEnabled |= validator != null; 
+						
 				String propertyName = path+"."+property;
 				properties.put(property, new Setting(scope,defaultValue,type,validator));
 				
@@ -236,6 +239,26 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 				logger.warn(e,e);
 			}
 		}
+	}
+	
+	public String validate() throws RemoteException{
+		String ans = "";
+		Iterator<SettingInt> it = properties.values().iterator();
+		while(it.hasNext()){
+			SettingInt cur = it.next();
+			String ans_loc = cur.valid();
+			if(ans_loc != null){
+				ans+=ans_loc+"\n";
+			}
+		}
+		if(ans.isEmpty()){
+			ans = null;
+		}
+		return ans;
+	}
+	
+	public boolean isValidationEnabled(){
+		return validationEnabled;
 	}
 	
 	protected Setting.Scope readScope(JSONObject setting){

@@ -37,7 +37,7 @@ public class Setting extends UnicastRemoteObject implements SettingInt{
 	private static Logger logger = Logger.getLogger(Setting.class);
 	
 	public interface Checker{
-		boolean valid();
+		String valid(Setting s);
 	}
 	
 	protected Scope scope;
@@ -133,27 +133,28 @@ public class Setting extends UnicastRemoteObject implements SettingInt{
 		}
 	}
 	
-	protected boolean validType(){
-		boolean ans = false;
+	protected String validType(){
+		String ans = null;
 		try{
 			if(type.equals("INT")){
 				Integer.valueOf(getValue());
-				ans = true;
 			}else if(type.equals("BOOLEAN")){
 				Boolean.valueOf(getValue());
-				ans = true;
 			}else if(type.equals("FLOAT")){
 				Float.valueOf(getValue());
-				ans = true;
-			}else{
-				ans = true;
 			}
-		}catch(Exception e){}
+		}catch(Exception e){
+			ans = "Value '"+getValue()+"' is not of the expected type ("+type+")";
+		}
 		return ans;
 	}
 
-	public boolean valid() {
-		return checker == null? validType(): validType()&&checker.valid();
+	public String valid() {
+		String ans = validType();
+		if(ans == null && checker != null){
+			ans = checker.valid(this);
+		}
+		return ans;
 	}
 	
 	public String getSysPropetyValue(){

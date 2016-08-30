@@ -29,10 +29,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.SettingsControl;
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 import com.redsqirl.workflow.settings.SettingInt;
@@ -50,7 +52,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 	protected String pathPosition;
 	protected List<String> path;
 	protected String template;
-
+	protected boolean validationEnabled;
 
 	protected Properties updateProperty(Properties props, String path, Map<String, SettingInt> templateSetting, Setting.Scope scope) throws RemoteException{
 		Properties ans = new Properties();
@@ -156,9 +158,25 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		while(itPath.hasNext()){
 			cur = cur.goTo(itPath.next());
 		}
+		validationEnabled = cur.isValidationEnabled();
 		return cur;
 	}
 	
+	public void validate() throws RemoteException{
+		logger.debug("validate");
+		applySettings();
+		String error = s.validate();
+		if(error == null){
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}
+		displayErrorMessage(error,"SETTINGS_VALIDATION");
+	}
+	
+	public boolean isValidationEnabled(){
+		return validationEnabled;
+	}
 
 	public void navigationPackageSettings() throws RemoteException{
 
