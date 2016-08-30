@@ -33,7 +33,7 @@
             "optional": "true",
             "property": "allow_user_install",
             "scope": "system",
-            "type": "STRING"
+            "type": "BOOLEAN"
         },
         {
             "default": "true",
