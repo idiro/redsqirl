@@ -207,7 +207,7 @@
 	    <div style="overflow-x:hidden;float:right;margin-right:5px;margin-top:10px;">
 		    <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();" />
 		    &#32;&#32;
-		    <a4j:commandButton value="#{messages.button_check}" action="#{settingsBean.validate}" styleClass="greenButton" rendered="#{settingsBean.validationEnabled}" reRender="msnError, errorTable,msnSuccess" />
+		    <a4j:commandButton value="#{messages.button_check}" action="#{settingsBean.validate}" styleClass="greenButton" rendered="#{settingsBean.validationEnabled}" reRender="msnError, msnSuccess" />
 		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_apply}" action="#{settingsBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />
 		    &#32;&#32;

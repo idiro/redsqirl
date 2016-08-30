@@ -262,6 +262,10 @@ jQuery(function() {
 				<td>
 					<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.saveSettings}" 
 						styleClass="greenButton" style="margin-left:690px;" />
+						
+					<a4j:commandButton value="#{messages.button_check}" action="#{analyticsStoreLoginBean.validate}" 
+						styleClass="greenButton" rendered="#{analyticsStoreLoginBean.validationEnabled}" 
+						reRender="msnError, msnSuccess" />
 				</td>
 			</tr>
 		</table>
@@ -311,6 +315,37 @@ jQuery(function() {
 
 	</rich:modalPanel>
 	
+	
+	<rich:modalPanel id="msnSuccess"
+		showWhenRendered="#{requestScope['msnSuccess'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto;">
+			<rich:messages id="msgS" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+				style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
+		</div>
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="msnError"
+		showWhenRendered="#{requestScope['msnError'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto; z-index: 1000; position: relative;">
+			<rich:messages id="msg" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
+
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnError')}.hide(); return false;"
+				style="bottom:14%;position:relative;"
+				reRender="msnError, msg, errorTable" />
+
+		</div>
+	</rich:modalPanel>
 	
 
 </body>
