@@ -132,7 +132,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Date runningEndDate;
 	private List<Scheduling> listScheduling;
 	private Scheduling selectedScheduling;
-	
+	private Date reRunSchedulingStartDate;
+	private Date reRunSchedulingEndDate;
+
 	/**
 	 * 
 	 * @return
@@ -739,9 +741,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String canvasStatus = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("canvasStatus");
-		
+
 		logger.info(canvasStatus);
-		
+
 		try {
 			JSONObject canvas = new JSONObject(canvasStatus);
 			if(canvas.get("modified").toString().equalsIgnoreCase("true")){
@@ -792,7 +794,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 					JSONObject positionsArray = new JSONObject(
 							canvas.get("positions").toString());
-					
+
 					Iterator it = positionsArray.keys();
 					while (it.hasNext()) {
 						String groupId = (String) it.next();
@@ -1338,30 +1340,30 @@ public class CanvasBean extends BaseBean implements Serializable {
 				listScheduling = new ArrayList<Scheduling>();
 				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
 					String nameObj = (String) iterator.next();
-					
+
 					JSONObject obj = (JSONObject) jsonObj.get(nameObj);
-					
+
 					Scheduling scheduling = new Scheduling();
-					
+
 					scheduling.setNameScheduling(nameObj);
 					scheduling.setLastActionScheduling(obj.getString("last-action"));
 					scheduling.setNextActionScheduling(obj.getString("next-action"));
 					scheduling.setActionsScheduling(obj.getString("actions"));
 					scheduling.setOkScheduling(obj.getString("ok"));
-					
+
 					List<String[]> listJobsScheduling = new ArrayList<String[]>();
 					JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
 					for (int i = 0; i < jsonArray.length(); i++) {
 						JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
-						String[] aux = new String[]{jObj.get("nominal-time").toString(), jObj.get("job-id").toString(), jObj.get("status").toString() };
+						String[] aux = new String[]{"false", jObj.get("nominal-time").toString(), jObj.get("job-id").toString(), jObj.get("status").toString() };
 						listJobsScheduling.add(aux);
 					}
 					scheduling.setListJobsScheduling(listJobsScheduling);
-					
+
 					scheduling.setSkippedScheduling(obj.getString("skipped"));
 					scheduling.setErrorsScheduling(obj.getString("errors"));
 					scheduling.setRunningScheduling(obj.getString("running"));
-					
+
 					listScheduling.add(scheduling);
 				}
 
@@ -1372,7 +1374,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		return new String[]{Boolean.toString(running),name};
 	}
-	
+
 	public void setSelectedScheduling() throws RemoteException, JSONException {
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
 		for (Scheduling scheduling : listScheduling) {
@@ -1381,6 +1383,36 @@ public class CanvasBean extends BaseBean implements Serializable {
 				break;
 			}
 		}
+	}
+
+	public void reRunSelectedScheduling() throws RemoteException {
+		
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				
+				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
+					if(value[0] == "true"){
+						logger.info(value[0]);
+					}
+				}
+				
+				//getOozie().reRunCoord(coordinatorJobId, "action-id", "1,2", true, true);
+			}
+		}
+		
+	}
+
+	public void reRunAllScheduling() throws RemoteException {
+		
+		//getReRunSchedulingStartDate()
+		//getReRunSchedulingEndDate();
+		
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				//getOozie().reRunBundle(df.getOozieJobId(), null, "2009-01-01T01:00Z::2009-05-31T23:59Z", true, true);
+			}
+		}
+
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
@@ -2922,7 +2954,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					logger.info("openAggregate ansOut: " + outputReNames.get(vet[1]) + " " + vet[1] + " " + vet[2]);
 					outputs.put(outputReNames.get(vet[1]), new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
 				}
-				
+
 				//check inputname and outputname do not exist on workflow
 				List<String> outputNames = new ArrayList<String>(outputs.size());
 				outputNames.addAll(outputs.keySet());
@@ -3448,5 +3480,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void setSelectedScheduling(Scheduling selectedScheduling) {
 		this.selectedScheduling = selectedScheduling;
 	}
-	
+
+	public Date getReRunSchedulingStartDate() {
+		return reRunSchedulingStartDate;
+	}
+
+	public void setReRunSchedulingStartDate(Date reRunSchedulingStartDate) {
+		this.reRunSchedulingStartDate = reRunSchedulingStartDate;
+	}
+
+	public Date getReRunSchedulingEndDate() {
+		return reRunSchedulingEndDate;
+	}
+
+	public void setReRunSchedulingEndDate(Date reRunSchedulingEndDate) {
+		this.reRunSchedulingEndDate = reRunSchedulingEndDate;
+	}
+
 }

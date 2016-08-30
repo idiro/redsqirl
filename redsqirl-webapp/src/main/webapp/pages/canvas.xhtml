@@ -1400,7 +1400,7 @@
 			
 				<a4j:jsFunction name="updateSchedulingStatus" 
 					reRender="tableListScheduling, nameScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling" 
-					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="console.log(data[0]);if(data[0] == 'false'){unblockRunningSchedulingWorkflowJS();}" />
+					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false'){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
 			
 				<a4j:jsFunction name="openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
 					reRender="modalSchedulingRunning"
@@ -1410,8 +1410,6 @@
 			
 				<img src="../image/icons/waiting.gif" />
 				<br/>
-				
-				
 				
 				
 				<div style="height:100px;overflow:auto;border:1px solid;" >
@@ -1466,8 +1464,15 @@
 				
 				<br/>
 				
-				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Kill Process"
-					action="#{canvasBean.stopRunningWorkflow}" oncomplete="unblockRunningSchedulingWorkflowJS();" />
+				<rich:panel columns="2" style="border:none; float:right;">
+				
+					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_all}"
+						oncomplete="#{rich:component('reRunScheduleModal')}.show();" reRender="modalReRunSchedule" />
+					
+					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_KillProcess}"
+						action="#{canvasBean.stopRunningWorkflow}" oncomplete="unblockRunningSchedulingWorkflowJS();" />
+					
+				</rich:panel>
 				
 			</h:form>
 		</div>
@@ -1557,23 +1562,29 @@
                    onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
                    rowClasses="even-row, odd-row" >
                    
-                    <rich:column>
+                   <rich:column>
+	                    <f:facet name="header">
+							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /listJobsSchedulingSelected$/);" />
+						</f:facet>
+						<h:selectBooleanCheckbox id="listJobsSchedulingSelected" value="#{item[0]}" />
+                   </rich:column>
+                   <rich:column>
                        <f:facet name="header">
                            <h:outputText value="#{messages.label_voronoi_nominaltimeScheduling}" title="#{messages.title_voronoi_nominaltimeScheduling_desc}" />
-                       </f:facet>
-                       <h:outputText value="#{item[0]}" />
-                   </rich:column>
-                    <rich:column>
-                       <f:facet name="header">
-                           <h:outputText value="#{messages.label_voronoi_jobidScheduling}" title="#{messages.title_voronoi_jobidScheduling_desc}" />
                        </f:facet>
                        <h:outputText value="#{item[1]}" />
                    </rich:column>
                     <rich:column>
                        <f:facet name="header">
-                           <h:outputText value="#{messages.label_voronoi_statusScheduling}" title="#{messages.title_voronoi_statusScheduling_desc}" />
+                           <h:outputText value="#{messages.label_voronoi_jobidScheduling}" title="#{messages.title_voronoi_jobidScheduling_desc}" />
                        </f:facet>
                        <h:outputText value="#{item[2]}" />
+                   </rich:column>
+                    <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_statusScheduling}" title="#{messages.title_voronoi_statusScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item[3]}" />
                    </rich:column>
                    
                 </rich:dataTable>
@@ -1581,8 +1592,15 @@
 				
 				<br/>
 				
+				<rich:panel columns="2" style="border:none; float:right;">
+				
+				<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_selected}" action="#{canvasBean.reRunSelectedScheduling}"
+					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
+				
 				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Close"
 					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
+					
+				</rich:panel>
 	
 			</h:form>
 	
@@ -3138,6 +3156,21 @@
 
 			<h:panelGroup>
 				<a4j:include viewId="/pages/scheduleModal.xhtml" ajaxRendered="false" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	
+		<a4j:region>
+		<rich:modalPanel id="reRunScheduleModal" width="800" height="600" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+			
+			<f:facet name="header">Configuration</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('reRunScheduleModal')}.hide();" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/reRunScheduleModal.xhtml" ajaxRendered="false" />
 			</h:panelGroup>
 
 		</rich:modalPanel>
