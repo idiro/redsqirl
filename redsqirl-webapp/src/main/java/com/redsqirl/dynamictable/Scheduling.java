@@ -1,10 +1,17 @@
 package com.redsqirl.dynamictable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Scheduling {
+public class Scheduling implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7291616326471561973L;
+	
 	private String nameScheduling;
+	private String jobId;
 	private String lastActionScheduling;
 	private String nextActionScheduling;
 	private String actionsScheduling;
@@ -71,6 +78,20 @@ public class Scheduling {
 	}
 	public void setNameScheduling(String nameScheduling) {
 		this.nameScheduling = nameScheduling;
+	}
+
+	/**
+	 * @return the jobId
+	 */
+	public String getJobId() {
+		return jobId;
+	}
+
+	/**
+	 * @param jobId the jobId to set
+	 */
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
 	}
 	
 }

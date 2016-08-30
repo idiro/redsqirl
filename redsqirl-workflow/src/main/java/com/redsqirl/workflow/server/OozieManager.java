@@ -642,6 +642,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		try{
 			SimpleDateFormat format = new SimpleDateFormat();
 			CoordinatorJob cur = oc.getCoordJobInfo(jobId);
+			ans+= "\"job-id\":\""+jobId+"\",";
 			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
 			ans+= "\"next-action\":\""+format.format(cur.getNextMaterializedTime())+"\",";
 			int counterError = 0;
@@ -655,8 +656,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				CoordinatorAction cActCur = cActIt.next();
 				Status statusCAct = cActCur.getStatus();
 				ans +="{";
+				ans+= "\"action-number\":\""+cActCur.getActionNumber()+"\",";
+				ans+= "\"w-id\":\""+cActCur.getId()+"\",";
 				ans+= "\"nominal-time\":\""+format.format(cActCur.getNominalTime())+"\",";
-				ans+= "\"job-id\":\""+cActCur.getJobId()+"\",";
 				ans+= "\"status\":\""+statusCAct+"\"";
 				if(Status.FAILED.equals(statusCAct) || 
 						Status.KILLED.equals(statusCAct) || 
@@ -692,6 +694,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	public void reRunCoord(String jobId, String rerunType, String scope, boolean refresh,
 			boolean noCleanup) throws RemoteException {
 		try{
+			logger.debug("rerun coord: "+jobId+" "+rerunType+" "+scope+" "+refresh+" "+noCleanup);
 			oc.reRunCoord(jobId, rerunType, scope, refresh, noCleanup);
 		}catch(Exception e){
 			logger.error(e,e);
@@ -702,6 +705,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	public void reRunBundle(String jobId, String coordScope, String dateScope, boolean refresh, boolean noCleanup)
 			 throws RemoteException {
 		try{
+			logger.debug("rerun bundle: "+jobId+" "+coordScope+" "+dateScope+" "+refresh+" "+noCleanup);
 			oc.reRunBundle(jobId, coordScope, dateScope, refresh, noCleanup);
 		}catch(Exception e){
 			logger.error(e,e);
