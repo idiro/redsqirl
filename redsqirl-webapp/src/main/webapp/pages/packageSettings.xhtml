@@ -12,6 +12,17 @@
 	function getNewPSTemplateNameValue(){
 		return jQuery("[id$='newpstemplatename']").val();
 	}
+	
+	var scrollPosition;
+
+	function saveScrollPositionPackages() {
+	    scrollPosition = jQuery('[id$="listSettingPackages"]').scrollTop();
+	}
+
+	function setScrollPositionPackages() {
+		jQuery('[id$="listSettingPackages"]').scrollTop(scrollPosition);
+	}
+	
 </script>
 <a4j:loadBundle basename="MessagesResources" var="messages" />
     
@@ -20,7 +31,7 @@
 		    
 	    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
 		    	<ui:repeat value="#{packageMngBean.path}" var="item">
-		    		<a4j:commandLink value="#{item}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
+		    		<a4j:commandLink value="#{item}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingPackages" 
 		    			styleClass="packageSettingsTab" rendered="#{item ne packageMngBean.pathPosition}" >
 			    		<f:param name="name" value="#{item}" />
 			    	</a4j:commandLink>
@@ -48,7 +59,7 @@
 			    
 				    <ui:repeat value="#{packageMngBean.listSubMenu}" var="sc">
 				     	<a4j:commandButton value="#{sc.name}" action="#{packageMngBean.navigationPackageSettings}" 
-				     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
+				     		reRender="pathSetting, listSubMenuSettings, listSettingPackages" styleClass="greenButton" >
 				     		<f:param name="name" value="#{sc.name}" />
 				     	</a4j:commandButton>
 				     	
@@ -64,7 +75,7 @@
 				    </ui:repeat>
 			    </h:panelGroup>
 		     
-		     	<h:panelGroup layout="block" id="listSettingSettings" style="margin-left:170px;height:440px;overflow:auto;"  >
+		     	<h:panelGroup layout="block" id="listSettingPackages" style="margin-left:170px;height:440px;overflow:auto;"  >
 			     	<table>
 			     		
 			     		<tr>
@@ -103,22 +114,25 @@
 			     				
 			     					<h:panelGrid columns="3" rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.template != 'Y'}">
 			     					
-			     						<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+			     						<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" 
+			     						onmousedown="saveScrollPositionPackages();" oncomplete="setScrollPositionPackages();" >
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="type" value="SYSTEM" />
 									    </a4j:commandLink>
 	 			     					
-	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingSettings" 
-	 			     						rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingPackages" 
+	 			     						rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" 
+	 			     						onmousedown="saveScrollPositionPackages();" oncomplete="setScrollPositionPackages();" >
 									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
 									    </a4j:commandLink>
 									    
-									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingSettings" 
-									    	rendered="#{!packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" >
+									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingPackages" 
+									    	rendered="#{!packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" 
+									    	onmousedown="saveScrollPositionPackages();" oncomplete="setScrollPositionPackages();" >
 									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="SYSTEM" />
@@ -147,14 +161,14 @@
 									    	<f:param name="type" value="USER" />
 									    </a4j:commandLink>
 								    	
-	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingSettings" 
+	 			     					<a4j:commandLink action="#{packageMngBean.deletePropertyValue}" reRender="listSettingPackages" 
 	 			     						rendered="#{packageMngBean.s.properties[obj].existUserProperty}" >
 									    	<h:graphicImage url="../image/icons/button-delete-small.gif" style="width:20px;" title="#{messages.label_delete_value}"/>
 									    	<f:param name="key" value="#{obj}" />
 									    	<f:param name="scope" value="USER" />
 									    </a4j:commandLink>
 									    
-									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingSettings" 
+									    <a4j:commandLink action="#{packageMngBean.addPropertyValue}" reRender="listSettingPackages" 
 									    	rendered="#{!packageMngBean.s.properties[obj].existUserProperty}" >
 									    	<h:graphicImage url="../image/icons/button-plus-small.gif" style="width:20px;" title="#{messages.label_add_value}"/>
 									    	<f:param name="key" value="#{obj}" />
@@ -188,7 +202,7 @@
 		     
 		    <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton" oncomplete="#{rich:component('modalPackageSettings')}.hide();" />
 		    &#32;&#32;
-		    <a4j:commandButton value="#{messages.button_apply}" action="#{packageMngBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />
+		    <a4j:commandButton value="#{messages.button_apply}" action="#{packageMngBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingPackages" />
 		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.saveSettings}" styleClass="greenButton" oncomplete="#{rich:component('modalPackageSettings')}.hide();" />
 	    

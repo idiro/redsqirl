@@ -46,7 +46,7 @@ function searchJS(){
 
 <body>
 
-	<h:form>
+	<h:form style="height: inherit;">
 	
 		<a4j:jsFunction name="updateDefaultInstallation" oncomplete="searchJS();" />
 		
@@ -56,7 +56,7 @@ function searchJS(){
 		<a4j:jsFunction name="installModule" action="#{analyticsStoreLoginBean.installModule}"/>
 		<a4j:jsFunction name="uninstallModule" action="#{analyticsStoreLoginBean.uninstallModule}"/>
 	
-		<table style="position:relative;height:87%;" >
+		<table style="position:relative;" >
 			<tr>
 				
 				<td style="float:right;position:relative;top:-40px;padding-left: 400px;" >
@@ -114,24 +114,23 @@ function searchJS(){
 			</tr>
 		</table>
 	
-	 	<table style="width: 100%;" >
-			<tr>
-				<td>
-					<center>
-					
-						<h:outputText value="#{messages.label_package_install}" style="font-size:50px;position:relative;left:0px;color:#818286;" 
-							title="#{messages.label_packages}" />
-						
-						<br/><br/>
-					
-						<iframe id="moduleIframe" src="../pages/admSearch.xhtml?userInstall=false" width="800px" height="600px" style="border:none;" />
-    						
-    				</center>
-    				
-				</td>
-			</tr>
-		</table>
-		
+	 	<div style="width:100%;height: inherit;" >
+			<center style="height: inherit;">
+			
+				<h:outputText value="#{messages.label_package_install}" style="font-size:50px;position:relative;left:0px;color:#818286;" 
+					title="#{messages.label_packages}" />
+				
+				<br/><br/>
+			
+	 			
+	 			<div style="width:800px;height:60%;overflow:auto;">
+	 			<ui:include src="/pages/admSearch.xhtml" id="moduleIframe" >
+	 				<ui:param name="userInstall" value="false"></ui:param>
+	 			</ui:include>
+	 			</div>
+	 					
+	 		</center>
+		</div>
 		
 		<div style="height:100px;width:100%;background:#C0D72F;position:fixed;bottom:0px;" />
 	
