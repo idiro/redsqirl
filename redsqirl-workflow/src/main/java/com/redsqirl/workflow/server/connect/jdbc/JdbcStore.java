@@ -198,7 +198,7 @@ public class JdbcStore extends Storage {
 		return ans;
 	}
 	
-	private static JdbcStoreConnection createConnectionAndUpdateMap(String connectionName) throws Exception{
+	protected static JdbcStoreConnection createConnectionAndUpdateMap(String connectionName) throws Exception{
 		JdbcDetails details = new JdbcPropertiesDetails(connectionName);
 		JdbcStoreConnection ans = initConnection(details);
 		if(ans != null){

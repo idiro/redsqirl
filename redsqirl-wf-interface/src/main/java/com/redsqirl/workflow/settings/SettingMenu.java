@@ -248,7 +248,7 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 			SettingInt cur = it.next();
 			String ans_loc = cur.valid();
 			if(ans_loc != null){
-				ans+=ans_loc+"\n";
+				ans+=cur.getLabel()+": "+ans_loc+"\n";
 			}
 		}
 		if(ans.isEmpty()){

@@ -10,15 +10,15 @@ public class OozieXMLSchemaVersionChecker implements Setting.Checker{
 		String ans = null;
 		if(WorkflowPrefManager.sys_oozie_bundle_xmlns.endsWith(s.getPropertyName())){
 			if(!s.getValue().startsWith("uri:oozie:bundle:")){
-				ans = s.getLabel()+" has to start with 'uri:oozie:bundle:'";
+				ans = "The xml schema uri has to start with 'uri:oozie:bundle:'";
 			}
 		}else if(WorkflowPrefManager.sys_oozie_coord_xmlns.endsWith(s.getPropertyName())){
 			if(!s.getValue().startsWith("uri:oozie:coordinator:")){
-				ans = s.getLabel()+" has to start with 'uri:oozie:coordinator:'";
+				ans = "The xml schema uri has to start with 'uri:oozie:coordinator:'";
 			}
 		}else if(WorkflowPrefManager.sys_oozie_xmlns.endsWith(s.getPropertyName())){
 			if(!s.getValue().startsWith("uri:oozie:workflow:")){
-				ans = s.getLabel()+" has to start with 'uri:oozie:workflow:'";
+				ans = "The xml schema uri has to start with 'uri:oozie:workflow:'";
 			}
 		} 
 		return ans;

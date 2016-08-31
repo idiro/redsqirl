@@ -5,28 +5,32 @@
             "optional": "false",
             "property": "namenode",
             "scope": "system",
-            "type": "STRING"
+            "type": "STRING",
+            "validator": "com.redsqirl.workflow.settings.checkers.NameNodeChecker"
         },
         {
             "default": "namenode:9001",
             "optional": "false",
             "property": "jobtracker",
             "scope": "system",
-            "type": "STRING"
+            "type": "STRING",
+            "validator": "com.redsqirl.workflow.settings.checkers.JobTrackerChecker"
         },
         {
             "default": "/home/hadoop/hadoop-2.7.0",
             "optional": "false",
             "property": "hadoop_home",
             "scope": "system",
-            "type": "STRING"
+            "type": "STRING",
+            "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
         },
         {
             "default": "root:admin:http:redsqirl",
             "optional": "false",
             "property": "admin_user",
             "scope": "system",
-            "type": "STRING"
+            "type": "STRING",
+            "validator": "com.redsqirl.workflow.settings.checkers.AdminUserChecker"
         },
         {
             "default": "true",
@@ -47,7 +51,8 @@
             "optional": "false",
             "property": "pack_manager_url",
             "scope": "system",
-            "type": "STRING"
+            "type": "STRING",
+            "validator": "com.redsqirl.workflow.settings.checkers.UrlRegexChecker"
         },
         {
             "default": "/opt/redsqirl/redsqirl-webapp/src/main/webapp",
@@ -87,56 +92,64 @@
                     "optional": "false",
                     "property": "oozie_url",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.UrlRegexChecker"
                 },
                 {
                     "default": "http://namenode:8088/cluster",
                     "optional": "true",
                     "property": "applications_url",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.UrlRegexChecker"
                 },
                 {
                     "default": "GMT+0000",
                     "optional": "true",
                     "property": "processing_timezone",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.TimeZoneConstantGMTChecker"
                 },
                 {
                     "default": "Europe/Dublin",
                     "optional": "true",
                     "property": "user_timezone",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.TimeZoneChecker"
                 },
                 {
                     "default": "default",
                     "optional": "false",
                     "property": "oozie_action_queue",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.QueueChecker"
                 },
                 {
                     "default": "default",
                     "optional": "false",
                     "property": "oozie_launcher_queue",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.QueueChecker"
                 },
                 {
                     "default": "uri:oozie:workflow:0.5",
                     "optional": "true",
                     "property": "oozie_xmlns",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.OozieXMLSchemaVersionChecker"
                 },
                 {
                     "default": "uri:oozie:coordinator:0.2",
                     "optional": "true",
                     "property": "oozie_coord_xmlns",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.OozieXMLSchemaVersionChecker"
                 },
                 {
                     "default": "uri:oozie:bundle:0.2",
@@ -144,7 +157,7 @@
                     "property": "oozie_bundle_xmlns",
                     "scope": "system",
                     "type": "STRING",
-                    "validator": "com.redsqirl.workflow.settings.checkers.OozieChecker"
+                    "validator": "com.redsqirl.workflow.settings.checkers.OozieXMLSchemaVersionChecker"
                 }
             ]
         },
@@ -156,7 +169,8 @@
                     "optional": "false",
                     "property": "hive_url",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.server.connect.jdbc.JdbcHiveChecker"
                 },
                 {
                     "default": "thrift://myserver:9083",
@@ -177,28 +191,32 @@
                     "optional": "true",
                     "property": "hive_xml",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
                 },
                 {
                     "default": "/usr/bin/hcat",
                     "optional": "true",
                     "property": "hcat_bin",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
                 },
                 {
                     "default": "",
                     "optional": "true",
                     "property": "hdfs_path_default",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.DirectoryOrEmptyRegexChecker"
                 },
                 {
-                    "default": "DEFAULT",
+                    "default": "default",
                     "optional": "true",
                     "property": "db_default",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.server.connect.hcat.HCatDefaultDatabaseChecker"
                 }
             ],
             "tabs": [
@@ -209,7 +227,8 @@
                             "optional": "false",
                             "property": "hdfs_path",
                             "scope": "any",
-                            "type": "STRING"
+                            "type": "STRING",
+                            "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
                         }
                     ],
                     "template_name": "db"
@@ -224,14 +243,16 @@
                     "optional": "true",
                     "property": "jdbc_oracle_driver",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.LocalDirectoryExistChecker"
                 },
                 {
                     "default": "/opt/jdbcdriver/mysql-connector.jar",
                     "optional": "true",
                     "property": "jdbc_mysql_driver",
                     "scope": "any",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.LocalDirectoryExistChecker"
                 }
             ],
             "tabs": [
@@ -242,7 +263,8 @@
                             "optional": "false",
                             "property": "jdbc_url",
                             "scope": "any",
-                            "type": "STRING"
+                            "type": "STRING",
+                            "validator": "com.redsqirl.workflow.server.connect.jdbc.JdbcChecker"
                         },
                         {
                             "default": "MYUSER",
@@ -275,7 +297,8 @@
                             "optional": "true",
                             "property": "path_driver",
                             "scope": "any",
-                            "type": "STRING"
+                            "type": "STRING",
+                            "validator": "com.redsqirl.workflow.settings.checkers.LocalDirectoryExistChecker"
                         }
                     ],
                     "template_name": "other_drivers"
@@ -290,7 +313,8 @@
                     "optional": "true",
                     "property": "user_email_address",
                     "scope": "user",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.EmailRegexChecker"
                 }
             ]
         },
@@ -316,7 +340,8 @@
                     "optional": "true",
                     "property": "user_keytab_template",
                     "scope": "system",
-                    "type": "STRING"
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
                 },
                 {
                     "default": "",

@@ -134,17 +134,32 @@ public class Setting extends UnicastRemoteObject implements SettingInt{
 	}
 	
 	protected String validType(){
+		if(logger.isDebugEnabled()){
+			logger.debug("Validate type "+getPropertyName()+": "+type);
+		}
+		String value = getValue();
 		String ans = null;
+		Object o = null;
 		try{
-			if(type.equals("INT")){
-				Integer.valueOf(getValue());
-			}else if(type.equals("BOOLEAN")){
-				Boolean.valueOf(getValue());
-			}else if(type.equals("FLOAT")){
-				Float.valueOf(getValue());
+			switch(type){
+			case BOOLEAN:
+				o = ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) ?"":null;
+				break;
+			case FLOAT:
+				o = Float.valueOf(value);
+				break;
+			case INT:
+				o = Integer.valueOf(value);
+				break;
+			default:
+				o = "";
+				break;
 			}
 		}catch(Exception e){
-			ans = "Value '"+getValue()+"' is not of the expected type ("+type+")";
+		}
+		
+		if(o == null){
+			ans = "Value '"+value+"' is not of the expected type ("+type+")";
 		}
 		return ans;
 	}
