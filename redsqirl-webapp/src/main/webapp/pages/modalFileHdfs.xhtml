@@ -44,17 +44,15 @@
     
     function isHDFSFileExists(path){
         var fileExist = false;
-        
         var table = jQuery('#divFileHdfs').find("table");
         var tbody = table.find("tbody");
         var rows = tbody.find("tr");
         rows.each(function(key, value){
-            var file2 = jQuery(this).find("td span").html();
+            var file2 = jQuery(this).find("td a").html();
             if ((fileModalFileHdfs == file2) || (fileModalFileHdfs+'.rs' == file2) || (fileModalFileHdfs+'.srs' == file2)){
                 fileExist = true;
             }
         });
-        
         return fileExist;
     }
 
