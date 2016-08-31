@@ -126,7 +126,7 @@ jQuery(function() {
 		    
 				    	<h:panelGroup layout="block" id="pathSetting" style="margin-left:10px;" >
 					    	<ui:repeat value="#{analyticsStoreLoginBean.path}" var="item">
-					    		<a4j:commandLink value="#{item}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
+					    		<a4j:commandLink value="#{item}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings, validadeSettingsBT" 
 					    			styleClass="packageSettingsTab" rendered="#{item ne analyticsStoreLoginBean.pathPosition}" >
 						    		<f:param name="name" value="#{item}" />
 						    	</a4j:commandLink>
@@ -154,7 +154,7 @@ jQuery(function() {
 								<ui:repeat value="#{analyticsStoreLoginBean.listSubMenu}" var="sc">
 							     	
 							     	<a4j:commandButton value="#{sc.name}" action="#{analyticsStoreLoginBean.navigationPackageSettings}" 
-							     		reRender="pathSetting, listSubMenuSettings, listSettingSettings" styleClass="greenButton" >
+							     		reRender="pathSetting, listSubMenuSettings, listSettingSettings, validadeSettingsBT" styleClass="greenButton" >
 							     		<f:param name="name" value="#{sc.name}" />
 							     	</a4j:commandButton>
 
@@ -260,12 +260,18 @@ jQuery(function() {
 			</tr>
 			<tr style="position: fixed; bottom: 110px;" >
 				<td>
-					<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.saveSettings}" 
-						styleClass="greenButton" style="margin-left:690px;" />
+				
+					<h:panelGroup layout="block" id="validadeSettingsBT">
+					
+						<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.saveSettings}" 
+							styleClass="greenButton" style="margin-left:690px;" />
+							
+						<a4j:commandButton value="#{messages.button_check}" action="#{analyticsStoreLoginBean.validate}" 
+							styleClass="greenButton" rendered="#{analyticsStoreLoginBean.validationEnabled}" 
+							reRender="msnError, msnSuccess" />
 						
-					<a4j:commandButton value="#{messages.button_check}" action="#{analyticsStoreLoginBean.validate}" 
-						styleClass="greenButton" rendered="#{analyticsStoreLoginBean.validationEnabled}" 
-						reRender="msnError, msnSuccess" />
+					</h:panelGroup>
+						
 				</td>
 			</tr>
 		</table>

@@ -202,6 +202,8 @@
 		     
 		    <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton" oncomplete="#{rich:component('modalPackageSettings')}.hide();" />
 		    &#32;&#32;
+		    <a4j:commandButton value="#{messages.button_check}" action="#{packageMngBean.validate}" styleClass="greenButton" rendered="#{packageMngBean.validationEnabled}" reRender="msnError, msnSuccess" />
+		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_apply}" action="#{packageMngBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingPackages" />
 		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.saveSettings}" styleClass="greenButton" oncomplete="#{rich:component('modalPackageSettings')}.hide();" />
