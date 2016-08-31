@@ -34,6 +34,7 @@ import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -98,6 +99,7 @@ public class SendEmail extends DataflowAction {
 				LanguageManagerWF.getText("email.destinatary_interaction.title"),
 				LanguageManagerWF.getText("email.destinatary_interaction.legend"), 
 				0, 0);
+		destinataryInt.setVariableDisable(false);
 		destinataryInt.setValue(email);
 		destinataryInt.setRegex("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+" +
 				"(,[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)*$");
@@ -107,6 +109,7 @@ public class SendEmail extends DataflowAction {
 				LanguageManagerWF.getText("email.cc_interaction.title"),
 				LanguageManagerWF.getText("email.cc_interaction.legend"), 
 				1, 0);
+		ccInt.setVariableDisable(false);
 		ccInt.setValue("");
 		ccInt.setRegex("^$|^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+" +
 				"(,[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)*$");
@@ -118,6 +121,7 @@ public class SendEmail extends DataflowAction {
 				2, 0);
 		subjectInt.setValue("");
 		subjectInt.setRegex(".*");
+		subjectInt.setVariableDisable(false);
 		
 		messageInt = new EditorInteraction(
 				key_message,
@@ -125,6 +129,7 @@ public class SendEmail extends DataflowAction {
 				LanguageManagerWF.getText("email.message_interaction.legend"), 
 				3, 0);
 		messageInt.setValue("");
+		messageInt.setVariableDisable(false);
 //		messageInt.setRegex(".*");
 		
 		page1.addInteraction(destinataryInt);
@@ -143,7 +148,7 @@ public class SendEmail extends DataflowAction {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			in.put(key_input, new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 
-					0, Integer.MAX_VALUE));
+					0, Integer.MAX_VALUE,PathType.MATERIALIZED));
 			input = in;
 		}
 

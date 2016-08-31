@@ -1,22 +1,21 @@
-package com.redsqirl.workflow.server.connect.hcat;
+package com.redsqirl.workflow.server.connect.jdbc;
 
 import java.rmi.RemoteException;
 
 import com.redsqirl.workflow.settings.Setting;
 
-public class HCatDefaultDatabaseChecker implements Setting.Checker{
+public class JdbcDatabaseExistChecker implements Setting.Checker{
 
 	@Override
 	public String valid(Setting s) {
 		String ans = null;
 		try {
-			if(!new HCatStore().exists("/"+s.getValue())){
-				ans = "HCatalog database '"+s.getValue()+"' does not exist.";
+			if(!new JdbcStore().exists("/"+s.getValue())){
+				ans = "JDBC Database '"+s.getValue()+"' does not exist.";
 			}
 		} catch (RemoteException e) {
 			ans = "Unexpected error: "+e.getMessage();
 		}
 		return ans;
 	}
-
 }

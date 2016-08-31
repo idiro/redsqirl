@@ -84,6 +84,7 @@ public class EditorInteraction extends UserInteraction{
 			editor.add("keywords");
 			//editor.add("help");
 		}
+		setVariableDisable(false);
 	}
 	
 	/**
