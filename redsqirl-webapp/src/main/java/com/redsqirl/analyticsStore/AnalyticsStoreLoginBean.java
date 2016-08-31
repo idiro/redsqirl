@@ -901,7 +901,8 @@ public class AnalyticsStoreLoginBean extends SettingsBeanAbs implements Serializ
 			}
 
 		}
-
+		
+		logger.info("ValidationEnabled " + isValidationEnabled());
 	}
 	
 	public void addNewTemplate() throws RemoteException{

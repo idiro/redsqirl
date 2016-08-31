@@ -158,7 +158,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		while(itPath.hasNext()){
 			cur = cur.goTo(itPath.next());
 		}
-		validationEnabled = cur.isValidationEnabled();
+		setValidationEnabled(cur.isValidationEnabled());
 		return cur;
 	}
 	
@@ -174,10 +174,7 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		displayErrorMessage(error,"SETTINGS_VALIDATION");
 	}
 	
-	public boolean isValidationEnabled(){
-		return validationEnabled;
-	}
-
+	
 	public void navigationPackageSettings() throws RemoteException{
 
 		saveSettings();
@@ -311,9 +308,16 @@ public abstract class SettingsBeanAbs extends BaseBean {
 		return template;
 	}
 
-
 	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	public boolean isValidationEnabled() {
+		return validationEnabled;
+	}
+
+	public void setValidationEnabled(boolean validationEnabled) {
+		this.validationEnabled = validationEnabled;
 	}
 
 }
