@@ -170,6 +170,8 @@ public abstract class SettingsBeanAbs extends BaseBean {
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
+		}else{
+			error.substring(0,error.length()-1).replaceAll("\n", "</br>");
 		}
 		displayErrorMessage(error,"SETTINGS_VALIDATION");
 	}

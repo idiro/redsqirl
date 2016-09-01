@@ -89,6 +89,7 @@ public class TableInteraction extends UserInteraction {
 		if(tree.isEmpty()){
 			tree.add("table").add("columns");
 		}
+		setVariableDisable(false);
 	}
 	
 	protected void reInitAfterError() throws RemoteException{

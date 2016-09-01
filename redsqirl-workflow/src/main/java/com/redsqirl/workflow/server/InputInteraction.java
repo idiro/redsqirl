@@ -76,6 +76,7 @@ public class InputInteraction extends UserInteraction{
 			input.add("output");
 			input.add("regex");
 		}
+		setVariableDisable(false);
 	}
 	
 	protected void reInitAfterError() throws RemoteException{
