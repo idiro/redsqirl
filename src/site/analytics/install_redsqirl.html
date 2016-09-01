@@ -115,10 +115,12 @@ $(document).ready(function() {
 
 	<div style="padding:0 15%;">
 	<span style="font-size:1.4em">
-		Red Sqirl is a web-based application, meaning that once you've installed Red Sqirl onto your Hadoop cluster you 		can simply perform all your data analytics activities in your browser using the intuitive drag and drop interface.
+		Red Sqirl is a web-based application, meaning that once you've installed Red Sqirl onto your Hadoop cluster you can simply perform all your data analytics activities in your browser using the intuitive drag and drop interface.
+<br/><br/>
 		Red Sqirl has packages that give you an easy to use, intuitive interface for the Hadoop algorithms and software
-		that you already have on your Hadoop cluster. You just install the package for Spark, Pig, Hama etc. from within
-		Red Sqirl, and use these packages to analyse your data. There are two ways to use Red Sqirl on your Hadoop 			cluster, Online and Offline..
+		that you already have on your Hadoop cluster. You just install the package for Spark, Pig, Hama etc. from within Red Sqirl, and use these packages to analyse your data.
+<br/><br/>
+There are two ways to use Red Sqirl on your Hadoop cluster, Online and Offline.
 	</span>
 	</div>
 <br/><br/>
@@ -133,7 +135,7 @@ $(document).ready(function() {
 
 			<div class="clients" style="display:inline-block;width:45%;min-width:260px;vertical-align:top;text-align:start;padding:25px;margin-bottom: 10px;">
 				<center><h3 style="font-family:Open Sans !important;">Online Red Sqirl</h3></center>
-
+<br/><br/>
 				<div style="padding:0 10%;">
 				<span style="font-size:1.4em" >
 				Online Red Sqirl can be set up in less than 10 minutes and gives you the ability to download software packages instantly from inside the application.
@@ -152,27 +154,36 @@ $(document).ready(function() {
 <span style="font-size:1.4em" >
 <br/>
 To use Red Sqirl Online there are a few things you'll need to have first <br/><br/>
+<ul style="font-size: inherit;">
+<li>A Linux web server </li><br/>
+<li>An Apache Hadoop cluster with Apache Oozie installed </li><br/>
+<li>An account on the server (or using LDAP) for every Red Sqirl user </li><br/>
+<li>SSH on the web server with password authentication enabled for localhost </li><br/>
+<li>HDFS Home directory for each user (/user/$user) </li><br/>
+<li>A direct connection to internet and white list redsqirl.com on your firewall </li><br/>
+<li>At least one of the following installed on your Hadoop cluster </li><br/>
 
--A Linux web server <br/>
--An Apache Hadoop cluster with Apache Oozie installed <br/>
--An account on the server (or using LDAP) for every Red Sqirl user <br/>
--SSH on the web server with password authentication enabled for localhost <br/>
--HDFS Home directory for each user (/user/$user) <br/>
--A direct connection to internet and white list redsqirl.com on your firewall <br/>
--At least one of the following installed on your Hadoop cluster <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Hive <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Pig <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Hama <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Spark <br/> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        To use Spark in Red Sqirl you will need the following python libraries on all data nodes:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        -python-dateutil<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        -numpy (used by Spark for machine learning: official documentation) <br/>
+<ul style="font-size: inherit;">
+<li>Apache Hive </li>
+<li>Apache Pig </li>
+<li>Apache Hama </li>
+<li>Apache Spark </li>
+</ul>
+<br/>
+<li>To use Spark in Red Sqirl you will need the following python libraries on all data nodes:</li><br/>
+
+<ul style="font-size: inherit;">
+<li>python-dateutil</li>
+<li>numpy (used by Spark for machine learning: official documentation)</li>
+</ul>
+
+</ul>
 
 <br/>
-If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker here
+If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker <a href="try_redsqirl.html" >here</a>
+
+
+
 </span>
 
 
@@ -230,7 +241,55 @@ Red Sqirl uses Tomcat as a web service. When you are logging in, it will create 
 
 <span style="font-size:1.4em" >
 <br/>
-Step 1: Click the Red Sqirl download for the version of Hadoop that you are running<br/><br/>
+Step 1: Click the Red Sqirl download for the version of Hadoop that you are running <br/><br/>
+
+
+Red Sqirl version <b>0.13</b>
+<br/>
+
+<table class="bodyTable" border="1" style="width:100%" id="table013" >
+	<tbody>
+	<tr>
+		<th align="left" style="width: 25%" >Hadoop Version</th>
+		<th align="left" style="width: 25%" >Release Date</th>
+		<th align="left" style="width: 25%" >Source</th>
+		<th align="left" style="width: 25%" >md5sum</th>
+	</tr>
+	
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.7.0-0.13-tomcat.tar.gz" >2.7.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">c71354474277c49c8b03703f22725964</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.6.0-0.13-tomcat.tar.gz" >2.6.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">db55dc3a4de111c4ae957465e22a8bc2</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.4.0-0.13-tomcat.tar.gz" >2.4.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">1f26264910aa7c669d06d2338d0756e5</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-1.0.3-mapr-4.1.0-0.13-tomcat.tar.gz" >1.0.3-mapr-4.1.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">f9264c8c539e413fc8e0622bd9fe4ab2</td>
+	</tr>
+</table>
+<br/><br/>
 
 
 
@@ -240,7 +299,8 @@ Step 4: Go http://myserver:portNumber/redsqirl, in your browser, where you shoul
 Step 5: Create a Red Sqirl Analytics Store admin user account, confirm the registration through your email and sign in with your new credentials <br/><br/>
 Step 6: You will then be asked to install the recommended default package and any other packages you want <br/><br/>
 Step 7: Set up the settings from the Settings tab <br/><br/>
-Step 8: You can then sign out from the admin page and sign in to Red Sqirl using your server account details (OS name and password) <br/>
+Step 8: You can then click to sign out from the admin page and click to sign into Red Sqirl using your server account details (OS name and password) 
+ <br/>
 
 <br/>
 <center>Congratulations you now have Red Sqirl installed</center>
@@ -259,9 +319,9 @@ Step 8: You can then sign out from the admin page and sign in to Red Sqirl using
 <!-- START OFF LINE -->
 
 
-			<div class="clients" style="display:inline-block;width:45%;min-width:260px;vertical-align:top;text-align:start;padding:25px;margin-bottom: 10px;">
+			<div class="clients" style="display:inline-block;width:45%;min-width:260px;vertical-align:top;text-align:start;padding:25px;margin-bottom:10px;margin-right:15px;">
 				<center><h3 style="font-family:Open Sans !important;">Offline Red Sqirl</h3></center>
-
+<br/><br/>
 				<div style="padding:0 10%;">
 				<span style="font-size:1.4em" >
 				Offline Red Sqirl gives you the ability to use Red Sqirl separate from a network connection. This may take slightly longer than the Online Red Sqirl installation. 
@@ -279,24 +339,31 @@ Step 8: You can then sign out from the admin page and sign in to Red Sqirl using
 <br/>
 To use Red Sqirl Online there are a few things you'll need to have first<br/>
 <br/>
--A Linux web server<br/>
--An Apache Hadoop cluster with Apache Oozie installed<br/>
--An account on the server (or using LDAP) for every Red Sqirl user<br/>
--SSH on the web server with password authentication enabled for localhost<br/>
--HDFS Home directory for each user (/user/$user)<br/>
--At least one of the following installed on your Hadoop cluster<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Hive <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Pig <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Hama <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Apache Spark <br/> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-To use Spark in Red Sqirl you will need the following python libraries on all data nodes: <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
--python-dateutil <br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
--numpy (used by Spark for machine learning: official documentation) <br/>
-<br/><br/>
-If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker here
+
+<ul style="font-size: inherit;">
+<li>A Linux web server</li><br/>
+<li>An Apache Hadoop cluster with Apache Oozie installed </li><br/>
+<li>An account on the server (or using LDAP) for every Red Sqirl user </li><br/>
+<li>SSH on the web server with password authentication enabled for localhost </li><br/>
+<li>HDFS Home directory for each user (/user/$user) </li><br/>
+<li>At least one of the following installed on your Hadoop cluster </li><br/>
+<ul style="font-size: inherit;">
+<li>Apache Hive </li>
+<li>Apache Pig </li>
+<li>Apache Hama </li>
+<li>Apache Spark </li>
+</ul>
+<br/>
+<li>To use Spark in Red Sqirl you will need the following python libraries on all data nodes: </li><br/>
+
+<ul style="font-size: inherit;">
+<li>python-dateutil </li>
+<li>numpy (used by Spark for machine learning: official documentation) </li>
+</ul>
+</ul>
+
+If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker 
+<a href="try_redsqirl.html">here</a>
 
 </span>
 
@@ -349,8 +416,54 @@ Red Sqirl uses Tomcat as a web service. When you are logging in, it will create 
 <span style="font-size:1.4em" >
 
 <br/>
-Step 1: Click the Red Sqirl download for the version of Hadoop that you are running <br/>
+Step 1: Click the Red Sqirl download for the version of Hadoop that you are running <br/><br/>
 
+Red Sqirl version <b>0.13</b>
+<br/>
+
+<table class="bodyTable" border="1" style="width:100%" id="table013" >
+	<tbody>
+	<tr>
+		<th align="left" style="width: 25%" >Hadoop Version</th>
+		<th align="left" style="width: 25%" >Release Date</th>
+		<th align="left" style="width: 25%" >Source</th>
+		<th align="left" style="width: 25%" >md5sum</th>
+	</tr>
+	
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.7.0-0.13-tomcat.tar.gz" >2.7.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">c71354474277c49c8b03703f22725964</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.6.0-0.13-tomcat.tar.gz" >2.6.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">db55dc3a4de111c4ae957465e22a8bc2</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-2.4.0-0.13-tomcat.tar.gz" >2.4.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">1f26264910aa7c669d06d2338d0756e5</td>
+	</tr>
+	<tr>
+		<td align="left">
+			<a data-toggle="modal" class="dropdown-toggle" href="#" data-target="#modalTermsAndConditions" data-project-id="redsqirl-1.0.3-mapr-4.1.0-0.13-tomcat.tar.gz" >1.0.3-mapr-4.1.0</a>
+		</td>
+		<td align="left">13 June 2016</td>
+		<td align="left">binary *.tar.gz</td>
+		<td align="left">f9264c8c539e413fc8e0622bd9fe4ab2</td>
+	</tr>
+</table>
+<br/><br/>
 
 
 Step 2: Unzip the download where you want to install it through the Tomcat user <br/><br/>
@@ -359,7 +472,7 @@ Step 4: Before you can use Red Sqirl Offline, you'll need to create a Red Sqirl 
 Step 5: Once logged in, click on 'request new software key' and fill the form. You'll need to choose the Red Sqirl version you downloaded. Your licence key will be generated automatically <br/><br/>
 Step 6: The next page will show you the packages available. You'll need to download the Red Sqirl package for each of the Hadoop technologies that you have on your Hadoop cluster. For example, choose the Red Sqirl Pig package (redsqirl-pig) and generate the package key if you have Apache Pig on your Hadoop cluster. <br/><br/>
 Step 7: Once you've generated the package key, you'll then need to download the package itself and the keys you just generated from the Module Key Manager page <br/><br/>
-Step 8: Now you're ready to set up Offline Red Sqirl, go to http://myserver:portNumber/redsqirl <br/><br/>
+Step 8: Now you're ready to set up Offline Red Sqirl, disconnect from your network and go to http://myserver:portNumber/redsqirl <br/><br/>
 Step 9: Sign into Red Sqirl using your server account details (OS name and password) <br/><br/>
 Step 10: On the License key page you'll need to upload your license key file (licenseKey.properties), after pressing ok you'll be redirected to the Packages page <br/><br/>
 Step 11: Upload the Red Sqirl package (.zip) and any other packages you've downloaded on this page <br/><br/>
@@ -394,45 +507,49 @@ Step 13: You'll then need to sign out and sign in again with your server account
 			<div class="clients" style="display:inline-block;width:100%;vertical-align:top;text-align:start;padding:25px;">
 				<center><h3 style="font-family:Open Sans !important;">Tutorials</h3></center>
 
-				<div style="padding:0 10%;">
+				<div style="padding:0 12%;text-align:center;">
+				<br/><br/>
 				<span style="font-size:1.4em" >
-Now that you have Red Sqirl installed, you can follow Step 8: Now you're ready to set up Offline Red Sqirl, go along with our video and written tutorials here 
+Now that you have Red Sqirl installed, you can follow along with our video and written tutorials here
 				</span>
 				</div>
-<center>
-<table class="bodyTable">
-	<tr>
-		<td height="50" style="width: 45%;">
-			<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration: none;" >
-			<input type="submit" class="contentButtonSubPages" value="Video Tutorials" style="width:90%;" >
+<br/><br/>
+
+<div style="text-align: center">
+<div style="display: inline-block;">
+
+
+			<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration:none;" >
+			<input type="submit" class="contentButtonSubPages" value="Video Tutorials" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-		<td style="width: 45%;">
-			<a href="help/main.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Documentation" style="width:90%;" >
+<span style="line-height: 60px;">&nbsp;</span>
+			<a href="help/main.html" style="text-decoration: none;margin-left: -10px;" >
+				<input type="submit" class="contentButtonSubPages" value="Documentation" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-	</tr>
-		<td style="width: 45%;">
+</div>
+<div style="display: inline-block;">
+
+
 			<a href="help/buildingworkflow.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Written Tutorials" style="width:90%;" >
+				<input type="submit" class="contentButtonSubPages" value="Written Tutorials" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-		<td style="width: 45%;">
-			<a href="product.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Products" style="width:90%;" >
+<span style="line-height: 60px;">&nbsp;</span>
+			<a href="product.html" style="text-decoration: none;margin-left: -10px;" >
+				<input type="submit" class="contentButtonSubPages" value="Products" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-	</tr>
-</table>
-</center>
+</div>
+</div>
+
 			</div>
 			
 
 		</div>
 	</div>
 </div>
-
 
 
 <!---->

@@ -117,11 +117,18 @@ We recommend you have at least 8GB of RAM on your computer, in order to have the
 
 <br/>
 <span style="font-size:1.4em" >
-You can install Docker from here
+
+First you'll need to download and install docker onto your computer, to do that please go to 
+<a href="https://www.docker.com/products/docker" target="_blank" >this</a>
+page. 
+<br/><br/>
+If you need to download Docker using Docker Toolbox, you'll need to allocate at least 2GB, but 4GB are recommended, to your Virtual Machine. 
+<br/><br/>
+To do this, by default, docker installs 'VirtualBox' and uses the VM called "default". Open VirtualBox, right click on the Default VM > Settings. On the next window go to System > Motherboard and move the cursor of the base memory to 4GB (4096 MB). Click OK.
+
 </span>
 
 </div>
-
 
 
 
@@ -133,16 +140,27 @@ You can install Docker from here
 <div id="part2" class="collapse">
 
 <span style="font-size:1.4em" >
-Step 1: When you have Docker installed, simply open up your terminal and type in this Docker command: docker pull redsqirl/cloudera:2.6.0-0.12 
+Step 1: When you have Docker installed, simply open up your terminal and type in this Docker command: 
 <br/><br/>
-(We're recommending this Cloudera Hadoop distribution for convenience, but if you have a preference we also have
-Hortonworks and MapR, click here to choose one of those) 
+<code>
+docker pull redsqirl/cloudera:2.6.0-0.12 
+</code>
 <br/><br/>
-Step 2: Next, in the terminal, you'll now create the Docker image by typing in this command:<br/>
-docker run --hostname=quickstart.cloudera --privileged=true -t -i -p 8842:8842 redsqirl/clouder-
-a:2.6.0-0.12 /usr/bin/docker-quickstart
+(We're recommending 
+<a href="https://hub.docker.com/r/redsqirl/cloudera/" target="_blank">this</a> 
+Cloudera Hadoop distribution for convenience, but if you have a preference we also have
+Hortonworks and MapR, click 
+<a href="https://hub.docker.com/r/redsqirl/" target="_blank" >here</a> to choose one of those) 
 <br/><br/>
-This may take a few minutes, you'll know when this has finished when it says "setting up Red Sqirl"
+Step 2: Next, in the terminal, you'll now create the Docker image by typing in this command:
+<br/><br/>
+<code>
+docker run --hostname=quickstart.cloudera --privileged=true <br/> 
+-t -i -p 8842:8842 redsqirl/clouder- a:2.6.0-0.12 <br/> /usr/bin/docker-quickstart
+</code>
+<br/><br/>
+This may take a few minutes, when it's finished you'll see our Red Sqirl welcome message in the terminal. 
+
 </span>
 
 </div>
@@ -160,9 +178,35 @@ This may take a few minutes, you'll know when this has finished when it says "se
 <span style="font-size:1.4em" >
 <br/>
 
-Step 1: Open your browser and go to the url: http://local-host:8842/redsqirl Any exposed ports are available on the Docker host's IP address, which you can get using the docker-machine ip command: $ docker-machine ip default 192.168.99.100
-https://docs.docker.com/machine/get-started/ On a windows environment, it could be docker-ma-chine.exe
+Step 1: If you have installed on Linux: <br/><br/>
+Open your browser and go to the url: http://local-host:8842/redsqirl 
+
 <br/><br/>
+If you have installed on another system you'll just need to find your Docker IP address.<br/><br/>
+
+The Red Sqirl URL will look like this <br/> http://< IP ADDRESS >:8842/redsqirl.<br/><br/> 
+
+To get the IP address:<br/><br/>
+
+On windows: Start your favorite shell (cmd.exe, PowerShell, or other) and type <br/><br/>
+<code>
+docker-machine.exe ip default
+</code>
+<br/><br/>
+
+On Mac: Start your favorite terminal and type <br/><br/>
+<code>
+docker-machine ip default
+</code>
+<br/><br/>
+
+Now that you have the IP address go you your browser and go to this URL:
+http://< IP ADDRESS >:8842/redsqirl
+<br/><br/>
+
+
+
+
 Step 2: Create a Red Sqirl Analytics Store admin user account, confirm the registration through your email and sign in with your new credentials.
 <br/><br/>
 Step 3: Do not install the default packages (Spark is not installed by default on a Cloudera cluster)
@@ -203,40 +247,43 @@ Step 6: Now login with the OS username: redsqirl (password: redsqirl)
 			<div class="clients" style="display:inline-block;width:100%;vertical-align:top;text-align:start;padding:25px;">
 				<center><h3 style="font-family:Open Sans !important;">Tutorials</h3></center>
 
-				<div style="padding:0 10%;">
+				<div style="padding:0 12%;text-align:center;">
+				<br/><br/>
 				<span style="font-size:1.4em" >
-Now that you have Red Sqirl installed, you can follow Step 8: Now you're ready to set up Offline Red Sqirl, go along with our video and written tutorials here 
+Now that you have Red Sqirl installed, you can follow along with our video and written tutorials here
 				</span>
 				</div>
-<center>
-<table class="bodyTable">
-	<tr>
-		<td height="50" style="width: 45%;">
-			<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration: none;" >
-			<input type="submit" class="contentButtonSubPages" value="Video Tutorials" style="width:90%;" >
+<br/><br/>
+
+<div style="text-align: center">
+<div style="display: inline-block;">
+
+
+			<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration:none;" >
+			<input type="submit" class="contentButtonSubPages" value="Video Tutorials" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-		<td style="width: 45%;">
-			<a href="help/main.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Documentation" style="width:90%;" >
+<span style="line-height: 60px;">&nbsp;</span>
+			<a href="help/main.html" style="text-decoration: none;margin-left: -10px;" >
+				<input type="submit" class="contentButtonSubPages" value="Documentation" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-	</tr>
-		<td style="width: 45%;">
+</div>
+<div style="display: inline-block;">
+
+
 			<a href="help/buildingworkflow.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Written Tutorials" style="width:90%;" >
+				<input type="submit" class="contentButtonSubPages" value="Written Tutorials" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-		<td style="width: 45%;">
-			<a href="product.html" style="text-decoration: none;" >
-				<input type="submit" class="contentButtonSubPages" value="Products" style="width:90%;" >
+<span style="line-height: 60px;">&nbsp;</span>
+			<a href="product.html" style="text-decoration: none;margin-left: -10px;" >
+				<input type="submit" class="contentButtonSubPages" value="Products" 
+style="width:90%;white-space:normal;word-wrap:break-word;" >
 			</a>
-		</td>
-	</tr>
-</table>
-				
-				
-</center>
+</div>
+</div>
+
 			</div>
 			
 
