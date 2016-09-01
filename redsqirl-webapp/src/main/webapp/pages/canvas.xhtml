@@ -1470,13 +1470,32 @@
                        </f:facet>
                        <h:outputText value="#{item.errorsScheduling}" id="errorsScheduling" />
 					</rich:column>
+					
 					<rich:column>
                        <f:facet name="header">
                            <h:outputText value="#{messages.label_voronoi_runningScheduling}" title="#{messages.title_voronoi_runningScheduling_desc}" />
                        </f:facet>
-                       <h:outputText value="#{item.runningScheduling}" id="runningScheduling" />
+                       
+                       <a4j:commandLink action="#{canvasBean.suspendBundleScheduling}"
+							reRender="tableListScheduling"
+							rendered="#{canvasBean.showSuspendScheduling}">
+							<h:graphicImage value="../image/icons/button-suspendJob.gif" title='#{messages.oozie_suspendjob}' style="padding-right:2px;width:16px;" />
+							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
+						</a4j:commandLink>
+						<a4j:commandLink action="#{canvasBean.resumeBundleScheduling}"
+							reRender="tableListScheduling"
+							rendered="#{canvasBean.showResumeScheduling}">
+							<h:graphicImage value="../image/icons/button-resumeJob.gif" title='#{messages.oozie_oozie_resumejob}' style="padding-right:2px;width:16px;" />
+							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
+						</a4j:commandLink>
+						<a4j:commandLink action="#{canvasBean.killBundleScheduling}"
+							reRender="tableListScheduling" >
+							<h:graphicImage value="../image/icons/button-killJob.gif" title='#{messages.oozie_killjob}' style="padding-right:2px;width:16px;" />
+							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
+						</a4j:commandLink>
+                       
 					</rich:column>
-                   
+					
                 </rich:dataTable>
 				</div>
 				
@@ -1616,11 +1635,17 @@
                        </f:facet>
                        <h:outputText value="#{item[2]}" />
                    </rich:column>
-                    <rich:column>
+                   <rich:column>
                        <f:facet name="header">
                            <h:outputText value="#{messages.label_voronoi_statusScheduling}" title="#{messages.title_voronoi_statusScheduling_desc}" />
                        </f:facet>
                        <h:outputText value="#{item[3]}" />
+                   </rich:column>
+                   <rich:column>
+                       <f:facet name="header">
+                           <h:outputText value="#{messages.label_voronoi_widScheduling}" title="#{messages.title_voronoi_widScheduling_desc}" />
+                       </f:facet>
+                       <h:outputText value="#{item[4]}" />
                    </rich:column>
                    
                 </rich:dataTable>
