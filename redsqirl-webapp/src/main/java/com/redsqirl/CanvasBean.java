@@ -137,6 +137,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Scheduling selectedScheduling;
 	private Date reRunSchedulingStartDate;
 	private Date reRunSchedulingEndDate;
+	private boolean showSuspendScheduling;
+	private boolean showResumeScheduling;
 
 	/**
 	 * 
@@ -1341,6 +1343,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info(json);
 				JSONObject jsonObj = new JSONObject(json);
 				listScheduling = new ArrayList<Scheduling>();
+				List<String> status = new ArrayList<String>();
 				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
 					String nameObj = (String) iterator.next();
 
@@ -1368,7 +1371,25 @@ public class CanvasBean extends BaseBean implements Serializable {
 					scheduling.setErrorsScheduling(obj.getString("errors"));
 					scheduling.setRunningScheduling(obj.getString("running"));
 
+					scheduling.setStatusScheduling(obj.getString("status"));
+
+					if(!status.contains(obj.getString("status"))){
+						status.add(obj.getString("status"));
+					}
+
 					listScheduling.add(scheduling);
+				}
+
+				if(!status.contains("SUSPENDED")){
+					setShowSuspendScheduling(true);
+					setShowResumeScheduling(false);
+				}else{
+					setShowResumeScheduling(true);
+					if(status.contains("RUNNING")){
+						setShowSuspendScheduling(true);
+					}else{
+						setShowSuspendScheduling(false);
+					}
 				}
 
 			}
@@ -1385,6 +1406,39 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if(scheduling.getNameScheduling().equals(selectedScheduling)){
 				setSelectedScheduling(scheduling);
 				break;
+			}
+		}
+	}
+
+	public void resumeScheduling() throws Exception {
+		logger.info("resumeScheduling");
+		
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.isSelected()){
+						if(scheduling.getStatusScheduling().equalsIgnoreCase("SUSPENDED")){
+							getOozie().resume(scheduling.getJobId());
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+	public void suspendScheduling() throws Exception {
+		logger.info("suspendScheduling");
+		
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.isSelected()){
+						if(!scheduling.getStatusScheduling().equalsIgnoreCase("SUSPENDED")){
+							getOozie().suspend(scheduling.getJobId());
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1428,13 +1482,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("reRunAllScheduling");
 		Date startDate = getReRunSchedulingStartDate();
 		Date endDate = getReRunSchedulingEndDate();
-		
+
 		if(df != null){
 			logger.info("df not null");
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 			dateFormat.setTimeZone(TimeZone.getTimeZone(
-						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
-			
+					WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+
 			if(df.isrunning() && df.isSchedule()){
 				logger.info("df running");
 				try{
@@ -3529,6 +3583,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setReRunSchedulingEndDate(Date reRunSchedulingEndDate) {
 		this.reRunSchedulingEndDate = reRunSchedulingEndDate;
+	}
+
+	public boolean isShowSuspendScheduling() {
+		return showSuspendScheduling;
+	}
+
+	public void setShowSuspendScheduling(boolean showSuspendScheduling) {
+		this.showSuspendScheduling = showSuspendScheduling;
+	}
+
+	public boolean isShowResumeScheduling() {
+		return showResumeScheduling;
+	}
+
+	public void setShowResumeScheduling(boolean showResumeScheduling) {
+		this.showResumeScheduling = showResumeScheduling;
 	}
 
 }

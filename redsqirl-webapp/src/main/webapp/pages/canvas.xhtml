@@ -818,7 +818,7 @@
 			console.log("blockRunningWorkflowJS " + selectedCanvas);
 			console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
 	     	           
-	     	if(isIfISchedule(selectedCanvas) == 'true'){
+	     	if(isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true){
 	     		console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
@@ -1406,7 +1406,7 @@
 			<h:form>
 			
 				<a4j:jsFunction name="updateSchedulingStatus" 
-					reRender="tableListScheduling, nameScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling" 
+					reRender="tableListScheduling, nameScheduling, statusScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling, panelGroupSchedulingBT" 
 					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false'){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
 			
 				<a4j:jsFunction name="openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
@@ -1425,7 +1425,13 @@
                    enableContextMenu="false" selectionMode="none" rowKeyVar="index"
                    onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
                    rowClasses="even-row, odd-row" >
-                   
+
+					<rich:column>
+						<f:facet name="header">
+							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /listCoordinatorSchedulingSelected$/);" />
+						</f:facet>
+						<h:selectBooleanCheckbox id="listCoordinatorSchedulingSelected" value="#{item.selected}" />
+					</rich:column>                   
 					<rich:column>
 						<f:facet name="header">
                         	<h:outputText value="#{messages.label_voronoi_nameScheduling}" title="#{messages.title_voronoi_nameScheduling_desc}" />
@@ -1433,6 +1439,12 @@
 						<a4j:commandLink onclick="openModalSchedulingRunning('#{item.nameScheduling}');" >
 							<h:outputText value="#{item.nameScheduling}" id="nameScheduling"/>
 						</a4j:commandLink>
+					</rich:column>
+					<rich:column>
+                    	<f:facet name="header">
+                        	<h:outputText value="#{messages.label_voronoi_statusScheduling}" title="#{messages.title_voronoi_statusScheduling_desc}" />
+						</f:facet>
+						<h:outputText value="#{item.statusScheduling}" id="statusScheduling" />
 					</rich:column>
                     <rich:column>
                        <f:facet name="header">
@@ -1470,6 +1482,15 @@
 				
 				
 				<br/>
+				
+				<rich:panel columns="2" style="border:none; float:left;">
+				<h:panelGroup layout="block" id="panelGroupSchedulingBT">
+					<a4j:commandButton styleClass="greenButton" value="#{messages.oozie_resume}" 
+						rendered="#{canvasBean.showResumeScheduling}" action="#{canvasBean.resumeScheduling}" />
+					<a4j:commandButton styleClass="greenButton" value="#{messages.oozie_suspend}" 
+						rendered="#{canvasBean.showSuspendScheduling}" action="#{canvasBean.suspendScheduling}" />
+				</h:panelGroup>
+				</rich:panel>
 				
 				<rich:panel columns="2" style="border:none; float:right;">
 				
@@ -1822,7 +1843,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
+					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);setIfISchedule(getSelectedByName(),true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>

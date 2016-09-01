@@ -73,7 +73,9 @@ function selectedScheduling(){
 						<h:outputText value="#{messages.label_voronoi_executionTime}" title="#{messages.title_voronoi_executionTime}" />
 					</td>
 					<td>
-			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_executionTime}" >
+			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" 
+			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_executionTime}" 
+			    			showApplyButton="true" >
 			    		<f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>

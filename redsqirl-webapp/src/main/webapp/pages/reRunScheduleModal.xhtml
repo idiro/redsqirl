@@ -16,7 +16,9 @@
 						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
 					</td>
 					<td>
-			    		<rich:calendar id="runningStartDate" value="#{canvasBean.reRunSchedulingStartDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" >
+			    		<rich:calendar id="runningStartDate" value="#{canvasBean.reRunSchedulingStartDate}" datePattern="d/M/yy HH:mm" 
+			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" 
+			    			showApplyButton="true" >
 			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
@@ -26,7 +28,9 @@
 						<h:outputText value="#{messages.label_voronoi_data_end}" title="#{messages.title_voronoi_data_end}" />
 					</td>
 					<td>
-			    		<rich:calendar id="runningEndDate" value="#{canvasBean.reRunSchedulingEndDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" >
+			    		<rich:calendar id="runningEndDate" value="#{canvasBean.reRunSchedulingEndDate}" datePattern="d/M/yy HH:mm" 
+			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" 
+			    			showApplyButton="true" >
 			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>

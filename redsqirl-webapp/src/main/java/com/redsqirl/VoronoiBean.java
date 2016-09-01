@@ -77,9 +77,12 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			setName(dataFlowCoordinator.getName());
 			if(dataFlowCoordinator.getTimeCondition() != null && dataFlowCoordinator.getTimeCondition().getUnit() != null){
 				setSelectedSchedulingOption(dataFlowCoordinator.getTimeCondition().getUnit().toString());
+				setPeriodic(dataFlowCoordinator.getTimeCondition().getFrequency());
 			}else{
 				setSelectedSchedulingOption(null);
+				setPeriodic(null);
 			}
+			setScheduling(true);
 			
 		}else{
 			setName(null);
