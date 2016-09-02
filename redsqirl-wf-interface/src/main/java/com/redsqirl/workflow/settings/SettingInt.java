@@ -94,4 +94,6 @@ public interface SettingInt extends Remote{
 	boolean isExistSysProperty() throws RemoteException;
 
 	void setExistSysProperty(boolean existSysProperty) throws RemoteException;
+	
+	boolean isPassword() throws RemoteException;
 }

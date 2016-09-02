@@ -215,6 +215,7 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 			Properties sysProperties, Properties userProperties, Properties langProperties){
 		scopeMenu = Setting.Scope.USER;
 		validationEnabled = false;
+		boolean templateMenu = isTemplate();
 		for(int i = 0; i < settingArray.length();++i){
 			
 			try{
@@ -224,7 +225,9 @@ public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 				Setting.Scope scope =  readScope(settingObj);
 				Setting.Type type =  readType(settingObj);
 				Setting.Checker validator = readChecker(settingObj);
-				validationEnabled |= validator != null; 
+				if(!templateMenu){
+					validationEnabled |= validator != null || !Setting.Type.STRING.equals(type);
+				}
 						
 				String propertyName = path+"."+property;
 				properties.put(property, new Setting(scope,defaultValue,type,validator));

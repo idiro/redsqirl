@@ -2679,7 +2679,7 @@
 									</rich:menuItem>
 
 									<rich:menuItem id="settingsMenuItem" submitMode="ajax"
-										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}"
+										value="#{messages.label_setting_modal}" action="#{settingsBean.defaultSettings}" reRender="user_core_prop_password, user_core_prop_non_password" 
 										oncomplete="#{rich:component('modalSettings')}.show();document.getElementById('helpmain_setting').click();">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>

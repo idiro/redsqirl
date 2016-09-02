@@ -463,6 +463,18 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		return jobId;
 	}
 
+	public String getConsoleUrl(String jobId) throws RemoteException{
+		String console = null;
+		if (jobId != null) {
+			try {
+				console = oc.getJobInfo(jobId).getConsoleUrl();
+			} catch (OozieClientException e) {
+				logger.error(e,e);
+			}
+		}
+		return console;
+	}
+	
 	/**
 	 * Get the Console URL for Oozie
 	 * 
@@ -475,13 +487,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 */
 
 	public String getConsoleUrl(DataFlow df) throws RemoteException, Exception {
-		String console = null;
-		String jobId = df.getOozieJobId();
-
-		if (jobId != null) {
-			console = oc.getJobInfo(jobId).getConsoleUrl();
-		}
-		return console;
+		return getConsoleUrl(df.getOozieJobId());
 	}
 
 	public String getElementStatus(DataFlow df, DataFlowElement dfe)

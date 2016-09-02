@@ -21,12 +21,12 @@ package com.redsqirl.workflow.server.oozie;
 
 import java.rmi.RemoteException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
-import com.redsqirl.workflow.server.oozie.HiveAction;
 
 public class JdbcAction extends OozieUniqueActionAbs {
 
@@ -34,6 +34,7 @@ public class JdbcAction extends OozieUniqueActionAbs {
 	 * 
 	 */
 	private static final long serialVersionUID = 7581034254093689611L;
+	private static Logger logger = Logger.getLogger(JdbcAction.class);
 	protected boolean hiveAction;
 	protected OozieUniqueActionAbs action;
 	
@@ -45,6 +46,8 @@ public class JdbcAction extends OozieUniqueActionAbs {
 
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
+		logger.debug("Add variables to the sql action: "+getVariables());
+		this.action.addAllVariables(getVariables());
 		this.action.createOozieElement(oozieXmlDoc, action, fileNames);
 	}
 	

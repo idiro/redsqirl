@@ -69,6 +69,14 @@ public interface JobManager extends Remote{
 	public void suspend(String jobId) throws RemoteException, Exception;
 	
 	/**
+	 * Get the Console URL for a job
+	 * @param jobId
+	 * @return
+	 * @throws RemoteException
+	 */
+	String getConsoleUrl(String jobId) throws RemoteException;
+	
+	/**
 	 *
 	 * @param jobId
 	 * @param rerunType

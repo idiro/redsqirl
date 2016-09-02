@@ -59,3 +59,5 @@ ${STARTUP}
 WEBAPP_PID=`ps aux | grep $(dirname $TOMCAT_PATH_CUR}) | grep $USER | head -1 | sed -e 's/\s\+/ /g' | cut -d' ' -f 2`
 echo $WEBAPP_PID > /tmp/redsqirl.pid
 
+sleep 1
+cat ../conf/logo.txt

@@ -149,8 +149,11 @@
 			     				<td>
 			     				
 			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;vertical-align:-6px;" title="#{messages.label_user}" rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
-			     						rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
+			     					<h:inputText id="user_core_prop_password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
+			     						title="#{settingsBean.s.properties[obj].description}" />
+			     					<h:inputText id="user_core_prop_non_password" type="password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" />
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existUserProperty  or settingsBean.template == 'Y') }" />

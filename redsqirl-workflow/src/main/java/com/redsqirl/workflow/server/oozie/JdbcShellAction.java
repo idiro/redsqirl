@@ -81,7 +81,9 @@ public class JdbcShellAction  extends ShellAction {
 			String className = WorkflowPrefManager.getProperty(JdbcStore.property_other_drivers+techName+JdbcStore.property_class_name);
 			content += "CLASS=\""+className+"\"\n";
 		}
-		content += "FILE=\""+sqlFile.getName()+"\"\n";
+		content += "FILE=\""+sqlFile.getName()+"\"\n\n";
+		content += getSedCommand("$FILE");
+		content += "\n\n";
 		content += "MAIN_CLASS=\"com.idiro.ScriptRunnerMain\"\n";
 		content += "\n\n\n";
 		

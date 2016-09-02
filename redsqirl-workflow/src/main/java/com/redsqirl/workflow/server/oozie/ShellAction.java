@@ -21,14 +21,16 @@ package com.redsqirl.workflow.server.oozie;
 
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 import com.redsqirl.workflow.server.OozieManager;
+import com.redsqirl.workflow.server.OozieUniqueActionAbs;
 
 /**
  * Write a mrql action into an oozie xml file.
@@ -84,10 +86,18 @@ public class ShellAction extends OozieUniqueActionAbs {
 			argumentElement2.appendChild(oozieXmlDoc.createTextNode(fileNames[1].substring(fileNames[1].indexOf("/") + 1, fileNames[1].length()) ));
 			shellElement.appendChild(argumentElement2);
 		}
-		
-		Element userEnvVar = oozieXmlDoc.createElement("env-var");
-		userEnvVar.appendChild(oozieXmlDoc.createTextNode("HADOOP_USER_NAME=${"+OozieManager.prop_user+"}"));
-		shellElement.appendChild(userEnvVar);
+		{
+			Element userEnvVar = oozieXmlDoc.createElement("env-var");
+			userEnvVar.appendChild(oozieXmlDoc.createTextNode("HADOOP_USER_NAME=${"+OozieManager.prop_user+"}"));
+			shellElement.appendChild(userEnvVar);
+		}
+		Iterator<String> it = getVariables().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			Element userEnvVar = oozieXmlDoc.createElement("env-var");
+			userEnvVar.appendChild(oozieXmlDoc.createTextNode(cur+"=${"+cur+"}"));
+			shellElement.appendChild(userEnvVar);
+		}
 		
 		Element fileElement = oozieXmlDoc.createElement("file");
 		fileElement.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
@@ -114,6 +124,24 @@ public class ShellAction extends OozieUniqueActionAbs {
 		return null;
 	}
 	
+	public String getSedCommand(String fileName){
+		String ans = "";
+		if(fileName != null && !fileName.isEmpty()){
+			Set<String> vars = getVariables();
+			if(!vars.isEmpty()){
+				ans = "sed -i ";
+				Iterator<String> it = vars.iterator();
+				while(it.hasNext()){
+					String curVar = it.next();
+					ans += "-e \"s/\\${"+curVar+"}/$"+curVar+"/g\" ";
+				}
+				ans += fileName;
+			}
+		}
+		return ans;
+	}
+	
+	
 	public String getShellContent(String oneCommandToExecute){
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
 		logger.debug("Command to execute "+oneCommandToExecute);
@@ -131,7 +159,7 @@ public class ShellAction extends OozieUniqueActionAbs {
 			toWrite += "echo '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'"+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
-		
+			toWrite += getSedCommand("$FILE_NAME")+ System.getProperty("line.separator");
 			if(getFileExtensions()[1].endsWith(".sh")){
 				toWrite += "chmod +x *.sh"+System.getProperty("line.separator");
 			}

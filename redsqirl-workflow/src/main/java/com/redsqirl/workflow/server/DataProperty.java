@@ -68,6 +68,25 @@ DFELinkProperty {
 		this.typeAccepted.add(typeAccepted);
 		init(minOccurence, maxOccurence);
 	}
+	
+
+	/**
+	 * Constructor with one accepted type, the min and max occurrence values and the path type.
+	 * 
+	 * @param typeAccepted
+	 * @param minOccurence
+	 * @param maxOccurenceç
+	 * @param pathTypeAccepted
+	 * @throws RemoteException
+	 */
+	public DataProperty(Class<? extends DFEOutput> typeAccepted,
+			int minOccurence, int maxOccurence,PathType pathTypeAccepted) throws RemoteException {
+		super();
+		this.typeAccepted = new LinkedList<Class<? extends DFEOutput>>();
+		this.typeAccepted.add(typeAccepted);
+		this.pathTypeAccepted = pathTypeAccepted;
+		init(minOccurence, maxOccurence);
+	}
 
 	/**
 	 * Constructor with a list of accepted types and the min and max occurrence

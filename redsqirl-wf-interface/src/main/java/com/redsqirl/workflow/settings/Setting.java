@@ -287,5 +287,10 @@ public class Setting extends UnicastRemoteObject implements SettingInt{
 	public void setExistSysProperty(boolean existSysProperty) {
 		this.existSysProperty = existSysProperty;
 	}
+
+	@Override
+	public boolean isPassword() throws RemoteException {
+		return propertyName.contains("password");
+	}
 	
 }
