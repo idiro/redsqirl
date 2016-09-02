@@ -649,6 +649,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			SimpleDateFormat format = new SimpleDateFormat();
 			CoordinatorJob cur = oc.getCoordJobInfo(jobId);
 			ans+= "\"job-id\":\""+jobId+"\",";
+			ans+= "\"status\":\""+cur.getStatus()+"\",";
 			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
 			ans+= "\"next-action\":\""+format.format(cur.getNextMaterializedTime())+"\",";
 			int counterError = 0;

@@ -137,6 +137,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Scheduling selectedScheduling;
 	private Date reRunSchedulingStartDate;
 	private Date reRunSchedulingEndDate;
+	private boolean showSuspendScheduling;
+	private boolean showResumeScheduling;
 
 	/**
 	 * 
@@ -1340,35 +1342,99 @@ public class CanvasBean extends BaseBean implements Serializable {
 				String json = getOozie().getBundleJobInfo(getDf().getOozieJobId());
 				logger.info(json);
 				JSONObject jsonObj = new JSONObject(json);
-				listScheduling = new ArrayList<Scheduling>();
+				
+				if(listScheduling == null){
+					listScheduling = new ArrayList<Scheduling>();
+				}
+				
+				List<String> status = new ArrayList<String>();
 				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
 					String nameObj = (String) iterator.next();
 
 					JSONObject obj = (JSONObject) jsonObj.get(nameObj);
 
-					Scheduling scheduling = new Scheduling();
+					boolean exist = false;
+					Scheduling scheduling = null;
+					for (Scheduling sc : listScheduling) {
+						if(sc.getJobId().equals(obj.getString("job-id"))){
+							exist = true;
+							scheduling = sc;
+							
+							scheduling.setNameScheduling(nameObj);
+							scheduling.setJobId(obj.getString("job-id"));
+							scheduling.setLastActionScheduling(obj.getString("last-action"));
+							scheduling.setNextActionScheduling(obj.getString("next-action"));
+							scheduling.setActionsScheduling(obj.getString("actions"));
+							scheduling.setOkScheduling(obj.getString("ok"));
 
-					scheduling.setNameScheduling(nameObj);
-					scheduling.setJobId(obj.getString("job-id"));
-					scheduling.setLastActionScheduling(obj.getString("last-action"));
-					scheduling.setNextActionScheduling(obj.getString("next-action"));
-					scheduling.setActionsScheduling(obj.getString("actions"));
-					scheduling.setOkScheduling(obj.getString("ok"));
+							List<String[]> listJobsScheduling = new ArrayList<String[]>();
+							JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
+							for (int i = 0; i < jsonArray.length(); i++) {
+								JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
+								String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
+								listJobsScheduling.add(aux);
+							}
+							scheduling.setListJobsScheduling(listJobsScheduling);
 
-					List<String[]> listJobsScheduling = new ArrayList<String[]>();
-					JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
-					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
-						String[] aux = new String[]{"false", jObj.get("action-number").toString(),jObj.get("nominal-time").toString(), jObj.get("status").toString() };
-						listJobsScheduling.add(aux);
+							scheduling.setSkippedScheduling(obj.getString("skipped"));
+							scheduling.setErrorsScheduling(obj.getString("errors"));
+							scheduling.setRunningScheduling(obj.getString("running"));
+
+							scheduling.setStatusScheduling(obj.getString("status"));
+							
+							break;
+						}
 					}
-					scheduling.setListJobsScheduling(listJobsScheduling);
+					
+					if(!exist){
+						scheduling = new Scheduling();
 
-					scheduling.setSkippedScheduling(obj.getString("skipped"));
-					scheduling.setErrorsScheduling(obj.getString("errors"));
-					scheduling.setRunningScheduling(obj.getString("running"));
+						scheduling.setNameScheduling(nameObj);
+						scheduling.setJobId(obj.getString("job-id"));
+						scheduling.setLastActionScheduling(obj.getString("last-action"));
+						scheduling.setNextActionScheduling(obj.getString("next-action"));
+						scheduling.setActionsScheduling(obj.getString("actions"));
+						scheduling.setOkScheduling(obj.getString("ok"));
 
-					listScheduling.add(scheduling);
+						List<String[]> listJobsScheduling = new ArrayList<String[]>();
+						JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
+						for (int i = 0; i < jsonArray.length(); i++) {
+							JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
+							String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
+							listJobsScheduling.add(aux);
+						}
+						scheduling.setListJobsScheduling(listJobsScheduling);
+
+						scheduling.setSkippedScheduling(obj.getString("skipped"));
+						scheduling.setErrorsScheduling(obj.getString("errors"));
+						scheduling.setRunningScheduling(obj.getString("running"));
+
+						scheduling.setStatusScheduling(obj.getString("status"));
+
+						if(!status.contains(obj.getString("status"))){
+							status.add(obj.getString("status"));
+						}
+
+						listScheduling.add(scheduling);
+					}
+					exist = false;
+					
+					if(!status.contains(obj.getString("status"))){
+						status.add(obj.getString("status"));
+					}
+					
+				}
+
+				if(!status.contains("SUSPENDED")){
+					setShowSuspendScheduling(true);
+					setShowResumeScheduling(false);
+				}else{
+					setShowResumeScheduling(true);
+					if(status.contains("RUNNING")){
+						setShowSuspendScheduling(true);
+					}else{
+						setShowSuspendScheduling(false);
+					}
 				}
 
 			}
@@ -1387,6 +1453,97 @@ public class CanvasBean extends BaseBean implements Serializable {
 				break;
 			}
 		}
+	}
+	
+	public void suspendScheduling() throws Exception {
+		logger.info("suspendScheduling");
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.isSelected()){
+						if(!scheduling.getStatusScheduling().equalsIgnoreCase("SUSPENDED")){
+							getOozie().suspend(scheduling.getJobId());
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void resumeScheduling() throws Exception {
+		logger.info("resumeScheduling");
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.isSelected()){
+						if(scheduling.getStatusScheduling().equalsIgnoreCase("SUSPENDED")){
+							getOozie().resume(scheduling.getJobId());
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
+	
+	public void suspendBundleScheduling() throws Exception {
+		logger.info("suspendBundleScheduling");
+		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.getNameScheduling().equals(selectedScheduling)){
+						for (String[] value : scheduling.getListJobsScheduling()) {
+							if(value[3].equalsIgnoreCase("RUNNING")){
+								getOozie().suspend(value[4]);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public void resumeBundleScheduling() throws Exception {
+		logger.info("resumeBundleScheduling");
+		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.getNameScheduling().equals(selectedScheduling)){
+						for (String[] value : scheduling.getListJobsScheduling()) {
+							if(value[3].equalsIgnoreCase("SUSPENDED")){
+								getOozie().resume(value[4]);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
+	public void killBundleScheduling() throws Exception {
+		logger.info("killBundleScheduling");
+		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				for (Scheduling scheduling : listScheduling) {
+					if(scheduling.getNameScheduling().equals(selectedScheduling)){
+						for (String[] value : scheduling.getListJobsScheduling()) {
+							if(value[3].equalsIgnoreCase("RUNNING")){
+								getOozie().kill(value[4]);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	public void reRunSelectedScheduling() throws RemoteException {
@@ -1428,13 +1585,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("reRunAllScheduling");
 		Date startDate = getReRunSchedulingStartDate();
 		Date endDate = getReRunSchedulingEndDate();
-		
+
 		if(df != null){
 			logger.info("df not null");
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 			dateFormat.setTimeZone(TimeZone.getTimeZone(
-						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
-			
+					WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+
 			if(df.isrunning() && df.isSchedule()){
 				logger.info("df running");
 				try{
@@ -1458,6 +1615,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (df != null && df.getOozieJobId() != null) {
 				getOozie().kill(df.getOozieJobId());
 			}
+			
+			listScheduling = null;
+			
 		}catch(Exception e){
 			error = getMessageResources("msg_error_oops");
 		}
@@ -3529,6 +3689,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setReRunSchedulingEndDate(Date reRunSchedulingEndDate) {
 		this.reRunSchedulingEndDate = reRunSchedulingEndDate;
+	}
+
+	public boolean isShowSuspendScheduling() {
+		return showSuspendScheduling;
+	}
+
+	public void setShowSuspendScheduling(boolean showSuspendScheduling) {
+		this.showSuspendScheduling = showSuspendScheduling;
+	}
+
+	public boolean isShowResumeScheduling() {
+		return showResumeScheduling;
+	}
+
+	public void setShowResumeScheduling(boolean showResumeScheduling) {
+		this.showResumeScheduling = showResumeScheduling;
 	}
 
 }

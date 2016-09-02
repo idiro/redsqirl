@@ -20,6 +20,8 @@ public class Scheduling implements Serializable{
 	private String errorsScheduling;
 	private String runningScheduling;
 	private List<String[]> listJobsScheduling;
+	private String statusScheduling;
+	private boolean selected;
 	
 	public Scheduling() {
 		super();
@@ -79,19 +81,24 @@ public class Scheduling implements Serializable{
 	public void setNameScheduling(String nameScheduling) {
 		this.nameScheduling = nameScheduling;
 	}
-
-	/**
-	 * @return the jobId
-	 */
 	public String getJobId() {
 		return jobId;
 	}
-
-	/**
-	 * @param jobId the jobId to set
-	 */
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
+	}
+	public String getStatusScheduling() {
+		return statusScheduling;
+	}
+	public void setStatusScheduling(String statusScheduling) {
+		this.statusScheduling = statusScheduling;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 	
 }
