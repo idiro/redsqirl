@@ -115,7 +115,7 @@
 			     					<h:panelGrid columns="3" rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.template != 'Y'}">
 			     					
 			     						<a4j:commandLink action="#{packageMngBean.setDefaultValue}" rendered="#{packageMngBean.s.properties[obj].existSysProperty and packageMngBean.canEdit}" 
-			     						onmousedown="saveScrollPositionPackages();" oncomplete="setScrollPositionPackages();" >
+			     							onmousedown="saveScrollPositionPackages();" oncomplete="setScrollPositionPackages();" >
 									    	<h:graphicImage url="../image/icons/button-undo.gif" style="width:20px;" 
 									    		title="#{messages.label_default_value} #{packageMngBean.s.properties[obj].defaultValue}"/>
 									    	<f:param name="key" value="#{obj}" />
@@ -144,9 +144,15 @@
 			     				<td>
 			     				
 			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;vertical-align:-6px;" title="#{messages.label_user}" rendered="#{packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY'}" />
-			     					<h:inputText value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
-			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty  &amp;&amp; packageMngBean.template != 'Y'}" 
+			     						
+			     					<h:inputText id="user_core_prop_password" value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     						rendered="#{!packageMngBean.s.properties[obj].password &amp;&amp; (packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty &amp;&amp; packageMngBean.template != 'Y' }" 
 			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     					<h:inputSecret id="user_core_prop_non_password" type="password" value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     						rendered="#{packageMngBean.s.properties[obj].password &amp;&amp; (packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty &amp;&amp; packageMngBean.template != 'Y' }" 
+			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     						
+			     						
 			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
 			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!packageMngBean.s.properties[obj].existUserProperty or  packageMngBean.template == 'Y') }" />
 			     					<br/>

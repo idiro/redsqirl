@@ -1483,7 +1483,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
 	}
 	
 	
@@ -1523,7 +1522,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
 	}
 	
 	public void killBundleScheduling() throws Exception {
@@ -1543,7 +1541,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
 	}
 
 	public void reRunSelectedScheduling() throws RemoteException {
