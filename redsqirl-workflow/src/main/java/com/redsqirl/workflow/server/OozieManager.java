@@ -174,12 +174,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#kill(java.lang.String)
 	 */
-	public void kill(String jobId) throws Exception {
+	public void kill(String jobId) throws RemoteException {
 		try{
 			oc.kill(jobId);
 		}catch(OozieClientException e ){
 			logger.warn(e,e);
-			throw new Exception(e);
+			throw new RemoteException(e.getMessage());
 		}
 	}
 
@@ -190,12 +190,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#resume(java.lang.String)
 	 */
-	public void resume(String jobId) throws Exception {
+	public void resume(String jobId) throws RemoteException {
 		try{
 			oc.resume(jobId);
 		}catch(OozieClientException e ){
 			logger.warn(e,e);
-			throw new Exception(e);
+			throw new RemoteException(e.getMessage());
 		}
 	}
 
@@ -208,12 +208,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#run(java.util.Properties)
 	 */
-	public String run(Properties conf) throws Exception {
+	public String run(Properties conf) throws RemoteException {
 		try{
 			return oc.run(conf);
 		}catch(OozieClientException e ){
 			logger.warn(e,e);
-			throw new Exception(e);
+			throw new RemoteException(e.getMessage());
 		}
 	}
 
@@ -226,12 +226,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#submit(java.util.Properties)
 	 */
-	public String submit(Properties conf) throws Exception {
+	public String submit(Properties conf) throws RemoteException {
 		try{
 			return oc.submit(conf);
 		}catch(OozieClientException e ){
 			logger.warn(e,e);
-			throw new Exception(e);
+			throw new RemoteException(e.getMessage());
 		}
 	}
 
@@ -243,12 +243,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * @throws Exception
 	 * @see org.apache.oozie.client.OozieClient#suspend(java.lang.String)
 	 */
-	public void suspend(String jobId) throws Exception {
+	public void suspend(String jobId) throws RemoteException {
 		try{
 			oc.suspend(jobId);
 		}catch(OozieClientException e ){
 			logger.warn(e,e);
-			throw new Exception(e);
+			throw new RemoteException(e.getMessage());
 		}
 	}
 

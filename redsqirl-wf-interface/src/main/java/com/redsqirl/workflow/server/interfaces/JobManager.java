@@ -34,16 +34,14 @@ public interface JobManager extends Remote{
 	 * Kill a job
 	 * @param jobId
 	 * @throws RemoteException
-	 * @throws Exception
 	 */
-	public void kill(String jobId) throws RemoteException, Exception;
+	public void kill(String jobId) throws RemoteException;
 	/**
 	 * Resume a job that is suspended
 	 * @param jobId
 	 * @throws RemoteException
-	 * @throws Exception
 	 */
-	public void resume(String jobId) throws RemoteException, Exception;
+	public void resume(String jobId) throws RemoteException;
 	/**
 	 * Run a job using specified properties
 	 * @param conf
@@ -51,7 +49,7 @@ public interface JobManager extends Remote{
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
-	public String run(Properties conf) throws RemoteException, Exception;
+	public String run(Properties conf) throws RemoteException;
 	/**
 	 * Submit a job with specific properties
 	 * @param conf
@@ -59,14 +57,14 @@ public interface JobManager extends Remote{
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
-	public String submit(Properties conf) throws RemoteException, Exception;
+	public String submit(Properties conf) throws RemoteException;
 	/**
 	 * Suspend a job
 	 * @param jobId
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
-	public void suspend(String jobId) throws RemoteException, Exception;
+	public void suspend(String jobId) throws RemoteException;
 	
 	/**
 	 * Get the Console URL for a job
