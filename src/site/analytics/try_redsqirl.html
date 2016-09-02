@@ -143,7 +143,7 @@ To do this, by default, docker installs 'VirtualBox' and uses the VM called "def
 Step 1: When you have Docker installed, simply open up your terminal and type in this Docker command: 
 <br/><br/>
 <code>
-docker pull redsqirl/cloudera:2.6.0-0.12 
+docker pull redsqirl/cloudera:2.6.0-0.13
 </code>
 <br/><br/>
 (We're recommending 
@@ -156,7 +156,8 @@ Step 2: Next, in the terminal, you'll now create the Docker image by typing in t
 <br/><br/>
 <code>
 docker run --hostname=quickstart.cloudera --privileged=true <br/> 
--t -i -p 8842:8842 redsqirl/clouder- a:2.6.0-0.12 <br/> /usr/bin/docker-quickstart
+-t -i -p 8842:8842 redsqirl/cloudera:2.6.0-0.13 <br/> /usr/bin/docker-quickstart
+
 </code>
 <br/><br/>
 This may take a few minutes, when it's finished you'll see our Red Sqirl welcome message in the terminal. 
@@ -178,7 +179,8 @@ This may take a few minutes, when it's finished you'll see our Red Sqirl welcome
 <span style="font-size:1.4em" >
 <br/>
 
-Step 1: If you have installed on Linux: <br/><br/>
+Step 1: <br/>
+<b>On Linux:</b> If you have installed on Linux: <br/><br/>
 Open your browser and go to the url: http://local-host:8842/redsqirl 
 
 <br/><br/>
@@ -188,13 +190,13 @@ The Red Sqirl URL will look like this <br/> http://< IP ADDRESS >:8842/redsqirl.
 
 To get the IP address:<br/><br/>
 
-On windows: Start your favorite shell (cmd.exe, PowerShell, or other) and type <br/><br/>
+<b>On windows:</b> Start your favorite shell (cmd.exe, PowerShell, or other) and type <br/><br/>
 <code>
 docker-machine.exe ip default
 </code>
 <br/><br/>
 
-On Mac: Start your favorite terminal and type <br/><br/>
+<b>On Mac:</b> Start your favorite terminal and type <br/><br/>
 <code>
 docker-machine ip default
 </code>
@@ -207,7 +209,7 @@ http://< IP ADDRESS >:8842/redsqirl
 
 
 
-Step 2: Create a Red Sqirl Analytics Store admin user account, confirm the registration through your email and sign in with your new credentials.
+Step 2: Create a Red Sqirl Analytics Store user account, confirm the registration through your email and sign in with your new credentials.
 <br/><br/>
 Step 3: Do not install the default packages (Spark is not installed by default on a Cloudera cluster)
 <br/><br/>

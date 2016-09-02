@@ -199,10 +199,16 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker <a 
 <br/>
 Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
 <br/><br/>
-The principal should follow the format _USER/_HOST@_REALM for example, myuser/myhost.example.com@EXAMPLE.COM
+The principal should follow the format 
+<code>
+_USER/_HOST@_REALM
+</code>
+ for example, 
+<code> myuser/myhost.example.com@EXAMPLE.COM </code>
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
-By default, Red Sqirl is expecting the keytab files at /etc/security/keytabs/redsqirl/user-_USER.keytab
+By default, Red Sqirl is expecting the keytab files at 
+<code>/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
 <br/><br/>
 In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
 </span>
@@ -377,10 +383,14 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker
 <br/>
 Red Sqirl now supports Hadoop secure mode. If your cluster is kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
 <br/><br/>
-The principal should follow the format _USER/_HOST@_REALM for example, myuser/myhost.example.com@EXAMPLE.COM
+The principal should follow the format 
+<code>_USER/_HOST@_REALM</code>
+ for example, 
+<code>myuser/myhost.example.com@EXAMPLE.COM</code>
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
-By default, Red Sqirl is expecting the keytab files at /etc/security/keytabs/redsqirl/user-_USER.keytab
+By default, Red Sqirl is expecting the keytab files at 
+<code>/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
 <br/><br/>
 In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
 </span>
