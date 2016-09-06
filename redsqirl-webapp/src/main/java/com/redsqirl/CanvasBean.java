@@ -486,13 +486,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void applyMergeCoordinator() throws RemoteException {
 		logger.info("applyMergeCoordinator");
 		
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String coordinatorsSelectedA = params.get("coordinatorsSelectedA");
+		String coordinatorsSelectedB = params.get("coordinatorsSelectedB");
+		
 		//check if selected the same coordinator
-		if(getCoordinatorsSelectedA().equals(getCoordinatorsSelectedB())){
+		if(coordinatorsSelectedA.equals(coordinatorsSelectedB)){
 			displayErrorMessage(getMessageResources("msg_error_merge_equal"), "APPLYMERGECOORDINATOR");
 		}
 		
 		if (df != null) {
-			df.getCoordinator(getCoordinatorsSelectedA()).merge(df.getCoordinator(getCoordinatorsSelectedB()));
+			df.getCoordinator(coordinatorsSelectedA).merge(df.getCoordinator(coordinatorsSelectedB));
 		}
 		
 	}

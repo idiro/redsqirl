@@ -2555,7 +2555,6 @@
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
-				
 						
 				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" 
 					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling">
@@ -2564,10 +2563,16 @@
 					<a4j:actionparam name="selectedSchedulingOption" />
 					<a4j:actionparam name="list" />
 				</a4j:jsFunction>
-				
 
 				<a4j:jsFunction name="openModalMerge" action="#{canvasBean.openModalMergeCoordinator}" 
 					oncomplete="#{rich:component('modalMergeCoordinator')}.show();" reRender="msnError, errorTable, panelMergeCoordinatorA, panelMergeCoordinatorB">
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="applyMergeCoordinator"
+					action="#{canvasBean.applyMergeCoordinator}" reRender="errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('modalMergeCoordinator')}.hide(); undoRedoVoronoi(); }">
+					<a4j:actionparam name="coordinatorsSelectedA" />
+					<a4j:actionparam name="coordinatorsSelectedB" />
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="splitCoordinator"
@@ -2586,7 +2591,6 @@
 					<a4j:actionparam name="groupID" />
 				</a4j:jsFunction>
 			</a4j:region>
-			
 
 			<a4j:region>
 

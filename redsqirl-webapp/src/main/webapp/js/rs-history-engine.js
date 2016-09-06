@@ -738,3 +738,42 @@ function undoRedoCoordinator(obj){
 		canvasArray[selectedCanvas].commandHistory.push_command(new CommandCoordinator(obj));
 	}
 }
+
+/********************************************************************/
+/********************************************************************/
+/********************* MergeCoordinator ***************************/
+function MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB) {
+    Command.call(this);
+    this.coordinatorsSelectedA = coordinatorsSelectedA;
+    this.coordinatorsSelectedB = coordinatorsSelectedB;
+    this.cloneId = "";
+    
+    tmpCommandObj = this;
+};
+
+MergeCoordinator.prototype = Object.create(Command.prototype);
+MergeCoordinator.prototype.constructor = MergeCoordinator;
+
+MergeCoordinator.prototype.undo = function(){
+	deleteAllElements();
+	replaceWFByCloneVoronoi("",this.cloneId, false);
+};
+
+MergeCoordinator.prototype.redo = function(){
+	applyMergeCoordinator(this.coordinatorsSelectedA, this.coordinatorsSelectedB);
+};
+
+MergeCoordinator.prototype.getName = function(){
+	return msg_coordinator_command;
+};
+
+MergeCoordinator.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function undoRedoMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB){
+	console.log("A " + coordinatorsSelectedA);
+	console.log("B " + coordinatorsSelectedA);
+	canvasArray[selectedCanvas].commandHistory.push_command(new MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB));
+	cloneVoronoi(getAllCanvasesStatus());
+}

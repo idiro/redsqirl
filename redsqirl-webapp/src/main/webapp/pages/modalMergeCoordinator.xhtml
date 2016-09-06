@@ -54,8 +54,8 @@
 
 		<rich:panel columns="2" style="border:none; float:right;">
 		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalMergeCoordinator')}.hide();" />
-		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasBean.applyMergeCoordinator}"
-		    	oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('modalMergeCoordinator')}.hide(); undoRedoVoronoi(); }" reRender="msnError, errorTable" />
+		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" 
+		    	oncomplete="undoRedoMergeCoordinator('#{canvasBean.coordinatorsSelectedA}','#{canvasBean.coordinatorsSelectedB}');applyMergeCoordinator('#{canvasBean.coordinatorsSelectedA}','#{canvasBean.coordinatorsSelectedB}');" reRender="msnError, errorTable" />
 		</rich:panel>
 
     
