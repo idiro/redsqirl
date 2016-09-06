@@ -485,16 +485,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 	
 	public void applyMergeCoordinator() throws RemoteException {
 		logger.info("applyMergeCoordinator");
-		
+		String error = null;
 		//check if selected the same coordinator
 		if(getCoordinatorsSelectedA().equals(getCoordinatorsSelectedB())){
-			displayErrorMessage(getMessageResources("msg_error_merge_equal"), "APPLYMERGECOORDINATOR");
+			error = getMessageResources("msg_error_merge_equal");
+		}else if (df != null) {
+			error = df.checkCoordinatorMergeConflict(getCoordinatorsSelectedA(),getCoordinatorsSelectedB());
+			if(error == null){
+				df.mergeCoordinators(getCoordinatorsSelectedA(),getCoordinatorsSelectedB());
+			}
 		}
-		
-		if (df != null) {
-			df.getCoordinator(getCoordinatorsSelectedA()).merge(df.getCoordinator(getCoordinatorsSelectedB()));
-		}
-		
+
+		displayErrorMessage(error, "APPLYMERGECOORDINATOR");
 	}
 	
 	public void splitCoordinator() throws RemoteException {
@@ -504,10 +506,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String error = null;
 		
 		String coordinatorName = null;
-		List<DataFlowElement> componentIds = new ArrayList<DataFlowElement>();
+		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
 		for (String groupId : groupIds) {
-			DataFlowElement el = df.getElement(groupId);
+			String componentId = idMap.get(nameWorkflow).get(groupId);
+			DataFlowElement el = df.getElement(componentId);
 			
 			//check if is same coordinator
 			if(coordinatorName != null && !coordinatorName.equals(el.getCoordinatorName())){
@@ -515,7 +518,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				break;
 			}else{
 				coordinatorName = el.getCoordinatorName();
-				componentIds.add(el);
+				componentIds.add(componentId);
 			}
 			
 		}
@@ -527,11 +530,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		if(error == null){
 			if (df != null) {
-				df.getCoordinator(coordinatorName).split(componentIds);
+				error = df.splitCoordinator(coordinatorName, componentIds);
 			}
-		}else{
-			displayErrorMessage(error, "SPLITCOORDINATOR");
 		}
+		
+		displayErrorMessage(error, "SPLITCOORDINATOR");
 		
 	}
 
