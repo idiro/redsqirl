@@ -209,15 +209,15 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker <a 
 Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
 <br/><br/>
 The principal should follow the format 
-<code>
+<code style="white-space:normal;word-wrap: break-word;" >
 _USER/_HOST@_REALM
 </code>
  for example, 
-<code> myuser/myhost.example.com@EXAMPLE.COM </code>
+<code style="white-space:normal;word-wrap: break-word;" > myuser/myhost.example.com@EXAMPLE.COM </code>
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
 By default, Red Sqirl is expecting the keytab files at 
-<code>/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
+<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
 <br/><br/>
 In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
 </span>
@@ -310,7 +310,10 @@ Red Sqirl version <b>0.13</b>
 
 Step 2: Unzip the download where you want to install it through the Tomcat user <br/><br/>
 Step 3: Run the script bin/install.sh. It will ask for your Tomcat webapps port and directory if necessary. This is going to start the Tomcat <br/><br/>
-Step 4: Go http://myserver:portNumber/redsqirl, in your browser, where you should see a login page <br/><br/>
+Step 4: Go to 
+<code style="white-space:normal;word-wrap: break-word;" >
+http://myserver:portNumber/redsqirl
+</code> in your browser, where you should see a login page <br/><br/>
 Step 5: Create a Red Sqirl Analytics Store admin user account, confirm the registration through your email and sign in with your new credentials <br/><br/>
 Step 6: You will then be asked to install the recommended default package and any other packages you want <br/><br/>
 Step 7: Set up the settings from the Settings tab <br/><br/>
@@ -393,13 +396,13 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker
 Red Sqirl now supports Hadoop secure mode. If your cluster is kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
 <br/><br/>
 The principal should follow the format 
-<code>_USER/_HOST@_REALM</code>
+<code style="white-space:normal;word-wrap: break-word;" >_USER/_HOST@_REALM</code>
  for example, 
-<code>myuser/myhost.example.com@EXAMPLE.COM</code>
+<code style="white-space:normal;word-wrap: break-word;" >myuser/myhost.example.com@EXAMPLE.COM</code>
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
 By default, Red Sqirl is expecting the keytab files at 
-<code>/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
+<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
 <br/><br/>
 In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
 </span>
@@ -491,7 +494,12 @@ Step 4: Before you can use Red Sqirl Offline, you'll need to create a Red Sqirl 
 Step 5: Once logged in, click on 'request new software key' and fill the form. You'll need to choose the Red Sqirl version you downloaded. Your licence key will be generated automatically <br/><br/>
 Step 6: The next page will show you the packages available. You'll need to download the Red Sqirl package for each of the Hadoop technologies that you have on your Hadoop cluster. For example, choose the Red Sqirl Pig package (redsqirl-pig) and generate the package key if you have Apache Pig on your Hadoop cluster. <br/><br/>
 Step 7: Once you've generated the package key, you'll then need to download the package itself and the keys you just generated from the Module Key Manager page <br/><br/>
-Step 8: Now you're ready to set up Offline Red Sqirl, disconnect from your network and go to http://myserver:portNumber/redsqirl <br/><br/>
+Step 8: Now you're ready to set up Offline Red Sqirl, disconnect from your network and go to 
+
+<code style="white-space:normal;word-wrap: break-word;" >
+http://myserver:portNumber/redsqirl 
+</code>
+<br/><br/>
 Step 9: Sign into Red Sqirl using your server account details (OS name and password) <br/><br/>
 Step 10: On the License key page you'll need to upload your license key file (licenseKey.properties), after pressing ok you'll be redirected to the Packages page <br/><br/>
 Step 11: Upload the Red Sqirl package (.zip) and any other packages you've downloaded on this page <br/><br/>
