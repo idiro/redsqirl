@@ -447,6 +447,9 @@ img.five{
 	text-transform:uppercase;
 	font-weight:300;
 }
+.services h3 span{
+	color:#c4161c;
+}
 .videoWrapper {
 	position: relative;
 	padding-top: 25px;

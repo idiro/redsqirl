@@ -10,8 +10,8 @@ Administration Guide
 repository and takes advantage of it. Module management become
 easier if the repository is available and can be done directly from the Red
 Sqirl application. If the repository is not available only the administrator can
-install manually new modules. You can find the installation instructions in
-{{{./gettingstarted.html}Getting Started}}.
+install manually new modules. You can find the installation instructions on the
+{{{./install_redsqirl.html}Install Red Sqirl}} page.
 
 * Start and Shutdown
 
@@ -44,8 +44,7 @@ therefore one cannot sign in simultaneously two times with the same login.
 resumed through Oozie. Red Sqirl provides also those features through its UI.
 Red Sqirl enable users to change the execution queues for every user, the master
 processes (Oozie Map only job) run in the launch queue. The action
-queue manage the actual data processing jobs. See settings in the
-{{{./gettingstarted.html} Getting Started}}.
+queue manages the actual data processing jobs.
 
 * Package Management
 

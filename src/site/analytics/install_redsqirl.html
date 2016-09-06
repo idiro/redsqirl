@@ -62,10 +62,10 @@ $(document).ready(function() {
 	});
 
 	$('#Kerberized').on('show.bs.collapse', function () {
-		$('#textKerberized').html('&#9662; Kerberized Hadoop');
+		$('#textKerberized').html('&#9662; If your Hadoop is Kerberized');
 	});
 	$('#Kerberized').on('hidden.bs.collapse', function () {
-		$('#textKerberized').html('&#9656; Kerberized Hadoop');
+		$('#textKerberized').html('&#9656; If your Hadoop is Kerberized');
 	});
 
 
@@ -92,10 +92,19 @@ $(document).ready(function() {
 	});
 
 	$('#Kerberizedoff').on('show.bs.collapse', function () {
-		$('#textKerberizedoff').html('&#9662; Kerberized Hadoop');
+		$('#textKerberizedoff').html('&#9662; If your Hadoop is Kerberized');
 	});
 	$('#Kerberizedoff').on('hidden.bs.collapse', function () {
-		$('#textKerberizedoff').html('&#9656; Kerberized Hadoop');
+		$('#textKerberizedoff').html('&#9656; If your Hadoop is Kerberized');
+	});
+
+	$('#modalTermsAndConditions').on('show.bs.modal', function(e) {
+
+	    var id = $(e.relatedTarget).data('project-id');
+	    $(e.currentTarget).find('#selectedProject').val(id);
+	    $(e.currentTarget).find('#spanBTOK').removeClass();
+	    $(e.currentTarget).find('#spanBTOK').addClass($(e.relatedTarget).parents('table').attr('id')+id);
+
 	});
 
 
@@ -143,7 +152,7 @@ There are two ways to use Red Sqirl on your Hadoop cluster, Online and Offline.
 				</div>
 
 <br/><br/>
-<a href="#part1" data-toggle="collapse" style="text-decoration:none;color:#000000;">
+<a href="#part1" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;">
 <span style="font-size:25px;" id="textPart1" >&#9656; 1. What you'll need</span>
 </a>
 <br/>
@@ -189,8 +198,8 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker <a 
 
 
 <br/><br/>
-<a href="#Kerberized" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
-<span style="font-size:25px;" id="textKerberized" >&#9656; Kerberized Hadoop</span>
+<a href="#Kerberized" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
+<span style="font-size:25px;" id="textKerberized" >&#9656; If your Hadoop is Kerberized</span>
 </a>
 <br/>
 <div id="Kerberized" class="collapse">
@@ -223,7 +232,7 @@ In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is
 
 
 <br/><br/>
-<a href="#part2" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part2" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart2" >&#9656; 2. Architecture</span>
 </a>
 <br/><br/>
@@ -237,7 +246,7 @@ Red Sqirl uses Tomcat as a web service. When you are logging in, it will create 
 
 
 <br/>
-<a href="#part3" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part3" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart3" >&#9656; 3. Steps to install</span>
 </a>
 <br/>
@@ -253,7 +262,7 @@ Step 1: Click the Red Sqirl download for the version of Hadoop that you are runn
 Red Sqirl version <b>0.13</b>
 <br/>
 
-<table class="bodyTable" border="1" style="width:100%" id="table013" >
+<table class="bodyTable" border="1" style="width:100%;word-break: break-all;" id="table013" >
 	<tbody>
 	<tr>
 		<th align="left" style="width: 25%" >Hadoop Version</th>
@@ -309,7 +318,7 @@ Step 8: You can then click to sign out from the admin page and click to sign int
  <br/>
 
 <br/>
-<center>Congratulations you now have Red Sqirl installed</center>
+<center>Congratulations! You now have Red Sqirl installed</center>
 <br/>
 
 </span>
@@ -336,7 +345,7 @@ Step 8: You can then click to sign out from the admin page and click to sign int
 				
 
 <br/><br/>
-<a href="#part1off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part1off" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart1off" >&#9656; 1. What you'll need</span>
 </a>
 <br/>
@@ -374,8 +383,8 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker
 </span>
 
 <br/><br/>
-<a href="#Kerberizedoff" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
-<span style="font-size:25px;" id="textKerberizedoff" >&#9656; Kerberized Hadoop</span>
+<a href="#Kerberizedoff" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
+<span style="font-size:25px;" id="textKerberizedoff" >&#9656; If your Hadoop is Kerberized</span>
 </a>
 <br/>
 <div id="Kerberizedoff" class="collapse">
@@ -404,7 +413,7 @@ In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is
 
 
 <br/><br/>
-<a href="#part2off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part2off" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart2off" >&#9656; 2. Architecture</span>
 <br/><br/>
 <div id="part2off" class="collapse">
@@ -418,7 +427,7 @@ Red Sqirl uses Tomcat as a web service. When you are logging in, it will create 
 
 
 <br/>
-<a href="#part3off" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part3off" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart3off" >&#9656; 3. Steps to install</span>
 </a>
 <br/>
@@ -431,7 +440,7 @@ Step 1: Click the Red Sqirl download for the version of Hadoop that you are runn
 Red Sqirl version <b>0.13</b>
 <br/>
 
-<table class="bodyTable" border="1" style="width:100%" id="table013" >
+<table class="bodyTable" border="1" style="width:100%;word-break: break-all;" id="table013" >
 	<tbody>
 	<tr>
 		<th align="left" style="width: 25%" >Hadoop Version</th>
@@ -490,7 +499,7 @@ Step 12: Set up the settings from the Settings tab <br/><br/>
 Step 13: You'll then need to sign out and sign in again with your server account details (OS name and password) <br/>
 
 <br/>
-<center>Congratulations you now have Red Sqirl installed</center>
+<center>Congratulations! You now have Red Sqirl installed</center>
 <br/>
 
 </span>
@@ -591,6 +600,38 @@ style="width:90%;white-space:normal;word-wrap:break-word;" >
 
 	<a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
 
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalTermsAndConditions" role="dialog" style="height:250px;overflow:hidden;">
+  <div class="modal-dialog">
+
+	<form>
+    
+	    <!-- Modal content-->
+	    <div class="modal-content" >
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Terms and Conditions</h4>
+	      </div>
+	      <div class="modal-body" >
+		<p>
+
+		By clicking OK you acknowledge to have read and agree to the attached <a href="termsConditions.html" target="_blank" > Terms and Conditions</a>
+		
+		<input type="hidden" id="selectedProject" />
+
+		</p>
+	      </div>
+	      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="event.preventDefault();DownloadProject( $('#selectedProject').val() );" ><span id="spanBTOK" class="" >OK</span></button>
+	      </div>
+	    </div>
+
+	</form>
+
+  </div>
 </div>
 
 
