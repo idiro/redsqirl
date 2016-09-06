@@ -1373,6 +1373,18 @@
 				jQuery("#formMenu\\:aggregateMenuItem").click();
 			}
 	   	});
+        
+        shortcut.add("Ctrl+Alt+R",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:mergeMenuItem").click();
+			}
+	   	});
+        
+        shortcut.add("Ctrl+Alt+S",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:splitMenuItem").click();
+			}
+	   	});
 
 	</script>
 
@@ -2684,6 +2696,16 @@
 										value="#{messages.label_menu_aggregate}"
 										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();">
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="mergeMenuItem" submitMode="ajax"
+										value="#{messages.label_voronoi_merge}"
+										onclick="checkSplit();">
+										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="splitMenuItem" submitMode="ajax"
+										value="#{messages.label_voronoi_split}"
+										onclick="checkSplit();">
+										<h:outputText value="Ctrl+Alt+S" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
