@@ -103,38 +103,24 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	}
 	
 	public Date getStartTime(Date executionTime,int offset) throws RemoteException{
+		return getStartTime(new Date(),executionTime,offset);
+	}
+	
+	public Date getStartTime(Date referenceTime, Date executionTime,int offset) throws RemoteException{
 		Date tmpDate = null;
-		Date now = new Date();
 		Calendar cl = new GregorianCalendar(
 				TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone)));
 		if(executionTime == null){
-			cl.setTime(now);
+			cl.setTime(referenceTime);
 			tmpDate = cl.getTime();
 		}else{
 			tmpDate = executionTime;
 			cl.setTime(tmpDate);
 			while(true){
-				long search = (tmpDate.getTime() - now.getTime())/60000;
-				switch(unit){
-				case DAY:
-					cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1)* 24 * frequency));
-					break;
-				case HOUR:
-					cl.add(Calendar.HOUR, (int)((search < 0 ? 1:-1) * frequency));
-					break;
-				case MINUTE:
-					cl.add(Calendar.MINUTE, (int)((search < 0 ? 1:-1) * frequency));
-					break;
-				case MONTH:
-					cl.add(Calendar.MONTH, (int)((search < 0 ? 1:-1)* frequency));
-					break;
-				case YEAR:
-					cl.add(Calendar.YEAR, (int)((search < 0 ? 1:-1)* frequency));
-					break;
-
-				}
-				long newSearch = (cl.getTime().getTime() - now.getTime());
+				long search = (tmpDate.getTime() - referenceTime.getTime())/60000;
+				cl.setTime(addToDate(cl.getTime(), (int)((search < 0 ? 1:-1) * frequency), unit));
+				long newSearch = (cl.getTime().getTime() - referenceTime.getTime());
 				if(newSearch*search < 1){
 					if(newSearch > 1){
 						tmpDate  = cl.getTime();
@@ -145,26 +131,34 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 			cl.setTime(tmpDate);
 		}
 		if( unit != null && offset > 0){
-			switch(unit){
-			case DAY:
-				cl.add(Calendar.HOUR, 24 * frequency * offset);
-				break;
-			case HOUR:
-				cl.add(Calendar.HOUR, frequency * offset);
-				break;
-			case MINUTE:
-				cl.add(Calendar.MINUTE, frequency * offset);
-				break;
-			case MONTH:
-				cl.add(Calendar.MONTH, frequency * offset);
-				break;
-			case YEAR:
-				cl.add(Calendar.YEAR, frequency * offset);
-				break;
-
-			}
+			cl.setTime(addToDate(cl.getTime(), frequency * offset, unit));
 		}
 		
+		return cl.getTime();
+	}
+	
+	public static Date addToDate(Date myDate, int offset, TimeTemplate unit) throws RemoteException{
+		Calendar cl = new GregorianCalendar(
+				TimeZone.getTimeZone(
+						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		cl.setTime(myDate);
+		switch(unit){
+		case DAY:
+			cl.add(Calendar.HOUR, 24 * offset);
+			break;
+		case HOUR:
+			cl.add(Calendar.HOUR, offset);
+			break;
+		case MINUTE:
+			cl.add(Calendar.MINUTE, offset);
+			break;
+		case MONTH:
+			cl.add(Calendar.MONTH, offset);
+			break;
+		case YEAR:
+			cl.add(Calendar.YEAR, offset);
+			break;
+		}
 		return cl.getTime();
 	}
 	
@@ -176,23 +170,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		if(unit == null){
 			cl.add(Calendar.MINUTE, 3);
 		}else{
-			switch(unit){
-			case DAY:
-				cl.add(Calendar.HOUR, 24 * frequency * (numberDefaultIteration - offset));
-				break;
-			case HOUR:
-				cl.add(Calendar.HOUR, frequency * (numberDefaultIteration - offset));
-				break;
-			case MINUTE:
-				cl.add(Calendar.MINUTE, frequency * (numberDefaultIteration - offset));
-				break;
-			case MONTH:
-				cl.add(Calendar.MONTH, frequency * (numberDefaultIteration - offset));
-				break;
-			case YEAR:
-				cl.add(Calendar.YEAR, frequency * (numberDefaultIteration - offset));
-				break;
-			}
+			cl.setTime(addToDate(startDate, frequency * (numberDefaultIteration - offset), unit));
 		}
 		return cl.getTime();
 	}

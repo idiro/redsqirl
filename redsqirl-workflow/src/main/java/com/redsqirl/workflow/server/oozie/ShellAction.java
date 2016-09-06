@@ -133,7 +133,7 @@ public class ShellAction extends OozieUniqueActionAbs {
 				Iterator<String> it = vars.iterator();
 				while(it.hasNext()){
 					String curVar = it.next();
-					ans += "-e \"s/\\${"+curVar+"}/$"+curVar+"/g\" ";
+					ans += "-e \"s#\\${"+curVar+"}#$"+curVar+"#g\" ";
 				}
 				ans += fileName;
 			}

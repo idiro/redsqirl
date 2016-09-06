@@ -792,13 +792,6 @@
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
 	             try{DMRDIV_disableProgressBar();}catch(exception){}
 	             try{jQuery('#domMessageRunning'+ copyRunningMsgIdx).remove();}catch(exception){}
-
-	             //remove star if necessary
-	             var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
-	             if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-	 				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
-	 				updateCanvasNameStar();
-	 			 }
 	             
 	         }else{
 		    	 console.log("unblockRunningWorkflowJS");
@@ -871,7 +864,7 @@
 	             
 	            resizeBlockUICanvas();
 
-	            runningIntervalID = setInterval(function(){ updateSchedulingStatus(); },1500);
+	            runningIntervalID = setInterval(function(){ updateSchedulingStatus(); },5000);
 	            setTimeout(function(){ updateSchedulingStatus(); }, 100);
 	             
 	            //]]>
@@ -884,13 +877,6 @@
 		        	 console.log("unblockRunningSchedulingWorkflowJS ", lastBlockedRunningWorkflow);
 		             
 		        	 jQuery('#'+lastBlockedRunningWorkflow).unblock();
-
-		             //remove star if necessary
-		             var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
-		             if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-		 				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
-		 				updateCanvasNameStar();
-		 			 }
 		             
 		         }else{
 			    	 console.log("unblockRunningSchedulingWorkflowJS");
@@ -1199,9 +1185,16 @@
 	    }
 	   	
 	   	
-	   	function checkPathRestoreToRun(path){
-	   		if (path.match("redsqirl-backup")) {
-	   			alert("This canvas is backed up in: " + path + ". Please, don't forget to save!");
+	   	function checkPathRestoreToRun(canvasName){
+	   		if (!isSaved(canvasName)) {
+	   			alert("Please, don't forget to save "+canvasName+"!");
+	   		}else{
+	   		  //remove star if necessary
+		      var canvasNameStar = jQuery('#canvasNameStar-'+canvasName).text();
+		      if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+		 		jQuery('#canvasNameStar-'+canvasName).text(canvasName);
+		 		updateCanvasNameStar();
+		 	  }
 	   		}
 	   	}
 	   	
@@ -1402,15 +1395,22 @@
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
 				<a4j:jsFunction name="DMRDIV_disableProgressBar" reRender="DMRDIV_idProgBarRunning" 
 				     oncomplete="try{#{rich:component('DMRDIV_idProgBarRunning')}.disable();}catch(exception){}"/>
-				
+				<span style="float:left;margin-left:5px;">
 				<h:outputLink id="DMRDIV_workflowUrl" value="#{canvasBean.workflowUrl}"
-					target="_blank" style="float:left;margin-left:5px;"
+					target="_blank"
 					rendered="#{canvasBean.workflowUrl != null}">
 					<h:graphicImage
 						value="../image/icons/button-oozie_web_console.gif"
 						title='#{messages.oozie_gotowebconsole}' alt="Oozie Console"
 						class="fileSystemIcon" />
 				</h:outputLink>
+				<a4j:commandButton id="DMRDIV_copyWfBtn" styleClass="fileSystemIcon" 
+    	    		action="#{canvasBean.copyRunningWorkflow}" image="../image/icons/button-copy.gif"
+					title="Copy Workflow"
+    				reRender="msnError,errorTable,formMenu"
+    				oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalFileHdfs')}.hide();loadWorkflow();}">
+    			</a4j:commandButton>
+    			</span>
 				<img src="../image/icons/waiting.gif" />
 				<h:panelGroup id="DMRDIV_right_area" layout="block">
 					<br/>
@@ -1454,7 +1454,7 @@
 			
 				<a4j:jsFunction name="updateSchedulingStatus" 
 					reRender="tableListScheduling, nameScheduling, statusScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling, panelGroupSchedulingBT" 
-					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false'){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
+					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false'  &amp;&amp; data[1] == getSelectedByName()){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
 			
 				<a4j:jsFunction name="openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
 					reRender="modalSchedulingRunning"
@@ -1462,6 +1462,22 @@
 					<a4j:actionparam name="selectedScheduling" />
 				</a4j:jsFunction>
 			
+				<span style="float:left;margin-left:5px;">
+				<h:outputLink id="DMRDIV_workflowUrl" value="#{canvasBean.workflowUrl}"
+					target="_blank"
+					rendered="#{canvasBean.workflowUrl != null}">
+					<h:graphicImage
+						value="../image/icons/button-oozie_web_console.gif"
+						title='#{messages.oozie_gotowebconsole}' alt="Oozie Console"
+						class="fileSystemIcon" />
+				</h:outputLink>
+				<a4j:commandButton id="DMRDIV_copyWfBtn" styleClass="fileSystemIcon" 
+    	    		action="#{canvasBean.copyRunningWorkflow}" image="../image/icons/button-copy.gif"
+					title="Copy Workflow"
+    				reRender="msnError,errorTable,formMenu"
+    				oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalFileHdfs')}.hide();loadWorkflow();}">
+    			</a4j:commandButton>
+    			</span>
 				<img src="../image/icons/waiting.gif" />
 				<br/>
 				
@@ -1522,20 +1538,8 @@
                        <f:facet name="header">
                            <h:outputText value="#{messages.label_voronoi_runningScheduling}" title="#{messages.title_voronoi_runningScheduling_desc}" />
                        </f:facet>
-                       
-                       <a4j:commandLink action="#{canvasBean.suspendBundleScheduling}"
-							reRender="tableListScheduling"
-							rendered="#{canvasBean.showSuspendScheduling}">
-							<h:graphicImage value="../image/icons/button-suspendJob.gif" title='#{messages.oozie_suspendjob}' style="padding-right:2px;width:16px;" />
-							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
-						</a4j:commandLink>
-						<a4j:commandLink action="#{canvasBean.resumeBundleScheduling}"
-							reRender="tableListScheduling"
-							rendered="#{canvasBean.showResumeScheduling}">
-							<h:graphicImage value="../image/icons/button-resumeJob.gif" title='#{messages.oozie_oozie_resumejob}' style="padding-right:2px;width:16px;" />
-							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
-						</a4j:commandLink>
-						<a4j:commandLink action="#{canvasBean.killBundleScheduling}"
+						<a4j:commandLink action="#{canvasBean.killCoordWfScheduling}"
+							rendered="#{item.runningScheduling == 'true'}"
 							reRender="tableListScheduling" >
 							<h:graphicImage value="../image/icons/button-killJob.gif" title='#{messages.oozie_killjob}' style="padding-right:2px;width:16px;" />
 							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
@@ -1564,7 +1568,7 @@
 						oncomplete="#{rich:component('reRunScheduleModal')}.show();" reRender="modalReRunSchedule" />
 					
 					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_KillProcess}"
-						action="#{canvasBean.stopRunningWorkflow}" oncomplete="unblockRunningSchedulingWorkflowJS();" />
+						action="#{canvasBean.stopRunningWorkflow}" />
 					
 				</rich:panel>
 				
@@ -2241,7 +2245,7 @@
 				
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
+					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
@@ -2250,7 +2254,7 @@
 				
 				<a4j:jsFunction name="runScheduleWorkflow"
 					action="#{canvasBean.runScheduleWorkflow}"
-					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getPathFile(getSelectedByName()));"
+					oncomplete="console.log('runScheduleWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />

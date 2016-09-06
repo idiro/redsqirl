@@ -656,6 +656,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				while(itRun.hasNext()){
 					itRun.next().resetCache();
 				}
+			}else{
+				Iterator<DataFlowElement> itRun = element.iterator();
+				while(itRun.hasNext()){
+					itRun.next().resetCache();
+				}
 			}
 		}
 
@@ -2818,6 +2823,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public void setPath(String path) {
 		this.path = path;
+		if(this.path == null){
+			saved = false;
+		}
 	}
 
 	@Override

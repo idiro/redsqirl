@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.apache.pig.parser.AliasMasker.load_clause_return;
 
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
@@ -702,14 +703,17 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 	}
 
-	public void copy(String id, String wfName) throws RemoteException{
-
-		if(wfClones.contains(id) && wf.containsKey(wfName)){
-			wf.remove(wfName);
-			removeClone(id);
-			wf.put(wfName,(Workflow)readCloneFile(id));
+	public void copyDF(String dfName, String copyDfName) throws RemoteException{
+		try{
+			DataFlow df = (DataFlow) readCloneFile(cloneDataFlow(dfName));
+			df.setOozieJobId(null);
+			df.setName(copyDfName);
+			df.setPath(null);
+			df.regeneratePaths(null);
+			wf.put(copyDfName, df);
+		}catch(Exception e){
+			logger.error(e,e);
 		}
-
 	}
 	
 	public void removeAllTmpInType(String type) throws RemoteException{

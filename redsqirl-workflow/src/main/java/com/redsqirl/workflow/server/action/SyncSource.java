@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,6 +108,7 @@ public class SyncSource extends AbstractSource {
 				return checkTemplatePath(output.get(out_name).getPath(), templatePath.getValue());
 			}
 		});
+		templatePath.setVariableDisable(true);
 		
 		page4.addInteraction(templatePath);
 		
@@ -410,6 +412,12 @@ public class SyncSource extends AbstractSource {
 			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));
 			templateOut.getFrequency().setUnit(TimeTemplate.valueOf(unit.getValue()));
 			templateOut.getFrequency().setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
+			templateOut.removeAllProperties();
+			Iterator<Entry<String,String>> itProp = startInstance.getProperties().entrySet().iterator();
+			while(itProp.hasNext()){
+				Entry<String,String> cur = itProp.next();
+				templateOut.addProperty(cur.getKey(), cur.getValue());
+			}
 		}
 		return error;
 	}
