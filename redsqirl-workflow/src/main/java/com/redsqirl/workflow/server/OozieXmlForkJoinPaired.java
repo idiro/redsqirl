@@ -54,6 +54,7 @@ import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -160,16 +161,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		Iterator<DataFlowCoordinator> it = df.getCoordinators().iterator();
 		String error = null;
 		if(scheduleJob){
+			Date now = new Date();
+			boolean pastRun = endTime != null && endTime.before(now);
 			logger.debug("Create coordinators...");
 			while(it.hasNext() && error == null){
 				DataFlowCoordinator cur = it.next();
 				File dirCoordinator = new File(directory, cur.getName());
 				logger.debug("Create xml coordinator for "+cur.getName());
-				error = createCoordinatorXml(df.getName(),df, cur,
-						directory.getName(),
-						dirCoordinator,
-						startTime,
-						endTime);
+				if(!pastRun){
+					error = createCoordinatorXml(df.getName(),df, cur,
+							directory.getName(),
+							dirCoordinator,
+							startTime,
+							endTime);
+				}
 				if(error == null){
 					try {
 						List<RunnableElement> toRun = df.subsetToRun(cur.getComponentIds());
@@ -191,12 +196,347 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			}
 			
 			if(error == null){
-				//Create Bundle
-				error = createBundleXml(df.getName(), df,directory);
+				if(!pastRun){
+					//Create Bundle
+					error = createBundleXml(df.getName(), df,directory);
+				}else{
+					error = createPastRunXml(df.getName(), df,directory,startTime,endTime);
+				}
 			}
 		}else{
 			error = createWorkflowXml(df.getName(),df, list,directory,false); 
 		}
+		return error;
+	}
+	
+	public String createPastRunXml(String wfId, DataFlow df,
+			File directory,Date startTime, Date endTime) throws RemoteException {
+
+
+		logger.debug("createPastRunXml");
+		String filename = "workflow.xml";
+		String error = null;
+
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			// root elements
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("workflow-app");
+			doc.appendChild(rootElement);
+
+			{
+				Attr attrName = doc.createAttribute("name");
+				attrName.setValue(wfId);
+				rootElement.setAttributeNode(attrName);
+			}
+			Attr attrXmlns = doc.createAttribute("xmlns");
+			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
+			rootElement.setAttributeNode(attrXmlns);
+			
+			String email = WorkflowPrefManager.getProperty(WorkflowPrefManager.user_email);
+			logger.debug("User Email Address: '"+email+"'");
+			String startNode = "start";
+			String errorEmailNodeName = "error_email";
+			String okEmailNodeName = "end_email";
+			String errorFinalNodeName = "error";
+			String okFinalNodeName = "end";
+
+			String errorNodeName = errorFinalNodeName;
+			String okEndNodeName = okFinalNodeName;
+			if(!email.isEmpty()){
+				errorNodeName = errorEmailNodeName;
+				okEndNodeName = okEmailNodeName;
+			}
+
+			if (error == null) {
+				logger.debug("Create workflow.xml...");
+				
+				//Order the coordinators
+				Map<String,Set<String>> coordinatorLinks = new LinkedHashMap<String,Set<String>>();
+				Iterator<DataFlowElement> elIt = df.getElement().iterator();
+				while(elIt.hasNext()){
+					DataFlowElement cur = elIt.next();
+					String coordinatorFrom = cur.getCoordinatorName();
+					Iterator<DataFlowElement> itOuts = cur.getAllOutputComponent().iterator();
+					while(itOuts.hasNext()){
+						String coordinatorTo = itOuts.next().getCoordinatorName();
+						if(!coordinatorFrom.equals(coordinatorTo)){
+							Set<String> coordFromLinkList = coordinatorLinks.get(coordinatorFrom);
+							if(coordFromLinkList == null){
+								coordFromLinkList = new LinkedHashSet<String>();
+								coordinatorLinks.put(coordinatorFrom,coordFromLinkList);
+							}
+							coordFromLinkList.add(coordinatorTo);
+						}
+					}
+				}
+				LinkedList<String> orderedCoordinatorList = new LinkedList<String>();
+				while(!coordinatorLinks.isEmpty()){
+					String nextEl = null;
+					Iterator<String> candidateIt = coordinatorLinks.keySet().iterator();
+					while(candidateIt.hasNext() && nextEl == null){
+						String candidate = candidateIt.next();
+						Iterator<Set<String>> checkIt = coordinatorLinks.values().iterator();
+						boolean found = false;
+						while(checkIt.hasNext()&&!found){
+							found = checkIt.next().contains(candidate);
+						}
+						if(!found){
+							nextEl = candidate;
+							orderedCoordinatorList.add(candidate);
+						}
+					}
+					coordinatorLinks.remove(nextEl);
+				}
+				
+				Iterator<DataFlowCoordinator> noLinkCoords = df.getCoordinators().iterator();
+				while(noLinkCoords.hasNext()){
+					String cur = noLinkCoords.next().getName();
+					if(!orderedCoordinatorList.contains(cur)){
+						orderedCoordinatorList.addFirst(cur);
+					}
+				}
+				
+				//For each coordinators
+				//Check the start date, end date and step
+				//Create a subworkflow action link it to the next
+				Iterator<String> itOrderedCoord = orderedCoordinatorList.iterator();
+				String curCoordinatorName = null;
+				if(itOrderedCoord.hasNext()){
+					curCoordinatorName = itOrderedCoord.next();
+					
+					Element start = doc.createElement(startNode);
+					Attr attrStartTo = doc.createAttribute("to");
+					attrStartTo.setValue(curCoordinatorName+"_0");
+					start.setAttributeNode(attrStartTo);
+					rootElement.appendChild(start);
+				}
+				while(curCoordinatorName != null){
+					
+					DataFlowCoordinator coordinator = df.getCoordinator(curCoordinatorName);
+					Date coordinatorStartDate = null;
+					Date endDate= endTime;
+					
+					CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
+					int offset = 0;
+					if(coordinatorTimeConstraint.getUnit() == null){
+						DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
+						coordinatorTimeConstraint = constraint.getConstraint();
+						offset = constraint.getOffset();
+					}
+					
+					coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),offset);
+					
+					Date incrDate = new Date(coordinatorStartDate.getTime());
+					int incrInt = 0;
+					while(incrDate.before(endDate)){
+						Element action = doc.createElement("action");
+						action.setAttribute("name", curCoordinatorName+"_"+incrInt);
+						Element subWfElement = doc.createElement("sub-workflow");
+						
+						Element pathElement = doc.createElement("app-path");
+						pathElement.appendChild(doc.createTextNode("${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName));
+						subWfElement.appendChild(pathElement);
+						
+						Element propElement = doc.createElement("propagate-configuration");
+						subWfElement.appendChild(propElement);
+						
+						//Add the variables related to the time period
+						Map<String,String> extraVariables = new LinkedHashMap<String,String>();
+						{
+							Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
+							while(itDfe.hasNext()){
+								DataFlowElement cur = itDfe.next();
+								logger.debug("Element "+cur.getComponentId());
+								Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
+								while(it.hasNext()){
+									DFEOutput out = it.next();
+									
+									if(PathType.MATERIALIZED.equals(out.getPathType())){
+										String[] paths = new String[out.getNumberMaterializedPath()];
+										int freqDataset = out.getFrequency().getFrequency();
+										TimeTemplate timeDataset = out.getFrequency().getUnit();
+										if(timeDataset == null){
+											freqDataset = coordinatorTimeConstraint.getFrequency();
+											timeDataset = coordinatorTimeConstraint.getUnit();
+										}
+										for(int i = 0; i < out.getNumberMaterializedPath();++i){
+											Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), i*freqDataset , timeDataset);
+											paths[i] = out.getPath().replaceAll("\\Q" + "${YEAR}"+ "\\E", new SimpleDateFormat("YYYY").format(matDate))
+													.replaceAll("\\Q" + "${MONTH}"+ "\\E", new SimpleDateFormat("MM").format(matDate))
+													.replaceAll("\\Q" + "${DAY}"+ "\\E", new SimpleDateFormat("dd").format(matDate))
+													.replaceAll("\\Q" + "${HOUR}"+ "\\E", new SimpleDateFormat("HH").format(matDate))
+													.replaceAll("\\Q" + "${MINUTE}"+ "\\E", new SimpleDateFormat("mm").format(matDate));
+										}
+										
+										if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
+											String path = "";
+											for(int i = 0; i < paths.length;++i){
+												path += paths[i]+" ";
+											}
+											extraVariables.put(cur.getComponentId(), path.trim());
+										}else{
+											String db = null;
+											String table = null;
+											String filter = "";
+											for(int i = 0; i < paths.length;++i){
+												String[] pathArray = HCatStore.getDatabaseTableAndPartition(paths[i]);
+												db = pathArray[0];
+												table = pathArray[1];
+												if(!filter.isEmpty()){
+													filter += " OR ";
+												}
+												if(pathArray[2].contains(";")){
+													filter += "(";
+												}
+												filter += pathArray[2].replaceAll(";", "' AND ").replaceAll("=","='")+"'";
+												if(pathArray[2].contains(";")){
+													filter += ")";
+												}
+											}
+											if(paths.length > 1){
+												filter = " ("+filter+") ";
+											}else{
+												filter = " "+filter+" ";
+											}
+											extraVariables.put("DATABASE_"+cur.getComponentId(), db);
+											extraVariables.put("TABLE_"+cur.getComponentId(), table);
+											extraVariables.put("FILTER_HIVE_"+cur.getComponentId(), filter);
+											extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter);
+											extraVariables.put("FILTER_JAVA_"+cur.getComponentId(), filter);
+										}
+									}
+								}
+							}
+						}
+						
+						if(extraVariables != null && !extraVariables.isEmpty()){
+							Element configuration = doc.createElement("configuration");
+							Iterator<Entry<String,String>> itVariables = extraVariables.entrySet().iterator();
+							while(itVariables.hasNext()){
+								Entry<String,String> var = itVariables.next();
+								Element confName = doc.createElement("name");
+								confName.appendChild(doc.createTextNode(var.getKey()));
+								Element confValue = doc.createElement("value");
+								confValue.appendChild(doc.createTextNode(var.getValue()));
+
+								Element property = doc.createElement("property");
+								property.appendChild(confName);
+								property.appendChild(confValue);
+
+								configuration.appendChild(property);
+							}
+							subWfElement.appendChild(configuration);
+						}
+						action.appendChild(subWfElement);
+						
+
+						Element errorEl = doc.createElement("error");
+						errorEl.setAttribute("to", errorNodeName);
+						//Link action to the next element
+						Element okEl = doc.createElement("ok");
+						incrDate = WfCoordTimeConstraint.addToDate(incrDate, 
+								coordinatorTimeConstraint.getFrequency(), coordinatorTimeConstraint.getUnit());
+						if(incrDate.before(endDate)){
+							okEl.setAttribute("to", curCoordinatorName+"_"+(++incrInt));
+						}else{
+							if(itOrderedCoord.hasNext()){
+								curCoordinatorName = itOrderedCoord.next();
+								okEl.setAttribute("to", curCoordinatorName+"_0");
+							}else{
+								curCoordinatorName = null;
+								okEl.setAttribute("to", okEndNodeName);
+							}
+						}
+						action.appendChild(okEl);
+						action.appendChild(errorEl);
+						
+						rootElement.appendChild(action);
+						
+					}
+				}
+			}
+
+			if (error == null) {
+				logger.debug("Finish up the xml generation...");
+				// Node kill
+				
+				if(!email.isEmpty()){
+					{
+						Element errorEmailAction = doc.createElement("action");
+						Attr attrErrorEmailName = doc.createAttribute("name");
+						attrErrorEmailName.setValue(errorEmailNodeName);
+						errorEmailAction.setAttributeNode(attrErrorEmailName);
+
+						EmailAction.createOozieElement(
+								doc, 
+								errorEmailAction,
+								email,
+								"",
+								LanguageManagerWF.getText("email.auto.error_title"),
+								LanguageManagerWF.getText("email.auto.error_body"));
+						createOKNode(doc, errorEmailAction, errorFinalNodeName);
+						createErrorNode(doc, errorEmailAction, errorFinalNodeName);
+						rootElement.appendChild(errorEmailAction);
+					}
+					{
+						Element okEmailAction = doc.createElement("action");
+						Attr attrOkEmailName = doc.createAttribute("name");
+						attrOkEmailName.setValue(okEmailNodeName);
+						okEmailAction.setAttributeNode(attrOkEmailName);
+
+						EmailAction.createOozieElement(
+								doc, 
+								okEmailAction,
+								email,
+								"",
+								LanguageManagerWF.getText("email.auto.ok_title"),
+								LanguageManagerWF.getText("email.auto.ok_body"));
+						createOKNode(doc, okEmailAction, okFinalNodeName);
+						createErrorNode(doc, okEmailAction, okFinalNodeName);
+						rootElement.appendChild(okEmailAction);
+					}
+				}
+				
+				
+				Element kill = doc.createElement("kill");
+				Attr attrKillName = doc.createAttribute("name");
+				attrKillName.setValue(errorFinalNodeName);
+				kill.setAttributeNode(attrKillName);
+				Element message = doc.createElement("message");
+				message.appendChild(doc
+						.createTextNode("Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]"));
+				kill.appendChild(message);
+				rootElement.appendChild(kill);
+
+				// Node End
+				Element end = doc.createElement("end");
+				Attr attrEndName = doc.createAttribute("name");
+				attrEndName.setValue(okFinalNodeName);
+				end.setAttributeNode(attrEndName);
+				rootElement.appendChild(end);
+
+				TransformerFactory transformerFactory = TransformerFactory
+						.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(
+						"{http://xml.apache.org/xslt}indent-amount", "4");
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+				DOMSource source = new DOMSource(doc);
+				StreamResult result = new StreamResult(new File(directory,
+						filename));
+				transformer.transform(source, result);
+			}
+		} catch (Exception e) {
+			error =" "+ LanguageManagerWF.getText(
+					"ooziexmlforkjoinpaired.createxml.fail",
+					new Object[] { wfId, df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
+			logger.error(error,e);
+		}
+		
 		return error;
 	}
 	
@@ -261,8 +601,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	public String createCoordinatorXml(String wfId,DataFlow df, DataFlowCoordinator coordinator,
 			String oozieFileName,
 			File directory,
-			Date startDate,
-			Date endDate) throws RemoteException {
+			Date startDateBundle,
+			Date endDateBundle) throws RemoteException {
 		
 
 		logger.debug("create coordinator Xml");
@@ -272,7 +612,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		String error = null;
 		directory.mkdirs();
 		try {
-			
+			Date startDate = null;
+			Date endDate = endDateBundle;
 			// Creating xml
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
@@ -294,8 +635,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				offset = constraint.getOffset();
 			}
 			
-			if(startDate == null){
+			if(startDateBundle == null){
 				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),offset);
+			}else{
+				startDate = WfCoordTimeConstraint.addToDate(startDateBundle, offset, coordinatorTimeConstraint.getUnit());
 			}
 
 			{

@@ -65,6 +65,7 @@ public class SyncSink extends DataflowAction{
 				LanguageManagerWF.getText("sync_sink.template_path.title"),
 				LanguageManagerWF.getText("sync_sink.template_path.legend")
 				, 0, 0);
+		templatePath.setVariableDisable(true);
 		templatePath.setChecker(new DFEInteractionChecker() {
 			
 			/**

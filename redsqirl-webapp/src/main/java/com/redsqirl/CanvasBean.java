@@ -624,7 +624,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private void load(String path,String newWfName,boolean setWorkflow){
 		logger.warn("load " + path);
-		String error = loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow);
+		String error = loadDataFlow(path, newWfName, path.endsWith(".rs"), setWorkflow,false);
 		displayErrorMessage(error,"LOADWORKFLOW");
 	}
 
@@ -637,7 +637,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void loadWorkFlow() {
-		String error = loadDataFlow(getPath(),generateWorkflowName(path), true, true);
+		String error = loadDataFlow(getPath(),generateWorkflowName(path), true, true,false);
 		displayErrorMessage(error,"LOADWORKFLOW");
 	}
 
@@ -650,11 +650,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void loadSubWorkflow() {
-		String error = loadDataFlow(getPath(),generateWorkflowName(path), false, true);
+		String error = loadDataFlow(getPath(),generateWorkflowName(path), false, true,false);
 		displayErrorMessage(error,"LOADSUBWORKFLOW");
 	}
 
-	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow) {
+	private String loadDataFlow(String path, String newWfName, boolean workflow, boolean setWorkflow,boolean copy) {
 
 		logger.warn("loadWorkFlow " + path);
 		logger.warn("newWfName " + newWfName);
@@ -679,18 +679,25 @@ public class CanvasBean extends BaseBean implements Serializable {
 					dfi.removeWorkflow(newWfName);
 				}
 			}
-			if (error == null) {
-				if(workflow){
-					error = dfi.addWorkflow(newWfName);
-				}else{
-					error = dfi.addSubWorkflow(newWfName);
-				}
-			}
-			if (error == null) {
+			
+			if(copy){
+				dfi.copyDF(path, newWfName);
 				df = dfi.getWorkflow(newWfName);
-				logger.warn("read " + path);
-				error = df.read(path);
-				df.setName(newWfName);
+			}else{
+				if (error == null) {
+					if(workflow){
+						error = dfi.addWorkflow(newWfName);
+					}else{
+						error = dfi.addSubWorkflow(newWfName);
+					}
+				}
+
+				if (error == null) {
+					df = dfi.getWorkflow(newWfName);
+					logger.warn("read " + path);
+					error = df.read(path);
+					df.setName(newWfName);
+				}
 			}
 
 			if (error == null) {
@@ -735,6 +742,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		return error;
 
+	}
+	
+	public void copyRunningWorkflow() {
+		String newWfName = getNameWorkflow()+"-copy";
+		loadDataFlow(getNameWorkflow(), newWfName, true, true,true);
 	}
 
 	/**
@@ -1165,7 +1177,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			calcWorkflowUrl();
 		}
-		displayErrorMessage(error, "RUNWORKFLOW");
+		displayErrorMessage(error, "RUNSCHEDULEWORKFLOW");
 	}
 
 
@@ -1265,7 +1277,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					try {
 						JobManager jm = getOozie();
 						jm.getUrl();
-						url = jm.getConsoleUrl(df);
+						url = jm.getConsoleUrl(df.getOozieJobId());
 					} catch (Exception e) {
 						logger.error("error " + e.getMessage());
 					}
@@ -1486,8 +1498,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 	
 	
-	public void suspendBundleScheduling() throws Exception {
-		logger.info("suspendBundleScheduling");
+	public void suspendCoordWfScheduling() throws Exception {
+		logger.info("suspendCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
 		if(df != null){
 			if(df.isrunning() && df.isSchedule()){
@@ -1505,8 +1517,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 	
-	public void resumeBundleScheduling() throws Exception {
-		logger.info("resumeBundleScheduling");
+	public void resumeCoordWfScheduling() throws Exception {
+		logger.info("resumeCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
 		if(df != null){
 			if(df.isrunning() && df.isSchedule()){
@@ -1524,8 +1536,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 	
-	public void killBundleScheduling() throws Exception {
-		logger.info("killBundleScheduling");
+	public void killCoordWfScheduling() throws Exception {
+		logger.info("killCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
 		if(df != null){
 			if(df.isrunning() && df.isSchedule()){
@@ -1533,6 +1545,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if(scheduling.getNameScheduling().equals(selectedScheduling)){
 						for (String[] value : scheduling.getListJobsScheduling()) {
 							if(value[3].equalsIgnoreCase("RUNNING")){
+								logger.info("Kill "+value[4]);
 								getOozie().kill(value[4]);
 								break;
 							}
@@ -1678,18 +1691,29 @@ public class CanvasBean extends BaseBean implements Serializable {
 			backupAndCloseAll();
 		}
 
-		String wfName = "";
+		String wfNameList = "";
 		Iterator<String[]> it = getworkFlowInterface().getLastBackedUp().iterator();
 		while(it.hasNext()){
-			wfName+=it.next()[0];
+			String[] cur = it.next();
+			String wfName=cur[0];
+			String path = cur[1];
+			String toWrite = wfName +" ("+path+")"; 
+			if(toWrite.length() > 80){
+				if(wfName.length() > 70){
+					toWrite = wfName;
+				}else{
+					toWrite = wfName +" (..."+path.substring(toWrite.length()-77)+")";
+				}
+			}
+			wfNameList +=toWrite;
 			if(it.hasNext()){
-				wfName +=", ";
+				wfNameList +=", ";
 			}
 		}
-		if(wfName.isEmpty()){
-			wfName = null;
+		if(wfNameList.isEmpty()){
+			wfNameList = null;
 		}
-		return new String[]{ans, wfName};
+		return new String[]{ans, wfNameList};
 
 	}
 

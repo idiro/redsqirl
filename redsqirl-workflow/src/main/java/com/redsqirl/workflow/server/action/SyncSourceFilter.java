@@ -2,10 +2,12 @@ package com.redsqirl.workflow.server.action;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -116,8 +118,13 @@ public class SyncSourceFilter extends DataflowAction{
 		
 		out.setPath(in.getPath());
 		out.setFields(new_field);
-		out.setNumberMaterializedPath(getNbPath());		
-			
+		out.setNumberMaterializedPath(getNbPath());
+		out.removeAllProperties();
+		Iterator<Entry<String,String>> itProp = in.getProperties().entrySet().iterator();
+		while(itProp.hasNext()){
+			Entry<String,String> cur = itProp.next();
+			out.addProperty(cur.getKey(), cur.getValue());
+		}
 		return error;
 	}
 

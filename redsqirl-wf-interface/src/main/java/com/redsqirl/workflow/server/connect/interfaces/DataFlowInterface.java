@@ -122,6 +122,14 @@ public interface DataFlowInterface extends Remote{
 	void eraseClone(String cloneId) throws RemoteException;
 	
 	/**
+	 * Copy a workflow into another name.
+	 * @param dfName
+	 * @param copyDfName
+	 * @throws RemoteException
+	 */
+	void copyDF(String dfName, String copyDfName) throws RemoteException;
+	
+	/**
 	 * Copy a subset of a workflow into another.
 	 * @param from The id of the workflow to copy from 
 	 * @param elements The element ids to copy

@@ -360,7 +360,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String error = null;
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
-		Type bundle = df.isSchedule() ? Type.BUNDLE : Type.WORKFLOW;
+		Type bundle = df.isSchedule() && (endTime == null || endTime.after(new Date())) ? Type.BUNDLE : Type.WORKFLOW;
 		File parentDir = new File(WorkflowPrefManager.getPathooziejob() + "/"
 				+ fileName);
 		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs() + "/"
@@ -662,9 +662,13 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			while(cActIt.hasNext()){
 				CoordinatorAction cActCur = cActIt.next();
 				Status statusCAct = cActCur.getStatus();
+				String extId = cActCur.getExternalId();
+				if(extId == null){
+					extId = "";
+				}
 				ans +="{";
 				ans+= "\"action-number\":\""+cActCur.getActionNumber()+"\",";
-				ans+= "\"w-id\":\""+cActCur.getId()+"\",";
+				ans+= "\"w-id\":\""+extId+"\",";
 				ans+= "\"nominal-time\":\""+format.format(cActCur.getNominalTime())+"\",";
 				ans+= "\"status\":\""+statusCAct+"\"";
 				if(Status.FAILED.equals(statusCAct) || 
