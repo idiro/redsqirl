@@ -3667,5 +3667,6 @@ function setIfISchedule(canvasName, value){
 }
 
 function isIfISchedule(canvasName){
+	console.log(canvasName);
     return canvasArray[canvasName].ifISchedule;
 }

@@ -588,6 +588,24 @@ function updatedComboboxListScheduling(element){
 	reLoadlistSchedulingInputHidden();
 }
 
+function updatedComboboxMergeCoordinatorA(element){
+	var idx=element.selectedIndex;
+	var val=element.options[idx].value;
+	var content=element.options[idx].innerHTML;
+	jQuery("[id$=selectedListMergeA]").children().val(val);
+	//alert(val + " " + content);
+	reLoadlistMergeAInputHidden();
+}
+
+function updatedComboboxMergeCoordinatorB(element){
+	var idx=element.selectedIndex;
+	var val=element.options[idx].value;
+	var content=element.options[idx].innerHTML;
+	jQuery("[id$=selectedListMergeB]").children().val(val);
+	//alert(val + " " + content);
+	reLoadlistMergeBInputHidden();
+}
+
 
 function disableAllButton(){
 	jQuery("input[type=button]").attr("disabled", "disabled");

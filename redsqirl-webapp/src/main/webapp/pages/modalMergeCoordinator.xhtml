@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+    <h:form>
+    
+    	<rich:panel style="border:none;overflow:auto;height:110px;width:100%;padding-left: 3px;padding-right: 3px;" >
+    
+	    	<h:outputText value="#{messages.label_voronoi_area}" title="#{messages.title_voronoi_area}" />
+			<h:panelGroup style="max-width:100px;" layout="block" id="panelMergeCoordinatorA" >
+				<select onchange="updatedComboboxMergeCoordinatorA(this);" style="max-width:100px;" id="comboboxMergeCoordinatorA">
+					<option></option>
+					<a4j:repeat value="#{canvasBean.coordinatorsList}" var="idx"  >
+						<h:outputText rendered="#{canvasBean.coordinatorsSelectedA == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+						<h:outputText rendered="#{canvasBean.coordinatorsSelectedA != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+					</a4j:repeat>
+				</select>
+				          
+				<div id="selectedListMergeA">
+					<h:inputHidden value="#{canvasBean.coordinatorsSelectedA}" id="selectedListMergeAHidden" />
+				</div>
+					
+				<a4j:jsFunction name="reLoadlistMergeAInputHidden" reRender="selectedListMergeAHidden" />
+			</h:panelGroup>
+	
+			<br/>		
+	
+			<h:outputText value="#{messages.label_voronoi_area}" title="#{messages.title_voronoi_area}" />
+			<h:panelGroup style="max-width:100px;" layout="block" id="panelMergeCoordinatorB" >
+				<select onchange="updatedComboboxMergeCoordinatorB(this);" style="max-width:100px;" id="comboboxMergeCoordinatorB">
+					<option></option>
+					<a4j:repeat value="#{canvasBean.coordinatorsList}" var="idx"  >
+						<h:outputText rendered="#{canvasBean.coordinatorsSelectedB == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+						<h:outputText rendered="#{canvasBean.coordinatorsSelectedB != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+					</a4j:repeat>
+				</select>
+				          
+				<div id="selectedListMergeB">
+					<h:inputHidden value="#{canvasBean.coordinatorsSelectedB}" id="selectedListMergeBHidden" />
+				</div>
+					
+				<a4j:jsFunction name="reLoadlistMergeBInputHidden" reRender="selectedListMergeBHidden" />
+			</h:panelGroup>
+
+
+		</rich:panel>
+		
+		<br/>
+
+		<rich:panel columns="2" style="border:none; float:right;">
+		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalMergeCoordinator')}.hide();" />
+		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasBean.applyMergeCoordinator}"
+		    	oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('modalMergeCoordinator')}.hide(); undoRedoVoronoi(); }" reRender="msnError, errorTable" />
+		</rich:panel>
+
+    
+    </h:form>
+    
+</ui:composition>
