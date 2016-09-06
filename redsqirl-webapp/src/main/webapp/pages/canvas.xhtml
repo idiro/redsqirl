@@ -1198,6 +1198,41 @@
 	   		}
 	   	}
 	   	
+	   	
+	   	function checkOpenModalMerge(){
+
+	    	console.log("checkOpenModalMerge");
+	    	console.log(getSelectedByName());
+	    	
+	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+	    	
+	    	if(isIfISchedule(getSelectedByName())){
+	    		openModalMerge();
+		    }else{
+		    	alert("This is not a schedule canvas.");
+			}
+	    	
+	    	jQuery('#canvas-tabs').unblock();
+	    	
+	    }
+	   	
+	   	function checkSplit(){
+	   		
+	   		console.log("checkSplit");
+	    	console.log(getSelectedByName());
+	    	
+	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+	    	
+	    	if(getSelectedIconsCommaDelimited() != ""){
+	    		splitCoordinator(getSelectedIconsCommaDelimited());
+		    }else{
+		    	alert("You need select at least one object.");
+			}
+
+	    	jQuery('#canvas-tabs').unblock();
+	    	
+	   	}
+	   	
 	   	/*keyboard shortcuts*/
 	   	
 	   	shortcut.add("Ctrl+n",function() {
@@ -1872,7 +1907,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);setIfISchedule(getSelectedByName(),true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
+					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfIScheduleJS();updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -2218,6 +2253,10 @@
 					oncomplete="checkIfSchedule(data);" reRender="msnError">
 				</a4j:jsFunction>
 				
+				<a4j:jsFunction name="setIfIScheduleJS" data="#{canvasBean.checkIfSchedule}"
+					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError">
+				</a4j:jsFunction>
+				
 			</a4j:region>
 
 			<a4j:region>
@@ -2514,6 +2553,16 @@
 					<a4j:actionparam name="list" />
 				</a4j:jsFunction>
 				
+
+				<a4j:jsFunction name="openModalMerge" action="#{canvasBean.openModalMergeCoordinator}" 
+					oncomplete="#{rich:component('modalMergeCoordinator')}.show();" reRender="msnError, errorTable, panelMergeCoordinatorA, panelMergeCoordinatorB">
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="splitCoordinator"
+					action="#{canvasBean.splitCoordinator}"	reRender="errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null}){ undoRedoVoronoi(); }">
+					<a4j:actionparam name="selectedIcons" />
+				</a4j:jsFunction>
 
 			</a4j:region>
 			
@@ -2841,6 +2890,16 @@
 
 					<div class="divMenuImage">
 					
+						<span style="cursor: pointer;">
+							<img src="../image/icons/button-aggregate.gif" alt="merge" class="shortMenuIcon" 
+								onclick="checkOpenModalMerge();" title="#{messages.label_voronoi_merge}" />
+						</span>
+						
+						<span style="cursor: pointer;">
+							<img src="../image/icons/button-aggregate.gif" alt="merge" class="shortMenuIcon" 
+								onclick="checkSplit();" title="#{messages.label_voronoi_split}" />
+						</span>
+						
 						<span style="cursor: pointer;">
 							<img src="../image/icons/button-aggregate.gif" alt="aggregate" class="shortMenuIcon" 
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();" title="#{messages.label_menu_aggregate}" />
@@ -3221,6 +3280,21 @@
 
 			<h:panelGroup>
 				<a4j:include viewId="/pages/scheduleModal.xhtml" ajaxRendered="false" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="modalMergeCoordinator" width="200" height="200" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+			
+			<f:facet name="header">Configuration</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('modalMergeCoordinator')}.hide();" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/modalMergeCoordinator.xhtml" ajaxRendered="false" />
 			</h:panelGroup>
 
 		</rich:modalPanel>

@@ -203,7 +203,10 @@ jQuery(function() {
 						     					<h:inputText title="#{analyticsStoreLoginBean.s.properties[obj].description}" 
 						     					    value="#{analyticsStoreLoginBean.s.properties[obj].sysValue}" 
 						     						style="background-color:#FF3333;border: 1px solid;" 
-						     						rendered="#{analyticsStoreLoginBean.s.properties[obj].existSysProperty &amp;&amp; analyticsStoreLoginBean.template != 'Y'}" />
+						     						rendered="#{!analyticsStoreLoginBean.s.properties[obj].password &amp;&amp; analyticsStoreLoginBean.s.properties[obj].existSysProperty &amp;&amp; analyticsStoreLoginBean.template != 'Y'}" />
+						     					<h:inputSecret value="#{analyticsStoreLoginBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;" 
+			     									rendered="#{analyticsStoreLoginBean.s.properties[obj].password &amp;&amp; analyticsStoreLoginBean.s.properties[obj].existSysProperty &amp;&amp; analyticsStoreLoginBean.template != 'Y'}" 
+						     						title="#{analyticsStoreLoginBean.s.properties[obj].description}" />	
 						     					<h:outputText value="#{analyticsStoreLoginBean.s.properties[obj].description}" 
 			     									rendered="#{!analyticsStoreLoginBean.s.properties[obj].existSysProperty or analyticsStoreLoginBean.template == 'Y'}" />
 						     					<br/>

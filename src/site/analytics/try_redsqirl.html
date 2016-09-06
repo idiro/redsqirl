@@ -107,7 +107,7 @@ We recommend you have at least 8GB of RAM on your computer, in order to have the
 				</div>
 
 <br/><br/>
-<a href="#part1" data-toggle="collapse" style="text-decoration:none;color:#000000;">
+<a href="#part1" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;outline:none;">
 <span style="font-size:25px;" id="textPart1" >&#9656; 1. Install Docker</span>
 </a>
 <br/>
@@ -118,7 +118,7 @@ We recommend you have at least 8GB of RAM on your computer, in order to have the
 <br/>
 <span style="font-size:1.4em" >
 
-First you'll need to download and install docker onto your computer, to do that please go to 
+First, you'll need to download and install docker onto your computer, to do that please go to 
 <a href="https://www.docker.com/products/docker" target="_blank" >this</a>
 page. 
 <br/><br/>
@@ -133,7 +133,7 @@ To do this, by default, docker installs 'VirtualBox' and uses the VM called "def
 
 
 <br/><br/>
-<a href="#part2" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part2" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart2" >&#9656; 2. Set up the virtual Hadoop environment (Docker Image), with Red Sqirl already installed</span>
 </a>
 <br/><br/>
@@ -142,19 +142,19 @@ To do this, by default, docker installs 'VirtualBox' and uses the VM called "def
 <span style="font-size:1.4em" >
 Step 1: When you have Docker installed, simply open up your terminal and type in this Docker command: 
 <br/><br/>
-<code>
+<code style="white-space:normal;word-wrap: break-word;" >
 docker pull redsqirl/cloudera:2.6.0-0.13
 </code>
 <br/><br/>
 (We're recommending 
 <a href="https://hub.docker.com/r/redsqirl/cloudera/" target="_blank">this</a> 
-Cloudera Hadoop distribution for convenience, but if you have a preference we also have
+Cloudera Hadoop distribution for your convenience. But, if you have a preference we also have
 Hortonworks and MapR, click 
 <a href="https://hub.docker.com/r/redsqirl/" target="_blank" >here</a> to choose one of those) 
 <br/><br/>
 Step 2: Next, in the terminal, you'll now create the Docker image by typing in this command:
 <br/><br/>
-<code>
+<code style="white-space:normal;word-wrap: break-word;" >
 docker run --hostname=quickstart.cloudera --privileged=true <br/> 
 -t -i -p 8842:8842 redsqirl/cloudera:2.6.0-0.13 <br/> /usr/bin/docker-quickstart
 
@@ -168,7 +168,7 @@ This may take a few minutes, when it's finished you'll see our Red Sqirl welcome
 
 
 <br/>
-<a href="#part3" data-toggle="collapse" style="text-decoration:none;color:#000000;" >
+<a href="#part3" data-toggle="collapse" style="text-decoration:none;color:#000000;outline:none;" >
 <span style="font-size:25px;" id="textPart3" >&#9656; 3. Start using Red Sqirl</span>
 </a>
 <br/>
@@ -186,18 +186,18 @@ Open your browser and go to the url: http://local-host:8842/redsqirl
 <br/><br/>
 If you have installed on another system you'll just need to find your Docker IP address.<br/><br/>
 
-The Red Sqirl URL will look like this <br/> http://< IP ADDRESS >:8842/redsqirl.<br/><br/> 
+The Red Sqirl URL will look like this <br/> http://< IP ADDRESS >:8842/redsqirl<br/><br/> 
 
 To get the IP address:<br/><br/>
 
-<b>On windows:</b> Start your favorite shell (cmd.exe, PowerShell, or other) and type <br/><br/>
-<code>
+<b>On windows:</b> Start your favourite shell (cmd.exe, PowerShell, or other) and type <br/><br/>
+<code style="white-space:normal;word-wrap: break-word;" >
 docker-machine.exe ip default
 </code>
 <br/><br/>
 
-<b>On Mac:</b> Start your favorite terminal and type <br/><br/>
-<code>
+<b>On Mac:</b> Start your favourite terminal and type <br/><br/>
+<code style="white-space:normal;word-wrap: break-word;" >
 docker-machine ip default
 </code>
 <br/><br/>
@@ -209,7 +209,7 @@ http://< IP ADDRESS >:8842/redsqirl
 
 
 
-Step 2: Create a Red Sqirl Analytics Store user account, confirm the registration through your email and sign in with your new credentials.
+Step 2: Create a Red Sqirl Analytics Store user account, confirm the registration through your email and sign in with your new credentials
 <br/><br/>
 Step 3: Do not install the default packages (Spark is not installed by default on a Cloudera cluster)
 <br/><br/>
@@ -220,7 +220,7 @@ Step 5: Sign Out
 Step 6: Now login with the OS username: redsqirl (password: redsqirl)
 
 <br/><br/>
-<center>Congratulations you now have Red Sqirl installed</center>
+<center>Congratulations! You now have Red Sqirl installed</center>
 <br/>
 
 </span>

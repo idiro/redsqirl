@@ -108,12 +108,17 @@
 			     				<td style="width:350px;">
 			     					
 			     					<h:graphicImage url="../image/icons/sys_icon.png" style="width:20px;vertical-align:-6px;" title="#{messages.label_system}" rendered="#{settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY'}" />
+			     					
 			     					<h:inputText title="#{settingsBean.s.properties[obj].description}" value="#{settingsBean.s.properties[obj].sysValue}" 
 			     						style="background-color:#FF3333;border: 1px solid;" 
-			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
+			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						disabled="#{!settingsBean.canEdit}" />
+			     					<h:inputSecret value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;" 
+			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
+			     						title="#{settingsBean.s.properties[obj].description}" />
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existSysProperty or settingsBean.template == 'Y')  }" />
+			     						
 			     					<br/>
 			     					<br/>
 			     				

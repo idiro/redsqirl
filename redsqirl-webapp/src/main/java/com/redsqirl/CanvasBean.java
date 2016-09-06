@@ -140,6 +140,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean showSuspendScheduling;
 	private boolean showResumeScheduling;
 
+	private String coordinatorsSelectedA;
+	private String coordinatorsSelectedB;
+	private List<SelectItem> coordinatorsList;
+	
+	
 	/**
 	 * 
 	 * @return
@@ -460,6 +465,74 @@ public class CanvasBean extends BaseBean implements Serializable {
 		displayErrorMessage(error, "GETVORONOI");
 
 		return new String[] { };
+	}
+	
+	public void openModalMergeCoordinator() throws RemoteException {
+		logger.info("openModalMergeCoordinator");
+		
+		DataFlow df = getDf();
+		
+		setCoordinatorsList(new ArrayList<SelectItem>());
+		
+		if (df != null) {
+			List<DataFlowCoordinator> l = df.getCoordinators();
+			for (DataFlowCoordinator dataFlowCoordinator : l) {
+				getCoordinatorsList().add(new SelectItem(dataFlowCoordinator.getName(),dataFlowCoordinator.getName()));
+			}
+		}
+
+	}
+	
+	public void applyMergeCoordinator() throws RemoteException {
+		logger.info("applyMergeCoordinator");
+		
+		//check if selected the same coordinator
+		if(getCoordinatorsSelectedA().equals(getCoordinatorsSelectedB())){
+			displayErrorMessage(getMessageResources("msg_error_merge_equal"), "APPLYMERGECOORDINATOR");
+		}
+		
+		if (df != null) {
+			df.getCoordinator(getCoordinatorsSelectedA()).merge(df.getCoordinator(getCoordinatorsSelectedB()));
+		}
+		
+	}
+	
+	public void splitCoordinator() throws RemoteException {
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String selectedIcons = params.get("selectedIcons");
+		String error = null;
+		
+		String coordinatorName = null;
+		List<DataFlowElement> componentIds = new ArrayList<DataFlowElement>();
+		String[] groupIds = selectedIcons.split(",");
+		for (String groupId : groupIds) {
+			DataFlowElement el = df.getElement(groupId);
+			
+			//check if is same coordinator
+			if(coordinatorName != null && !coordinatorName.equals(el.getCoordinatorName())){
+				error = getMessageResources("msg_error_split_differents");
+				break;
+			}else{
+				coordinatorName = el.getCoordinatorName();
+				componentIds.add(el);
+			}
+			
+		}
+		
+		//check if is selected all elements from one coordinator
+		if(error == null && df.getCoordinator(coordinatorName).getElements().size() == componentIds.size()){
+			error = getMessageResources("msg_error_split_all_elements");
+		}
+		
+		if(error == null){
+			if (df != null) {
+				df.getCoordinator(coordinatorName).split(componentIds);
+			}
+		}else{
+			displayErrorMessage(error, "SPLITCOORDINATOR");
+		}
+		
 	}
 
 	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA, DataFlowElement dfeObjB) {
@@ -3726,6 +3799,30 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setShowResumeScheduling(boolean showResumeScheduling) {
 		this.showResumeScheduling = showResumeScheduling;
+	}
+
+	public List<SelectItem> getCoordinatorsList() {
+		return coordinatorsList;
+	}
+
+	public void setCoordinatorsList(List<SelectItem> coordinatorsList) {
+		this.coordinatorsList = coordinatorsList;
+	}
+
+	public String getCoordinatorsSelectedA() {
+		return coordinatorsSelectedA;
+	}
+
+	public void setCoordinatorsSelectedA(String coordinatorsSelectedA) {
+		this.coordinatorsSelectedA = coordinatorsSelectedA;
+	}
+
+	public String getCoordinatorsSelectedB() {
+		return coordinatorsSelectedB;
+	}
+
+	public void setCoordinatorsSelectedB(String coordinatorsSelectedB) {
+		this.coordinatorsSelectedB = coordinatorsSelectedB;
 	}
 
 }
