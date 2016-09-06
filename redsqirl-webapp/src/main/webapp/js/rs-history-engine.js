@@ -776,4 +776,6 @@ function undoRedoMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB){
 	console.log("B " + coordinatorsSelectedA);
 	canvasArray[selectedCanvas].commandHistory.push_command(new MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB));
 	cloneVoronoi(getAllCanvasesStatus());
+	
+	setTimeout(function(){ applyMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB); }, 1000);
 }

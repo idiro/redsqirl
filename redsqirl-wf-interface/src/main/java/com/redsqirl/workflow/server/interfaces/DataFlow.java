@@ -43,7 +43,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return ElementManager
 	 * @throws RemoteException
 	 */
-	public ElementManager getElementManager() throws RemoteException;
+	ElementManager getElementManager() throws RemoteException;
 	
 	/**
 	 * Check if a workflow is correct or not. Returns a string with a
@@ -51,7 +51,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * 
 	 * @return the error.
 	 */
-	public String check() throws RemoteException;
+	String check() throws RemoteException;
 
 	/**
 	 * Run the workflow
@@ -60,7 +60,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
 	 */
-	public String run() throws RemoteException, Exception;
+	String run() throws RemoteException, Exception;
 
 	/**
 	 * Run the workflow
@@ -70,7 +70,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
 	 */
-	public String run(List<String> dataFlowElement) throws RemoteException;
+	String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
 	 * Run a bundle job on a period of time
@@ -79,7 +79,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public String run(Date startTime,Date endTime) throws RemoteException;
+	String run(Date startTime,Date endTime) throws RemoteException;
 	
 	/**
 	 * List the elements to run, removing the actions that already produced the data
@@ -87,7 +87,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return List the elements to run
 	 * @throws Exception
 	 */
-	public List<RunnableElement> subsetToRun(List<String> dataFlowElements) throws Exception;
+	List<RunnableElement> subsetToRun(List<String> dataFlowElements) throws Exception;
 	
 	/**
 	 * Check if workflow is running
@@ -95,14 +95,14 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return <code>true</code> if the workflow is currently processed (for
 	 *         Oozie running OR suspended) else <code>false</code>
 	 */
-	public boolean isrunning() throws RemoteException;
+	boolean isrunning() throws RemoteException;
 
 	/**
 	 * Check if the workflow is a schedule workflow
 	 * @return
 	 * @throws RemoteException
 	 */
-	public boolean isSchedule() throws RemoteException;
+	boolean isSchedule() throws RemoteException;
 	
 	/**
 	 * 
@@ -110,7 +110,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public String getRunningStatus(String componentId) throws RemoteException;
+	String getRunningStatus(String componentId) throws RemoteException;
 	
 	/**
 	 * Remove temporary and buffered data for the entire project.
@@ -118,7 +118,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return Error message
 	 * @throws RemoteException
 	 */
-	public String cleanProject() throws RemoteException;
+	String cleanProject() throws RemoteException;
 
 	/**
 	 * Regenerate path and copy or move the existing data
@@ -128,7 +128,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return Error message
 	 * @throws RemoteException
 	 */
-	public String regeneratePaths(Boolean copy) throws RemoteException;
+	String regeneratePaths(Boolean copy) throws RemoteException;
 
 	/**
 	 * Save a workflow. A workflow is a zip file containing two files: - an xml
@@ -138,20 +138,20 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            the file path
 	 * @return null if OK, or a description of the error.
 	 */
-	public String save(String file) throws RemoteException;
+	String save(String file) throws RemoteException;
 
 	/**
 	 * Close a workflow, clean temporary data if necessary.
 	 * 
 	 * @throws RemoteException
 	 */
-	public void close() throws RemoteException;
+	void close() throws RemoteException;
 
 	/**
 	 * Do an automatic backup of the workflow.
 	 * @return string
 	 */
-	public String backup() throws RemoteException;
+	String backup() throws RemoteException;
 
 	/**
 	 * Return true if the dataflow has been loaded or has been saved.
@@ -160,7 +160,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *         <code>false</code>
 	 * @throws RemoteException
 	 */
-	public boolean isSaved() throws RemoteException;
+	boolean isSaved() throws RemoteException;
 
 	/**
 	 * Reads a workflow
@@ -172,12 +172,12 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            the file path to read from
 	 * @return null if OK, or a description of the error.
 	 */
-	public String read(String file) throws RemoteException;
+	String read(String file) throws RemoteException;
 	
 	/**
 	 * Reads a workflow from a local file.
 	 */
-	public String readFromLocal(File f) throws RemoteException;
+	String readFromLocal(File f) throws RemoteException;
 
 	/**
 	 * Do sort of the workflow.
@@ -186,14 +186,14 @@ public interface DataFlow extends Remote, Cloneable{
 	 * 
 	 * @return null if OK, or a description of the error.
 	 */
-	public String topoligicalSort() throws RemoteException;
+	String topoligicalSort() throws RemoteException;
 
 	/**
 	 * Generate a unique id that can be used for a new Element
 	 * @return A new ID.
 	 * @throws RemoteException
 	 */
-	public String generateNewId() throws RemoteException;
+	String generateNewId() throws RemoteException;
 	
 	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
@@ -206,7 +206,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
 	 */
-	public String addElement(String elementName) throws RemoteException,
+	String addElement(String elementName) throws RemoteException,
 			Exception;
 	
 	/**
@@ -214,7 +214,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param dfe
 	 * @throws RemoteException
 	 */
-	public void addElement(DataFlowElement dfe, String coordinatorName) throws RemoteException;
+	void addElement(DataFlowElement dfe, String coordinatorName) throws RemoteException;
 	
 	/**
 	 * Change the id of an element
@@ -226,10 +226,10 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return The error if any or null
 	 * @throws RemoteException
 	 */
-	public String changeElementId(String oldId, String newId)
+	String changeElementId(String oldId, String newId)
 			throws RemoteException;
 
-	public String removeElement(String componentId) throws RemoteException,
+	String removeElement(String componentId) throws RemoteException,
 			Exception;
 
 	
@@ -243,7 +243,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return The new SubDataFlow
 	 * @throws Exception with an error message
 	 */
-	public SubDataFlow createSA(
+	SubDataFlow createSA(
 			List<String> componentIds, 
 			String subworkflowName,
 			String subworkflowComment,
@@ -258,7 +258,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param newName
 	 * @throws RemoteException
 	 */
-	public void renameSA(String oldName, String newName) throws RemoteException;
+	void renameSA(String oldName, String newName) throws RemoteException;
 	
 	/**
 	 * Aggregate the Elements in one existing SuperAction
@@ -269,7 +269,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return The error message if any or null
 	 * @throws RemoteException
 	 */
-	public String aggregateElements(
+	String aggregateElements(
 			List<String> componentIds, 
 			String subworkflowName,
 			Map<String,Entry<String,String>> inputs, 
@@ -281,7 +281,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return The error message if any or null
 	 * @throws RemoteException
 	 */
-	public String expand(String componentId) throws RemoteException;
+	String expand(String componentId) throws RemoteException;
 
 	/**
 	 * Replace string in the interaction of the given elements 
@@ -303,7 +303,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            The id of the action.
 	 * @return a WorkflowAction object or null
 	 */
-	public DataFlowElement getElement(String componentId)
+	DataFlowElement getElement(String componentId)
 			throws RemoteException;
 
 	/**
@@ -320,7 +320,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            the input vertex id
 	 * @return null if OK, or a description of the error.
 	 */
-	public String removeLink(String outName, String componentIdOut,
+	String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn) throws RemoteException;
 
 	/**
@@ -337,7 +337,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            the input vertex id
 	 * @return null if OK, or a description of the error.
 	 */
-	public String addLink(String outName, String componentIdOut, String inName,
+	String addLink(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
 
 	/**
@@ -355,7 +355,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            if false cancel the action if it implies a topological error
 	 * @return null if OK, or a description of the error.
 	 */
-	public String removeLink(String outName, String componentIdOut,
+	String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
 			throws RemoteException;
 
@@ -375,7 +375,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 *            if false cancel the action if it implies a topological error
 	 * @return null if OK, or a description of the error.
 	 */
-	public String addLink(String outName, String componentIdOut, String inName,
+	String addLink(String outName, String componentIdOut, String inName,
 			String componentIdIn, boolean force) throws RemoteException;
 
 	/**
@@ -391,7 +391,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
-	public Map<String, String> getAllWANameWithClassName()
+	Map<String, String> getAllWANameWithClassName()
 			throws RemoteException, Exception;
 
 	/**
@@ -404,21 +404,21 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
-	public List<String[]> getAllWA() throws RemoteException;
+	List<String[]> getAllWA() throws RemoteException;
 
 	/**
 	 * Get the list of Workflow elements
 	 * 
 	 * @return the workingWA
 	 */
-	public List<DataFlowElement> getElement() throws RemoteException;
+	List<DataFlowElement> getElement() throws RemoteException;
 	
 	/**
 	 * Get the list of coordinators
 	 * @return
 	 * @throws RemoteException
 	 */
-	public List<DataFlowCoordinator> getCoordinators() throws RemoteException;
+	List<DataFlowCoordinator> getCoordinators() throws RemoteException;
 	
 	/**
 	 * 
@@ -426,20 +426,46 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public DataFlowCoordinator getCoordinator(String coordinatorName) throws RemoteException;
+	DataFlowCoordinator getCoordinator(String coordinatorName) throws RemoteException;
+	
+	/**
+	 * Merge two coordinators
+	 * @param coordinatorNameToKeep
+	 * @param coordinatorNameToRemove
+	 * @throws RemoteException
+	 */
+	void mergeCoordinators(String coordinatorNameToKeep, String coordinatorNameToRemove) throws RemoteException;
+	
+	/**
+	 * Check coordinator before merging
+	 * @param coordName1
+	 * @param coordName2
+	 * @return
+	 * @throws RemoteException
+	 */
+	String checkCoordinatorMergeConflict(String  coordName1, String coordName2) throws RemoteException;
+	
+	/**
+	 * Split elements from one coordinator into two
+	 * @param coordinatorName
+	 * @param elements
+	 * @return
+	 * @throws RemoteException
+	 */
+	String splitCoordinator(String coordinatorName, List<String> elements) throws RemoteException;
 
 	/**
 	 * Get the last elment of workingWA
 	 * 
 	 * @return the last element of workingWA.
 	 */
-	public DataFlowElement getLastElement() throws RemoteException;
+	DataFlowElement getLastElement() throws RemoteException;
 
 	/**
 	 * 
 	 * @return the menuWA
 	 */
-	public Map<String, List<String[]>> getMenuWA() throws RemoteException;
+	Map<String, List<String[]>> getMenuWA() throws RemoteException;
 
 
 	/**
@@ -448,7 +474,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return list of the component Ids
 	 * @throws RemoteException
 	 */
-	public List<String> getComponentIds() throws RemoteException;
+	List<String> getComponentIds() throws RemoteException;
 
 	/**
 	 * Get the workflow name
@@ -456,7 +482,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return Name of the Workflow
 	 * @throws RemoteException
 	 */
-	public String getName() throws RemoteException;
+	String getName() throws RemoteException;
 
 	/**
 	 * Set the Workflow name
@@ -464,7 +490,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param name
 	 * @throws RemoteException
 	 */
-	public void setName(String name) throws RemoteException;
+	void setName(String name) throws RemoteException;
 
 	/**
 	 * Get the workflow comment
@@ -472,7 +498,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return Comment of the Workflow
 	 * @throws RemoteException
 	 */
-	public String getComment() throws RemoteException;
+	String getComment() throws RemoteException;
 
 	/**
 	 * Set the Workflow comment
@@ -480,7 +506,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param comment
 	 * @throws RemoteException
 	 */
-	public void setComment(String comment) throws RemoteException;
+	void setComment(String comment) throws RemoteException;
 	
 	/**
 	 * Get the oozie job id of the job currently running or previously run
@@ -488,7 +514,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return Job Id on oozie
 	 * @throws RemoteException
 	 */
-	public String getOozieJobId() throws RemoteException;
+	String getOozieJobId() throws RemoteException;
 
 	/**
 	 * Set the oozie job id
@@ -496,12 +522,12 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param oozieJobId
 	 * @throws RemoteException
 	 */
-	public void setOozieJobId(String oozieJobId) throws RemoteException;
+	void setOozieJobId(String oozieJobId) throws RemoteException;
 
 	/**
 	 * Get the Number of element run by oozie the last time
 	 */
-	public int getNbOozieRunningActions() throws RemoteException;
+	int getNbOozieRunningActions() throws RemoteException;
 	
 	/**
 	 * Check if the output of an element is a valid input of an other element
@@ -513,24 +539,24 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return True if a link can be created
 	 * @throws RemoteException
 	 */
-	public boolean check(String outName, String componentIdOut, String inName,
+	boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
 	
-	public String getPath() throws RemoteException;
+	String getPath() throws RemoteException;
 
-	public void setPath(String path) throws RemoteException;
+	void setPath(String path) throws RemoteException;
 
 	Set<String> getSADependencies() throws RemoteException;
 
-	public String cleanSelectedAction(List<String> ids) throws RemoteException;
+	String cleanSelectedAction(List<String> ids) throws RemoteException;
 
-	public void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
+	void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
 	
-	public String addElement(String waName, String componentId)	throws Exception;
+	String addElement(String waName, String componentId)	throws Exception;
 	
-	public boolean isChanged() throws RemoteException;
+	boolean isChanged() throws RemoteException;
 	
-	public void setChanged() throws RemoteException;
+	void setChanged() throws RemoteException;
 
 	
 }

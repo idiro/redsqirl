@@ -2258,6 +2258,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return ans;
 	}
+	
+	public void mergeCoordinators(String coordinatorNameToKeep, String coordinatorNameToRemove) throws RemoteException{
+		mergeCoordinators(getCoordinator(coordinatorNameToKeep),getCoordinator(coordinatorNameToRemove));
+	}
+	public void mergeCoordinators(DataFlowCoordinator coordinatorToKeep, DataFlowCoordinator coordinatorToRemove) throws RemoteException{
+		coordinatorToKeep.merge(coordinatorToRemove);
+		coordinators.remove(coordinatorToRemove);
+	}
+	
+	public String checkCoordinatorMergeConflict(String  coordName1, String coordName2) throws RemoteException{
+		return checkCoordinatorMergeConflict(getCoordinator(coordName1),getCoordinator(coordName2));
+	}
 
 	public DataFlowCoordinator getFirstCoordinator(){
 		return coordinators.getFirst();
@@ -2302,8 +2314,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		if(error == null){
 			//Merge Coordinator
-			coordinator1.merge(coordinator2);
-			coordinators.remove(coordinator2);
+			mergeCoordinators(coordinator1,coordinator2);
 		}
 
 		return error;
@@ -2510,11 +2521,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							if(error == null){
 								//Merge Coordinator
 								if(coordInFirst){
-									coordIn.merge(coordOut);
-									coordinators.remove(coordOut);
+									mergeCoordinators(coordIn,coordOut);
 								}else{
-									coordOut.merge(coordIn);
-									coordinators.remove(coordIn);
+									mergeCoordinators(coordOut,coordIn);
 								}
 							}
 						}
