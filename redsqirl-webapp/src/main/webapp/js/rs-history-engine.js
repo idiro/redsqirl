@@ -711,6 +711,7 @@ function CommandCoordinator(obj) {
     this.startDate = obj[6];
     this.selectedSchedulingOption = obj[7];
     this.positionsArrays = obj[8];
+    this.obj = obj;
 };
 
 CommandCoordinator.prototype = Object.create(Command.prototype);
@@ -722,6 +723,7 @@ CommandCoordinator.prototype.undo = function(){
 
 CommandCoordinator.prototype.redo = function(){
 	applyUndoRedoCoordinator(this.name, this.startDate, this.selectedSchedulingOption, this.positionsArrays);
+	undoRedoCoordinator(obj);
 };
 
 CommandCoordinator.prototype.getName = function(){
@@ -760,7 +762,7 @@ MergeCoordinator.prototype.undo = function(){
 };
 
 MergeCoordinator.prototype.redo = function(){
-	applyMergeCoordinator(this.coordinatorsSelectedA, this.coordinatorsSelectedB);
+	undoRedoMergeCoordinator(this.coordinatorsSelectedA, this.coordinatorsSelectedB);
 };
 
 MergeCoordinator.prototype.getName = function(){
@@ -800,7 +802,7 @@ SplitCoordinator.prototype.undo = function(){
 };
 
 SplitCoordinator.prototype.redo = function(){
-	splitCoordinator(this.selectedIconsCommaDelimited);
+	undoRedoSplitCoordinator(this.selectedIconsCommaDelimited);
 };
 
 SplitCoordinator.prototype.getName = function(){

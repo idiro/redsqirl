@@ -816,7 +816,7 @@ img.red {
 .left-about small {
 	font-size: 1.9em;
 }
-.left-about h3,.team h3 ,.services-grid h3,.clients h3,.portfolio-grid h3,.test h3,.contact-grid h3{
+.left-about h3,.team h3 ,.services-grid h3,.clients h3,.portfolio-grid h3,.test h3,.contact-grid h3, .services h3,.download h3{
 	font-size: 2.8em;
 }
 .left-about p {
@@ -969,7 +969,7 @@ img.red {
 .about, .team, .services, .clients, .portfolio-top, .test, .contact{
 	padding:1.5em 0 2em;
 }
-.left-about h3, .team h3, .services-grid h3, .clients h3, .portfolio-grid h3, .test h3, .contact-grid h3 {
+.left-about h3, .team h3, .services-grid h3, .clients h3, .portfolio-grid h3, .test h3, .contact-grid h3, .services h3, .download h3 {
 	font-size: 1.4em;
 }
 .left-about small {
