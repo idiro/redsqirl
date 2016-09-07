@@ -44,6 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.stringtemplate.v4.compiler.STParser.element_return;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -592,7 +593,8 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			}
 
 		}
-
+		getElement().clear();
+		coordinators.clear();
 		tmpFile.delete();
 		return error;
 	}

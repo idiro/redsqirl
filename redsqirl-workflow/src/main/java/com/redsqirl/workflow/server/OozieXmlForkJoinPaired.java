@@ -186,6 +186,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							}
 						}
 						error = createWorkflowXml(df.getName(),df,toRun, dirCoordinator,true);
+						
+						if(error == null){
+							error = createSubXmls(df, toRun,dirCoordinator);
+						}
 					} catch (Exception e) {
 						error =" "+ LanguageManagerWF.getText(
 								"ooziexmlforkjoinpaired.createxml.fail",

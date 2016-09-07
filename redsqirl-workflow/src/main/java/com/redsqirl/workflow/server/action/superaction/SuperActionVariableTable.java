@@ -40,15 +40,14 @@ public class SuperActionVariableTable extends TableInteraction{
 		}
 	}
 	
-	public void updateOozieAction(SubWorkflowAction oozieAction,final Map<String,String> defaultVariables) throws RemoteException{
+	public Map<String,String> getVariables() throws RemoteException{
 		Map<String,String> oozieVars = new HashMap<String,String>();
-		oozieVars.putAll(defaultVariables);
 		Iterator<Map<String,String>> overriddenVarIt = getValues().iterator();
 		while(overriddenVarIt.hasNext()){
 			Map<String,String> cur = overriddenVarIt.next();
 			oozieVars.put(cur.get(variable_name_title), cur.get(variable_value_title));
 		}
-		oozieAction.setSuperActionVariables(oozieVars);
+		return oozieVars;
 	}
 
 }

@@ -375,7 +375,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 										)){
 							check = false;
 							error = LanguageManagerWF.getText("copy_workflow_to_subDataFlow");
-						}else{
+						}else if(!(curEl instanceof SubWorkflowInput)){
 							Iterator<DFEOutput> itOut = curEl.getDFEOutput().values().iterator();
 							while(itOut.hasNext()){
 								DFEOutput curOut = itOut.next();

@@ -23,6 +23,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +31,14 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
+import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.AbstractSource;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -57,9 +60,11 @@ public class SubWorkflowInput extends AbstractSource{
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 	
 	public static final String key_headerInt = "header",
-						  key_fieldDefInt = "field_def";
+						  key_fieldDefInt = "field_def",
+						  key_materialized= "materialized";
 	
 	private InputInteraction headerInt;
+	private AppendListInteraction materializedInt;
 	private FieldDefinitionTableInteraction defFieldInt;
 	
 	public static final String out_name = "";
@@ -74,7 +79,17 @@ public class SubWorkflowInput extends AbstractSource{
 				LanguageManagerWF.getText("superactioninput.header.legend"), 
 				0, 
 				1);
+		
+		materializedInt= new AppendListInteraction(key_materialized,
+				LanguageManagerWF.getText("superactioninput.materialized.title"),
+				LanguageManagerWF.getText("superactioninput.materialized.legend"), 0, 2);
+		List<String> matIntVal = new LinkedList<String>();
+		matIntVal.add(LanguageManagerWF.getText("superactioninput.allow_materialized"));
+		materializedInt.setPossibleValues(matIntVal);
+		materializedInt.setDisplayCheckBox(true);
+
 		page2.addInteraction(headerInt);
+		page2.addInteraction(materializedInt);
 		
 		defFieldInt = new FieldDefinitionTableInteraction(
 				key_fieldDefInt, 
@@ -95,7 +110,11 @@ public class SubWorkflowInput extends AbstractSource{
 		if(output.get(out_name) == null){
 			return null;
 		}
-		return new DataProperty(output.get(out_name).getClass(), 1, 1,output.get(out_name).getFields());
+		if(materializedInt.getValues().isEmpty()){
+			return new DataProperty(output.get(out_name).getClass(), 1, 1,output.get(out_name).getFields());
+		}else{
+			return new DataProperty(output.get(out_name).getClass(), 1, 1,output.get(out_name).getFields(),PathType.MATERIALIZED);
+		}
 	}
 
 	@Override
@@ -127,10 +146,6 @@ public class SubWorkflowInput extends AbstractSource{
 				break;
 			}
 		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
-		}
 
 		return absolutePath;
 	}
@@ -153,10 +168,7 @@ public class SubWorkflowInput extends AbstractSource{
 				break;
 			}
 		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
-		}
+		
 		return absolutePath;
 	}
 	
@@ -175,6 +187,9 @@ public class SubWorkflowInput extends AbstractSource{
 			output.put(out_name, DataOutput.getOutput(dataSubtype.getValue()));
 		}
 		output.get(out_name).setFields(fl);
+		if(!materializedInt.getValues().isEmpty()){
+			output.get(out_name).setPathType(PathType.MATERIALIZED);
+		}
 		return error;
 	}
 

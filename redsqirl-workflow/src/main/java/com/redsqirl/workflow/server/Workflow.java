@@ -1563,7 +1563,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 				sw.addElement(newEl,coordinatorName);
 			}
-
+			DataFlowCoordinator coordinatorSW = sw.getCoordinator(coordinatorName);
 			try {
 				// Create Action inputs
 				Iterator<String> entries = inputs.keySet().iterator();
@@ -1577,9 +1577,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							.getDFEOutput()
 							.get(inputs.get(inputName).getValue());
 					inputsForHelp.put(inputName, constraint);
-					String tmpId = sw.addElement((new SubWorkflowInput())
-							.getName());
-					error = sw.changeElementId(tmpId, inputName);
+					sw.addElement((new SubWorkflowInput())
+							.getName(),inputName,coordinatorSW);
 
 					if (error == null) {
 						// Update Data Type
@@ -1602,7 +1601,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								.setValue(constraint.getTypeName());
 
 						logger.debug("Update Data SubType");
-
+						
+						if(PathType.MATERIALIZED.equals(constraint.getPathType())){
+							List<String> vals = new LinkedList<String>();
+							vals.add(LanguageManagerWF.getText("superactioninput.allow_materialized"));
+							((AppendListInteraction)input.getInteraction(SubWorkflowInput.key_materialized)).setValues(vals);
+						}
+						
 						// Update header
 						input.update(input
 								.getInteraction(SubWorkflowInput.key_headerInt));
@@ -1676,9 +1681,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				while (entries.hasNext() && error == null) {
 					String outputName = entries.next();
 
-					String tmpId = sw.addElement((new SubWorkflowOutput())
-							.getName());
-					error = sw.changeElementId(tmpId, outputName);
+					sw.addElement((new SubWorkflowOutput())
+							.getName(),outputName,coordinatorSW);
 
 					if (error == null) {
 						sw.addLink(outputs.get(outputName).getValue(), outputs

@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server.action.superaction;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -43,6 +44,8 @@ import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.AbstractSource;
+import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -406,8 +409,31 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	public String updateOut() throws RemoteException {
 		if(errorInstall == null){
 			((OozieSubWorkflowAction) oozieAction).setSuperElement(this);
+			//Edit input paths
+			Map<String,String> variables = new LinkedHashMap<String,String>();
+			variables.putAll(subWorkflowVariables);
 			if(variablesTable != null){
-				variablesTable.updateOozieAction((SubWorkflowAction) oozieAction, subWorkflowVariables);
+				variables.putAll(variablesTable.getVariables());
+			}
+			Iterator<String> itIn = input.keySet().iterator();
+			while(itIn.hasNext()){
+				String curInName = itIn.next();
+				DFEOutput origDfe = getDFEInput().get(curInName).get(0); 
+				if(PathType.MATERIALIZED.equals(origDfe.getPathType())){
+					if(origDfe instanceof HCatalogType){
+						variables.put("DATABASE_"+curInName,"${DATABASE_"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+						variables.put("TABLE_"+curInName,"${TABLE_"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+						variables.put("FILTER_HIVE_"+curInName,"${FILTER_HIVE_"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+						variables.put("FILTER_PIG_"+curInName,"${FILTER_PIG_"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+						variables.put("FILTER_JAVA_"+curInName,"${FILTER_JAVA_"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+					}else{
+						variables.put(curInName,"${"+getInputComponent().get(curInName).get(0).getComponentId()+"}");
+					}
+				}
+			}
+			
+			if(!variables.isEmpty()){
+				((SubWorkflowAction)oozieAction).setSuperActionVariables(variables);
 			}
 		}
 		return errorInstall; 
@@ -462,8 +488,10 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			while(itIn.hasNext()){
 				String curInName = itIn.next();
 				DFEOutput in = saWf.getElement(curInName).getDFEOutput().get(SubWorkflowInput.out_name);
+				DFEOutput origDfe = getDFEInput().get(curInName).get(0); 
 				in.setSavingState(SavingState.RECORDED);
-				in.setPath(getDFEInput().get(curInName).get(0).getPath());
+				in.setPath(origDfe.getPath());
+				in.setPathType(origDfe.getPathType());
 				Map<String, String> wfProp=  getDFEInput().get(curInName).get(0).getProperties();
 				for (Entry<String,String> cur: wfProp.entrySet()) {
 					in.addProperty(cur.getKey(), cur.getValue());
