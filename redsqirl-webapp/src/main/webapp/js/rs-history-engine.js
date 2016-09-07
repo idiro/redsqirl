@@ -764,7 +764,7 @@ MergeCoordinator.prototype.redo = function(){
 };
 
 MergeCoordinator.prototype.getName = function(){
-	return msg_coordinator_command;
+	return msg_coordinator_merge_command;
 };
 
 MergeCoordinator.prototype.clean = function(){
@@ -778,4 +778,43 @@ function undoRedoMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB){
 	cloneVoronoi(getAllCanvasesStatus());
 	
 	setTimeout(function(){ applyMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB); }, 1000);
+}
+
+/********************************************************************/
+/********************************************************************/
+/********************* SplitCoordinator ***************************/
+function SplitCoordinator(selectedIconsCommaDelimited) {
+    Command.call(this);
+    this.selectedIconsCommaDelimited = selectedIconsCommaDelimited;
+    this.cloneId = "";
+    
+    tmpCommandObj = this;
+};
+
+SplitCoordinator.prototype = Object.create(Command.prototype);
+SplitCoordinator.prototype.constructor = SplitCoordinator;
+
+SplitCoordinator.prototype.undo = function(){
+	deleteAllElements();
+	replaceWFByCloneVoronoi("",this.cloneId, false);
+};
+
+SplitCoordinator.prototype.redo = function(){
+	splitCoordinator(this.selectedIconsCommaDelimited);
+};
+
+SplitCoordinator.prototype.getName = function(){
+	return msg_coordinator_split_command;
+};
+
+SplitCoordinator.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function undoRedoSplitCoordinator(selectedIconsCommaDelimited){
+	console.log("undoRedoSplitCoordinator " + selectedIconsCommaDelimited);
+	canvasArray[selectedCanvas].commandHistory.push_command(new SplitCoordinator(selectedIconsCommaDelimited));
+	cloneVoronoi(getAllCanvasesStatus());
+	
+	setTimeout(function(){ splitCoordinator(selectedIconsCommaDelimited); }, 1000);
 }

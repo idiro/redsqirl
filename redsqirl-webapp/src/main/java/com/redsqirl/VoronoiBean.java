@@ -73,8 +73,8 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				tableList.add(v);
 			}
 
-			setExecutionTime(dataFlowCoordinator.getExecutionTime());
 			setName(dataFlowCoordinator.getName());
+			setExecutionTime(dataFlowCoordinator.getExecutionTime());
 			if(dataFlowCoordinator.getTimeCondition() != null && dataFlowCoordinator.getTimeCondition().getUnit() != null){
 				setSelectedSchedulingOption(dataFlowCoordinator.getTimeCondition().getUnit().toString());
 				setPeriodic(dataFlowCoordinator.getTimeCondition().getFrequency());
@@ -82,12 +82,17 @@ public class VoronoiBean extends BaseBean implements Serializable {
 				setSelectedSchedulingOption(null);
 				setPeriodic(null);
 			}
-			setScheduling(true);
+			if(dataFlowCoordinator.getExecutionTime() != null){
+				setScheduling(true);
+			}else{
+				setScheduling(false);
+			}
 			
 		}else{
 			setName(null);
 			setExecutionTime(null);
 			setSelectedSchedulingOption(null);
+			setScheduling(false);
 		}
 
 		schedulingOptions = new LinkedList<SelectItem>();

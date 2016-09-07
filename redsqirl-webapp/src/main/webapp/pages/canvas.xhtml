@@ -76,6 +76,8 @@
         var msg_newpackage_notification_footer_beg='#{messages.msg_newpackage_notification_footer_beg}';
         var msg_newpackage_notification_footer_end='#{messages.msg_newpackage_notification_footer_end}';
         var msg_coordinator_command='#{messages.msg_coordinator_command}';
+        var msg_coordinator_merge_command='#{messages.msg_coordinator_merge_command}';
+        var msg_coordinator_split_command='#{messages.msg_coordinator_merge_command}';
         
 		           
 		 var contTabCanvas = 1;
@@ -1200,37 +1202,42 @@
 	   	
 	   	
 	   	function checkOpenModalMerge(){
-
-	    	console.log("checkOpenModalMerge");
-	    	console.log(getSelectedByName());
-	    	
-	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
-	    	
-	    	if(isIfISchedule(getSelectedByName())){
-	    		openModalMerge();
-		    }else{
-		    	alert("This is not a schedule canvas.");
-			}
-	    	
-	    	jQuery('#canvas-tabs').unblock();
-	    	
+	   		//<![CDATA[
+		    	console.log("checkOpenModalMerge");
+		    	console.log(getSelectedByName());
+		    	console.log(isIfISchedule(getSelectedByName()));
+		    	
+		    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+		    	
+		    	if(isIfISchedule(getSelectedByName())){
+		    		openModalMerge();
+			    }else{
+			    	alert("This is not a schedule canvas.");
+				}
+		    	
+		    	jQuery('#canvas-tabs').unblock();
+	    	//]]>
 	    }
 	   	
 	   	function checkSplit(){
-	   		
-	   		console.log("checkSplit");
-	    	console.log(getSelectedByName());
-	    	
-	    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
-	    	
-	    	if(getSelectedIconsCommaDelimited() != ""){
-	    		splitCoordinator(getSelectedIconsCommaDelimited());
-		    }else{
-		    	alert("You need select at least one object.");
-			}
-
-	    	jQuery('#canvas-tabs').unblock();
-	    	
+	   		//<![CDATA[
+		   		console.log("checkSplit");
+		    	console.log(getSelectedByName());
+		    	
+		    	jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+		    	
+		    	if(isIfISchedule(getSelectedByName())){
+		    		if(getSelectedIconsCommaDelimited() != ""){
+		    			undoRedoSplitCoordinator(getSelectedIconsCommaDelimited());
+				    }else{
+				    	alert("You need select at least one object.");
+					}
+		    	}else{
+			    	alert("This is not a schedule canvas.");
+				}
+	
+		    	jQuery('#canvas-tabs').unblock();
+	    	//]]>
 	   	}
 	   	
 	   	/*keyboard shortcuts*/
@@ -1917,11 +1924,14 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
 				<a4j:jsFunction name="setWorkflow"
-					reRender="menuSoftware,installSubWorkflow"
+					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
 					action="#{canvasBean.changeWorkflow}"
 					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfIScheduleJS();updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
+				    
+				<a4j:jsFunction name="reRenderMenuMergeSplit" reRender="menuEdit, mergeMenuItem,splitMenuItem" />
+				
 			</a4j:region>
 
 			<a4j:region>
@@ -2570,7 +2580,7 @@
 				
 				<a4j:jsFunction name="applyMergeCoordinator"
 					action="#{canvasBean.applyMergeCoordinator}" reRender="errorTable, msnError"
-					oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('modalMergeCoordinator')}.hide(); undoRedoVoronoi(); }">
+					oncomplete="if(#{requestScope['msnError'] == null}){ undoRedoVoronoi();#{rich:component('modalMergeCoordinator')}.hide(); }">
 					<a4j:actionparam name="coordinatorsSelectedA" />
 					<a4j:actionparam name="coordinatorsSelectedB" />
 				</a4j:jsFunction>
@@ -2657,7 +2667,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu itemClass="canvasMenu">
+								<rich:dropDownMenu itemClass="canvasMenu" id="menuEdit">
 
 									<f:facet name="label">
 										<h:panelGroup>
@@ -2705,17 +2715,24 @@
 										onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });checkOpenModalAggregate();">
 										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
+									
+									<rich:menuSeparator />
+									
 									<rich:menuItem id="mergeMenuItem" submitMode="ajax"
 										value="#{messages.label_voronoi_merge}"
-										onclick="checkSplit();">
+										onclick="checkOpenModalMerge();"
+										disabled="#{!canvasBean.schedule}" >
 										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="splitMenuItem" submitMode="ajax"
 										value="#{messages.label_voronoi_split}"
-										onclick="checkSplit();">
+										onclick="checkSplit();"
+										disabled="#{!canvasBean.schedule}" >
 										<h:outputText value="Ctrl+Alt+S" class="menuItemHotKey" />
 									</rich:menuItem>
+									
 									<rich:menuSeparator />
+									
 									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_clean_project}"
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ cleanCanvasProjectJS(sels); }else{alert('#{messages.msg_err_no_action_selected}')}"
