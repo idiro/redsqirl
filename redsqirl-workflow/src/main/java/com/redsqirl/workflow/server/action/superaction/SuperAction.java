@@ -461,7 +461,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			Iterator<String> itIn = input.keySet().iterator();
 			while(itIn.hasNext()){
 				String curInName = itIn.next();
-				DFEOutput in = saWf.getElement(curInName).getDFEOutput().get(AbstractSource.out_name);
+				DFEOutput in = saWf.getElement(curInName).getDFEOutput().get(SubWorkflowInput.out_name);
 				in.setSavingState(SavingState.RECORDED);
 				in.setPath(getDFEInput().get(curInName).get(0).getPath());
 				Map<String, String> wfProp=  getDFEInput().get(curInName).get(0).getProperties();

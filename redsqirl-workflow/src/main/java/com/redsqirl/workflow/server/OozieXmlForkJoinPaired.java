@@ -719,9 +719,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								}
 							}
 						}
-					}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty() ){
+					}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType())){
 						List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
-						if(!inputsDfe.get(0).getCoordinatorName().equals(coordinator.getName())){
+						if(inputsDfe.isEmpty() ){
+							nameDataset = cur.getComponentId();
+							timeConstraintCur = df.getCoordinator(cur.getCoordinatorName()).getTimeCondition();
+							if(timeConstraintCur.getUnit() == null){
+								timeConstraintCur = df.getCoordinator(cur.getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
+							}
+							initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
+						}else if(!inputsDfe.get(0).getCoordinatorName().equals(coordinator.getName())){
 							if(inputsDone.add(datasetCur.getPath())){
 								nameDataset = inputsDfe.get(0).getComponentId();
 								timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
@@ -788,7 +795,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							autoVariables.put("FILTER_JAVA_"+cur.getComponentId(), "${coord:dataInPartitionFilter('"+cur.getComponentId()+"','java')}");
 						}
 						dataIn.setAttribute("name", cur.getComponentId());
-						dataIn.setAttribute("dataset", cur.getAllInputComponent().get(0).getComponentId());	
+						List<DataFlowElement> elIn = cur.getAllInputComponent();
+						if(elIn.isEmpty()){
+							dataIn.setAttribute("dataset", cur.getComponentId());
+						}else{
+							dataIn.setAttribute("dataset", elIn.get(0).getComponentId());	
+						}
 						if(out.getNumberMaterializedPath() == 1){
 							Element instance= doc.createElement("instance");
 							instance.appendChild(doc

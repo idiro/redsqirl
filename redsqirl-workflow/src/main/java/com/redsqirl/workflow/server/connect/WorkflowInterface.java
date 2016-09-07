@@ -54,7 +54,7 @@ import com.redsqirl.workflow.server.WorkflowCoordinator;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.SyncSink;
 import com.redsqirl.workflow.server.action.SyncSource;
-import com.redsqirl.workflow.server.action.SyncSourceFilter;
+import com.redsqirl.workflow.server.action.SyncSinkFilter;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
@@ -369,7 +369,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 					while(cloneElIt.hasNext() && check){
 						DataFlowElement curEl = cloneElIt.next();
 						if(elements.contains(curEl.getComponentId()) &&
-								( curEl instanceof SyncSourceFilter ||
+								( curEl instanceof SyncSinkFilter ||
 										curEl instanceof SyncSource ||
 										curEl instanceof SyncSink
 										)){

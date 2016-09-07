@@ -64,6 +64,10 @@ public class BrowserInteraction extends UserInteraction{
 		super(id, name, legend, texttip, DisplayType.browser, column, placeInColumn);
 	}
 	
+	public void update(String newType, String newSubtype) throws RemoteException {
+		update(newType, newSubtype,"");
+	}
+	
 	/**
 	 * Update the interaction
 	 * 
@@ -71,7 +75,7 @@ public class BrowserInteraction extends UserInteraction{
 	 * @param newSubtype New Sub type (Output name from DataOutput name)
 	 * @throws RemoteException
 	 */
-	public void update(String newType, String newSubtype) throws RemoteException {
+	public void update(String newType, String newSubtype,String outputName) throws RemoteException {
 		logger.debug("type : " + newType);
 		logger.debug("subtype : " + newSubtype);
 		
@@ -82,6 +86,10 @@ public class BrowserInteraction extends UserInteraction{
 		}
 		if(treeDataset.getFirstChild("browse").getFirstChild("output") == null){
 			treeDataset.getFirstChild("browse").add("output");
+		}
+		
+		if(treeDataset.getFirstChild("browse").getFirstChild("name") == null){
+			treeDataset.getFirstChild("browse").add("name").add(outputName);
 		}
 		
 		if(treeDataset.getFirstChild("browse").getFirstChild("type") == null){
@@ -96,11 +104,12 @@ public class BrowserInteraction extends UserInteraction{
 
 			if (oldSubType != null && !oldSubType.getHead().equals(newSubtype)) {
 				treeDataset.getFirstChild("browse").remove("type");
+				treeDataset.getFirstChild("browse").remove("subtype");
 				treeDataset.getFirstChild("browse").remove("output");
-				treeDataset.getFirstChild("browse").add("output");
 				treeDataset.getFirstChild("browse").add("type").add(newType);
 				treeDataset.getFirstChild("browse").add("subtype")
 						.add(newSubtype);
+				treeDataset.getFirstChild("browse").add("output");
 			}
 		}
 	}

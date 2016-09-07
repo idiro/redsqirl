@@ -79,7 +79,7 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SyncSink;
-import com.redsqirl.workflow.server.action.SyncSourceFilter;
+import com.redsqirl.workflow.server.action.SyncSinkFilter;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
@@ -300,6 +300,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							+ "\n";
 					listToNotCheck.add(wa);
 				} else {
+					wa.addMaterializedVariables();
 					wa.updateOut();
 				}
 			}
@@ -2146,7 +2147,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws Exception
 	 */
 	public String addElement(String waName, String componentId)	throws Exception {
-		DataFlowCoordinator dfC = new WorkflowCoordinator(componentId);
+		DataFlowCoordinator dfC = null;
+		if(element.isEmpty() || isSchedule()){
+			dfC = new WorkflowCoordinator(componentId);
+		}else{
+			dfC = getCoordinators().get(0);
+		}
 		String error = addElement(waName, componentId, dfC);
 		coordinators.add(dfC);
 
@@ -2515,7 +2521,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						//Check if it is a Sync-Sink - Sync-Source-Filter link
 						logger.debug("In Class: "+in.getClass().toString());
 						logger.debug("Out Class: "+out.getClass().toString());
-						if(!in.getClass().equals(SyncSourceFilter.class) || !out.getClass().equals(SyncSink.class)){
+						if(!in.getClass().equals(SyncSinkFilter.class) || !out.getClass().equals(SyncSink.class)){
 							error = checkCoordinatorMergeConflict(coordIn,coordOut);
 
 							if(error == null){
@@ -2864,7 +2870,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			while(itDfe.hasNext() && !ans){
 				Iterator<DFEOutput> itOut = itDfe.next().getDFEOutput().values().iterator();
 				while(itOut.hasNext() && !ans){
-					ans = PathType.TEMPLATE.equals(itOut.next().getPathType());
+					PathType curPathType = itOut.next().getPathType();
+					ans = PathType.TEMPLATE.equals(curPathType) || PathType.MATERIALIZED.equals(curPathType);
 				}
 			}
 		}

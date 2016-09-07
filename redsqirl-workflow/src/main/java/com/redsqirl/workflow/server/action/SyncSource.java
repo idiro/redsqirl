@@ -66,10 +66,11 @@ public class SyncSource extends AbstractSource {
 	private static final long serialVersionUID = 7519928238030041208L;
 
 	private static Logger logger = Logger.getLogger(SyncSource.class);
-	public final static String out_template = "template",
+	public final static String out_template = "",
 			inter_template = "template_path",
 			inter_unit = "unit",
-			inter_freq = "frequency";
+			inter_freq = "frequency",
+			inter_number = "nb_dataset";
 	
 	protected Page page4,page5;
 	protected InputInteraction templatePath;
@@ -77,6 +78,8 @@ public class SyncSource extends AbstractSource {
 	private ListInteraction unit;
 
 	private InputInteraction frequency;
+	
+	protected InputInteraction nbUsedPath;
 	
 	/**
 	 * Constructor containing the pages, page checks and interaction
@@ -86,7 +89,7 @@ public class SyncSource extends AbstractSource {
 	 */
 	public SyncSource() throws RemoteException {
 		super(null);
-
+		out_name = "initial";
 		addTypePage();
 		addSubTypePage();
 		addSourcePage();
@@ -125,14 +128,37 @@ public class SyncSource extends AbstractSource {
 				inter_freq, 
 				LanguageManagerWF.getText("sync_source.frequency.title"),
 				LanguageManagerWF.getText("sync_source.frequency.legend")
-				, 0, 0);
+				, 0, 1);
 		frequency.setValue("1");
 		frequency.setRegex("[1-9][0-9]{0,1}");
 		
+		//Number of dataset to use
+		nbUsedPath = new InputInteraction(
+				"nb_template_path_used", 
+				LanguageManagerWF.getText("sync_source_filter.nb_template_path_used.title"),
+				LanguageManagerWF.getText("sync_source_filter.nb_template_path_used.legend")
+				, 0, 2);
+		nbUsedPath.setRegex("^[1-9][0-9]*$");
+		nbUsedPath.setValue("1");
+		nbUsedPath.setReplaceDisable(true);
+				
 		page5.addInteraction(unit);
 		page5.addInteraction(frequency);
+		page5.addInteraction(nbUsedPath);
 		
 		
+	}
+	
+
+	
+	public int getNbPath(){
+		int nbPath = 1;
+		try{
+			nbPath = Integer.valueOf(nbUsedPath.getValue());
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return nbPath;
 	}
 	
 	protected void initializeDataTypeInteraction() throws RemoteException{
@@ -216,6 +242,9 @@ public class SyncSource extends AbstractSource {
 	
 	protected static String checkTemplatePath(String realPath, String templatePathStr){
 		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+		if(templatePathStr == null){
+			return "No template path given...";
+		}
 		Matcher m = p.matcher(templatePathStr);
 		String error = null; 
 		String buildingStr = "";
@@ -407,11 +436,12 @@ public class SyncSource extends AbstractSource {
 			DFEOutput templateOut = output.get(out_template);
 			templateOut.setPath(templatePathStr);
 			templateOut.setFields(getNewFields(startInstance));
-			templateOut.setPathType(PathType.TEMPLATE);
+			templateOut.setPathType(PathType.MATERIALIZED);
 			templateOut.setSavingState(SavingState.RECORDED);
 			templateOut.getFrequency().setFrequency(Integer.valueOf(frequency.getValue()));
 			templateOut.getFrequency().setUnit(TimeTemplate.valueOf(unit.getValue()));
 			templateOut.getFrequency().setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
+			templateOut.setNumberMaterializedPath(getNbPath());
 			templateOut.removeAllProperties();
 			Iterator<Entry<String,String>> itProp = startInstance.getProperties().entrySet().iterator();
 			while(itProp.hasNext()){

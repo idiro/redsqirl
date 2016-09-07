@@ -57,7 +57,9 @@ import com.redsqirl.dynamictable.Scheduling;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -2246,42 +2248,74 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				logger.info("path: " + e.getValue().getPath());
 
-				pathExists |= curPathExist;
-				if (stateCur != null) {
-					if (outputType == null) {
-						outputType = stateCur;
-					} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
-							.toString())
-							&& stateCur.equalsIgnoreCase(SavingState.RECORDED
-									.toString())) {
-						outputType = stateCur;
-					} else if (outputType
-							.equalsIgnoreCase(SavingState.TEMPORARY.toString())
-							&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
-									.toString()) || stateCur
-									.equalsIgnoreCase(SavingState.BUFFERED
-											.toString()))) {
-						outputType = stateCur;
+				//Arcs regarding path calculations
+				{
+					pathExists |= curPathExist;
+					if (stateCur != null) {
+						if (outputType == null) {
+							outputType = stateCur;
+						} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
+								.toString())
+								&& stateCur.equalsIgnoreCase(SavingState.RECORDED
+										.toString())) {
+							outputType = stateCur;
+						} else if (outputType
+								.equalsIgnoreCase(SavingState.TEMPORARY.toString())
+								&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
+										.toString()) || stateCur
+										.equalsIgnoreCase(SavingState.BUFFERED
+												.toString()))) {
+							outputType = stateCur;
+						}
 					}
 				}
-
-				tooltip.append("<br/>");
-				if (!e.getKey().isEmpty()) {
-					tooltip.append("Output Name: " + e.getKey() + "<br/>");
-				} else {
-					tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
-							+ "</span><br/>");
+				
+				{
+					tooltip.append("<br/>");
+					if (!e.getKey().isEmpty()) {
+						tooltip.append("Output Name: " + e.getKey() + "<br/>");
+					} else {
+						tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
+								+ "</span><br/>");
+					}
 				}
 				tooltip.append("Output Type: " + e.getValue().getTypeName()
 						+ "<br/>");
 
 				if("W".equals(workflowType)){
-					if (curPathExist) {
-						tooltip.append("Output Path: <span style='color:#008B8B'>"
-								+ e.getValue().getPath() + "</span><br/>");
-					} else {
-						tooltip.append("Output Path: <span style='color:#d2691e'>"
-								+ e.getValue().getPath() + "</span><br/>");
+					String pathTypeCur = e.getValue().getPathType().toString();
+					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+						tooltip.append("Output Path: "
+								+ e.getValue().getPath() + "<br/>");
+					}else{
+						if (curPathExist) {
+							tooltip.append("Output Path: <span style='color:#008B8B'>"
+									+ e.getValue().getPath() + "</span><br/>");
+						} else {
+							tooltip.append("Output Path: <span style='color:#d2691e'>"
+									+ e.getValue().getPath() + "</span><br/>");
+						}
+					}
+					tooltip.append("Output State: ");
+					if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
+					tooltip.append("<span style='color:#f08080'>");
+					}else if(SavingState.BUFFERED.toString().equalsIgnoreCase(stateCur)){
+						tooltip.append("<span style='color:#4682b4'>");
+					}else if(SavingState.TEMPORARY.toString().equalsIgnoreCase(stateCur)){
+						tooltip.append("<span style='color:#800080'>");
+					}
+					tooltip.append(stateCur+"</span><br/>");
+
+					
+					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+						CoordinatorTimeConstraint ctcCur = e.getValue().getFrequency();
+						if(ctcCur.getUnit() != null){
+							String frequencyStr = "Every "+ctcCur.getFrequency()+" "+ctcCur.getUnit().toString().toLowerCase();
+							tooltip.append("Frequency: "+frequencyStr + "<br/>");
+							if(PathType.MATERIALIZED.toString().equalsIgnoreCase(pathTypeCur)){
+								tooltip.append("Number of dataset: "+e.getValue().getNumberMaterializedPath() + "<br/>");
+							}
+						}
 					}
 				}
 

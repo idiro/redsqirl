@@ -58,6 +58,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	private List<String> fieldTypesString;
 	private String headerFieldsType;
 	private String selectHeaderEditor;
+	private String outputName;
 
 	/**
 	 * List of the properties
@@ -101,6 +102,11 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					setPath("/" + getPath());
 				}
 			}
+			outputName = "";
+			if (tree.getFirstChild("browse").getFirstChild("name") != null) {
+				outputName = tree.getFirstChild("browse")
+						.getFirstChild("name").getFirstChild().getHead();
+			}
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());
 			setPath(null);
@@ -108,8 +114,8 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		//set properties
 		try{
-			if (tree.getFirstChild("browse")
-					.getFirstChild("output").getChildren("property") != null) {
+			if (!tree.getFirstChild("browse")
+					.getFirstChild("output").getChildren("property").isEmpty()) {
 				//logger.info(printTree(tree.getFirstChild("browse").getFirstChild("output")));
 				List<Tree<String>> props = tree.getFirstChild("browse")
 						.getFirstChild("output").getFirstChild("property").getSubTreeList();
@@ -143,7 +149,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		}
 
 		if(modalOutput != null){
-			modalOutput.resetNameOutput();
+			modalOutput.setNameOutput(outputName);
 			modalOutput.updateDFEOutputTable();
 			try{
 				updatableHeader = Boolean.toString(dfe.getDFEOutput().get(modalOutput.getNameOutput()).getHeaderEditorOnBrowser());
@@ -155,13 +161,13 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void writeInteraction() throws RemoteException {
-		inter.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
-		inter.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(getPath());
-		inter.getTree().getFirstChild("browse").getFirstChild("output").add("name").add("");
+		Tree<String> outputTree = inter.getTree().getFirstChild("browse").getFirstChild("output"); 
+		outputTree.removeAllChildren();
+		outputTree.add("path").add(getPath());
 
-		inter.getTree().getFirstChild("browse").getFirstChild("output").remove("property");
-		inter.getTree().getFirstChild("browse").getFirstChild("output").remove("field");
-		Tree<String> myProperty = inter.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+		outputTree.remove("property");
+		outputTree.remove("field");
+		Tree<String> myProperty = outputTree.add("property");
 
 		for (SelectItem item : listProperties) {
 			logger.debug("Add property: " + item.getLabel() + ": " + item.getValue());
@@ -169,7 +175,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		}
 
 		for (String nameValue : listFields) {
-			Tree<String> myField = inter.getTree().getFirstChild("browse").getFirstChild("output").add("field");
+			Tree<String> myField = outputTree.add("field");
 			if(nameValue != null){
 				String value[] = nameValue.trim().split("\\s+");
 				if(value != null && value.length > 1){
@@ -182,81 +188,88 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void setUnchanged() {
+		String oldPath = null;
 		try {
 			// Check path
-			String oldPath = tree.getFirstChild("browse")
+			oldPath = tree.getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path")
 					.getFirstChild().getHead();
-			logger.debug("Comparaison path: " + oldPath + " , "
-					+ getPath());
-			unchanged = getPath().equals(
-					oldPath);
-
-			// Check properties
-			if (unchanged) {
-				for (SelectItem itemList : listProperties) {
-					String key = itemList.getLabel();
-					logger.debug("Comparaison property "
-							+ key
-							+ ": "
-							+ itemList.getValue()
-							+ " , "
-							+ tree
-							.getFirstChild("browse")
-							.getFirstChild("output")
-							.getFirstChild("property")
-							.getFirstChild(key).getFirstChild()
-							.getHead());
-					unchanged &= tree
-							.getFirstChild("browse")
-							.getFirstChild("output")
-							.getFirstChild("property")
-							.getFirstChild(key).getFirstChild()
-							.getHead().equals(itemList.getValue());
-				}
-			}
-
-			// Check fields
-			if (unchanged) {
-				List<Tree<String>> oldFieldsList = tree
-						.getFirstChild("browse")
-						.getFirstChild("output").getChildren("field");
-				logger.info("comparaison fields: "
-						+ oldFieldsList.size() + " , "
-						+ listFields.size());
-				if (unchanged &= oldFieldsList.size() == listFields.size()) {
-					Iterator<Tree<String>> oldFieldIt = oldFieldsList
-							.iterator();
-					for (String nameValue : listFields) {
-						Tree<String> field = oldFieldIt.next();
-						String value[] = nameValue.split(" ");
-						logger.info("Comparaison field: "
-								+ field.getFirstChild("name")
-								.getFirstChild().getHead()
-								+ " , "
-								+ value[0]
-										+ " | type "
-										+ field.getFirstChild("type")
-										.getFirstChild().getHead()
-										+ " , " + value[1]);
-
-						if (field.getFirstChild("name")
-								.getFirstChild().getHead()
-								.equals(value[0])) {
-							unchanged &= field
-									.getFirstChild("type")
-									.getFirstChild().getHead()
-									.equals(value[1]);
-						} else {
-							unchanged = false;
-						}
-					}
-
-				}
-			}
 		} catch (Exception e) {
-			logger.warn(e,e);
 			unchanged = false;
+		}
+		if(oldPath != null){
+			try{
+				logger.debug("Comparaison path: " + oldPath + " , "
+						+ getPath());
+				unchanged = getPath().equals(
+						oldPath);
+
+				// Check properties
+				if (unchanged) {
+					for (SelectItem itemList : listProperties) {
+						String key = itemList.getLabel();
+						logger.debug("Comparaison property "
+								+ key
+								+ ": "
+								+ itemList.getValue()
+								+ " , "
+								+ tree
+								.getFirstChild("browse")
+								.getFirstChild("output")
+								.getFirstChild("property")
+								.getFirstChild(key).getFirstChild()
+								.getHead());
+						unchanged &= tree
+								.getFirstChild("browse")
+								.getFirstChild("output")
+								.getFirstChild("property")
+								.getFirstChild(key).getFirstChild()
+								.getHead().equals(itemList.getValue());
+					}
+				}
+
+				// Check fields
+				if (unchanged) {
+					List<Tree<String>> oldFieldsList = tree
+							.getFirstChild("browse")
+							.getFirstChild("output").getChildren("field");
+					logger.info("comparaison fields: "
+							+ oldFieldsList.size() + " , "
+							+ listFields.size());
+					if (unchanged &= oldFieldsList.size() == listFields.size()) {
+						Iterator<Tree<String>> oldFieldIt = oldFieldsList
+								.iterator();
+						for (String nameValue : listFields) {
+							Tree<String> field = oldFieldIt.next();
+							String value[] = nameValue.split(" ");
+							logger.info("Comparaison field: "
+									+ field.getFirstChild("name")
+									.getFirstChild().getHead()
+									+ " , "
+									+ value[0]
+											+ " | type "
+											+ field.getFirstChild("type")
+											.getFirstChild().getHead()
+											+ " , " + value[1]);
+
+							if (field.getFirstChild("name")
+									.getFirstChild().getHead()
+									.equals(value[0])) {
+								unchanged &= field
+										.getFirstChild("type")
+										.getFirstChild().getHead()
+										.equals(value[1]);
+							} else {
+								unchanged = false;
+							}
+						}
+
+					}
+				}
+			} catch (Exception e) {
+				logger.warn(e,e);
+				unchanged = false;
+			}
 		}
 	}
 

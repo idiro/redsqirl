@@ -519,8 +519,8 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("send_email");
 				s.println("menu:Schedule");
 				s.println("synchronuous_source");
-				s.println("synchronuous_source_filter");
 				s.println("synchronuous_sink");
+				s.println("synchronuous_sink_filter");
 				s.close();
 
 			} catch (Exception e) {

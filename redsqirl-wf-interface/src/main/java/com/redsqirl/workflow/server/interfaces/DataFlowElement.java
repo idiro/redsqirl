@@ -289,6 +289,12 @@ public interface DataFlowElement extends RunnableElement{
 	 */
 	String updateOut() throws RemoteException;
 	
+	/**
+	 * Add materialized variables
+	 * @throws RemoteException
+	 */
+	public void addMaterializedVariables() throws RemoteException;
+	
 	String getRunningStatus() throws RemoteException;
 	
 	void setRunningStatus(String runningStatus) throws RemoteException;
