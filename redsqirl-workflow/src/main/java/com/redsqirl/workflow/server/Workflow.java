@@ -2359,7 +2359,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 
 				if(coordErr == null){
-					coordCheck.split(dfeToMove);
+					coordinators.add(coordCheck.split(dfeToMove));
 				}
 			}
 

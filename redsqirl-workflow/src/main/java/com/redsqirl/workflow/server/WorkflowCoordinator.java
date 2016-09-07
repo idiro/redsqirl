@@ -558,17 +558,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	
 	@Override
 	public DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException {
-		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+		DataFlowCoordinator dfC = new WorkflowCoordinator(dfe.get(0).getComponentId());
 		dfC.getVariables().addAll(variables);
 		Iterator<DataFlowElement> it = dfe.iterator();
 		while(it.hasNext()){
-			dfC.addElement(it.next());
-		}
-		it = elements.iterator();
-		while(it.hasNext()){
-			if(elements.contains(it.next())){
-				it.remove();
-			}
+			DataFlowElement cur = it.next();
+			dfC.addElement(cur);
+			elements.remove(cur);
 		}
 		return dfC;
 	}
