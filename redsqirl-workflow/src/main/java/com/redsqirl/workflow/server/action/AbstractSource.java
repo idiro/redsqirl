@@ -72,7 +72,7 @@ public abstract class AbstractSource extends DataflowAction {
 	/**
 	 * Output name
 	 */
-	public static final String out_name = "";
+	protected String out_name = "";
 	/**
 	 * datatype key
 	 */
@@ -375,7 +375,6 @@ public abstract class AbstractSource extends DataflowAction {
 						try {
 							name = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse")
-									.getFirstChild("output")
 									.getFirstChild("name").getFirstChild()
 									.getHead();
 						} catch (Exception e) {
@@ -433,10 +432,8 @@ public abstract class AbstractSource extends DataflowAction {
 								.removeAllChildren();
 						getInteraction(key_dataset).getTree()
 								.add(out.getTree());
-						
 						getInteraction(key_dataset).getTree()
 								.getFirstChild("browse")
-								.getFirstChild("output")
 								.add("name")
 								.add(name);
 						getInteraction(key_dataset).getTree()
@@ -511,7 +508,7 @@ public abstract class AbstractSource extends DataflowAction {
 		} else if (interId.equals(key_datasubtype)) {
 			updateDataSubType(interaction.getTree());
 		} else if (interId.equals(key_dataset)){
-			browser.update(dataType.getValue(), dataSubtype.getValue());
+			browser.update(dataType.getValue(), dataSubtype.getValue(),out_name);
 		}
 	}
 

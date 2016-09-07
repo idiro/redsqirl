@@ -27,20 +27,20 @@ import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
-public class SyncSourceFilter extends DataflowAction{
+public class SyncSinkFilter extends DataflowAction{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6765601797425986642L;
-	private static Logger logger = Logger.getLogger(SyncSourceFilter.class);
+	private static Logger logger = Logger.getLogger(SyncSinkFilter.class);
 	private static Map<String, DFELinkProperty> input;
 
 	public static final String key_input = "in",key_output="";
 	
 	protected InputInteraction nbUsedPath;
 	
-	public SyncSourceFilter(
+	public SyncSinkFilter(
 			) throws RemoteException {
 		super(null);
 		init();
@@ -89,7 +89,7 @@ public class SyncSourceFilter extends DataflowAction{
 
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous_source_filter";
+		return "synchronuous_sink_filter";
 	}
 
 	@Override

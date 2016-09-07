@@ -61,6 +61,8 @@ public class SubWorkflowInput extends AbstractSource{
 	
 	private InputInteraction headerInt;
 	private FieldDefinitionTableInteraction defFieldInt;
+	
+	public static final String out_name = "";
 
 	public SubWorkflowInput() throws RemoteException {
 		super(null);

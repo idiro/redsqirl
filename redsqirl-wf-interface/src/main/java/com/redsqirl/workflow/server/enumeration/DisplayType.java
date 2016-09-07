@@ -71,8 +71,8 @@ public enum DisplayType {
 	 * <code>
 	 * browse >[type>DataType.getName()]
 	 * 		   [subtype>namei]
-	 * 		   [output>[name>myname]
-	 * 				   [path>mypath]
+	 * 		   [name>myname]
+	 * 		   [output>[path>mypath]
 	 * 				   [field>[name>value]
 	 * 				   [type>value]]
 	 * 	       		   [property>namei>valuei]]

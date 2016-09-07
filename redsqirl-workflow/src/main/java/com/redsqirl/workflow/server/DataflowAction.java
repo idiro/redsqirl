@@ -47,6 +47,8 @@ import org.w3c.dom.NodeList;
 import com.idiro.Log;
 import com.idiro.check.FileChecker;
 import com.redsqirl.workflow.server.connect.WorkflowInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -968,6 +970,28 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			ans.addAll(it.next().getInteractions());
 		}
 		return ans;
+	}
+	
+	@Override
+	public void addMaterializedVariables() throws RemoteException {
+		if(oozieAction != null){
+			Iterator<Entry<String,Entry<String,DFEOutput>>> it = getAliasesPerComponentInput().entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,Entry<String,DFEOutput>> inCur = it.next();
+				DFEOutput dfeCur = inCur.getValue().getValue();
+				if(PathType.MATERIALIZED.equals(dfeCur.getPathType())){
+					if(dfeCur instanceof HCatalogType){
+						oozieAction.addVariable("DATABASE_"+inCur.getKey());
+						oozieAction.addVariable("TABLE_"+inCur.getKey());
+						oozieAction.addVariable("FILTER_HIVE_"+inCur.getKey());
+						oozieAction.addVariable("FILTER_PIG_"+inCur.getKey());
+						oozieAction.addVariable("FILTER_JAVA_"+inCur.getKey());
+					}else{
+						oozieAction.addVariable(inCur.getKey());
+					}
+				}
+			}
+		}
 	}
 
 	/**

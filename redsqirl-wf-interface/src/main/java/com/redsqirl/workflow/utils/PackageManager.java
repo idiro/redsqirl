@@ -616,7 +616,7 @@ public class PackageManager extends UnicastRemoteObject {
 		actions.add("superactionoutput");
 		actions.add("synchronuous_sink");
 		actions.add("synchronuous_source");
-		actions.add("synchronuous_source_filter");
+		actions.add("synchronuous_sink_filter");
 		return actions;
 	}
 	

@@ -20,7 +20,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idiro.utils.RandomString;
-import com.redsqirl.workflow.server.action.SyncSourceFilter;
+import com.redsqirl.workflow.server.action.SyncSinkFilter;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
@@ -558,17 +558,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	
 	@Override
 	public DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException {
-		DataFlowCoordinator dfC = new WorkflowCoordinator(RandomString.getRandomName(8));
+		DataFlowCoordinator dfC = new WorkflowCoordinator(dfe.get(0).getComponentId());
 		dfC.getVariables().addAll(variables);
 		Iterator<DataFlowElement> it = dfe.iterator();
 		while(it.hasNext()){
-			dfC.addElement(it.next());
-		}
-		it = elements.iterator();
-		while(it.hasNext()){
-			if(elements.contains(it.next())){
-				it.remove();
-			}
+			DataFlowElement cur = it.next();
+			dfC.addElement(cur);
+			elements.remove(cur);
 		}
 		return dfC;
 	}
@@ -613,9 +609,11 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 				int tmpOffset = 0;
 				if(PathType.TEMPLATE.equals(datasetCur.getPathType())){
 					curTimeConstraint = datasetCur.getFrequency();
-				}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType()) && !cur.getAllInputComponent().isEmpty()){
+				}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType())){
 					List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
-					if(!inputsDfe.get(0).getCoordinatorName().equals(getName())){
+					if(inputsDfe.isEmpty()){
+						curTimeConstraint = datasetCur.getFrequency();
+					}else if(!inputsDfe.get(0).getCoordinatorName().equals(getName())){
 						curTimeConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
 						if(curTimeConstraint.getUnit() == null){
 							DefaultConstraint prevConstraint = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df);
