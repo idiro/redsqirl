@@ -143,6 +143,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String coordinatorsSelectedA;
 	private String coordinatorsSelectedB;
 	private List<SelectItem> coordinatorsList;
+	private boolean schedule;
 	
 	
 	/**
@@ -492,17 +493,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		String error = null;
 		//check if selected the same coordinator
-		if(getCoordinatorsSelectedA().equals(getCoordinatorsSelectedB())){
+		if(coordinatorsSelectedA.equals(coordinatorsSelectedB)){
 			error = getMessageResources("msg_error_merge_equal");
 		}else if (df != null) {
-			error = df.checkCoordinatorMergeConflict(getCoordinatorsSelectedA(),getCoordinatorsSelectedB());
+			error = df.checkCoordinatorMergeConflict(coordinatorsSelectedA,coordinatorsSelectedB);
 			if(error == null){
-				df.mergeCoordinators(getCoordinatorsSelectedA(),getCoordinatorsSelectedB());
+				df.mergeCoordinators(coordinatorsSelectedA,coordinatorsSelectedB);
 			}
-		}
-		
-		if (df != null) {
-			df.getCoordinator(coordinatorsSelectedA).merge(df.getCoordinator(coordinatorsSelectedB));
 		}
 		
 		displayErrorMessage(error, "APPLYMERGECOORDINATOR");
@@ -1345,8 +1342,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String getCheckIfSchedule() throws RemoteException {
 		DataFlow df = getDf();
 		if(df.isSchedule()){
+			setSchedule(true);
 			return "true";
 		}else{
+			setSchedule(false);
 			return "false";
 		}
 	}
@@ -3835,6 +3834,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setCoordinatorsSelectedB(String coordinatorsSelectedB) {
 		this.coordinatorsSelectedB = coordinatorsSelectedB;
+	}
+
+	public boolean isSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(boolean schedule) {
+		this.schedule = schedule;
 	}
 
 }
