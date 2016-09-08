@@ -4,7 +4,7 @@ var time;
 function canvasResizeSplitter(){
 	//<![CDATA[
 
-	console.log("canvasResizeSplitter");
+	//console.log("canvasResizeSplitter");
 
 	/*jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-110+'px');
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
@@ -52,7 +52,7 @@ function canvasResizeSplitter(){
 
 function resizeBlockUICanvas(){
 
-	console.log("resizeBlockUICanvas");
+	//console.log("resizeBlockUICanvas");
 
 	jQuery(".blockOverlay").css("height", jQuery("#container-"+selectedCanvas).find(".kineticjs-content").find("canvas").eq(2).attr("height"));
 	jQuery(".blockOverlay").css("width", jQuery("#container-"+selectedCanvas).find(".kineticjs-content").find("canvas").eq(2).attr("width"));
@@ -60,14 +60,14 @@ function resizeBlockUICanvas(){
 
 function resizeBlockUICanvasOnLoad(){
 
-	console.log("resizeBlockUICanvasOnLoad");
+	//console.log("resizeBlockUICanvasOnLoad");
 
 	jQuery(".blockOverlay").css("top", "18px");
 }
 
 function resizeCanvas(val1, val2){
 
-	console.log("resizeCanvas");
+	//console.log("resizeCanvas");
 
 	for (var i in nameTabs){
 		//alert(nameTabs[i]);
@@ -101,7 +101,7 @@ function resizeTables(){
 
 function onPageReady(){
 
-	console.log("onPageReady");
+	//console.log("onPageReady");
 
 	var leftSize = jQuery(window).width()*2/3;
 	var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
@@ -162,7 +162,7 @@ function onPageReady(){
 
 function resiziRemoteFileSystem(){
 
-	console.log("resiziRemoteFileSystem");
+	//console.log("resiziRemoteFileSystem");
 
 	setTimeout(function(){
 		jQuery("div[id$='fileSysGridFormSshTab\\:sshfs\\:sd']").css("height", jQuery("#tabFlowchart").height()-255+"px", "important");
@@ -171,7 +171,7 @@ function resiziRemoteFileSystem(){
 
 function resiziFileSystem(){
 
-	console.log("resiziFileSystem");
+	//console.log("resiziFileSystem");
 
 	var leftSize = jQuery(window).width()*2/3;
 	var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
@@ -192,7 +192,7 @@ function resiziFileSystem(){
 
 function configureFooterCss(){
 
-	console.log("configureFooterCss");
+	//console.log("configureFooterCss");
 
 	jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	jQuery("#tabsFooter").css("overflow", "hidden");
@@ -206,7 +206,7 @@ function configureFooterCss(){
 
 function resizing(){
 
-	console.log("resizing");
+	//console.log("resizing");
 
 	isResizing = true;
 	var leftSize = jQuery(window).width() - 46 - jQuery("#splitHCanvas").width();
@@ -249,7 +249,7 @@ function resizing(){
 
 function configureLeft(){
 
-	console.log("configureLeft");
+	//console.log("configureLeft");
 
 	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-70+'px');
 	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-50+'px');
@@ -261,7 +261,7 @@ function configureLeft(){
 
 function validateArrowsAll(){
 
-	console.log("validateArrowsAll");
+	//console.log("validateArrowsAll");
 
 	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
@@ -273,7 +273,7 @@ function validateArrowsAll(){
 
 function validateArrows(tabPrincipal, spanButtons){
 
-	console.log("validateArrows");
+	//console.log("validateArrows");
 
 	var ul = tabPrincipal.tabs().children('ul').first();
 	var tabsRealWidth = 0;
@@ -308,7 +308,7 @@ function validateArrows(tabPrincipal, spanButtons){
 
 function resizeTabs(){
 
-	console.log("resizeTabs");
+	//console.log("resizeTabs");
 
 	var border = 44;
 
