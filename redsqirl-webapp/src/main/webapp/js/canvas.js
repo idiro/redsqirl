@@ -979,11 +979,11 @@ function deleteLayerChildren(canvasName, idGroup) {
     
     var toDelete = []; 
     var iter=-1;
-	console.log("deleteLayerChildren");
+	//console.log("deleteLayerChildren");
         jQuery.each(canvasArray[canvasName].layer.getChildren(),
             function(index, value) {
                 if (value && value.isArrow == true) {
-                    console.log(value.idOutput+","+value.idInput);
+                    //console.log(value.idOutput+","+value.idInput);
                     if (value.idOutput == idGroup || value.idInput == idGroup){
                         toDelete[++iter] = value;
                     }
@@ -1235,7 +1235,7 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
 
 
 
-function addElements(canvasName, positions, selecteds) {
+function addElements(canvasName, positions, selecteds, isStartVoronoi) {
 	
 	//console.log("addElements");
 	
@@ -1272,7 +1272,8 @@ function addElements(canvasName, positions, selecteds) {
 					selecteds,
 					positionsArrays[i][6],
 					positionsArrays[i][7],
-					positionsArrays[i][8]
+					positionsArrays[i][8],
+					isStartVoronoi
 					);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
@@ -1296,25 +1297,26 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName, voranoiPolygonTitle) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName, voranoiPolygonTitle, isStartVoronoi) {
     
 	console.log("addElement");
 	
-	console.log("canvasName " + canvasName);
-	console.log("elementType " + elementType);
-	console.log("elementImg " + elementImg);
-	console.log("posx " + posx);
-	console.log("posy " + posy);
-	console.log("numSides " + numSides);
-	console.log("idElement " + idElement);
-	console.log("selecteds " + selecteds);
-	console.log("privilege " + privilege);
-	console.log("elementTypeName " + elementTypeName);
-	console.log("voranoiPolygonTitle " + voranoiPolygonTitle);
+//	console.log("canvasName " + canvasName);
+//	console.log("elementType " + elementType);
+//	console.log("elementImg " + elementImg);
+//	console.log("posx " + posx);
+//	console.log("posy " + posy);
+//	console.log("numSides " + numSides);
+//	console.log("idElement " + idElement);
+//	console.log("selecteds " + selecteds);
+//	console.log("privilege " + privilege);
+//	console.log("elementTypeName " + elementTypeName);
+//	console.log("voranoiPolygonTitle " + voranoiPolygonTitle);
 	
 	if(voranoiPolygonTitle == undefined){
 		voranoiPolygonTitle = "title";
 	}
+	isStartVoronoi = typeof isStartVoronoi !== 'undefined' ? isStartVoronoi : true;
 	
 	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
 	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
@@ -1494,9 +1496,12 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     polygonLayer.add(group);
 
     
-    //add point to voronoi list
-    canvasArray[canvasName].pointsList.push([posx+40,posy+50]);
-    startVoronoi(canvasName, idElement, voranoiPolygonTitle);
+    //check if need start voronoi
+    if(isStartVoronoi){
+    	//add point to voronoi list
+        canvasArray[canvasName].pointsList.push([posx+40,posy+50]);
+        startVoronoi(canvasName, idElement, voranoiPolygonTitle);
+    }
     
     
     var selectedObj = false
@@ -3441,7 +3446,6 @@ function updateVoranoiAllPolygonTitle(listNames) {
 		}
 		
 		canvasArray[selectedCanvas].voronoiLayer = removeVoronoiDuplicateColour(canvasArray[selectedCanvas].voronoiLayer);
-		
 		canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
 		
 		canvasArray[selectedCanvas].voronoiButtonLayer.draw();
@@ -3474,38 +3478,38 @@ function updateVoranoiAllPolygonTitle(listNames) {
 }
 
 function removeVoronoiButtonDuplicate(voronoiButtonLayer){
-	var newTitle;
+	var newTitle = [];
 	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value){
-		if(newTitle == value.getChildren()[0].getText()){
+		if(newTitle.indexOf(value.getChildren()[0].getText()) != -1){
 			console.log("newTitle " + newTitle);
 			value.getChildren()[0].setOpacity(0);
 			value.on('mouseover', function(e) {
 				document.body.style.cursor = 'default';
 			});
 		}
-		newTitle = value.getChildren()[0].getText();
+		newTitle.push(value.getChildren()[0].getText());
 	});
 	return voronoiButtonLayer;
 }
 
 function removeVoronoiDuplicateColour(voronoiLayer){
-	var newTitle;
-	var colour;
+	var newTitle = [];
+	var colour = [];
 	var i = 0;
 	jQuery.each(voronoiLayer.getChildren(), function(index, value){
 		
 		console.log("removeVoronoiDuplicateColour " + value.voronoiTitle);
 		
-		if(newTitle == value.voronoiTitle){
+		if(newTitle.indexOf(value.voronoiTitle) != -1){
 			console.log("removeVoronoiDuplicateColour yes ");
-			value.setFill(colour);
+			value.setFill(colour[newTitle.indexOf(value.voronoiTitle)]);
 		}else{
 			console.log("removeVoronoiDuplicateColour no ");
 			value.setFill(coloursList[i%7]);
 			i++;
 		}
-		newTitle = value.voronoiTitle;
-		colour = value.getFill();
+		newTitle.push(value.voronoiTitle);
+		colour.push(value.getFill());
 	});
 	return voronoiLayer;
 }
