@@ -40,8 +40,6 @@
 		the action. If an actions name is used it could cause problems when
 		running the workflow.</p>
 
-	<h2>
-
 		<h2>Understanding the Icons</h2>
 
 		<p>The canvas uses actions that are represented by icons. There is
@@ -53,10 +51,10 @@
 			<li>A circular icon represents utility actions like convert,
 				source data or send an email</li>
 			<li>A pentagon (five sides) represents an action that preforms
-				some process or precedure like select</li>
-			<li>A octogon (seven sides) represents an alogrithm like
+				some process or procedure like select</li>
+			<li>A octagon (seven sides) represents an algorithm like
 				logistic regression</li>
-			<li>A hexagon (six sides) represemts a super action</li>
+			<li>A hexagon (six sides) represents a super action</li>
 		</ul>
 
 
@@ -103,7 +101,6 @@
 		</ul>
 		</p>
 
-
 		<h2>
 			<a name="input_class">Action's Input Class</a>
 		</h2>
@@ -117,7 +114,7 @@
 			<a name="saving_state">Saving State</a>
 		</h2>
 
-		<p>An output is generated afer each canvas action runs. Three
+		<p>An output is generated after each canvas action runs. Three
 			category of action exists
 		<ul>
 			<li>TEMPORARY: This is the default type, as soon as the action
@@ -176,7 +173,155 @@
 		generators. A generator is used to add pre-prepared rows to your grid.
 		These can then stay as they are or be modified to fit your needs.
 
+        <h2>Variables</h2>
 
+        <p>Variables can be defined in workflow by double clicking on the
+        parameter object top left. Functions are available as well as static
+        values. Variables can be used in almost all text field, but not for
+        field names, and other workflow meta-data parameters. Variable name
+        should only contains letters, underscore and numbers. You can also call
+        oozie functions inline. Note that Red Sqirl will not try to validate
+        variable values so you may experience errors at running time.</p>
+       
+		<h2>Super Actions</h2>
+
+		<p>Super Actions are actions that compose of other actions which
+			users can create. Super Actions are organised into
+			<a class="stopLink" id="helpmain_modelview" 
+			    onclick="return false;" href="../help/modelview.html">models</a>. To create a super action the user must create a sub
+			workflow which can be done by clicking in the menu and selecting new
+			-> sub-workflow. Once the sub-workflow the user can drag as many
+			SuperAction Input actions as needed to the sub-workflow to perform
+			the desired process. From there the use can add actions to build the
+			sub-workflow. Once the  user is happy with the process, again they can
+			add as many SuperAction Outputs as needed. If the user is happy with
+			the workflow and wants to make use of the sub-workflow they a have a
+			few options.
+		
+		
+		<p>The actions of a sub-workflow are abstract compared to a
+			workflow. There are no paths needed when creating a superaction
+			through a sub-workflow, actions are just abstract entities in this
+			case. As long as the inputs and outputs are given appropriate names
+			all actions are valid. When configuring the superaction input of a
+			sub-workflow, the user has to name the fields of the input. The only
+			requirment for an output is giving it a name. When a sub-workflow is
+			finished and installed, the Super Action will required
+			the input and produce the output declared.</p>
+		</p>
+
+        <p>The Super Action also supports variables. When a sub-workflow
+        defines variables, user can override default values when configuring
+        the Super Action. 
+		
+		<h3>SuperAction Generation</h3>
+
+		<p>SuperAction can be generated from workflows. To generate a
+		SuperAction from a workflow you select the actions on the
+		workflow and click the <a class="stopLink"
+		    id="helpmain_aggregate" onclick="return false;"
+		    href="../help/aggregate.html">aggregate</a> button in the
+		canvas control buttons above the canvas or in edit -> aggregate.
+		When the user selects aggregate they will be shown a pop up that
+		will be used to configure that SuperAction. The configuration
+		will ask what the names of the inputs and the name of the
+		outputs should be.</p>
+			
+		<h3>Expand</h3> 
+			
+		<p>Expand a SuperAction can be generated from workflows,
+		expanding means copying the logic of the Super Action into the
+		current workflow. To expand a SuperAction from a workflow you
+		should go into the options menu when you hover the Super Action.</p>
+			
+		
+	 
+        <h2>Scheduling</h2>
+
+        <p>Red Sqirl comes with scheduling functionalities. A canvas can
+        describe what Oozie calls a "bundle". A bundle is a group of schedule
+        job that together form a data pipe. For example let's say you summarize
+        your data daily and want to create a weekly report out of the summary.
+        The bundle will be composed of a daily process feeding a weekly but
+        that runs independently. Visually, a bundle will always show a colour
+        on the background.  </p>
+
+        <p>Each independent process is called a coordinator, a colour will be
+        assigned on the screen for every coordinator defined. Specific
+        variables can be set and used in the Red Sqirl actions. A coordinator
+        starts and ends with either a synchronous dataset, the path contains a
+        time stamp; or an asynchronous dataset, the path is static. For an
+        asynchronous dataset, you can proceed as a normal workflow then set the
+        running time inside the coordinator itself. For a synchronous dataset,
+        you can either use a synchronous source or combine a synchronous sink
+        with a synchronous sink filter. For more details about how to set up a
+        scheduled job, please review the <a class="stopLink"
+        id="helpmain_buildwork" onclick="return false;"
+    href="../help/buildingworkflow.html">building a workflow</a> section.</p>
+
+        <h3>Path Type</h3>
+
+        <p>A schedule workflow uses different path type:
+        <ul>
+            <li>REAL: A static path</li>
+            <li>TEMPLATE: A path with ${YEAR}, ${MONTH}, ${DAY}, ${HOUR}, ${MINUTE} that describes a path at a given time</li>
+            <li>MATERIALIZED: A materialization of a template path at a given time. A materialized path can gather more than just one template instance.</li>
+        </ul>
+
+        Every time you use a synchronous source, a materialized path is
+        defined. By using a synchronous sink, a template path is defined;
+        therefore a synchronous sink filter is required for generated a
+        materialized path and reuse the dataset in another coordinator.  </p>
+
+        <p>Not all dataset can be templatized, as of today, only HDFS and HCatalog are supported.</p> 
+	
+		<h2>Action Context Menu</h2>	
+			
+		<h3>Create link</h3>
+		<p>If you click in create link the arrow is going be generated in this selected object.
+		</p>
+		
+		<h3>Rename object</h3>
+		<p>If you click in rename object they will be shown a pop up that will be used to configure
+			the name and the comments fo this select object.
+		</p>
+		
+		<h3>Configure</h3>
+		<p>If you click in configure they will be shown a pop up that will be used to configure
+			this select object.
+		</p>
+		
+		<h3>Data output</h3>
+		<p>If you click in data output they will be shown a pop up that will be used to configure
+			the data output of this select object.
+		</p>
+		
+		<h3>Clean the Data</h3>
+		<p>If you click in Clean data they will be clean the data output of this object. 
+		Temporary and buffered data will be erased but not recorded.
+		</p>
+		
+		<h3>Oozie Action Logs</h3>
+		<p>If you click in Ozzie Action Logs a new url is going to be open and show the Ozzie logs.
+		</p>
+		
+		<h3>Edit Super Action</h3>
+
+		<p>If you click in Edit super Action a new tab is going to open
+		with the select super action to edit.  The user just can edit if
+		he have permission to edit.  </p>
+			
+		<h3>Expand</h3>
+
+		<p>If you click on Expand, the super action will be replaced
+		with its content.</p>
+
+		<h3>Refresh Super Action</h3>
+		<p>If you click with right click in a super action and click in refresh super 
+			action the canvas is going to refresh the super action and is going to show 
+			or remove errors.
+		</p>
+			
 		<h2>
 			<aname"regex">Regular expressions</a>
 		</h2>
@@ -207,7 +352,7 @@
 			<tr class='odd-row'>
 				<td valign="top" headers="construct characters"><i>[a-z]([a-z0-9_]*)</i></td>
 				<td headers="matches">Starts with a lower case character
-					optionaly followed by other lower case character, under score or
+					optionally followed by other lower case character, under score or
 					number</td>
 			</tr>
 			<tr>
@@ -523,104 +668,7 @@
 
 		</table>
 		
-		<h2>Super Actions</h2>
-
-		<p>Super Actions are actions that compose of other actions which
-			users can create. Super Actions are organised into
-			<a class="stopLink" id="helpmain_modelview" 
-			    onclick="return false;" href="../help/modelview.html">models</a>. To create a super action the user must create a sub
-			workflow which can be done by clicking in the menu and selecting new
-			-> sub workflow. Once the subworkflow the user can drag as many
-			SuperAction Input actions as needed to the sub workflow to perform
-			the desired process. From there the use can add actions to build the
-			sub workflow. Once the  user is happy with the process, again they can
-			add as many SuperAction Outputs as needed. If the user is happy with
-			the workflow and wants to make use of the sub workflow they a have a
-			few options.
 		
-		
-		<p>The actions of a sub workflow are abstract compared to a
-			workflow. There are no paths needed when creating a superaction
-			through a sub workflow, actions are just abstract entities in this
-			case. As long as the inputs and outputs are given appropriate names
-			all actions are valid. When configuring the superaction input of a
-			sub workflow, the user has to name the fields of the input. The only
-			requirment for an output is giving it a name. When a sub workflow is
-			finished and installed, the Super Action will required
-			the input and produce the output declared. </p>
-		</p>
-		
-		<h3>SuperAction Generation</h3>
-
-		<p>SuperAction can be generated from workflows. To generate a
-		SuperAction from a workflow you select the actions on the
-		workflow and click the <a class="stopLink"
-		    id="helpmain_aggregate" onclick="return false;"
-		    href="../help/aggregate.html">aggregate</a> button in the
-		canvas control buttons above the canvas or in edit -> aggregate.
-		When the user selects aggregate they will be shown a pop up that
-		will be used to configure that SuperAction. The configuraion
-		will ask what the names of the inputs and the name of the
-		outputs should be.</p>
-			
-			
-			
-		<h3>Expand</h3> 
-			
-		<p>Expand a SuperAction can be generated from workflows,
-		expanding means copying the logic of the Super Action into the
-		current workflow. To expand a SuperAction from a workflow you
-		should go into the options menu when you hover the Super Action.</p>
-			
-			
-		<h2>Action Context Menu</h2>	
-			
-		<h3>Create link</h3>
-		<p>If you click in create link the arrow is going be generated in this selected object.
-		</p>
-		
-		<h3>Rename object</h3>
-		<p>If you click in rename object they will be shown a pop up that will be used to configure
-			the name and the comments fo this select object.
-		</p>
-		
-		<h3>Configure</h3>
-		<p>If you click in configure they will be shown a pop up that will be used to configure
-			this select object.
-		</p>
-		
-		<h3>Data output</h3>
-		<p>If you click in data output they will be shown a pop up that will be used to configure
-			the data output of this select object.
-		</p>
-		
-		<h3>Clean the Data</h3>
-		<p>If you click in Clean data they will be clean the data output of this object. 
-		Temporary and buffered data will be erased but not recorded.
-		</p>
-		
-		<h3>Oozie Action Logs</h3>
-		<p>If you click in Ozzie Action Logs a new url is going to be open and show the Ozzie logs.
-		</p>
-		
-		<h3>Edit Super Action</h3>
-
-		<p>If you click in Edit super Action a new tab is going to open
-		with the select super action to edit.  The user just can edit if
-		he have permission to edit.  </p>
-			
-		<h3>Expand</h3>
-
-		<p>If you click on Expand, the super action will be replaced
-		with its content.</p>
-
-		<h3>Refresh Super Action</h3>
-		<p>If you click with right click in a super action and click in refresh super 
-			action the canvas is going to refresh the super action and is going to show 
-			or remove errors.
-		</p>
-			
-			
 			
 		<br /> <a class="stopLink" id="help_main" onclick="return false;"
 			href="../help/main.html">return to Red Sqirl help</a>

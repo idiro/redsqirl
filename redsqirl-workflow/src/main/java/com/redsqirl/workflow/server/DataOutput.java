@@ -83,6 +83,7 @@ DFEOutput {
 	 */
 	protected PathType pathType = PathType.REAL;
 	protected int numberMaterializedPath = 0;
+	protected int offsetPath = 0;
 	protected CoordinatorTimeConstraint frequency;
 	protected String initialInstance = "";
 
@@ -248,6 +249,11 @@ DFEOutput {
 			parent.appendChild(freq);
 		}
 		{
+			Element freq = doc.createElement("offset");
+			freq.appendChild(doc.createTextNode(Integer.toString(offsetPath)));
+			parent.appendChild(freq);
+		}
+		{
 			Element timeConstraint = doc.createElement("time-constraint");
 			frequency.write(doc, timeConstraint);
 			parent.appendChild(timeConstraint);
@@ -343,6 +349,15 @@ DFEOutput {
 		}catch(Exception e){
 			numberMaterializedPath = 0;
 		}
+		try{
+			String offsetPathStr = parent.getElementsByTagName("offset").item(0)
+					.getChildNodes().item(0).getNodeValue();
+			statLogger.debug("offsetPath: " + offsetPathStr);
+			offsetPath = Integer.valueOf(offsetPathStr);
+		}catch(Exception e){
+			offsetPath = 0;
+		}
+		
 		try{
 			Element timeConstraint = (Element) parent.getElementsByTagName("time-constraint").item(0);
 			frequency.read(timeConstraint);
@@ -872,6 +887,14 @@ DFEOutput {
 
 	public void setNumberMaterializedPath(int numberMaterializedPath) {
 		this.numberMaterializedPath = numberMaterializedPath;
+	}
+	
+	public int getOffsetPath(){
+		return this.offsetPath;
+	}
+
+	public void setOffsetPath(int offsetPath) throws RemoteException{
+		this.offsetPath = offsetPath;
 	}
 
 	public final CoordinatorTimeConstraint getFrequency() {

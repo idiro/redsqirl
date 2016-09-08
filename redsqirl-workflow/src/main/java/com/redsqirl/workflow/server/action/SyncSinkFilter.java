@@ -37,8 +37,9 @@ public class SyncSinkFilter extends DataflowAction{
 	private static Map<String, DFELinkProperty> input;
 
 	public static final String key_input = "in",key_output="";
-	
+
 	protected InputInteraction nbUsedPath;
+	protected InputInteraction offsetPath;
 	
 	public SyncSinkFilter(
 			) throws RemoteException {
@@ -57,7 +58,17 @@ public class SyncSinkFilter extends DataflowAction{
 		nbUsedPath.setRegex("^[1-9][0-9]*$");
 		nbUsedPath.setValue("1");
 		
+
+		offsetPath = new InputInteraction(
+				"nb_offset", 
+				LanguageManagerWF.getText("sync_source_filter.nb_offset.title"),
+				LanguageManagerWF.getText("sync_source_filter.nb_offset.legend")
+				, 0, 1);
+		offsetPath.setRegex("^(-?)[0-9]+$");
+		offsetPath.setValue("0");
+
 		page1.addInteraction(nbUsedPath);
+		page1.addInteraction(offsetPath);
 	}
 	
 	public int getNbPath(){
@@ -68,6 +79,16 @@ public class SyncSinkFilter extends DataflowAction{
 			logger.warn(e,e);
 		}
 		return nbPath;
+	}
+	
+	public int getOffsetPath(){
+		int offsetPathInt = 0;
+		try{
+			offsetPathInt = Integer.valueOf(offsetPath.getValue());
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return offsetPathInt;
 	}
 	
 	/**
@@ -119,6 +140,7 @@ public class SyncSinkFilter extends DataflowAction{
 		out.setPath(in.getPath());
 		out.setFields(new_field);
 		out.setNumberMaterializedPath(getNbPath());
+		out.setOffsetPath(getOffsetPath());
 		out.removeAllProperties();
 		Iterator<Entry<String,String>> itProp = in.getProperties().entrySet().iterator();
 		while(itProp.hasNext()){

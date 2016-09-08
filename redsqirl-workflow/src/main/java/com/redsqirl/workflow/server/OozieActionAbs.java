@@ -3,11 +3,15 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 
 
@@ -17,15 +21,19 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 	 * 
 	 */
 	private static final long serialVersionUID = -4050182914018968247L;
-
+	private static Logger logger = Logger.getLogger(OozieActionAbs.class);
 	protected Set<String> variables = new HashSet<String>();
 	
+	protected DataFlowCoordinatorVariables extraParameters = null;
 	/**
 	 * Default Conception
 	 * @throws RemoteException
 	 */
 	protected OozieActionAbs() throws RemoteException {
 		super();
+		if(supportsExtraJobParameters()){
+			extraParameters = new WfCoordVariables();
+		}
 	}
 	
 	@Override
@@ -92,9 +100,40 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 			property.appendChild(confValue);
 			configuration.appendChild(property);
 		}
+		
+		if(extraParameters != null){
+			try{
+				Iterator<Entry<String, String>> itExtraParams = extraParameters.getKeyValues().entrySet().iterator();
+				while(itExtraParams.hasNext()){
+					Entry<String,String> cur = itExtraParams.next();
+					{
+						Element confName = oozieXmlDoc.createElement("name");
+						confName.appendChild(oozieXmlDoc.createTextNode(cur.getKey()));
+						Element confValue = oozieXmlDoc.createElement("value");
+						confValue.appendChild(oozieXmlDoc.createTextNode(cur.getValue()));
+
+						Element property = oozieXmlDoc.createElement("property");
+						property.appendChild(confName);
+						property.appendChild(confValue);
+						configuration.appendChild(property);
+					}
+				}
+			}catch(Exception e){
+				logger.warn(e,e);
+			}
+		}
 
 		subAction.appendChild(configuration);
 	}
+	
+	public boolean supportsExtraJobParameters()  throws RemoteException{
+		return true;
+	}
+	
+	public DataFlowCoordinatorVariables getExtraJobParameters() throws RemoteException{
+		return extraParameters;
+	}
+	
 	/**
 	 * Get the varName surrounded byu "${}"
 	 * @param varName

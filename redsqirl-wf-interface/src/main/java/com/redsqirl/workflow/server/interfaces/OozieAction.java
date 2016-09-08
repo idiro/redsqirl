@@ -56,6 +56,21 @@ public interface OozieAction extends Remote{
 	 */
 	String[] getFileExtensions() throws RemoteException;
 
+
+	/**
+	 * Get the coordinator variables
+	 * @return
+	 * @throws RemoteException
+	 */
+	DataFlowCoordinatorVariables getExtraJobParameters() throws RemoteException;
+	
+	/**
+	 * True if the user can add job parameters
+	 * @return
+	 * @throws RemoteException
+	 */
+	boolean supportsExtraJobParameters() throws RemoteException;
+	
 	boolean addVariable(String arg0) throws RemoteException;
 
 	boolean addAllVariables(Collection<? extends String> arg0) throws RemoteException;

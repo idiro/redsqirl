@@ -257,7 +257,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
 		Matcher m = p.matcher(value);
 		while(m.find()){
-			ans.add(m.group(1));
+			String cur = m.group(1);
+			if(cur.matches("\\w+")){
+				ans.add(cur);
+			}
 		}
 		return ans;
 	}
