@@ -77,6 +77,7 @@ import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.action.ReservedWords;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SyncSink;
 import com.redsqirl.workflow.server.action.SyncSinkFilter;
@@ -150,8 +151,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected boolean saved = false;
 
 	protected int nbOozieRunningActions;
-
-	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count", "right", "left", "sample");
 
 	protected String path;
 	
@@ -1271,7 +1270,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			err = LanguageManagerWF.getText(
 					"workflow.changeElementId_newIDregexfail", new Object[] {
 							newId, regex });
-		} else if (keyWords.contains(newId.toLowerCase())) {
+		} else if (ReservedWords.isReservedWord(newId)) {
 			err = LanguageManagerWF.getText("workflow.changeElementId_newIDkeywordfail", new Object[] {	newId });
 		} else {
 			if (oldId == null || !oldId.equals(newId)) {

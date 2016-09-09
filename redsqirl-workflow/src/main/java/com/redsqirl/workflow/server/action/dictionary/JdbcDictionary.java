@@ -35,6 +35,7 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.action.AbstractSQLLikeDictionary;
+import com.redsqirl.workflow.server.action.ReservedWords;
 import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.connect.jdbc.JdbcTypeManager;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -502,10 +503,10 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		return help;
 	}
 
-	public boolean isVariableName(String name) {
+	public boolean isFieldName(String name) {
 		String regexUpper = "[A-Z]+[A-Z0-9_]*";
 		String regexLower = "[a-z]+[a-z0-9_]*";
-		return name.matches(regexUpper) || name.matches(regexLower);
+		return !ReservedWords.isReservedWord(name) && (name.matches(regexUpper) || name.matches(regexLower));
 	}
 	
 	/**

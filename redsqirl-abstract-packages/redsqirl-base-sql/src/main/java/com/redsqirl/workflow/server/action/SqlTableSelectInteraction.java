@@ -138,7 +138,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 					logger.debug("checking : " + featoperation + " "
 							+ feattitle + " ");
 					try {
-						if (!getDictionary().isVariableName(feattitle)) {
+						if (!getDictionary().isFieldName(feattitle)) {
 							msg = SqlLanguageManager.getText(
 									"sql.join_fields_interaction.fieldinvalid",
 									new Object[] { rowNb, feattitle });

@@ -126,7 +126,7 @@ public interface SqlDictionary {
 	 * @return <code>true</code> if the name is suitable else <code>false</code>
 	 */
 
-	public boolean isVariableName(String name);
+	public boolean isFieldName(String name);
 
 
 }

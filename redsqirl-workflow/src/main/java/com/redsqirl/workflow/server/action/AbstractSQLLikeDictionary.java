@@ -1082,9 +1082,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 * @return <code>true</code> if the name is the structure for a
 	 *         variable </code>
 	 */
-	public boolean isVariableName(String name) {
+	public boolean isFieldName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";
-		return name.matches(regex);
+		return !ReservedWords.isReservedWord(name) && name.matches(regex);
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 						String expression = row.get(table_op_title);
 						String type = row.get(table_type_title); 
 						String fieldName = row.get(table_feat_title);
-						if (!getDictionary().isVariableName(fieldName)) {
+						if (!getDictionary().isFieldName(fieldName)) {
 							msg = SqlLanguageManager.getText(
 									"sql.join_fields_interaction.fieldinvalid",
 									new Object[] { rowNb, fieldName });

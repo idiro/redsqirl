@@ -111,7 +111,7 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 				String type = row.get(table_type_title);
 				String op = row.get(table_op_title);
 				String field = row.get(table_feat_title);
-				if (!getDictionary().isVariableName(field)) {
+				if (!getDictionary().isFieldName(field)) {
 					msg = SqlLanguageManager.getText(
 							"sql.join_fields_interaction.fieldinvalid",
 							new Object[] { rowNb, field });
