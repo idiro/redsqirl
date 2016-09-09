@@ -32,11 +32,11 @@
 	<h:panelGroup id="tabRemote" styleClass="removeDefaults" layout="block">
 		
 		<h:form id="fileSysGridFormSsh">
-			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" oncomplete="resizeTables();" reRender="sshfs,sshpath" >
+			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" oncomplete="createFilterOnChangeTriggerSsh();" reRender="sshfs,sshpath" >
 				<a4j:actionparam name="nameTab"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFileSsh}" oncomplete="resizeTables()" reRender="sshfs,sshpath">
+			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFileSsh}" oncomplete="createFilterOnChangeTriggerSsh()" reRender="sshfs,sshpath">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
@@ -64,7 +64,7 @@
 			
 		<h:form id="fileSysGridFormSshTab">
 		
-		<a4j:jsFunction name="submitSSHPathSelected" action="#{sshBean.changePathSsh}" oncomplete="resizeTables();" reRender="sshpath,sshfs,msnErrorSsh" >
+		<a4j:jsFunction name="submitSSHPathSelected" action="#{sshBean.changePathSsh}" oncomplete="createFilterOnChangeTriggerSsh();" reRender="sshpath,sshfs,msnErrorSsh" >
 			<a4j:actionparam name="nameTab" />
 			<a4j:actionparam name="path" />
 		</a4j:jsFunction>

@@ -47,6 +47,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 
 	private List<String> columnIds;
 	private List<String> titles;
+	private List<String> filters;
 	private List<SelectableRow> rows;
 	private String rowNumber;
 	private String name;
@@ -70,11 +71,14 @@ public class SelectableTable extends BaseBean implements Serializable {
 	protected void updateTitles(){
 		if (columnIds != null) {
 			titles = new LinkedList<String>();
+			filters = new LinkedList<String>();
 			Iterator<String> columnIdsIt = columnIds.iterator();
 			while (columnIdsIt.hasNext()) {
+				filters.add("");
 				titles.add(WordUtils.capitalizeFully(columnIdsIt.next()
 						.replace("_", " ")));
 			}
+			
 		}
 	}
 
@@ -89,20 +93,69 @@ public class SelectableTable extends BaseBean implements Serializable {
 		this.rows = rows;
 	}
 
+	public SelectableTable(String[] columnIds) {
+		super();
+		this.columnIds = new LinkedList<String>();
+		for(String colId:columnIds){
+			this.columnIds.add(colId);
+		}
+		this.rows = new LinkedList<SelectableRow>();
+		updateTitles();
+	}
+
 	public String getValueRow(int rowNb, int columnNb) {
-		return rows.get(rowNb).getRow()[columnNb];
+		return rows.size() > rowNb?rows.get(rowNb).getRow()[columnNb]:null;
 	}
 
 	public String getValueRow(int rowNb, String column) {
-		return rows.get(rowNb).getRow()[columnIds.indexOf(column)];
+		return rows.size() > rowNb?rows.get(rowNb).getRow()[columnIds.indexOf(column)]:null;
 	}
 
 	public void setValueRow(int rowNb, int columnNb, String value) {
-		rows.get(rowNb).getRow()[columnNb] = value;
+		if(rows.size() > rowNb && columnIds.size() > columnNb){
+			rows.get(rowNb).getRow()[columnNb] = value;
+		}
 	}
 
 	public void setValueRow(int rowNb, String column, String value) {
-		rows.get(rowNb).getRow()[columnIds.indexOf(column)] = value;
+		if(rows.size() > rowNb && columnIds.indexOf(column) >= 0){
+			rows.get(rowNb).getRow()[columnIds.indexOf(column)] = value;
+		}
+	}
+
+	public boolean filterOnParam0(Object value){
+		return filterOn(value, 0);
+	}
+	public boolean filterOnParam1(Object value){
+		return filterOn(value, 1);
+	}
+	public boolean filterOnParam2(Object value){
+		return filterOn(value, 2);
+	}
+	public boolean filterOnParam3(Object value){
+		return filterOn(value, 3);
+	}
+	public boolean filterOnParam4(Object value){
+		return filterOn(value, 4);
+	}
+	public boolean filterOnParam5(Object value){
+		return filterOn(value, 5);
+	}
+	public boolean filterOnParam6(Object value){
+		return filterOn(value, 6);
+	}
+	public boolean filterOnParam7(Object value){
+		return filterOn(value, 7);
+	}
+	public boolean filterOnParam8(Object value){
+		return filterOn(value, 8);
+	}
+	public boolean filterOnParam9(Object value){
+		return filterOn(value, 9);
+	}
+	
+	public boolean filterOn(Object value, int index){
+		return value.toString().contains(filters.get(index));
 	}
 
 	public boolean add(Map<String, String> row) {
@@ -116,12 +169,13 @@ public class SelectableTable extends BaseBean implements Serializable {
 	}
 
 	public Map<String, String> getRow(int index) {
-		Map<String, String> ans = null;
-		String[] row = rows.get(index).getRow();
-		if (row != null) {
-			ans = new LinkedHashMap<String, String>();
-			for (int i = 0; i < columnIds.size(); ++i) {
-				ans.put(columnIds.get(i), row[i]);
+		Map<String, String> ans = new LinkedHashMap<String, String>();
+		if(rows.size() > index){
+			String[] row = rows.get(index).getRow();
+			if (row != null) {
+				for (int i = 0; i < columnIds.size(); ++i) {
+					ans.put(columnIds.get(i), row[i]);
+				}
 			}
 		}
 		return ans;
@@ -260,6 +314,8 @@ public class SelectableTable extends BaseBean implements Serializable {
 		setRowNumber(null);
 	}
 	
+	
+	
 	public void sortRows(){
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String collun = params.get("column");
@@ -373,6 +429,14 @@ public class SelectableTable extends BaseBean implements Serializable {
 
 	public void setTitles(List<String> titles) {
 		this.titles = titles;
+	}
+
+	public final List<String> getFilters() {
+		return filters;
+	}
+
+	public final void setFilters(List<String> filters) {
+		this.filters = filters;
 	}
 
 }

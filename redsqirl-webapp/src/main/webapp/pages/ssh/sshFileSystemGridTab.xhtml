@@ -61,31 +61,31 @@
                             oncomplete="#{rich:component('ssheditModalPanel')}.show();">
                             <h:graphicImage value="../image/icons/button-directory-property.gif"
                                 title='#{messages.HdfsInterface_properties_help}'
-                                rendered="#{sshBean.allProps[indexTable]['type'] == 'directory'}"
+                                rendered="#{item.row[0] == 'directory'}"
                                 styleClass="btfileSystem" />
                             <h:graphicImage value="../image/icons/button-file-property.gif"
                                 title='#{messages.HdfsInterface_properties_help}'
-                                rendered="#{sshBean.allProps[indexTable]['type'] == 'file'}"
+                                rendered="#{item.row[0] == 'file'}"
                                 styleClass="btfileSystem" />
                             <f:param name="indexFileEdit" value="#{indexTable}" />
                         </a4j:commandLink>
                     </rich:column>
 	
-					<rich:column sortBy="#{sshBean.allProps[indexTable]['name']}" filterBy="#{sshBean.allProps[indexTable]['name']}"
+					<rich:column filterBy="#{item.row[1]}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}"/>
 								
 						</f:facet>
 						<a4j:commandLink 
-						    value="#{sshBean.allProps[indexTable]['name']}" 
-						    title="#{sshBean.allProps[indexTable]['name']}"
+						    value="#{item.row[1]}" 
+						    title="#{item.row[1]}"
 						    action="#{sshBean.verifyIfIsFile}"
-	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{sshBean.allProps[indexTable]['name']}')">
-	     						<f:param name="nameFile" value="#{sshBean.allProps[indexTable]['name']}" />
-	     						<rich:dragSupport dragIndicator=":indicator" dragValue="#{sshBean.allProps[indexTable]['name']}" dragType="ssh">
-	                                <rich:dndParam name="label" value="#{sshBean.allProps[indexTable]['name']}" />
-	                                <a4j:actionparam name="file" value="#{sshBean.allProps[indexTable]['name']}" />
+	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{item.row[1]}')">
+	     						<f:param name="nameFile" value="#{item.row[1]}" />
+	     						<rich:dragSupport dragIndicator=":indicator" dragValue="#{item.row[1]}" dragType="ssh">
+	                                <rich:dndParam name="label" value="#{item.row[1]}" />
+	                                <a4j:actionparam name="file" value="#{item.row[1]}" />
 	                                <a4j:actionparam name="path" value="#{sshBean.path}" />
 	                                <a4j:actionparam name="server" value="#{tab}" />
                             	</rich:dragSupport>
@@ -93,7 +93,8 @@
 					</rich:column>
 					
 					
-					<rich:columns value="#{sshBean.tableGrid.titles == null? canvasBean.emptyList : sshBean.tableGrid.titles}" var="column" index="ind" begin="1"
+					<rich:columns value="#{sshBean.tableGrid.titles == null? canvasBean.emptyList : sshBean.tableGrid.titles}" 
+						var="column" index="ind" filterBy="#{item.row[ind]}" begin="4"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />

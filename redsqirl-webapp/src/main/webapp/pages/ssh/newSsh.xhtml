@@ -59,7 +59,7 @@ function selectedpassword(){
 			<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 				onclick="#{rich:component('modalNewSsh')}.hide();" />
 	
-			<a4j:commandButton id="newSshBtn" styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();resizeTables();" 
+			<a4j:commandButton id="newSshBtn" styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();createFilterOnChangeTriggerSsh();" 
 				value="#{messages.button_ok}" reRender="tabRemote,msnError,fileSysGridFormSsh" />
 	
 		</h:panelGrid>

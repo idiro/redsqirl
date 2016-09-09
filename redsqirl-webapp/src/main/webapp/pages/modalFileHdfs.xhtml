@@ -154,7 +154,7 @@
                 <f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-                <h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableOpenSelectOneRadio(this, '#{browserHdfsBean.allProps[indexTable]['name']}');" 
+                <h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableOpenSelectOneRadio(this, '#{item.row[1]}');" 
                 rendered="#{item.disableSelect}">
                     <f:selectItem itemValue="true" />
                 </h:selectOneRadio>
@@ -165,33 +165,33 @@
 					<h:outputText value="" />
 				</f:facet>
 				<h:graphicImage value="../image/icons/icon-directory.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
+					rendered="#{item.row[0] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+					rendered="#{item.row[0] == 'file'}" styleClass="btfileSystem" />
 			</rich:column>
             
             <rich:column style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
                     <h:outputText value="#{messages.label_name}" />
                 </f:facet>
-               <a4j:commandLink value="#{browserHdfsBean.allProps[indexTable]['name']}"
-                    title="#{browserHdfsBean.allProps[indexTable]['name']}"
+               <a4j:commandLink value="#{item.row[1]}"
+                    title="#{item.row[1]}"
 					action="#{browserHdfsBean.verifyIfIsFile}"
-					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')"
-					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] == 'true'}">
-					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
+					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{item.row[1]}')"
+					rendered="#{item.row[2] == 'true'}">
+					<f:param name="nameFile" value="#{item.row[1]}" />
 				</a4j:commandLink>
 				<a4j:commandLink
 				    style="text-decoration:none;"
-					value="#{browserHdfsBean.allProps[indexTable]['name']}"
-					title="#{browserHdfsBean.allProps[indexTable]['name']}"
-					rendered="#{browserHdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"
-					onclick="setFileNameModalFileHdfs('#{browserHdfsBean.allProps[indexTable]['name']}')" />
+					value="#{item.row[1]}"
+					title="#{item.row[1]}"
+					rendered="#{item.row[2] != 'true'}"
+					onclick="setFileNameModalFileHdfs('#{item.row[1]}')" />
 
 			</rich:column>
     
             <rich:columns value="#{browserHdfsBean.tableGrid.titles == null? canvasBean.emptyList : browserHdfsBean.tableGrid.titles}" 
-            	var="column" index="ind"
+            	var="column" index="ind" begin="4"
                 style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
                     <h:outputText value="#{column}" />

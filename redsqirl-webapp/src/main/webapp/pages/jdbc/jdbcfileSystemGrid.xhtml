@@ -21,7 +21,7 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableJdbc" action="#{jdbcBean.selectFile}" reRender="jdbcfs,jdbcpath" oncomplete="resizeTables();">
+			<a4j:jsFunction name="updateTableJdbc" action="#{jdbcBean.selectFile}" reRender="jdbcfs,jdbcpath" oncomplete="createFilterOnChangeTriggerJdbc();">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
@@ -31,7 +31,7 @@
 					onkeypress="return enableEnterKey(event, 'jdbcfsPathBtn');"/>
 				
 				<a4j:commandLink id="jdbcfsPathBtn" action="#{jdbcBean.changePath}" reRender="jdbcfs" style="color:#FFFFFF" 
-					oncomplete="resizeTables();" >
+					oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 				</a4j:commandLink>
 			</div>
@@ -44,23 +44,23 @@
 					<h:graphicImage id="jdbcbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.JdbcInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{jdbcBean.goPrevious}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{jdbcBean.goPrevious}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
 					rendered="#{not empty jdbcBean.tableGrid.rows}" >
 					<h:graphicImage id="jdbcbtUndo" value="../image/icons/button-previous.gif" title="#{messages.JdbcInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{jdbcBean.goNext}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{jdbcBean.goNext}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
 					rendered="#{not empty jdbcBean.tableGrid.rows}" >
 					<h:graphicImage id="jdbcbtRedo" value="../image/icons/button-next.gif" title="#{messages.JdbcInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{jdbcBean.goUp}" reRender="jdbcpath,jdbcfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{jdbcBean.goUp}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
 					rendered="#{not empty jdbcBean.tableGrid.rows}" >
 					<h:graphicImage id="jdbcgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
 				<a4j:commandLink id="jdbcfsRefreshBtn" action="#{jdbcBean.refreshPath}" reRender="jdbcfs"
-					oncomplete="resizeTables();" >
+					oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
 				</a4j:commandLink>
 			</div>
@@ -87,35 +87,35 @@
 						<h:outputText value="" />
 					</f:facet>
 					<h:graphicImage value="../image/icons/icon-connection.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+						rendered="#{item.row[0] == 'connection'}" styleClass="btfileSystem" />
 					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.JdbcInterface_properties_help}"
-						rendered="#{jdbcBean.allProps[indexTable]['type'] == 'table'}" styleClass="btfileSystem" />
+						rendered="#{item.row[0] == 'table'}" styleClass="btfileSystem" />
 						<f:param name="indexFileEdit" value="#{indexTable}" />
 				</rich:column>
 				
-				<rich:column sortBy="#{jdbcBean.allProps[indexTable]['name']}" filterBy="#{jdbcBean.allProps[indexTable]['name']}" 
+				<rich:column filterBy="#{item.row[1]}" 
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_name}" />
 					</f:facet>
-					<a4j:commandLink value="#{jdbcBean.allProps[indexTable]['name']}"
-						title="#{jdbcBean.allProps[indexTable]['name']}"
-						rendered="#{jdbcBean.allProps[indexTable]['can_have_children'] == 'true'}"
+					<a4j:commandLink value="#{item.row[1]}"
+						title="#{item.row[1]}"
+						rendered="#{item.row[2] == 'true'}"
 						action="#{jdbcBean.selectFile}" reRender="jdbcfs,jdbcpath"
-						oncomplete="resizeTables();">
-						<a4j:actionparam name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}" />
+						oncomplete="createFilterOnChangeTriggerJdbc();">
+						<a4j:actionparam name="nameFile" value="#{item.row[1]}" />
 					</a4j:commandLink>
 					<a4j:commandLink 
-					    value="#{jdbcBean.allProps[indexTable]['name']}"
-					    title="#{jdbcBean.allProps[indexTable]['name']}"
-					    rendered="#{jdbcBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					    value="#{item.row[1]}"
+					    title="#{item.row[1]}"
+					    rendered="#{item.row[2] != 'true'}"
 					    action="#{jdbcBean.openFile}"
 					    oncomplete="#{rich:component('jdbcOpenFileModalPanel')}.show();" >
-							<a4j:actionparam name="nameFile" value="#{jdbcBean.allProps[indexTable]['name']}"/>
+							<a4j:actionparam name="nameFile" value="#{item.row[1]}"/>
      				</a4j:commandLink>
 				</rich:column>
 
-				<rich:columns value="#{jdbcBean.tableGrid.titles == null? canvasBean.emptyList : jdbcBean.tableGrid.titles}" var="column" index="ind" begin="1"
+				<rich:columns value="#{jdbcBean.tableGrid.titles == null? canvasBean.emptyList : jdbcBean.tableGrid.titles}" var="column" index="ind" begin="4"
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="#{column}" />

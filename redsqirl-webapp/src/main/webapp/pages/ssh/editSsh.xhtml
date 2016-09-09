@@ -8,18 +8,18 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{sshBean.allProps[sshBean.currentFileIndex]['name']}" onkeypress="return enableEnterKey(event, 'editFileAfterOkBt');" />
+	<h:inputText value="#{sshBean.childrenProperties[sshBean.currentFileIndex]['name']}" onkeypress="return enableEnterKey(event, 'editFileAfterOkBt');" />
 	
-	<a4j:repeat value="#{sshBean.editProps}" var="title" >
+	<a4j:repeat value="#{sshBean.editProps}" var="title">
 
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{sshBean.allProps[sshBean.currentFileIndex][title]}"
+		<h:inputText value="#{sshBean.childrenProperties[sshBean.currentFileIndex][title]}"
 			disabled="#{sshBean.propsParam[title].constant}"
 			rendered="#{sshBean.propsParam[title].type != 'BOOLEAN'}" 
 			/>
 			
-		<h:selectOneRadio value="#{sshBean.allProps[sshBean.currentFileIndex][title]}" 
+		<h:selectOneRadio value="#{sshBean.childrenProperties[sshBean.currentFileIndex][title]}" 
 		rendered="#{sshBean.propsParam[title].type == 'BOOLEAN'}">
 			<f:selectItem itemValue="true" itemLabel="Yes" />
 			<f:selectItem itemValue="false" itemLabel="No" />
@@ -33,7 +33,7 @@
 		<a4j:commandButton styleClass="greenButton"
 			value="#{messages.button_cancel}" type="button" onclick="#{rich:component('ssheditModalPanel')}.hide();" />
 
-		<a4j:commandButton id="editFileAfterOkBtSsh" styleClass="greenButton"	action="#{sshBean.editFileAfter}" oncomplete="resizeTables();"
+		<a4j:commandButton id="editFileAfterOkBtSsh" styleClass="greenButton"	action="#{sshBean.editFileAfter}" oncomplete="createFilterOnChangeTriggerSsh();"
 			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('ssheditModalPanel')}.hide()" />
 		
 	</h:panelGrid>

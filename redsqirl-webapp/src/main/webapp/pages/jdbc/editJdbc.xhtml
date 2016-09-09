@@ -8,19 +8,19 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 	
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{jdbcBean.allProps[jdbcBean.currentFileIndex]['name']}" 
+	<h:inputText value="#{jdbcBean.childrenProperties[jdbcBean.currentFileIndex]['name']}" 
 	onkeypress="return enableEnterKey(event, 'editFileAfterJdbcBt');" />
 
-	<a4j:repeat value="#{jdbcBean.editProps}" var="title" >
+	<a4j:repeat value="#{jdbcBean.editProps}" var="title">
 	
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{jdbcBean.allProps[jdbcBean.currentFileIndex][title]}" 
+		<h:inputText value="#{jdbcBean.childrenProperties[jdbcBean.currentFileIndex][title]}" 
 			title="#{jdbcBean.propsParam[title].help}"
 			disabled="#{jdbcBean.propsParam[title].constant}" 
 			rendered="#{jdbcBean.propsParam[title].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{jdbcBean.allProps[jdbcBean.currentFileIndex][title]}" 
+		<h:inputTextarea value="#{jdbcBean.childrenProperties[jdbcBean.currentFileIndex][title]}" 
 			title="#{jdbcBean.propsParam[title].help}"
 			disabled="#{jdbcBean.propsParam[title].constant}"
 			rendered="#{jdbcBean.propsParam[title].type == 'BOOLEAN'}"
@@ -32,7 +32,7 @@
 
 	<h:panelGrid columns="2">
 		<a4j:commandButton id="editFileAfterJdbcBt" styleClass="greenButton" action="#{jdbcBean.editFileAfter}" value="#{messages.button_ok}"
-			onclick="#{rich:component('jdbceditModalPanel')}.hide()" reRender="jdbcfs" oncomplete="resizeTables();" />
+			onclick="#{rich:component('jdbceditModalPanel')}.hide()" reRender="jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();" />
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('jdbceditModalPanel')}.hide();" />
 	</h:panelGrid>
 

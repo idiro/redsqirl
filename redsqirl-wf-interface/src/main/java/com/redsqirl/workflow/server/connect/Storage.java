@@ -45,7 +45,7 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 	private static Logger logger = Logger.getLogger(Storage.class);
 
 	public static final String key_children = "can_have_children";
-	
+	public static final String key_type = "type";
 	/** Max History Size */
 	public static final int historyMax = 50;
 	

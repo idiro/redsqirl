@@ -45,7 +45,7 @@
 			onclick="#{rich:component('hdfsaddModalPanel')}.hide();" />
 		
 		<a4j:commandButton id="addHdfsBtn" styleClass="greenButton" action="#{hdfsBean.addFileAfter}" value="#{messages.button_ok}"
-			reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide();" oncomplete="resizeTables();" />
+			reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide();" oncomplete="createFilterOnChangeTriggerHdfs();" />
 		
 	</h:panelGrid>
 

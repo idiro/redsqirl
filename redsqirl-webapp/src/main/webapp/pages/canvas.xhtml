@@ -477,8 +477,69 @@
 
 	    		 reinitializeCanvas();
 	    		 
+				 //Fix the FileSystem refresh on filter
+	    		 setTimeout(function(){
+	    		 	jQuery("#hdfsFileSystem").find(".rich-filter-input").each(function(){
+	    		 		jQuery(this).change(function() {
+	    		 			setTimeout(
+	    		 				function(){ 
+	    		 					createFilterOnChangeTriggerHdfs();
+	    		 				}, 1000);
+	    		 		});
+	    		 	});
+	    		 	jQuery("#hcatFileSystem").find(".rich-filter-input").each(function(){
+	    		 		jQuery(this).change(function() {
+	    		 			setTimeout(
+	    		 				function(){ 
+	    		 					createFilterOnChangeTriggerHCat(); 
+	    		 				}, 1000);
+	    		 		});
+	    		 	});
+	    		 	jQuery("#sshFileSystem").find(".rich-filter-input").each(function(){
+	    		 		jQuery(this).change(function() {
+	    		 			setTimeout(
+	    		 				function(){
+	    		 					createFilterOnChangeTriggerSsh();
+	    		 				}, 1000);
+	    		 		});
+	    		 	});
+	    		 	jQuery("#jdbcFileSystem").find(".rich-filter-input").each(function(){
+	    		 		jQuery(this).change(function() {
+	    		 			setTimeout(
+	    		 				function(){ 
+	    		 					createFilterOnChangeTriggerJdbc();
+	    		 				}, 1000);
+	    		 		});
+	    		 	});
+	    		 },10000);
+	    		 	
 	    	});	//---------- END jQuery function
-
+	    	
+	    	function createFilterOnChangeTriggerHdfs(){
+	    		createFilterOnChangeTrigger("#hdfsFileSystem");
+	    	}
+	    	function createFilterOnChangeTriggerHCat(){
+	    		createFilterOnChangeTrigger("#hcatFileSystem");
+	    	}
+	    	function createFilterOnChangeTriggerJdbc(){
+	    		createFilterOnChangeTrigger("#jdbcFileSystem");
+	    	}
+	    	function createFilterOnChangeTriggerSsh(){
+	    		createFilterOnChangeTrigger("#sshFileSystem");
+	    	}
+	    	
+	    	function createFilterOnChangeTrigger(idElement){
+	    		console.log("resize");
+	    		resizeTables();
+	    		jQuery(idElement).find(".rich-filter-input").each(function(){
+	    		jQuery(this).change(function() {
+	    			setTimeout(
+	    				function(){ 
+	    					createFilterOnChangeTrigger(idElement);
+	    				}, 500);
+	    			});
+	    		});
+	    	}
 
 		    function reOpenCanvasJS(status){
 			//<![CDATA[
@@ -1385,7 +1446,6 @@
 				jQuery("#formMenu\\:splitMenuItem").click();
 			}
 	   	});
-
 	</script>
 
 </head>
