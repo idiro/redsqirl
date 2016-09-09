@@ -777,6 +777,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			//Define the input events
 			Element inputEvent = doc.createElement("input-events");
+			int maxOffset = Integer.MIN_VALUE;
 			int inputNb = 0;
 			itDfe = coordinator.getElements().iterator();
 			while(itDfe.hasNext()){
@@ -808,22 +809,27 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						if(out.getNumberMaterializedPath() == 1){
 							Element instance= doc.createElement("instance");
 							instance.appendChild(doc
-									.createTextNode("${coord:current(0)}"));
+									.createTextNode("${coord:current("+out.getOffsetPath()+")}"));
 							
 							dataIn.appendChild(instance);
 						}else{
 
 							Element startInstance= doc.createElement("start-instance");
 							startInstance.appendChild(doc
-									.createTextNode("${coord:current(-"+(out.getNumberMaterializedPath()-1)+")}"));
+									.createTextNode("${coord:current("+(1-out.getNumberMaterializedPath()+out.getOffsetPath())+")}"));
 
 							Element endInstance= doc.createElement("end-instance");
 							endInstance.appendChild(doc
-									.createTextNode("${coord:current(0)}"));
+									.createTextNode("${coord:current("+out.getOffsetPath()+")}"));
 							
 							dataIn.appendChild(startInstance);
 							dataIn.appendChild(endInstance);
 						}
+						try{
+							if(coordinatorTimeConstraint.getFreqInMinutes() == out.getFrequency().getFreqInMinutes()){
+								maxOffset = Math.max(maxOffset, out.getOffsetPath());
+							}
+						}catch(Exception e){}
 						inputEvent.appendChild(dataIn);
 						++inputNb;
 					}
@@ -877,8 +883,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						DFEOutput out = it.next();
 
 						if(PathType.TEMPLATE.equals(out.getPathType())){
-							Element dataIn = doc.createElement("data-out");
-							dataIn.setAttribute("name", cur.getComponentId());
+							Element dataOut = doc.createElement("data-out");
+							dataOut.setAttribute("name", cur.getComponentId());
 							if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
 								autoVariables.put(cur.getComponentId(), "${coord:dataOut('"+cur.getComponentId()+"')}");
 							}else{
@@ -894,13 +900,18 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								autoVariables.put("PARTITION_"+cur.getComponentId(), "${coord:dataOutPartitions('"+cur.getComponentId()+"')}");
 							}
 							
-							dataIn.setAttribute("dataset", cur.getComponentId());
+							dataOut.setAttribute("dataset", cur.getComponentId());
 							
 							Element instance= doc.createElement("instance");
-							instance.appendChild(doc
-									.createTextNode("${coord:current(0)}"));
-							dataIn.appendChild(instance);
-							outputEvent.appendChild(dataIn);
+							if(maxOffset > Integer.MIN_VALUE){
+								instance.appendChild(doc
+										.createTextNode("${coord:current("+maxOffset+")}"));
+							}else{
+								instance.appendChild(doc
+										.createTextNode("${coord:current(0)}"));
+							}
+							dataOut.appendChild(instance);
+							outputEvent.appendChild(dataOut);
 						}
 					}
 				}

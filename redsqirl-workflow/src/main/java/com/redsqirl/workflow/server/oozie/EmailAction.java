@@ -84,6 +84,10 @@ public class EmailAction extends OozieUniqueActionAbs{
 		
 		action.appendChild(emailElement);
 	}
+	
+	public boolean supportsExtraJobParameters() throws RemoteException {
+		return false;
+	}
 
 	@Override
 	public String[] getFileExtensions() throws RemoteException {

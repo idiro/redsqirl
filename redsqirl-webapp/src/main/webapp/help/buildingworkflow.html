@@ -4,6 +4,7 @@
 <title>Building a Workflow</title>
 </head>
 <body>
+
 	<h1>Building a Workflow</h1>
 
 	<p>The initial step in builidng a workflow is to add/drag a source
@@ -16,12 +17,12 @@
 		the action.</p>
 	<table class="secondtable">
 		<tr>
-			<td><img src="../helpimages/OrganizedTabs.png" /></td>
-			<td><img src="../helpimages/CanvasWithSource.png" /></td>
+			<td><img width="100%" src="../helpimages/OrganizedTabs.png" /></td>
+			<td><img width="100%" src="../helpimages/CanvasWithSource.png" /></td>
 		</tr>
 		<tr>
-			<td><img src="../helpimages/AddedAction.png" /></td>
-			<td><img src="../helpimages/Workflow.png" /></td>
+			<td><img width="100%" src="../helpimages/AddedAction.png" /></td>
+			<td><img width="100%" src="../helpimages/Workflow.png" /></td>
 		</tr>
 	</table>
 
@@ -33,6 +34,40 @@
 		When the workflow is ready to run, the <a class="stopLink" id="helpmain_menu" onclick="return false;" href="../help/menu.html">menu</a>
 		holds the option to run the project under Projects.
 	</p>
+
+	<h1>Schedule a Workflow</h1>
+
+    <p>When scheduling a workflow, it is recommended to use synchronous dataset, as it will help keeping a history and allow rerun in case of process or data changes, asynchronous dataset can be used as a quick fix or when the data is not available on HDFS.</p>
+    
+    <h2>Synchronous Dataset</h2>
+
+    <p>For Synchronous dataset, the three synchronous object should be used. 
+    <ul>
+        <li>Sync Source: loads a synchronous dataset</li>
+        <li>Sync Sink: store a synchronous dataset</li>
+        <li>Sync Sink Filter: reuse the result of a Sync Sink</li>
+    </p>
+    <table class="secondtable">
+		<tr>
+			<td><img width="100%" src="../helpimages/build_schedule1.png" /></td>
+			<td><img width="100%" src="../helpimages/build_schedule2.png" /></td>
+		</tr>
+		<tr>
+			<td><img width="100%" src="../helpimages/build_schedule3.png" /></td>
+		</tr>
+	</table>
+    <h2>Asynchronous Dataset</h2>
+
+    <p>For Asynchronous dataset, use the coordinator view</p>
+    <table class="secondtable">
+		<tr>
+			<td><img width="100%" src="../helpimages/build_schedule_async1.png" /></td>
+			<td><img width="100%" src="../helpimages/build_schedule_async2.png" /></td>
+		</tr>
+		<tr>
+			<td><img width="100%" src="../helpimages/build_schedule_async3.png" /></td>
+		</tr>
+	</table>
 
 	<h1>Tutorials</h1>
 

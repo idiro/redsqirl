@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -16,6 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.redsqirl.workflow.server.action.OozieDictionary;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
@@ -27,11 +30,15 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 	 */
 	private static final long serialVersionUID = 4444112770960681337L;
 	private static Logger logger = Logger.getLogger(WfCoordVariables.class);
+	private static OozieDictionary oozieDict = null;
 	
 	Map<String,DataFlowCoordinatorVariable> variableList = new LinkedHashMap<String,DataFlowCoordinatorVariable>();
 
 	protected WfCoordVariables() throws RemoteException {
 		super();
+		if(oozieDict == null){
+			oozieDict = OozieDictionary.getInstance();
+		}
 	}
 
 	@Override
@@ -129,6 +136,60 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 			variableList.put(cur.getKey(), cur);
 		}
 		return ans;
+	}
+	
+
+
+	@Override
+	public Map<String, String[][]> getVarFunctions() throws RemoteException {
+		return oozieDict.getFunctionsMap();
+	}
+
+	@Override
+	public String checkVar(String expression) throws RemoteException {
+		String error = "";
+		try{
+			Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
+			Matcher m = p.matcher(expression);
+			while(m.find()){
+				String curExpr = m.group(1);
+				String errorLoc = null;
+				try{
+					errorLoc = oozieDict.getReturnType(curExpr) == null ? null:"Expression unrecognized";
+				}catch(Exception e){
+					logger.warn(e,e);
+					errorLoc = "Unexpected error: "+e.getMessage();
+				}
+				if(errorLoc != null){
+					error += errorLoc+"\n";
+				}
+			}
+		}catch(Exception e){
+			logger.warn(e,e);
+			error =  "Unexpected error: "+e.getMessage();
+		}
+
+		if(error.isEmpty()){
+			error = null;
+		}
+		return error;
+	}
+
+	@Override
+	public String checkAllVariables() throws RemoteException {
+		String error = "";
+		Iterator<Entry<String, DataFlowCoordinatorVariable>> it = variableList.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<String, DataFlowCoordinatorVariable> cur = it.next();
+			String errorLoc = checkVar(cur.getValue().getValue());
+			if(errorLoc != null){
+				error += errorLoc+"\n";
+			}
+		}
+		if(error.isEmpty()){
+			error = null;
+		}
+		return error;
 	}
 
 	@Override

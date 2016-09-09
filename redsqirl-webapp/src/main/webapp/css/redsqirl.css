@@ -634,6 +634,7 @@ table.firsttable td {
 table.secondtable {
 	border-collapse: collapse;
 	border: 1px solid black;
+	width: 100%;
 }
 
 table.secondtable td {

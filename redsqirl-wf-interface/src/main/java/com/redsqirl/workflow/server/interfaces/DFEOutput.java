@@ -411,6 +411,20 @@ public interface DFEOutput extends Remote {
 	 * @throws RemoteException
 	 */
 	public void setNumberMaterializedPath(int numberMaterializedPath) throws RemoteException;
+
+	/**
+	 * In case of a Materialized path, get the offset.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public int getOffsetPath() throws RemoteException;
+
+	/**
+	 * In case of a Materialized path, set the offset.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public void setOffsetPath(int offsetPath) throws RemoteException;
 	
 	/**
 	 * Get the time constraint on a template dataset

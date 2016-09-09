@@ -80,6 +80,7 @@ public class SyncSource extends AbstractSource {
 	private InputInteraction frequency;
 	
 	protected InputInteraction nbUsedPath;
+	protected InputInteraction offsetPath;
 	
 	/**
 	 * Constructor containing the pages, page checks and interaction
@@ -141,10 +142,20 @@ public class SyncSource extends AbstractSource {
 		nbUsedPath.setRegex("^[1-9][0-9]*$");
 		nbUsedPath.setValue("1");
 		nbUsedPath.setReplaceDisable(true);
-				
+		
+
+		offsetPath = new InputInteraction(
+				"nb_offset", 
+				LanguageManagerWF.getText("sync_source_filter.nb_offset.title"),
+				LanguageManagerWF.getText("sync_source_filter.nb_offset.legend")
+				, 0, 0);
+		offsetPath.setRegex("^(-?)[0-9]+$");
+		offsetPath.setValue("0");
+		
 		page5.addInteraction(unit);
 		page5.addInteraction(frequency);
 		page5.addInteraction(nbUsedPath);
+		page5.addInteraction(offsetPath);
 		
 		
 	}
@@ -160,6 +171,17 @@ public class SyncSource extends AbstractSource {
 		}
 		return nbPath;
 	}
+	
+	public int getOffsetPath(){
+		int offsetPathInt = 0;
+		try{
+			offsetPathInt = Integer.valueOf(offsetPath.getValue());
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return offsetPathInt;
+	}
+	
 	
 	protected void initializeDataTypeInteraction() throws RemoteException{
 		dataType = new ListInteraction(
@@ -442,6 +464,7 @@ public class SyncSource extends AbstractSource {
 			templateOut.getFrequency().setUnit(TimeTemplate.valueOf(unit.getValue()));
 			templateOut.getFrequency().setInitialInstance(getInitialInstance(output.get(out_name).getPath(), templatePath.getValue()));
 			templateOut.setNumberMaterializedPath(getNbPath());
+			templateOut.setOffsetPath(getOffsetPath());
 			templateOut.removeAllProperties();
 			Iterator<Entry<String,String>> itProp = startInstance.getProperties().entrySet().iterator();
 			while(itProp.hasNext()){

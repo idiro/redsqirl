@@ -102,6 +102,10 @@ public class SubWorkflowAction extends OozieUniqueActionAbs implements OozieSubW
 		
 		action.appendChild(subWfElement);
 	}
+	
+	public boolean supportsExtraJobParameters()  throws RemoteException{
+		return false;
+	}
 
 	@Override
 	public String[] getFileExtensions() throws RemoteException {

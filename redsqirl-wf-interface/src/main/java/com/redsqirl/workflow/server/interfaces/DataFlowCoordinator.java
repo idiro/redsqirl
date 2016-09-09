@@ -178,5 +178,4 @@ public interface DataFlowCoordinator extends Remote{
 	 * @throws RemoteException
 	 */
 	DefaultConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;
-	
 }

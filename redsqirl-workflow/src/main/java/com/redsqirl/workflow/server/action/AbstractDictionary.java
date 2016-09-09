@@ -564,4 +564,147 @@ public abstract class AbstractDictionary {
 	public final Map<String, String[][]> getFunctionsMap() {
 		return functionsMap;
 	}
+	
+
+
+	/**
+	 * Check if an expression is in a list
+	 * 
+	 * @param list
+	 * @param expr
+	 * @return <cod>true</code> if expression in list else <cod>false</code>
+	 */
+	protected static boolean isInList(String[][] list, String expr) {
+		String cleanUp = removeBracketContent(expr);
+		if (logger.isDebugEnabled()) {
+			logger.debug(cleanUp);
+		}
+		boolean found = false;
+		int i = 0;
+		while (!found && list.length > i) {
+			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
+			if (logger.isDebugEnabled()) {
+				logger.debug("Is " + cleanUp + " contains " + regex);
+			}
+			found = cleanUp.matches(regex);
+			++i;
+		}
+
+		return found;
+	}
+
+	/**
+	 * Remove the content that is in the expression
+	 * 
+	 * @param expr
+	 * @return content
+	 */
+	public static String removeBracketContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				if (count == 1) {
+					cleanUp += '(';
+				}
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				if (count == 0) {
+					cleanUp += ')';
+				}
+			} else if (count == 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp;
+	}
+
+
+	/**
+	 * Get the regex that can be used to find the expression
+	 * 
+	 * @param expr
+	 * @return regex
+	 */
+	public static String getRegexToFind(String expr) {
+		String regex = escapeString(expr);
+		if (!expr.matches("\\W.*")) {
+			regex = "(^|.*\\s)" + regex;
+		} else {
+			regex = ".*" + regex;
+		}
+		if (!expr.matches(".*\\W")) {
+			regex = regex + "(\\s.*|$)";
+		} else {
+			regex = regex + ".*";
+		}
+		return regex;
+	}
+
+
+	/**
+	 * Get the expression with escape characters
+	 * 
+	 * @param expr
+	 * @return escapedString
+	 */
+	public static String escapeString(String expr) {
+		return "\\Q" + expr + "\\E";
+	}
+
+
+	/**
+	 * Find all methods for an Expression
+	 * 
+	 * @param list
+	 * @param method
+	 * @return List of Methods
+	 */
+	protected static List<String[]> findAll(String[][] list, String method) {
+
+		int i = 0;
+		List<String[]> ans = new LinkedList<String[]>();
+		String search = removeBracketContent(method.trim());
+		while (list.length > i) {
+			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
+			if (search.matches(regex)) {
+				ans.add(list[i]);
+			}
+
+			++i;
+		}
+		logger.debug("expr " + method + ", to search: " + search + ", found: " + ans.size());
+		return ans;
+	}
+	
+	public static String[] getArguments(String arguments, String delimiter) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		List<String> ans = new LinkedList<String>();
+		int delIndex = arguments.indexOf(delimiter);
+		while (index < arguments.length() && delIndex > -1) {
+			if(delIndex == index){
+				delIndex = arguments.indexOf(delimiter,index+1);
+				if(count == 0){
+					ans.add(cleanUp);
+					cleanUp="";
+					++index;
+					continue;
+				}
+			}else if (arguments.charAt(index) == '(') {
+				++count;
+			}else if (arguments.charAt(index) == ')') {
+				--count;
+			}
+			cleanUp += arguments.charAt(index);
+			++index;
+		}
+		ans.add(cleanUp+arguments.substring(index));
+		
+		return ans.toArray(new String[ans.size()]);
+	}
 }

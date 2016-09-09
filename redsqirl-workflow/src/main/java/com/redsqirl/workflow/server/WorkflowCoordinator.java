@@ -4,12 +4,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -20,7 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idiro.utils.RandomString;
-import com.redsqirl.workflow.server.action.SyncSinkFilter;
+import com.redsqirl.workflow.server.action.OozieDictionary;
 import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
@@ -38,7 +36,6 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	 */
 	private static final long serialVersionUID = 2983015342985143960L;
 	private static Logger logger = Logger.getLogger(WorkflowCoordinator.class);
-	
 	protected CoordinatorTimeConstraint timeCondition = new WfCoordTimeConstraint();
 	protected String name;
 	protected List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
@@ -265,6 +262,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			error = cur.writeValuesXml(doc, interactions);
 			component.appendChild(interactions);
 
+
+			if(error == null && cur.getOozieAction() != null && cur.getOozieAction().supportsExtraJobParameters()){
+				Element elOozie = doc.createElement("hadoop_extra_conf");
+				error = cur.getOozieAction().getExtraJobParameters().saveInXml(doc, elOozie);
+				rootElement.appendChild(elOozie);
+			}
+			
 			rootElement.appendChild(component);
 		}
 		return error;
@@ -487,6 +491,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 								.getText("workflow.read_failLoadOut");
 						logger.error(error,e);
 					}
+				}
+				
+				try{
+					if(el.getOozieAction() != null && el.getOozieAction().supportsExtraJobParameters()){
+						el.getOozieAction().getExtraJobParameters().readInXml(doc,(Element) parent.getElementsByTagName("hadoop_extra_conf").item(0));
+					}
+				}catch(Exception e){
 				}
 			}
 

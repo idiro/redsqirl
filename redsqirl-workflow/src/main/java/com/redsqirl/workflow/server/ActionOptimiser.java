@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 
 import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 
@@ -67,6 +68,10 @@ DFEOptimiser {
 			elementList.add(dfe);
 			if(dfe.getOozieAction() != null){
 				oozieAction.addAllVariables(dfe.getOozieAction().getVariables());
+				if(oozieAction.supportsExtraJobParameters() && dfe.getOozieAction().supportsExtraJobParameters()){
+					DataFlowCoordinatorVariables extraConfs = oozieAction.getExtraJobParameters();
+					extraConfs.addVariables(dfe.getOozieAction().getExtraJobParameters().getKeyValues());
+				}
 			}
 		}
 		return ans;

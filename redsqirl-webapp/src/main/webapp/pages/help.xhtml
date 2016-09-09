@@ -22,36 +22,40 @@
     	showTabResult();
     });
     
-    jQuery(document).on("click", ".stopLink", function(e){
-		
-	    if(!jQuery('#notMoveHelp').is(':checked')){
+    function clickOnStopLink(origLink, force){
+
+	    if(!jQuery('#notMoveHelp').is(':checked') || force){
 			showTabResult();
 			jQuery("#divTabHelp").scrollTop( 0 );
-			var id = jQuery(this).attr('id');
+			var id = jQuery(origLink).attr('id');
 			if( historyHelp[historyHelpIndex] != id ){
 	            jQuery("#nextHelp").attr("disabled", true);
 	            jQuery("#prevHelp").attr("disabled", false);
 			    jQuery("#helpIndex").hide();
 	            jQuery("#helpPanel").show();
-			    jQuery("#contentHelp").load(jQuery(this).attr("href"));
+			    jQuery("#contentHelp").load(jQuery(origLink).attr("href"));
 	            
 			    //<![CDATA[
 			    if(id != "help_main" && id.substring(0,5) == "help_"){
-			      var obj = jQuery("#image_"+jQuery(this).attr("id"));
+			      var obj = jQuery("#image_"+id);
 			      document.getElementById("imageHelp").innerHTML = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
 	              jQuery("#imageHelp").show();
-			    }else{
+			    }else if(id != "help_main" && id.substring(0,8) == "vishelp_"){
+				  var obj = jQuery("#image_"+id.substring(3));
+				  document.getElementById("imageHelp").innerHTML = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
+		          jQuery("#imageHelp").show();
+				}else{
 			      document.getElementById("imageHelp").innerHTML = "";
 			      jQuery("#imageHelp").hide();
 			    }
 	            //]]>
 	            
 	            jQuery("#btIndex").show();
-	            if(jQuery(this).attr("href").indexOf('#') == -1){
+	            if(jQuery(origLink).attr("href").indexOf('#') == -1){
 			    	jQuery("#divTabHelp").scrollTop( 0 );
 	            }else{
-	            	console.log(jQuery(jQuery(this,'href')).offset().top);
-	            	jQuery("#divTabHelp").animate({ scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
+	            	console.log(jQuery(jQuery(origLink,'href')).offset().top);
+	            	jQuery("#divTabHelp").animate({ scrollTop: jQuery(jQuery(origLink,'href')).offset().top}, 800);
 			    }
 			    
 			    //<![CDATA[
@@ -66,36 +70,43 @@
 			    historyHelp[historyHelpIndex] = id;
 			}
 	    }
+    }
+    
+    jQuery(document).on("click", ".stopLink", function(e){
+    	clickOnStopLink(this,true);
 	});
 
+    jQuery(document).on("click", ".stopLinkInternal", function(e){
+    	clickOnStopLink(this,false);
+	});
+    
+    
 	jQuery(document).on("click", "#btIndex", function(e) {
 
 		showTabResult();
 		jQuery("#divTabHelp").scrollTop( 0 );
 		
-	    if(! jQuery('#notMoveHelp').is(':checked')){
-		    var id = jQuery(this).attr('id');
+		var id = jQuery(this).attr('id');
 
-		  //<![CDATA[
-		    if(historyHelp[historyHelpIndex] != id || (id == "btIndex" && historyHelp[historyHelpIndex] == "btIndex") ){
-			    jQuery("#nextHelp").attr("disabled", true);
-			    jQuery("#prevHelp").attr("disabled", false);
-			    jQuery("#helpIndex").show();
-			    jQuery("#helpPanel").hide();
-			    jQuery("#btIndex").hide();
-			    jQuery("#tabs-1").scrollTop( 0 );
-			    while(historyHelpIndex + 1 < historyHelp.length){
-				    historyHelp.pop();
-				}
-				if(historyHelp.length > 100){
-					historyHelp.shift();
-				}
-		    	
-		    	historyHelpIndex = historyHelp.length;
-		    	historyHelp[historyHelpIndex] = id;
-		    }
-		  //]]>
-	    }
+		//<![CDATA[
+		if(historyHelp[historyHelpIndex] != id || (id == "btIndex" && historyHelp[historyHelpIndex] == "btIndex") ){
+		    jQuery("#nextHelp").attr("disabled", true);
+		    jQuery("#prevHelp").attr("disabled", false);
+			jQuery("#helpIndex").show();
+		    jQuery("#helpPanel").hide();
+		    jQuery("#btIndex").hide();
+		    jQuery("#tabs-1").scrollTop( 0 );
+		    while(historyHelpIndex + 1 < historyHelp.length){
+			    historyHelp.pop();
+			}
+			if(historyHelp.length > 100){
+				historyHelp.shift();
+			}
+		   	
+		   	historyHelpIndex = historyHelp.length;
+		   	historyHelp[historyHelpIndex] = id;
+		}
+		//]]>
 	});
 
 	jQuery(document).on("click", "#prevHelp", function(e) {
@@ -219,7 +230,7 @@
 				<ul>
 					<ui:repeat value="#{helpBean.result}" var="item" class="test">
 				    	<li>
-				    		<a class="stopLink" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
+				    		<a class="stopLinkInternal" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
 				    			<h:outputText value="#{item[1]}" title="#{item[1]}" style="font-size:16px;" />
 				    		</a>
 				    	</li>
@@ -237,27 +248,27 @@
 			    onclick="return false;" href="../help/main.html">here</a>
 			</p>
 		
-			<a class="stopLink" id="helpmain_tech" style="display: none;" onclick="return false;" href="../help/technologies.html">Technologies</a>
-			<a class="stopLink" id="helpmain_menu" style="display: none;" onclick="return false;" href="../help/menu.html">Menu</a>
-			<a class="stopLink" id="helpmain_canvas" style="display: none;" onclick="return false;" href="../help/canvas.html">Canvas</a>
-			<a class="stopLink" id="helpmain_actfooter" style="display: none;" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
-			<a class="stopLink" id="helpmain_buildwork" style="display: none;" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a>
-			<a class="stopLink" id="helpmain_ssh" style="display: none;" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
-			<a class="stopLink" id="helpmain_help" style="display: none;" onclick="return false;" href="../help/help_view.html">Help</a>
-			<a class="stopLink" id="helpmain_procman" style="display: none;" onclick="return false;" href="../help/process_manager.html">Process manager</a>
-			<a class="stopLink" id="helpmain_error" style="display: none;" onclick="return false;" href="../help/error_view.html">Error</a>
-			<a class="stopLink" id="helpmain_jdbc" style="display: none;" onclick="return false;" href="../help/jdbc_view.html">Jdbc</a>
-			<a class="stopLink" id="helpmain_hcat" style="display: none;" onclick="return false;" href="../help/hcatalog_view.html">Hcatalog</a>
-			<a class="stopLink" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
-			<a class="stopLink" id="helpmain_splitter" style="display: none;" onclick="return false;" href="../help/splitter.html">Splitter</a>
-		    <a class="stopLink" id="helpmain_pigtuto" style="display: none;" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
-		    <a class="stopLink" id="helpmain_hamatuto" style="display: none;" onclick="return false;" href="../help/hamatutorial.html">Hama Tutorial</a>
-		    <a class="stopLink" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
-		    <a class="stopLink" id="helpmain_setting" style="display: none;" onclick="return false;" href="../help/setting.html">Settings</a>
-		    <a class="stopLink" id="helpmain_packageview" style="display: none;" onclick="return false;" href="../help/packageview.html">Package View</a>
-		    <a class="stopLink" id="helpmain_modelview" style="display: none;" onclick="return false;" href="../help/modelview.html">Model View</a>
-		    <a class="stopLink" id="helpmain_aggregate" style="display: none;" onclick="return false;" href="../help/aggregate.html">Aggregate</a>
-		    <a class="stopLink" id="helpmain_commenteditor" style="display: none;" onclick="return false;" href="../help/commentEditor.html">Comment Editor</a>
+			<a class="stopLinkInternal" id="helpmain_tech" style="display: none;" onclick="return false;" href="../help/technologies.html">Technologies</a>
+			<a class="stopLinkInternal" id="helpmain_menu" style="display: none;" onclick="return false;" href="../help/menu.html">Menu</a>
+			<a class="stopLinkInternal" id="helpmain_canvas" style="display: none;" onclick="return false;" href="../help/canvas.html">Canvas</a>
+			<a class="stopLinkInternal" id="helpmain_actfooter" style="display: none;" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
+			<a class="stopLinkInternal" id="helpmain_buildwork" style="display: none;" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a>
+			<a class="stopLinkInternal" id="helpmain_ssh" style="display: none;" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
+			<a class="stopLinkInternal" id="helpmain_help" style="display: none;" onclick="return false;" href="../help/help_view.html">Help</a>
+			<a class="stopLinkInternal" id="helpmain_procman" style="display: none;" onclick="return false;" href="../help/process_manager.html">Process manager</a>
+			<a class="stopLinkInternal" id="helpmain_error" style="display: none;" onclick="return false;" href="../help/error_view.html">Error</a>
+			<a class="stopLinkInternal" id="helpmain_jdbc" style="display: none;" onclick="return false;" href="../help/jdbc_view.html">Jdbc</a>
+			<a class="stopLinkInternal" id="helpmain_hcat" style="display: none;" onclick="return false;" href="../help/hcatalog_view.html">Hcatalog</a>
+			<a class="stopLinkInternal" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
+			<a class="stopLinkInternal" id="helpmain_splitter" style="display: none;" onclick="return false;" href="../help/splitter.html">Splitter</a>
+		    <a class="stopLinkInternal" id="helpmain_pigtuto" style="display: none;" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
+		    <a class="stopLinkInternal" id="helpmain_hamatuto" style="display: none;" onclick="return false;" href="../help/hamatutorial.html">Hama Tutorial</a>
+		    <a class="stopLinkInternal" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
+		    <a class="stopLinkInternal" id="helpmain_setting" style="display: none;" onclick="return false;" href="../help/setting.html">Settings</a>
+		    <a class="stopLinkInternal" id="helpmain_packageview" style="display: none;" onclick="return false;" href="../help/packageview.html">Package View</a>
+		    <a class="stopLinkInternal" id="helpmain_modelview" style="display: none;" onclick="return false;" href="../help/modelview.html">Model View</a>
+		    <a class="stopLinkInternal" id="helpmain_aggregate" style="display: none;" onclick="return false;" href="../help/aggregate.html">Aggregate</a>
+		    <a class="stopLinkInternal" id="helpmain_commenteditor" style="display: none;" onclick="return false;" href="../help/commentEditor.html">Comment Editor</a>
 		    
 			<h2>Available Actions (#{helpBean.helpSize})</h2>
 			
@@ -267,7 +278,8 @@
 				    <ui:repeat value="#{helpBean.helpAns[pck[0]]}" var="action">
 					    <li>
 					    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
-					    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+					    	<a class="stopLink" id="vishelp_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+					    	<a class="stopLinkInternal" style="display: none;" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
 					    </li>
 				    </ui:repeat>
 				</ul>
@@ -297,7 +309,8 @@
 					    <ui:repeat value="#{helpBean.helpHtmlSA[model[0]]}" var="action">
 						    <li>
 						    	<img id="image_help_#{model[0]}_#{action[0]}" width="25px" src="#{action[3]}"/>
-						    	<a class="stopLink" id="help_#{model[0]}_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+						    	<a class="stopLink" id="vishelp_#{model[0]}_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+						    	<a class="stopLinkInternal" style="display: none;" id="help_#{model[0]}_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
 						    </li>
 					    </ui:repeat>
 					</ul>
