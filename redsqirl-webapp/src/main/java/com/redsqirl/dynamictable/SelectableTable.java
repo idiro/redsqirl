@@ -21,11 +21,15 @@ package com.redsqirl.dynamictable;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
@@ -254,6 +258,25 @@ public class SelectableTable extends BaseBean implements Serializable {
 			}
 		}
 		setRowNumber(null);
+	}
+	
+	public void sortRows(){
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String collun = params.get("column");
+		sortRows(collun);
+	}
+	
+	public void sortRows(String collun){
+		final int index = getTitles().indexOf(collun);
+		if(index != -1){
+			List<SelectableRow> list = getRows();
+			Collections.sort(list, new Comparator<SelectableRow>() {
+				@Override
+				public int compare(SelectableRow s1, SelectableRow s2) {
+					return s1.getRow()[index].compareTo(s2.getRow()[index]); 
+				}
+			});
+		}
 	}
 
 
