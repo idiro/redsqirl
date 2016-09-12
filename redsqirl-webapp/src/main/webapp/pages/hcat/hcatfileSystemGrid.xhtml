@@ -21,7 +21,7 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableHcat" action="#{hcatBean.selectFile}" reRender="hcatfs,hcatpath" oncomplete="resizeTables();">
+			<a4j:jsFunction name="updateTableHcat" action="#{hcatBean.selectFile}" reRender="hcatfs,hcatpath" oncomplete="createFilterOnChangeTriggerHCat();">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
@@ -31,7 +31,7 @@
 					onkeypress="return enableEnterKey(event, 'hcatfsPathBtn');"/>
 				
 				<a4j:commandLink id="hcatfsPathBtn" action="#{hcatBean.changePath}" reRender="hcatfs" style="color:#FFFFFF" 
-					oncomplete="resizeTables();" >
+					oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 				</a4j:commandLink>
 			</div>
@@ -44,23 +44,23 @@
 					<h:graphicImage id="hcatbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HcatInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hcatBean.goPrevious}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{hcatBean.goPrevious}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
 					rendered="#{not empty hcatBean.tableGrid.rows}" >
 					<h:graphicImage id="hcatbtUndo" value="../image/icons/button-previous.gif" title="#{messages.HcatInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hcatBean.goNext}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{hcatBean.goNext}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
 					rendered="#{not empty hcatBean.tableGrid.rows}" >
 					<h:graphicImage id="hcatbtRedo" value="../image/icons/button-next.gif" title="#{messages.HcatInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hcatBean.goUp}" reRender="hcatpath,hcatfs" oncomplete="resizeTables();"
+				<a4j:commandLink action="#{hcatBean.goUp}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
 					rendered="#{not empty hcatBean.tableGrid.rows}" >
 					<h:graphicImage id="hcatgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
 				<a4j:commandLink id="hcatfsRefreshBtn" action="#{hcatBean.refreshPath}" reRender="hcatfs"
-					oncomplete="resizeTables();" >
+					oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
 				</a4j:commandLink>
 			</div>
@@ -87,35 +87,35 @@
 						<h:outputText value="" />
 					</f:facet>
 					<h:graphicImage value="../image/icons/icon-db.gif" title="#{messages.HcatInterface_properties_help}"
-						rendered="#{hcatBean.allProps[indexTable]['type'] == 'database'}" styleClass="btfileSystem" />
+						rendered="#{item.row[0] == 'database'}" styleClass="btfileSystem" />
 					<h:graphicImage value="../image/icons/icon-table.gif" title="#{messages.HcatInterface_properties_help}"
-						rendered="#{hcatBean.allProps[indexTable]['type'] == 'table' || hcatBean.allProps[indexTable]['type'] == 'partition'}" styleClass="btfileSystem" />
+						rendered="#{item.row[0] == 'table' || item.row[0] == 'partition'}" styleClass="btfileSystem" />
 						<f:param name="indexFileEdit" value="#{indexTable}" />
 				</rich:column>
 				
-				<rich:column sortBy="#{hcatBean.allProps[indexTable]['name']}" filterBy="#{hcatBean.allProps[indexTable]['name']}" 
+				<rich:column filterBy="#{item.row[1]}" 
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_name}" />
 					</f:facet>
-					<a4j:commandLink value="#{hcatBean.allProps[indexTable]['name']}"
-						title="#{hcatBean.allProps[indexTable]['name']}"
-						rendered="#{hcatBean.allProps[indexTable]['can_have_children'] == 'true'}"
+					<a4j:commandLink value="#{item.row[1]}"
+						title="#{item.row[1]}"
+						rendered="#{item.row[2] == 'true'}"
 						action="#{hcatBean.selectFile}" reRender="hcatfs,hcatpath"
-						oncomplete="resizeTables();">
-						<a4j:actionparam name="nameFile" value="#{hcatBean.allProps[indexTable]['name']}" />
+						oncomplete="createFilterOnChangeTriggerHCat();">
+						<a4j:actionparam name="nameFile" value="#{item.row[1]}" />
 					</a4j:commandLink>
 					<a4j:commandLink 
-					    value="#{hcatBean.allProps[indexTable]['name']}"
-					    title="#{hcatBean.allProps[indexTable]['name']}"
-					    rendered="#{hcatBean.allProps[indexTable]['can_have_children'] != 'true'}"
+					    value="#{item.row[1]}"
+					    title="#{item.row[1]}"
+					    rendered="#{item.row[2] != 'true'}"
 					    action="#{hcatBean.openFile}"
 					    oncomplete="#{rich:component('hcatOpenFileModalPanel')}.show();" >
-							<a4j:actionparam name="nameFile" value="#{hcatBean.allProps[indexTable]['name']}"/>
+							<a4j:actionparam name="nameFile" value="#{item.row[1]}"/>
      				</a4j:commandLink>
 				</rich:column>
 
-				<rich:columns value="#{hcatBean.tableGrid.titles == null? canvasBean.emptyList : hcatBean.tableGrid.titles}" var="column" index="ind" begin="1"
+				<rich:columns value="#{hcatBean.tableGrid.titles == null? canvasBean.emptyList : hcatBean.tableGrid.titles}" begin="4" var="column" index="ind"
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="#{column}" />

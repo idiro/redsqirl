@@ -8,25 +8,8 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex]['name']}" onkeypress="return enableEnterKey(event, 'editFileAfterOkBt');" />
+	<h:inputText value="#{hdfsBean.childrenProperties[hdfsBean.currentFileIndex]['name']}" onkeypress="return enableEnterKey(event, 'editFileAfterOkBt');" />
 	
-	<a4j:repeat value="#{hdfsBean.editProps}" var="title" >
-
-		<h:outputText value="#{title}" />
-		<br />
-		<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}"
-			disabled="#{hdfsBean.propsParam[title].constant}"
-			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" 
-			/>
-			
-		<h:selectOneRadio value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}" 
-		rendered="#{hdfsBean.propsParam[title].type == 'BOOLEAN'}">
-			<f:selectItem itemValue="true" itemLabel="Yes" />
-			<f:selectItem itemValue="false" itemLabel="No" />
-		</h:selectOneRadio>
-		<br />
-		<br />
-	</a4j:repeat>
 
 	<h:panelGrid columns="2">
 

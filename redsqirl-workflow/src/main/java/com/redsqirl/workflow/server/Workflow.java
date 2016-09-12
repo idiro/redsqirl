@@ -1170,6 +1170,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// for the element and there id
 		// for link all the element
 		logger.debug("loads elements...");
+		coordinators.clear();
+		element.clear();
 		NodeList compList = doc.getElementsByTagName("coordinator");
 		boolean runs = isrunning();
 		if(compList == null || compList.getLength() == 0){
@@ -1178,24 +1180,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			coord.setName(this.name != null && !this.name.isEmpty()? this.name:"Coordinator");
 			coord.readInXml(doc, wf, this);
 			error = coord.readInXmlLinks(doc, (Element) wf, this,pathsUsed,runs);
-			coordinators.add(coord);
+			if(getCoordinator(coord.getName()) == null){
+				coordinators.add(coord);
+			}
 			logger.debug("loads links...");
 		}else{
 			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
 				Node coordCur = compList.item(temp);
 				WorkflowCoordinator coord = new WorkflowCoordinator();
-				coordinators.add(coord);
 				coord.readInXml(doc, (Element) coordCur, this);
+				if(getCoordinator(coord.getName()) == null){
+					coordinators.add(coord);
+				}
 			}
 			logger.debug("loads coordinator links...");
+			Set<String> cNames = new LinkedHashSet<String>();
 			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
 				Node coordCur = compList.item(temp);
 				String nameCoord = ((Element) coordCur).getElementsByTagName("name").item(0)
 						.getChildNodes().item(0).getNodeValue();
-
-				error = getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this,pathsUsed,runs);
+				if(cNames.add(nameCoord)){
+					error = getCoordinator(nameCoord).readInXmlLinks(doc, (Element) coordCur, this,pathsUsed,runs);
+				}
 			}
 		}
 
@@ -2153,11 +2161,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		DataFlowCoordinator dfC = null;
 		if(element.isEmpty() || isSchedule()){
 			dfC = new WorkflowCoordinator(componentId);
+			coordinators.add(dfC);
 		}else{
 			dfC = getCoordinators().get(0);
 		}
 		String error = addElement(waName, componentId, dfC);
-		coordinators.add(dfC);
 
 		return error;
 	}

@@ -57,29 +57,29 @@
 				<h:outputText value="" />
 			</f:facet>
 				<h:graphicImage value="../image/icons/icon-directory.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
+				rendered="#{item.row[0] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+				rendered="#{item.row[0] == 'file'}" styleClass="btfileSystem" />
 		</rich:column>
 		
-		<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}"
+		<rich:column
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_name}" />
 			</f:facet>
-			<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
-				title="#{hdfsBean.allProps[indexTable]['name']}"
+			<a4j:commandLink value="#{item.row[1]}"
+				title="#{item.row[1]}"
 				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy"
-				rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] == 'true'}">
-				<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
+				rendered="#{item.row[2] == 'true'}">
+				<f:param name="nameFile" value="#{item.row[1]}" />
 			</a4j:commandLink>
-			<h:outputText value="#{hdfsBean.allProps[indexTable]['name']}"
-				title="#{hdfsBean.allProps[indexTable]['name']}"
-				rendered="#{hdfsBean.allProps[indexTable]['can_have_children'] != 'true'}"/>
+			<h:outputText value="#{item.row[1]}"
+				title="#{item.row[1]}"
+				rendered="#{item.row[2] != 'true'}"/>
 		</rich:column>
 
 		<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column"
-			index="ind" style="border-bottom:0px;border-right:0px;">
+			index="ind" style="border-bottom:0px;border-right:0px;" begin="4">
 			<f:facet name="header">
 				<h:outputText value="#{column}" />
 			</f:facet>
@@ -92,9 +92,9 @@
 	<h:panelGrid columns="2" id="copyMovelBt" style="border:none; float:right;">
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('modalCopyMoveHdfs')}.hide();" />
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.copyFileAfter}" value="#{messages.button_ok}" rendered="#{hdfsBean.showCopyMove == 'C'}" 
-			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
+			reRender="hdfsfs,msnError,hdfspath" oncomplete="createFilterOnChangeTriggerHdfs(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}" rendered="#{hdfsBean.showCopyMove == 'M'}"
-			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
+			reRender="hdfsfs,msnError,hdfspath" oncomplete="createFilterOnChangeTriggerHdfs(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
 	</h:panelGrid>
 
 </ui:composition>

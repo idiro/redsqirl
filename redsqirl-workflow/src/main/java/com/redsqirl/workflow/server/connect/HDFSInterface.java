@@ -92,8 +92,6 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 			key_owner = "owner",
 			/** Group Key */
 			key_group = "group",
-			/** Type Key */
-			key_type = "type",
 			/** Size Key */
 			key_size = "size",
 			/** Recursive Key */

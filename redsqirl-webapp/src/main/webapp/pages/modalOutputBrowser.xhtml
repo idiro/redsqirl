@@ -164,7 +164,7 @@
 								<f:facet name="header">
 									<h:outputText value="" />
 								</f:facet>
-								<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');"
+								<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{item.row[1]}');"
 								rendered="#{item.disableSelect}" >
 									<f:selectItem itemValue="true" />
 								</h:selectOneRadio>
@@ -175,39 +175,39 @@
 									<h:outputText value="" />
 								</f:facet>
 								<h:graphicImage value="../image/icons/icon-directory.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
+									rendered="#{item.row[0] == 'directory'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+									rendered="#{item.row[0] == 'file'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-connection.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'connection'}" styleClass="btfileSystem" />
+									rendered="#{item.row[0] == 'connection'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-db.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'database'}" styleClass="btfileSystem" />
+									rendered="#{item.row[0] == 'database'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-table.gif" title='#{messages.HdfsInterface_properties_help}' 
-									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'table' || canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'partition'}" styleClass="btfileSystem" />
+									rendered="#{item.row[0] == 'table' || item.row[0] == 'partition'}" styleClass="btfileSystem" />
 							</rich:column>
 					
-							<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+							<rich:column sortBy="#{item.row[1]}"
 								style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_name}" />
 								</f:facet>
 								
 								<a4j:commandLink 
-								    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+								    value="#{item.row[1]}"
+								    title="#{item.row[1]}"
 								    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
-					    			rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['can_have_children'] == 'true'}"
+					    			rendered="#{item.row[2] == 'true'}"
 									reRender="pathDataOutputBrowser,dataOutputBrowser,comboboxExtensionsFilesystem, errorTable, msnError" 
 									oncomplete="if(#{requestScope['msnError'] == null}){mountComboboxExtensionsFilesystem();}" >
-									<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
+									<f:param name="nameFile" value="#{item.row[1]}" />
 								</a4j:commandLink>
-								<h:outputText value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-					    			rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['can_have_children'] != 'true'}"/>
+								<h:outputText value="#{item.row[1]}"
+								    title="#{item.row[1]}"
+					    			rendered="#{item.row[2] != 'true'}"/>
 							</rich:column>
 					
 							<rich:columns value="#{canvasModalBean.outputTab.fileSystem.tableGrid.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.tableGrid.titles}" 
-								var="column" index="ind" style="border-bottom:0px;border-right:0px;">
+								var="column" index="ind" begin="4" style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
 									<h:outputText value="#{column}" />
 								</f:facet>

@@ -53,6 +53,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
+	public static final String TYPE = "type";
+	public static final String NAME = "name";
+	public static final String CHILDREN = "can_have_children";
 
 
 	private List<SelectItem> listExtensions;
@@ -72,10 +75,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	/**
 	 * The list of rows of the grid file system
 	 */
-	private SelectableTable tableGrid = new SelectableTable();
+	private SelectableTable tableGrid = new SelectableTable(new String[]{TYPE,NAME, CHILDREN});
 
 	private DataStore dataStore;
-	private List<Map<String,String>> allProps;
 	private List<String> editProps;
 	private List<String> createProps;
 	private Map<String, ParamProperty> propsParam; 
@@ -87,6 +89,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * 'C' for showing copy and 'M' for showing move.
 	 */
 	private String showCopyMove;
+
+	private List<Map<String,String>> childrenProperties;
 
 
 
@@ -125,10 +129,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		LinkedList<String> titles = new LinkedList<String>();
 		LinkedList<String> editProps = new LinkedList<String>();
 		LinkedList<String> createProps = new LinkedList<String>();
+		titles.add(TYPE);
+		titles.add(NAME);
+		titles.add(CHILDREN);
 		for (String properties : propsParam.keySet()) {
-
 			if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
-				titles.add(properties);
+				if(! (properties.equalsIgnoreCase(NAME) || properties.equalsIgnoreCase(TYPE) || properties.equalsIgnoreCase(CHILDREN))){
+					titles.add(properties);
+				}
 				editProps.add(properties);
 			}else if (propsParam.get(properties).editOnly()) {
 				editProps.add(properties);
@@ -178,22 +186,49 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		updateParamProperties();
 		
 		//Fill rows
+		childrenProperties = new LinkedList<Map<String,String>>();
 		try{
-			if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
-					(getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) || refresh ){
+			if (oldPath == null || !oldPath.equals(getPath()) 
+					|| getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty() || refresh ){
 				
-				Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties(refresh);
-				if(mapSSH != null){
-					setAllProps(new LinkedList<Map<String,String>>());
+				Map<String, Map<String, String>> childrenProps = getDataStore().getChildrenProperties(refresh);
+				List<String> gridTitles = getTableGrid().getColumnIds();
+				if(childrenProps != null){
 					getTableGrid().getRows().clear();
-					for (String path : mapSSH.keySet()) {
-						String[] aux = path.split("/");
-						String childName = aux[aux.length - 1];
-						Map<String, String> allProperties = new LinkedHashMap<String, String>();
-						allProperties.put("name", childName);
-						allProperties.putAll(mapSSH.get(path));
-						getTableGrid().add(allProperties);
-						getAllProps().add(allProperties);
+					for (String path : childrenProps.keySet()) {
+						Map<String, String> curPathProps = new LinkedHashMap<String,String>();
+						curPathProps.putAll(childrenProps.get(path));
+						Map<String, String> orderedProps = new LinkedHashMap<String, String>();
+						Iterator<String> it = gridTitles.iterator();
+						while(it.hasNext()){
+							String curTitle = it.next();
+							if(TYPE.equals(curTitle)){
+								if(curPathProps.containsKey(TYPE)){
+									orderedProps.put(TYPE, curPathProps.get(curTitle));
+								}else{
+									orderedProps.put(TYPE, "?");
+								}
+							}else if(NAME.equals(curTitle)){
+								if(curPathProps.containsKey(NAME)){
+									orderedProps.put(NAME, curPathProps.get(curTitle));
+								}else{
+									String[] aux = path.split("/");
+									String childName = aux[aux.length - 1];
+									orderedProps.put(NAME, childName);
+									curPathProps.put(NAME, childName);
+								}
+							}else if(CHILDREN.equals(curTitle)){
+								if(curPathProps.containsKey(CHILDREN)){
+									orderedProps.put(CHILDREN,curPathProps.get(CHILDREN));
+								}else{
+									orderedProps.put(CHILDREN,"true");
+								}
+							}else{
+								orderedProps.put(curTitle,curPathProps.get(curTitle));
+							}
+						}
+						childrenProperties.add(curPathProps);
+						getTableGrid().add(orderedProps);
 					}
 				}
 			}
@@ -211,7 +246,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	}
 	
 	private void updateSelection(){
-		if(getAllProps() != null){
+		if(getTableGrid().getRows() != null && !getTableGrid().getRows().isEmpty()){
 
 			String regex = null;
 			if(extensionsSelected != null && !extensionsSelected.isEmpty()){
@@ -220,23 +255,24 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("Regex: "+regex);
 			}
 			
-			
-			for(int i=0;i < getAllProps().size();++i){
-				String childName = getAllProps().get(i).get("name");
+			List<SelectableRow> rows = getTableGrid().getRows();
+			for(int i=0;i < rows.size();++i){
+				String[] curRow = rows.get(i).getRow();
+				String childName = curRow[1];
 				getTableGrid().getRows().get(i).setSelected(false);
 				getTableGrid().getRows().get(i).setDisableSelect(false);
 				try{
-					if(getAllProps().get(i).get("type").equalsIgnoreCase("connection") ||
-							(getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) ||
-							(!getAllProps().get(i).get("type").equalsIgnoreCase("directory") && isAllowOnlyDirectories()) ||
-							(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory"))
+					if(curRow[0].equalsIgnoreCase("connection") ||
+							(curRow[0].equalsIgnoreCase("directory") && !isAllowDirectories()) ||
+							(!curRow[0].equalsIgnoreCase("directory") && isAllowOnlyDirectories()) ||
+							(openOutputData != null && openOutputData.equals("Y") && !curRow[0].equalsIgnoreCase("directory"))
 							) {
-						getTableGrid().getRows().get(i).setDisableSelect(false);
+						rows.get(i).setDisableSelect(false);
 					}else{
 						if(regex != null){
-							getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+							rows.get(i).setDisableSelect(childName.matches(regex));
 						}else{
-							getTableGrid().getRows().get(i).setDisableSelect(true);
+							rows.get(i).setDisableSelect(true);
 						}
 					}
 				}catch(Exception e){
@@ -261,7 +297,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if(posToDell != null){
 			for (int i = 0; i < posToDell.size(); i++) {
 				int pos = posToDell.get(i);
-				String directory = generatePath(getDataStore().getPath(), allProps.get(pos).get("name"));
+				String directory = generatePath(getDataStore().getPath(), tableGrid.getRow(pos).get(NAME));
 				logger.info("Delete -" + directory);
 				getDataStore().delete(directory);
 			}
@@ -432,8 +468,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		int i =0;
 		for (SelectableRow row : getTableGrid().getRows()) {
 			if (row.isSelected()) {
-				selectedFiles.add(new String[] { getDataStore().getPath(), getAllProps().get(i).get("name")});
-				logger.info("mountSelectedFilesList " + getAllProps().get(i).get("name"));
+				selectedFiles.add(new String[] { getDataStore().getPath(), row.getRow()[1]});
+				logger.info("mountSelectedFilesList " + row.getRow()[1]);
 			}
 			i++;
 		}
@@ -463,7 +499,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String error = null;
 		String destination = getDataStore().getPath();
 		if(indexDes != null){
-			destination += "/" + getAllProps().get(indexDes).get("name");
+			destination += "/" + getTableGrid().getRow(indexDes).get(NAME);
 		}
 		for (String[] s : selectedFiles) {
 			if(destination.startsWith((s[0] + "/" + s[1]))){
@@ -576,7 +612,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		logger.info("addFileAfter");
 
-		setName(newProp.get("name"));
+		setName(newProp.get(NAME));
 
 		String newDirectory = generatePath(getDataStore().getPath(), getName());
 		getDataStore().create(newDirectory, getNewProp());
@@ -605,7 +641,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		if(index != null){
 			setCurrentFileIndex(Integer.parseInt(index));
-			setName(allProps.get(getCurrentFileIndex()).get("name"));
+			setName(getTableGrid().getRow(getCurrentFileIndex()).get(NAME));
 		}
 
 	}
@@ -624,9 +660,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		Iterator<String> it = editProps.iterator();
 		while (it.hasNext()) {
 			String key = it.next();
-			prop.put(key, allProps.get(getCurrentFileIndex()).get(key));
+			prop.put(key, childrenProperties.get(getCurrentFileIndex()).get(key));
 		}
-		String newName = allProps.get(getCurrentFileIndex()).get("name");
+		String newName = childrenProperties.get(getCurrentFileIndex()).get(NAME);
 
 		try {
 			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), prop);
@@ -748,10 +784,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		return tableGrid;
 	}
 
-	public List<Map<String, String>> getAllProps() {
-		return allProps;
-	}
-
 	public List<String> getEditProps() {
 		return editProps;
 	}
@@ -762,10 +794,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setTableGrid(SelectableTable tableGrid) {
 		this.tableGrid = tableGrid;
-	}
-
-	public void setAllProps(List<Map<String, String>> allProps) {
-		this.allProps = allProps;
 	}
 
 	public void setEditProps(List<String> editProps) {
@@ -902,6 +930,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setAllowOnlyDirectories(boolean allowOnlyDirectories) {
 		this.allowOnlyDirectories = allowOnlyDirectories;
+	}
+
+	public final List<Map<String, String>> getChildrenProperties() {
+		return childrenProperties;
+	}
+
+	public final void setChildrenProperties(List<Map<String, String>> childrenProperties) {
+		this.childrenProperties = childrenProperties;
 	}
 	
 }
