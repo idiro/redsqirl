@@ -34,10 +34,7 @@
             if(jQuery('[id^="browserInteractionRegion"]')){
                 jQuery('[id^="browserInteractionRegion"]').hide();
             }
-            //alert("text");
-            if(jQuery('[id^="textEditorInteractionRegion"]')){
-                jQuery('[id^="textEditorInteractionRegion"]').hide();
-            }
+            
             //alert("div");
             jQuery('[id$="quickNavigation"]').hide();
             jQuery("#divTableInteraction").css("height","390");
@@ -73,7 +70,70 @@
             jQuery('[id$="quickNavigation"]').show();
             jQuery("#divTableInteraction").css("height","220px");
         }
-        minSize= !minSize;
+        minSize = !minSize;
+        //alert("new value: "+minSize);
+    }
+    
+    function toggleTexAreaSize(){
+        if(minSize){
+            //alert("hide all: "+minSize);
+            //alert("canvasModalHeader");
+            jQuery("#canvasModalHeader").hide();
+            jQuery('[id$="panelBtCanvasModal"]').hide();
+            
+            //alert("canvasModalInteractionHeader_");
+            jQuery('[id^="canvasModalInteractionHeader_"]').hide();
+            
+            //alert("input");
+            if(jQuery('[id^="inputInteractionRegion"]')){
+                jQuery('[id^="inputInteractionRegion"]').hide();
+            }
+            //alert("list");
+            if(jQuery('[id^="listInteractionRegion"]')){
+                jQuery('[id^="listInteractionRegion"]').hide();
+            }
+            //alert("append");
+            if(jQuery('[id^="appendListInteractionRegion"]')){
+                jQuery('[id^="appendListInteractionRegion"]').hide();
+            }
+            //alert("browser");
+            if(jQuery('[id^="browserInteractionRegion"]')){
+                jQuery('[id^="browserInteractionRegion"]').hide();
+            }
+            
+            //alert("div");
+            jQuery('[id$="quickNavigation"]').hide();
+            jQuery('[id$="command"]').css("height","420px");
+        }else{
+            //alert("show all: "+minSize);
+            
+            //alert("canvasModalHeader");
+            jQuery("#canvasModalHeader").show();
+            jQuery('[id$="panelBtCanvasModal"]').show();
+            //alert("canvasModalInteractionHeader_");
+            jQuery('[id^="canvasModalInteractionHeader_"]').show();
+            //alert("input");
+            if(jQuery('[id^="inputInteractionRegion"]')){
+                jQuery('[id^="inputInteractionRegion"]').show();
+            }
+            //alert("list");
+            if(jQuery('[id^="listInteractionRegion"]')){
+                jQuery('[id^="listInteractionRegion"]').show();
+            }
+            //alert("append");
+            if(jQuery('[id^="appendListInteractionRegion"]')){
+                jQuery('[id^="appendListInteractionRegion"]').show();
+            }
+            //alert("browser");
+            if(jQuery('[id^="browserInteractionRegion"]')){
+                jQuery('[id^="browserInteractionRegion"]').show();
+            }
+            
+            //alert("div");
+            jQuery('[id$="quickNavigation"]').show();
+            jQuery('[id$="command"]').css("height","150px");
+        }
+        minSize = !minSize;
         //alert("new value: "+minSize);
     }
     
@@ -388,6 +448,11 @@
 		                            rendered="#{interCur.editor.openPopup == 'Y'}">
 		                            <h:graphicImage url="../image/icons/button-pencil02.gif" style="width:35px;float:right;margin-top:10px;margin-right: 5px;" title="#{messages.label_text_editor}"/>
 								</a4j:commandLink>
+								
+								<a4j:commandLink title="Resize" onclick="toggleTexAreaSize();">
+		                            <img src="../image/icons/resize-6-24.gif" style="float:right;margin-right:-30px;margin-top:60px;"/>
+		                        </a4j:commandLink>
+								
 	                        </h:inputTextarea>
 	                        
 	                        <br/>
@@ -582,7 +647,7 @@
 	                
 	                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();jQuery.unblockUI();" />
 	                
-	                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" oncomplete="jQuery.unblockUI();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();if(browserTableData){reLoadTabs();}" />
+	                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, coordinatorTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" oncomplete="jQuery.unblockUI();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();if(browserTableData){reLoadTabs();}" />
 	    
 	                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();jQuery.unblockUI();" />
 	                
@@ -796,6 +861,99 @@
                     </rich:panel>
                 
             </rich:tab>
+            
+			<!-- Voronoi Start -->
+            <rich:tab id="coordinatorTab" label="#{messages.label_dynamic_coordinator_tab}" rendered="#{canvasModalBean.showCoordinatorTab}" >
+            	
+            	<a4j:region>
+			        <a4j:jsFunction name="openVoronoiEditorModal" action="#{canvasModalBean.openVoronoiEditorModal}" value=". . ."  
+			                reRender="commandTextVoronoi,listFunctionsVoronoi,comboboxListFunctions,msnError" 
+			                oncomplete="mountComboboxTextEditorVoronoiCM('#{canvasModalBean.varFunctionsListString}');#{rich:component('voronoiTextEditorModalCM')}.show();" style="float:right;margin-right:62px;height:46px;">
+			                    <a4j:actionparam name="rowKey" value="#{rowNb}"/>
+			        </a4j:jsFunction>
+			    </a4j:region>
+			
+			
+				<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:490px;width:100%;padding-left: 3px;padding-right: 3px;" >
+				
+					
+					 <h1><h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/></h1>
+					 <center><h:outputText value="#{messages.label_voronoi_variables_desc}" title="#{messages.title_voronoi_variables_desc}"/></center>
+					
+					<a4j:commandLink title="#{messages.label_add_new_line}" action="#{canvasModalBean.addNewLine}" reRender="canvasModalTableVoronoi" >
+		            	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+					</a4j:commandLink>
+					
+					<rich:dataTable id="canvasModalTableVoronoi" value="#{canvasModalBean.tableList}" var="rowItem" rowKeyVar="rowNb" width="100%" 
+						style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" 
+			            onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+		
+			             <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+			                 <h:outputText value="#{rowNb+1}" />
+			             </rich:column>
+			
+			             <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+			                 <f:facet name="header">
+			                     <h:panelGrid columns="1" >
+			                      <a4j:commandLink title="Delete selected lines" action="#{canvasModalBean.deleteLine}" reRender="canvasModalTableVoronoi"
+			                          onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+			                          <img src="../image/icons/button-delete-small.gif" class="btConfigureFooter" />
+			                      </a4j:commandLink>
+			                      <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableVoronoiSelect$/);"/>
+			                     </h:panelGrid>
+			                 </f:facet>
+			
+			                 <h:selectBooleanCheckbox id="tableVoronoiSelect" value="#{rowItem.selected}">
+			                     <f:selectItem itemValue="true" />
+			                 </h:selectBooleanCheckbox>
+			
+						</rich:column>
+			             
+						<rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_voronoilist_key}" />
+					        </f:facet>
+			              
+			              	<h:inputText value="#{rowItem.key}" />
+			              
+			            </rich:column>
+			            <rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_voronoilist_value}" />
+					        </f:facet>
+					        
+					        <h:inputText value="#{rowItem.value}" styleClass="tableInteractionTextEditor" onchange="reLoadInputEditorVoronoi();"
+					        	id="editorVoronoi#{rowNb+1}" >
+								<a4j:commandLink onclick="openVoronoiEditorModal('#{rowNb}');" >
+									<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
+								</a4j:commandLink>
+							</h:inputText>
+							<a4j:jsFunction name="reLoadInputEditorVoronoi" reRender="editorVoronoi#{rowNb+1}" />
+					        
+			            </rich:column>
+			            <rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_voronoilist_description}" />
+					        </f:facet>
+					        
+					        <h:inputText value="#{rowItem.description}" />
+					        
+			            </rich:column>
+		             
+		         	</rich:dataTable>
+					
+				</rich:panel>
+            	
+            	<rich:panel columns="3" style="border:none; float:right;">
+                    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
+                    <a4j:commandButton value="#{messages.button_apply}" styleClass="greenButton" action="#{canvasModalBean.applyVoronoi}" reRender="msnSuccess" />
+                    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasModalBean.applyVoronoi}" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')}" reRender="msnError, errorTable" />
+                </rich:panel>
+
+            </rich:tab>
+			<!-- Voronoi end -->
+
+
         </rich:tabPanel>
         
     </div>

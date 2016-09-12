@@ -3515,20 +3515,19 @@ function removeVoronoiDuplicateColour(voronoiLayer){
 }
 
 function undoRedoVoronoi(){
-	
+	reBuildListVoronoi();
+	undoRedoVoronoiJS();
+}
+
+function reBuildListVoronoi(){
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	
 	canvasArray[selectedCanvas].pointsList = [];
-	
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined && value.getParent().getId() !== undefined){
             canvasArray[selectedCanvas].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
         }
     });
-    
 	startVoronoi(selectedCanvas, "", "");
-	
-	undoRedoVoronoiJS();
 }
 
 function createDefaultVoronoi(){
@@ -3578,6 +3577,14 @@ function checkIfSchedule(value, changeTitle){
 	canvasArray[selectedCanvas].changeTitle = typeof changeTitle !== 'undefined' ? changeTitle : false;
 	reRenderMenuMergeSplit();
 	undoRedoVoronoi();
+}
+
+function checkIfScheduleArc(value){
+	console.log("checkIfScheduleArc " + value);
+	canvasArray[selectedCanvas].isSchedule = parseBool(value);
+	reRenderMenuMergeSplit();
+	reBuildListVoronoi();
+	undoRedoVoronoiJSArc();
 }
 
 function setIfISchedule(canvasName, value){

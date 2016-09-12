@@ -48,6 +48,17 @@ function selectedScheduling(){
 
 
 	<h:form>
+	
+	
+		<a4j:region>
+	        <a4j:jsFunction name="openVoronoiEditorModal" action="#{voronoiBean.openVoronoiEditorModal}" value=". . ."  
+	                reRender="commandTextVoronoi,listFunctionsVoronoi,comboboxListFunctions,msnError" 
+	                oncomplete="mountComboboxTextEditorVoronoi('#{voronoiBean.varFunctionsListString}');#{rich:component('voronoiTextEditorModal')}.show();" style="float:right;margin-right:62px;height:46px;">
+	                    <a4j:actionparam name="rowKey" value="#{rowNb}"/>
+	        </a4j:jsFunction>
+	    </a4j:region>
+	
+	
 		<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
 		
 			<table>
@@ -161,7 +172,13 @@ function selectedScheduling(){
 						<h:outputText value="#{messages.label_voronoilist_value}" />
 			        </f:facet>
 			        
-			        <h:inputText value="#{rowItem.value}" />
+			        <h:inputText value="#{rowItem.value}" styleClass="tableInteractionTextEditor" onchange="reLoadInputEditorVoronoi();"
+			        	id="editorVoronoi#{rowNb+1}" >
+						<a4j:commandLink onclick="openVoronoiEditorModal('#{rowNb}');" >
+							<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
+						</a4j:commandLink>
+					</h:inputText>
+					<a4j:jsFunction name="reLoadInputEditorVoronoi" reRender="editorVoronoi#{rowNb+1}" />
 			        
 	            </rich:column>
 	            <rich:column style="border-bottom:0px;border-right:0px;" width="155px;">
@@ -193,5 +210,25 @@ function selectedScheduling(){
 		</rich:panel>
 	
 	</h:form>
+	
+	
+	<rich:modalPanel id="voronoiTextEditorModal" width="800" height="450" style="overflow:hidden;" >
+            
+	    <f:facet name="header">
+	    	<h:outputText value="#{messages.label_Editor}" />
+	    </f:facet>
+	    <f:facet name="controls">
+	    	<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+	            onclick="#{rich:component('voronoiTextEditorModal')}.hide()" />
+	    </f:facet>
+	    
+	    <h:form>
+		    <h:panelGroup>
+		    	<ui:include src="/pages/voronoiTextEditorModal.xhtml" />
+		    </h:panelGroup>
+	    </h:form>
+            
+    </rich:modalPanel>
+	
 
 </ui:composition>

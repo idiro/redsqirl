@@ -1,0 +1,222 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<script>
+//<![CDATA[
+
+	function completeCommandCM(text){
+	    var txtarea = jQuery("[id$='commandTextVoronoi']");
+	    var scrollPos = txtarea.scrollTop;
+	    var strPos = 0;
+	    strPos = txtarea.getCursorPosition();
+	    var spaceAdd = 0;
+	    var front = (txtarea.val().trim()).substring(0,strPos);
+	    if(front.length > 0 && front.charAt(front.length -1) != " "){
+	       front += " ";
+	       spaceAdd += 1;
+	    }
+	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length);
+        if(back.length > 0 && back.charAt(back.length -1) != " "){
+           back = " "+back;
+           spaceAdd += 1;
+        }
+	    txtarea.val(front + text.trim() + back);
+
+
+	    var regex = '\\(';
+	    var pos = text.search(regex);
+	    if(pos != -1){
+		    strPos = strPos + pos+1+spaceAdd;
+		}else{
+			strPos = strPos + text.length+spaceAdd;
+		}
+	    
+	    //txtarea.selectionStart = strPos;
+	    //txtarea.selectionEnd = strPos;
+	    //txtarea.focus();
+
+	    txtarea.selectRange(strPos,strPos);
+	    
+	    txtarea.scrollTop = scrollPos;
+	}
+
+	(function (jQuery, undefined){
+		jQuery.fn.getCursorPosition = function(){
+	        var el = jQuery(this).get(0);
+	        var pos = 0;
+	        if('selectionStart' in el){
+	            pos = el.selectionStart;
+	        } else if('selection' in document){
+	            el.focus();
+	            var Sel = document.selection.createRange();
+	            var SelLength = document.selection.createRange().text.length;
+	            Sel.moveStart('character', -el.value.length);
+	            pos = Sel.text.length - SelLength;
+	        }
+	        return pos;
+	    }
+	})(jQuery);
+
+	(function (jQuery, undefined){
+	jQuery.fn.selectRange = function(start, end) {
+	    if(!end) end = start; 
+	    return this.each(function() {
+	        if (this.setSelectionRange) {
+	            this.focus();
+	            this.setSelectionRange(start, end);
+	        } else if (this.createTextRange) {
+	            var range = this.createTextRange();
+	            range.collapse(true);
+	            range.moveEnd('character', end);
+	            range.moveStart('character', start);
+	            range.select();
+	        }
+	    });
+	}
+	})(jQuery);
+	
+//]]>
+
+var comboboxListFunctionsCM;
+
+function mountComboboxTextEditorVoronoiCM(obj1){
+	
+	console.log("1 " + obj1);
+
+	if(jQuery("[id$='comboboxListFunctionsCM']").parent().attr('class') != "text-wrap"){
+
+		comboboxListFunctionsCM = jQuery("[id$='comboboxListFunctionsCM']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
+
+		try{
+
+			var aux = obj1+"";
+			var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+			var list = myArray ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+
+		jQuery("[id$='comboboxListFunctionsCM']").bind('setFormData', function(e, data, isEmpty){
+			onselectListCategoriesVoronoiCM(data);
+		});
+		
+	}else{
+		
+		console.log('comboboxListFunctionsCM');
+			
+		var aux = obj1+"";
+		var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+		var list = myArray;
+		
+		comboboxListFunctionsCM.trigger('setSuggestions', {
+			result : list,
+			showHideDropdown : false
+		});
+		
+	}
+	
+}
+
+</script>
+
+	<div style="width:100%;overflow:auto;height:100%;" >
+	
+		<a4j:jsFunction name="onselectListCategoriesVoronoiCM" reRender="listFunctionsVoronoi,btCompleteFunction,comboboxListFunctionsCM" 
+			action="#{canvasModalBean.updateTableEditor}" >
+			<a4j:actionparam name="nameFunction" />
+		</a4j:jsFunction>
+			
+		
+		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.textAreaEditor}"
+			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandTextVoronoi" />
+
+		<div style="width:100%;overflow:auto;height:100%;overflow-x:hidden;overflow-y:auto;" >
+			
+			<table width="100%" id="table" style="border:none;">
+			
+				<tr style="vertical-align: top;">
+					
+					<td width="100%">
+						<br /> 
+						
+						<h:panelGroup style="width:150px" layout="block" >
+	                    <h:inputText value="#{canvasModalBean.selectedFunction}" id="comboboxListFunctionsCM" style="width:145px" >
+	                               	 
+	                    </h:inputText>
+	                    </h:panelGroup>
+						
+						<br />
+						
+						<rich:extendedDataTable id="listFunctionsVoronoi" var="item" enableContextMenu="false" selectionMode="none" 
+						    value="#{canvasModalBean.listFunctionsTable}" 
+							style="border:0px; height:200px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row" >
+	
+							<rich:column style="border-bottom:0px;border-right:0px;" >
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_word}" />
+								</f:facet>
+								<a4j:commandLink id="btCompleteFunction" onclick="completeCommandCM('#{item[0]}');"
+									onmouseover="addtooltip('#{item[3]}', event)" onmouseout="removetoottip()">
+									<f:param name="nameFunctions" value="#{item[0]}" />
+									<h:outputText value="#{item[0]}" title="#{item[0]}" />
+								</a4j:commandLink>
+							</rich:column>
+	
+							<rich:column style="border-bottom:0px;border-right:0px;">
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_input}" />
+								</f:facet>
+								<h:outputText value="#{item[1]}" title="#{item[1]}" />
+							</rich:column>
+	
+							<rich:column style="border-bottom:0px;border-right:0px;">
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_return}" />
+								</f:facet>
+								<h:outputText value="#{item[2]}" title="#{item[2]}" />
+							</rich:column>
+	
+						</rich:extendedDataTable>
+					</td>
+	
+					
+	
+					
+				</tr>
+			</table>
+			</div>
+		<br />
+		
+		<rich:panel style="border:none; float:right;" >
+			
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiTextEditorModalCM')}.hide();"
+				reRender="command,tableInteraction, msnError, errorTable" />
+				
+			<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.checkTableEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError" />
+			
+			<a4j:commandButton action="#{canvasModalBean.applyTableEditor}" styleClass="greenButton" value="#{messages.button_ok}"
+				oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('voronoiTextEditorModalCM')}.hide() };"
+				reRender="tableVoronoi, commandTextVoronoi, msnError, canvasModalTableVoronoi" />
+			
+		</rich:panel>
+
+	</div>
+	
+</ui:composition>

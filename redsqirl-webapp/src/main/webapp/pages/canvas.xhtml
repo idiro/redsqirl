@@ -1825,7 +1825,7 @@
 
 				<a4j:jsFunction name="updateOutputStatus"
 					data="#{canvasBean.outputStatus}"
-					oncomplete="console.log('updateOutputStatus'); updateArcStatus(data);checkIfSchedule(data[0][8]);" reRender="errorTable, msnError">
+					oncomplete="console.log('updateOutputStatus'); updateArcStatus(data);checkIfScheduleArc(data[0][8]);" reRender="errorTable, msnError">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 
@@ -1899,7 +1899,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);checkIfSchedule(data[0][8]);"
+					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);checkIfScheduleArc(data[0][8]);"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -2543,6 +2543,8 @@
 
 				<a4j:jsFunction name="undoRedoVoronoiJS" data="#{canvasBean.voronoi}"
 					oncomplete="updateVoranoiAllPolygonTitle(data[0]);updateSelectedOutputStatus(getIdsFromVoronoi(data[1]));" />
+					
+				<a4j:jsFunction name="undoRedoVoronoiJSArc" data="#{canvasBean.voronoi}" oncomplete="updateVoranoiAllPolygonTitle(data[0]);" />
 			</a4j:region>
 			
 			<a4j:region>
@@ -3357,6 +3359,24 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+	<rich:modalPanel id="voronoiTextEditorModalCM" width="800" height="450" style="overflow:hidden;" >
+            
+	    <f:facet name="header">
+	    	<h:outputText value="#{messages.label_Editor}" />
+	    </f:facet>
+	    <f:facet name="controls">
+	    	<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+	            onclick="#{rich:component('voronoiTextEditorModalCM')}.hide()" />
+	    </f:facet>
+	    
+	    <h:form>
+		    <h:panelGroup>
+		    	<ui:include src="/pages/voronoiTextEditorCanvasModal.xhtml" />
+		    </h:panelGroup>
+	    </h:form>
+            
+    </rich:modalPanel>
 
 	<a4j:region>
 		<rich:modalPanel id="modalConfigureFooterTabs" width="450" height="400"

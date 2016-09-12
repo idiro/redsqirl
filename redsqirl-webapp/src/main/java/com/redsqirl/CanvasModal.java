@@ -20,8 +20,8 @@
 package com.redsqirl;
 
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -36,6 +36,7 @@ import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
+import com.redsqirl.dynamictable.VoronoiType;
 import com.redsqirl.interaction.BrowserInteraction;
 import com.redsqirl.interaction.CanvasModalInteraction;
 import com.redsqirl.interaction.EditorInteraction;
@@ -46,6 +47,8 @@ import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 
 /**
@@ -55,7 +58,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
  * @author Igor.Souza
  */
 @KeepAlive
-public class CanvasModal extends BaseBean implements Serializable {
+public class CanvasModal extends VoronoiBeanAbs {
 
 	/**
 	 * 
@@ -198,6 +201,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 	private String stringToReplace;
 	private String replaceValue;
+	
+	private boolean showCoordinatorTab;
 
 	public CanvasModal() throws RemoteException{
 		
@@ -349,7 +354,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 
 						outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
-
+						
+						checkVoronoiTab();
+								
 						checkFirstPage();
 
 						//logger.info("List size " + getListPageSize());
@@ -391,6 +398,53 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info(ans[0]+", "+ans[1]+", "+ans[2]+", "+ans[3]+", "+ans[4]+", "+ans[5]+", "+ans[6]);
 		
 		return ans;
+	}
+	
+	public void checkVoronoiTab() throws RemoteException{
+		setShowCoordinatorTab(dfe.getDFEOutput().size() >= 1 && dfe.getOozieAction() != null && dfe.getOozieAction().supportsExtraJobParameters());
+		if(isShowCoordinatorTab()){
+			openVoronoi();
+		}
+	}
+	
+	public void openVoronoi() throws RemoteException{
+		logger.info("openVoronoi");
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}",	CanvasBean.class);
+		
+		DataFlowCoordinatorVariables vars = dfe.getOozieAction().getExtraJobParameters(); 
+		setDataFlowCoordinatorVariables(vars);
+
+		tableList = new ArrayList<VoronoiType>();
+		Iterator<String> ans = vars.getKeyValues().keySet().iterator();
+		while(ans.hasNext()){
+			String key = ans.next();
+			DataFlowCoordinatorVariable var = vars.getVariable(key);
+			VoronoiType v = new VoronoiType();
+			v.setKey(key);
+			v.setValue(var.getValue());
+			v.setDescription(var.getDescription());
+			tableList.add(v);
+		}
+		
+	}
+	
+	public void applyVoronoi() throws RemoteException{
+		logger.info("applyVoronoi");
+		String error = null;
+		dfe.getOozieAction().getExtraJobParameters().removeAllVariables();
+		for (VoronoiType voronoiType : tableList) {
+			if(error == null){
+				error = dfe.getOozieAction().getExtraJobParameters().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
+			}
+		}
+		displayErrorMessage(error, "APPLYVORONOI");
+		if(error == null){
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}
 	}
 	
 	public void closeCanvasModal() throws Exception {
@@ -509,6 +563,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				updateOutputElement();
 				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			}
+			checkVoronoiTab();
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
 			setErrorMsg("");
@@ -1144,6 +1199,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setReplaceValue(String replaceValue) {
 		this.replaceValue = replaceValue;
+	}
+	public boolean isShowCoordinatorTab() {
+		return showCoordinatorTab;
+	}
+
+	public void setShowCoordinatorTab(boolean showCoordinatorTab) {
+		this.showCoordinatorTab = showCoordinatorTab;
 	}
 
 }
