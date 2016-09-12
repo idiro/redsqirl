@@ -230,7 +230,7 @@
 				<ul>
 					<ui:repeat value="#{helpBean.result}" var="item" class="test">
 				    	<li>
-				    		<a class="stopLinkInternal" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
+				    		<a class="stopLink" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
 				    			<h:outputText value="#{item[1]}" title="#{item[1]}" style="font-size:16px;" />
 				    		</a>
 				    	</li>
