@@ -41,7 +41,6 @@ function Canvas(name){
     this.voronoiLayer = null;
     this.voronoiButtonLayer = null;
     this.defaultVoronoi = false;
-    this.changeTitle = false;
     this.isSchedule = false;
 }
 
@@ -3469,7 +3468,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 		console.log("update default1 " + listNamesArrays[0][0]);
 		console.log("update default2 " + listNamesArrays[0][1]);
 		console.log(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName());
-		if (canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0] && canvasArray[selectedCanvas].changeTitle) {
+		if (canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0]) {
 			canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
 			canvasArray[selectedCanvas].voronoiButtonLayer.draw();
 		}
@@ -3571,10 +3570,9 @@ function createDefaultVoronoi(){
 	voronoiButtonLayer.draw();
 }
 
-function checkIfSchedule(value, changeTitle){
+function checkIfSchedule(value){
 	console.log("isSchedule " + value);
 	canvasArray[selectedCanvas].isSchedule = parseBool(value);
-	canvasArray[selectedCanvas].changeTitle = typeof changeTitle !== 'undefined' ? changeTitle : false;
 	reRenderMenuMergeSplit();
 	undoRedoVoronoi();
 }
