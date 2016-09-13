@@ -634,11 +634,13 @@
 	          
 	      }
 
-	      function addSelectedElement(canvasName, path, positions, links, selecteds){
+	      function addSelectedElement(canvasName, path, positions, links, selecteds, isStartVoronoi){
 
 	    	  console.log("addSelectedElement");
+	    	  
+	    	  isStartVoronoi = typeof isStartVoronoi !== 'undefined' ? isStartVoronoi : true;
 		      
-	   	      addElements(canvasName, positions, selecteds, false);
+	   	      addElements(canvasName, positions, selecteds, isStartVoronoi);
 	   	      addLinks(canvasName, links);
 	   	      canvasArray[canvasName].layer.draw();
               canvasArray[canvasName].polygonLayer.draw();
@@ -2381,7 +2383,11 @@
 			<a4j:region>
 			
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4]); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4],false); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
+					reRender="tabFlowchart" />
+				
+				<a4j:jsFunction name="rebuildJSPaste" data="#{canvasBean.positions}"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4],true); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
 					reRender="tabFlowchart" />
 			
 				<a4j:jsFunction name="updateAllArcsStatusRebuildJS"
@@ -2510,7 +2516,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildPasteJS'); addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildPasteJS'); addSelectedElement(data[0],data[1],data[2],data[3],data[4],false);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -2524,7 +2530,7 @@
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
-					oncomplete="console.log('pasteJS'); saveAllCanvasesStatus(getAllCanvasesStatus());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllCanvasesStatus());" />
+					oncomplete="console.log('pasteJS'); saveAllCanvasesStatus(getAllCanvasesStatus()); rebuildJSPaste(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllCanvasesStatus());" />
 			</a4j:region>
 			<a4j:region>
 
