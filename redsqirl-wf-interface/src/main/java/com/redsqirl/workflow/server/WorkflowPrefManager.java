@@ -118,7 +118,12 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * Path System super action directory
 	 */
-	pathSysSuperAction;
+	pathSysSuperAction,
+
+	/**
+	 * Path System scripts directory
+	 */
+	pathSysScripts;
 
 	private static String
 	/**
@@ -139,6 +144,10 @@ public class WorkflowPrefManager extends BlockManager {
 			 * The local directory to access super-actions
 			 */
 			pathUserSuperAction = pathUserPref + "/superactions",
+			/**
+			 * The local directory to access bespoke scripts
+			 */
+			pathUserScripts = pathUserPref + "/scripts",
 			/**
 			 * The local file storing output classes
 			 */
@@ -365,6 +374,7 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 
 		pathSysSuperAction = pathSysHome+"/superactions";
+		pathSysScripts= pathSysHome+"/scripts";
 
 		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
 			interfacePath = pathSysHome + "/lib/redsqirl-wf-interface-0.1-SNAPSHOT.jar";
@@ -517,6 +527,10 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("superactionoutput");
 				s.println("convert_file_text");
 				s.println("send_email");
+				s.println("script");
+				s.println("bespoke");
+				s.println("script_0_output");
+				s.println("script_2_outputs");
 				s.println("menu:Schedule");
 				s.println("synchronuous_source");
 				s.println("synchronuous_sink");
@@ -593,6 +607,7 @@ public class WorkflowPrefManager extends BlockManager {
 		pathWorkflow = pathUserPref + "/workflows";
 		pathUserDFEOutputColour = pathUserPref + "/output_colours.properties";
 		pathUserSuperAction = pathUserPref + "/superactions";
+		pathUserScripts = pathUserPref + "/scripts";
 		pathOutputClasses = pathUserPref + "/.outputclasses.txt";
 		pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt";
 		pathFooterPackageNotification = pathUserPref + "/.footerpackagenotification.txt";
@@ -1127,8 +1142,23 @@ public class WorkflowPrefManager extends BlockManager {
 		return getPathUserPref(user)+"/superactions";
 	}
 
+
 	/**
 	 * @return the pathUserSuperAction
+	 */
+	public static String getPathUserScripts() {
+		return pathUserScripts;
+	}
+
+	/**
+	 * @return the pathUserScripts
+	 */
+	public static String getPathUserScripts(String user) {
+		return getPathUserPref(user)+"/scripts";
+	}
+
+	/**
+	 * @return the pathUserScripts
 	 */
 	public static String getPathOutputClasses() {
 		return pathOutputClasses;
@@ -1175,6 +1205,13 @@ public class WorkflowPrefManager extends BlockManager {
 		return pathSysSuperAction;
 	}
 
+	/**
+	 * @return the pathSysSuperAction
+	 */
+	public static final String getPathSysScripts() {
+		return pathSysScripts;
+	}
+	
 	/**
 	 * 
 	 * @return

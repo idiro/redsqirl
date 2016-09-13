@@ -30,10 +30,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileWithHeaderType;
+import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.oozie.ShellAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -66,25 +67,21 @@ public class FileTextSource extends AbstractSource {
 	public FileTextSource() throws RemoteException {
 		super(new ShellAction());
 		
-		initializeDataTypeInteraction();
-		initializeDataSubtypeInteraction();
-		
 		addSubTypePage();
 		addSourcePage();
 		
 		logger.debug("FileTextSource - addSourcePage ");
 		
-		browser.setTextTip(LanguageManagerWF.getText("fileTextSource.test_source_browser_interaction.header_help"));
+		getBrowser().setTextTip(LanguageManagerWF.getText("fileTextSource.test_source_browser_interaction.header_help"));
 		
 		MapRedTextFileType type = new MapRedTextFileType();
-		dataType.setValue(type.getBrowserName());
-
+		ListInteraction dataSubtype = getDataSubtype();
 		List<String> posValuesSubType = new LinkedList<String>();
 		posValuesSubType.add(type.getTypeName());
 		dataSubtype.setPossibleValues(posValuesSubType);
 		dataSubtype.setValue(type.getTypeName());
 		
-		checkSubType();
+		page2.checkPage();
 	}
 	
 	/**
@@ -93,9 +90,11 @@ public class FileTextSource extends AbstractSource {
 	 * @param treeDatasubtype
 	 * @throws RemoteException
 	 */
-	public void updateDataSubType(Tree<String> treeDatasubtype)
+	@Override
+	public void updateDataSubType(DFEInteraction interaction)
 			throws RemoteException {
 		logger.debug("updating data subtype");
+		ListInteraction dataSubtype = (ListInteraction) interaction;
 
 		List<String> posValuesSubType = new LinkedList<String>();
 		posValuesSubType.add(new MapRedTextFileType().getTypeName());
@@ -131,7 +130,7 @@ public class FileTextSource extends AbstractSource {
 		
 		DFEOutput out = getDFEOutput().get(out_name);
 		
-		if (out != null && dataSubtype.getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
+		if (out != null && getDataSubtype().getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
 			if(output.get(no_header_out_name) == null){
 				output.put(no_header_out_name, new MapRedTextFileType());
 				output.get(no_header_out_name).generatePath(this.componentId, no_header_out_name);

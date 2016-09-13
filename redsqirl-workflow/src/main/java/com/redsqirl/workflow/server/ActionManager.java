@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -64,7 +65,8 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	/**
 	 * Avoid to call reflexive method again and again
 	 */
-	protected static Map<String, String> flowElement = new LinkedHashMap<String, String>();
+	protected static Map<String, String> flowElement = null;
+	private static boolean initializeFlowElement = false;
 
 	/**
 	 * Menu of action, each tab title is link to a list of action name (@see
@@ -151,6 +153,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 					}
 				} catch (Exception e) {
+					logger.error(e,e);
 					error = LanguageManagerWF.getText("workflow.loadclassfail",
 							new Object[] { line });
 				}
@@ -161,6 +164,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			// }
 
 		} catch (Exception e) {
+			logger.error(e,e);
 			error += "\n"
 					+ LanguageManagerWF.getText("workflow.loadclassexception");
 		}
@@ -192,6 +196,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				LinkedHashMap<String, String[]> aux = new LinkedHashMap<String, String[]>();
 				for (String actionName : mapAction.get(packageName)) {
 					try {
+						logger.debug("Class "+nameWithClass.get(actionName));
 						DataFlowElement dfe = (DataFlowElement) Class.forName(nameWithClass.get(actionName)).newInstance();
 						aux.put(actionName, new String[] { dfe.getHelp(), dfe.getImage() });
 					} catch (Exception e) {
@@ -202,6 +207,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			}
 			
 		} catch (Exception e) {
+			logger.error(e,e);
 			logger.error(LanguageManagerWF
 					.getText("workflow.loadclassexception"));
 		}
@@ -229,7 +235,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 
 		} catch (Exception e) {
 			logger.error(LanguageManagerWF
-					.getText("workflow.loadclassexception"));
+					.getText("workflow.loadclassexception"),e);
 		}
 	}
 
@@ -275,6 +281,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 							}
 						}
 					} catch (Exception e) {
+						logger.error(e,e);
 						error = LanguageManagerWF.getText(
 								"workflow.loadclassfail",
 								new Object[] { action });
@@ -284,6 +291,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			}
 
 		} catch (Exception e) {
+			logger.error(e,e);
 			error += "\n"
 					+ LanguageManagerWF.getText("workflow.loadclassexception");
 		}
@@ -325,6 +333,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			s.close();
 
 		} catch (Exception e) {
+			logger.error(e,e);
 			error += "\n" + LanguageManagerWF.getText("workflow.saveMenuFail");
 		}
 
@@ -476,6 +485,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 			}
 
 		}
+		logger.debug("Return data flow classes: "+dataFlowActionClassName);
 		return dataFlowActionClassName;
 	}
 
@@ -558,7 +568,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				ans.put(key, out);
 				
 			} catch (Exception e) {
-				logger.error(e.getMessage());
+				logger.error(e.getMessage(),e);
 				logger.error("Error Getting relative paths for Help");
 			}
 		}
@@ -606,7 +616,7 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				result.add(new String[] { wa.getName(), wa.getImage(),
 						wa.getHelp() });
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e,e);
 			}
 		}
 		// result.add(new String[]{"Red Sqirl Help", "", "test.html"});
@@ -629,13 +639,14 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 	public Map<String, String> getAllWANameWithClassName() throws RemoteException {
 
 		logger.debug("get all the Workflow actions");
-
-		if (flowElement.isEmpty()) {
-
+		
+		if (flowElement == null && !initializeFlowElement) {
+			initializeFlowElement = true;
 			List<String> l = getDataflowActionClasses();
 			logger.debug("getDataflowActionClasses size " + l.size());
+			Map<String, String> flowElementTmp = new HashMap<String,String>(l.size()); 
 			
-			for (int i = 0; i < l.size(); i++) {
+			for (int i = 0; i < l.size(); ++i) {
 				String className = l.get(i);
 
 				logger.debug("getAllWANameWithClassName " + i + " " + className);
@@ -643,17 +654,26 @@ public class ActionManager extends UnicastRemoteObject implements ElementManager
 				try {
 					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
 					if (!(wa instanceof SuperAction)) {
-						flowElement.put(wa.getName(), className);
+						flowElementTmp.put(wa.getName(), className);
 					}else{
 						logger.debug("superAction " + className);
 					}
 				} catch (Exception e) {
 					logger.error("Error instanciating class : " + className);
-					logger.debug(e,e);
+					logger.error(e,e);
 				}
 			}
+			flowElement = flowElementTmp;
 
 			logger.debug("WorkflowAction found : " + flowElement.toString());
+		}else if(flowElement == null){
+			do{
+				try {
+					Thread.sleep(250);
+				} catch (InterruptedException e) {
+					logger.debug(e,e);
+				}
+			}while(flowElement == null);
 		}
 		
 		logger.debug("flowElement size " +flowElement.size());

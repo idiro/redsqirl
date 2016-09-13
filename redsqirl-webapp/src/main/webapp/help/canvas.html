@@ -92,11 +92,9 @@
 				</ul>
 			</li>
 			<li>
-				<ul>
-					The following types use Hive metastore.
-					<li>Hive Table : A Apache Hive table</li>
-					<li>Hive Partition: A Apache Hive partition</li>
-				</ul>
+				With the HCatalog type, you can select a table or a partition.
+			</li>
+			<li>With the JDBC metastore you can select a table from a database.
 			</li>
 		</ul>
 		</p>
@@ -132,14 +130,13 @@
 			<a name="output_links">Output Links</a>
 		</h2>
 
-		Certain actions may create more than 1 dataset and others may accept
-		more than 1 type of dataset. In these case all of them can be used and
-		when creating a link you may be asked to choose a data set. A link
-		name will always be in the form output -&gt; input, where output/input
-		is respectively the name of the action output/input. When no other
-		options are possible, output or input names are omitted. For example
-		'-&gt; input', means that the output action has only one output that
-		fits with the input constraint.
+        Certain actions may create more than 1 dataset and others may accept
+        more than 1 type of dataset. In these cases, you may be asked to choose
+        a data set when linking. A link name will always be in the form output
+        -&gt; input, where output/input is respectively the name of the action
+        output/input. When no other options are possible, output or input names
+        are omitted. For example '-&gt; input', means that the output action
+        has only one output that fits with the input constraint.
 
 		<h2>
 			<a name="data_type">Data Type</a>
@@ -166,7 +163,7 @@
 		</ul>
 
 		<h2>
-			<aname"interactions">Grid</a>
+			<a name"interactions">Grid</a>
 		</h2>
 
 		Grids are often used in Red Sqirl, they come sometimes with
@@ -275,6 +272,27 @@
 
         <p>Not all dataset can be templatized, as of today, only HDFS and HCatalog are supported.</p> 
 	
+        <h2>Execution Plan</h2>
+
+        When hitting the button run, Red Sqirl will create an execution plan, generate the corresponding oozie xml files and script, then kick off the Oozie Job. The procedure follows the rules given here.
+
+        <h3>Fork and Join</h3>
+
+        Red Sqirl will executes as many tasks as possible in parallel, and will trust the YARN queue to do the correct queuing if necessary.
+
+        <h3>Optimisation</h3>
+
+        <p>Red Sqirl will always attempt to optimise the process. It means if you have a 1-to-1 daisy-chained actions, and those actions are compatible, they will be merged.</p>
+
+        <p>For example if your workflow is composed of Pig Select action, linked solely to another Pig Select, both will be merged at running time to fasten the execution</p>
+
+        <p>Forks, joins, and saved transitional dataset (if one of the transitional dataset is buffered or recorded) take precedence over the optimisation.</p>
+
+        <h3>Workflow vs Schedule</h3>
+
+        <p>When running a workflow, Red Sqirl will always look what is the data available and run the requested output from the closest point. In schedule mode, only the entire dataset can run and it is not possible to select a given coordinator to run.</p> 
+
+
 		<h2>Action Context Menu</h2>	
 			
 		<h3>Create link</h3>

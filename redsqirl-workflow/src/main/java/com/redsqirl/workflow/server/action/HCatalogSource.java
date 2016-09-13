@@ -28,6 +28,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.DataflowAction;
+import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
@@ -54,43 +56,11 @@ public class HCatalogSource extends AbstractSource {
 	 */
 	public HCatalogSource() throws RemoteException {
 		super(new ShellAction());
-		
-		initializeDataTypeInteraction();
-		initializeDataSubtypeInteraction();
-		
-		addSourcePage();
-		
+
 		logger.debug("HCatalogSource - addSourcePage ");
-		
-		HCatalogType type = new HCatalogType();
-		dataType.setValue(type.getBrowserName());
-
-		List<String> posValuesSubType = new LinkedList<String>();
-		posValuesSubType.add(type.getTypeName());
-		dataSubtype.setPossibleValues(posValuesSubType);
-		dataSubtype.setValue(type.getTypeName());
-		
-		checkSubType();
-	}
-	
-	/**
-	 * Update the DataSubType Interaction
-	 * 
-	 * @param treeDatasubtype
-	 * @throws RemoteException
-	 */
-	public void updateDataSubType(Tree<String> treeDatasubtype)
-			throws RemoteException {
-		logger.debug("updating data subtype");
-
-		List<String> posValuesSubType = new LinkedList<String>();
-		posValuesSubType.add(new MapRedTextFileType().getTypeName());
-		posValuesSubType.add(new MapRedTextFileWithHeaderType().getTypeName());
-		dataSubtype.setPossibleValues(posValuesSubType);
-			
-		if(dataSubtype.getValue() == null || !posValuesSubType.contains(dataSubtype.getValue())){
-			dataSubtype.setValue(new MapRedTextFileType().getTypeName());
-		}
+		idVsOutputName.put("", out_name);
+		new SubTypePageChecker(this, out_name, initializeDataSubtypeInteraction("",new HCatalogType().getTypeName())).check(null);
+		addSourcePage();
 	}
 
 	/**

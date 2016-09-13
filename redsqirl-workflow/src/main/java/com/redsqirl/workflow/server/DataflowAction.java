@@ -22,7 +22,10 @@ package com.redsqirl.workflow.server;
 
 
 import java.awt.Point;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.AbstractMap;
@@ -1361,6 +1364,21 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return files;
 
+	}
+
+	public boolean writeFile(String toWrite, File f) {
+		boolean ok = true;
+		try {
+			waLogger.debug("Content of " + f + ": " + toWrite);
+			FileWriter fw = new FileWriter(f);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(toWrite);
+			bw.close();
+		} catch (IOException e) {
+			ok = false;
+			waLogger.error("Fail to write into the file " + f.getAbsolutePath(), e);
+		}
+		return ok;
 	}
 
 	/**

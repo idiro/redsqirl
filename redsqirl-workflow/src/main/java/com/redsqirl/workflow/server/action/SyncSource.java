@@ -182,9 +182,9 @@ public class SyncSource extends AbstractSource {
 		return offsetPathInt;
 	}
 	
-	
-	protected void initializeDataTypeInteraction() throws RemoteException{
-		dataType = new ListInteraction(
+	@Override
+	protected ListInteraction initializeDataTypeInteraction(String id) throws RemoteException{
+		ListInteraction dataType = new ListInteraction(
 				key_datatype,
 				LanguageManagerWF.getText("source.datatype_interaction.title"),
 				LanguageManagerWF.getText("source.datatype_interaction.legend"),
@@ -195,6 +195,8 @@ public class SyncSource extends AbstractSource {
 		posValues.add(new HDFSInterface().getBrowserName());
 		posValues.add(new HCatStore().getBrowserName());
 		dataType.setPossibleValues(posValues);
+		
+		return dataType;
 	}
 	
 	protected void updateUnit() throws RemoteException{

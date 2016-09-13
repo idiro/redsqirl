@@ -166,6 +166,14 @@ DFELinkProperty {
 		init(minOccurence, maxOccurence);
 	}
 
+	public DataProperty(List<Class<? extends DFEOutput>> typeAccepted, int minOccurence, int maxOccurence, FieldList acceptableFieldList) throws RemoteException {
+		super();
+		this.typeAccepted = typeAccepted;
+		this.fieldListAccepted = acceptableFieldList;
+		init(minOccurence, maxOccurence);
+	}
+
+
 	/**
 	 * Initialize the Data property with min and max occurence values
 	 * 

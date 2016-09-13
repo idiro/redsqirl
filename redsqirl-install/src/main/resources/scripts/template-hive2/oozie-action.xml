@@ -1,0 +1,22 @@
+<hive2 xmlns="uri:oozie:hive2-action:0.1">
+    <job-tracker>${jobtracker}</job-tracker>
+    <name-node>${namenode}</name-node>
+    <prepare>
+        <delete path="!{OUTPUT_PATH}"/>
+    </prepare>
+    <job-xml>/user/USER/.redsqirl/conf/hive-site.xml</job-xml>
+    <configuration>
+        <property>
+            <name>mapred.job.queue.name</name>
+            <value>${default_action_queue}</value>
+        </property>
+        <property>
+            <name>oozie.launcher.mapred.job.queue.name</name>
+            <value>${default_launcher_queue}</value>
+        </property>
+    </configuration>
+    <jdbc-url>jdbc:hive2://HOST:10000/default</jdbc-url>
+    <script>!{SCRIPT}</script>
+    <param>INPUT=!{INPUT_DATABASE}.!{INPUT_TABLE}</param>
+    <param>OUTPUT=!{OUTPUT_DATABASE}.!{OUTPUT_TABLE}</param>
+</hive2>

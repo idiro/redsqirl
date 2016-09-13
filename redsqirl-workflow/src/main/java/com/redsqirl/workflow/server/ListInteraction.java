@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -206,7 +207,7 @@ public class ListInteraction extends UserInteraction {
 	 * @param values list of possible values
 	 * @throws RemoteException
 	 */
-	public void setPossibleValues(List<String> values) throws RemoteException {
+	public void setPossibleValues(Collection<String> values) throws RemoteException {
 		Tree<String> vals = null;
 		try{
 			vals = tree.getFirstChild("list").getFirstChild("values");

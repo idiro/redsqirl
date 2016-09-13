@@ -184,7 +184,7 @@ public class SubWorkflowInput extends AbstractSource{
 					FieldType.valueOf(cur.get(FieldDefinitionTableInteraction.table_type_title)));
 		}
 		if(output.get(out_name) == null){
-			output.put(out_name, DataOutput.getOutput(dataSubtype.getValue()));
+			output.put(out_name, DataOutput.getOutput(getDataSubtype().getValue()));
 		}
 		output.get(out_name).setFields(fl);
 		if(!materializedInt.getValues().isEmpty()){

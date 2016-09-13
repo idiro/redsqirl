@@ -30,12 +30,14 @@ support@redsqirl.com
 	<dist.lib>${dist}/lib</dist.lib>
 	<dist.war>${dist}/war</dist.war>
 	<dist.bin>${dist}/bin</dist.bin>
+	<dist.script>${dist}/scripts</dist.script>
 	<dist.conf>${dist}/conf</dist.conf>
 	<dist.tomcat>${dist}/apache-tomcat-7.0.62</dist.tomcat>
 	<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}/lib</redsqirl-workflow.lib>
 	<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}/lib</redsqirl-base-sql.lib>
 	<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
 	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
+	<main.resources.bin>${basedir}/src/main/resources/bin</main.resources.bin>
 	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
 	<tutorial.data>${basedir}/../src/site/files</tutorial.data>
 	<dist.tutorialdata>${dist}/tutorialdata</dist.tutorialdata>
@@ -219,7 +221,6 @@ support@redsqirl.com
 
 		    <execution>
 			<id>copy-resources-bin</id>
-			<!-- here the phase you need -->
 			<phase>package</phase>
 			<goals>
 			    <goal>copy-resources</goal>
@@ -228,14 +229,13 @@ support@redsqirl.com
 			    <outputDirectory>${dist.bin}</outputDirectory>
 			    <resources>
 				<resource>
-				    <directory>${main.resources.script}</directory>
+				    <directory>${main.resources.bin}</directory>
 				</resource>
 			    </resources>
 			</configuration>
 		    </execution>
 		    <execution>
 			<id>copy-resources-conf</id>
-			<!-- here the phase you need -->
 			<phase>package</phase>
 			<goals>
 			    <goal>copy-resources</goal>
@@ -249,6 +249,22 @@ support@redsqirl.com
 			    </resources>
 			</configuration>
 		    </execution>
+            <execution>
+			<id>copy-resources-script</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.script}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${main.resources.script}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+
 		    <execution>
 			<id>copy-tutorialdata</id>
 			<phase>package</phase>

@@ -367,7 +367,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 											timeDataset = coordinatorTimeConstraint.getUnit();
 										}
 										for(int i = 0; i < out.getNumberMaterializedPath();++i){
-											Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), i*freqDataset , timeDataset);
+											Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), (i+out.getOffsetPath())*freqDataset , timeDataset);
 											paths[i] = out.getPath().replaceAll("\\Q" + "${YEAR}"+ "\\E", new SimpleDateFormat("YYYY").format(matDate))
 													.replaceAll("\\Q" + "${MONTH}"+ "\\E", new SimpleDateFormat("MM").format(matDate))
 													.replaceAll("\\Q" + "${DAY}"+ "\\E", new SimpleDateFormat("dd").format(matDate))

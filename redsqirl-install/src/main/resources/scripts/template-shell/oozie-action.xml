@@ -1,0 +1,20 @@
+<shell xmlns="uri:oozie:shell-action:0.1">
+    <job-tracker>${jobtracker}</job-tracker>
+    <name-node>${namenode}</name-node>
+    <job-xml>[SHELL SETTINGS FILE]</job-xml>
+    <configuration>
+        <property>
+            <name>mapred.job.queue.name</name>
+            <value>${default_action_queue}</value>
+        </property>
+        <property>
+            <name>oozie.launcher.mapred.job.queue.name</name>
+            <value>${default_launcher_queue}</value>
+        </property>
+    </configuration>
+    <exec>!{SCRIPT}</exec>
+    <argument>!{INPUT}</argument>
+    <argument>!{OUTPUT}</argument>
+    <env-var>[VAR1=VALUE1]</env-var>
+    <capture-output/>
+</shell>
