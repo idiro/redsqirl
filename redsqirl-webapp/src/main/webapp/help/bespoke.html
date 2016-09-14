@@ -2,114 +2,55 @@
 
 <head>
 <link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
-<title>Source</title>
+<title>Bespoke</title>
 </head>
 <body id="help">
-	<h1>Source</h1>
+<h1>Bespoke</h1>
 
-	<h3>Description</h3>
-	<p>Source is an action that defines a data source for a workflow.
-		A data source can come from a type of storage facility. There are two
-		types of storage facilities: Hive and HDFS.</p>
-	<h3>Quick Guide</h3>
-	<p>
-	<ul>
-		<li>Inputs - No Inputs</li>
-		<li>DataType - The Type of data that is selected</li>
-		<ul>
-			<li>Hive - Select a Table</li>
-			<li>HDFS - Select a File</li>
-		</ul>
-		<li>SubType - Select the Subtype of the selected DataType</li>
-		<ul>
-			<li>Hive</li>
-			<ul>
-				<li>Table - Regular Table</li>
-				<li>Partition - Partitioned Table</li>
-			</ul>
-		</ul>
-		<ul>
-			<li>HDFS</li>
-			<ul>
-				<li>Text Map Reduce Directory - Text File</li>
-				<li>Binary Map Reduce Directory - Binary File</li>
-			</ul>
-		</ul>
-		<li>Browser</li>
-		<ul>
-			<li>Path - Path to the dataset</li>
-			<li>Header - Set Properties for the dataset</li>
-			<li>Table Preview - Preview the table</li>
-		</ul>
-		<li>Outputs - Single object specified from the DataType and
-			SubType</li>
-	</ul>
-	</p>
-	<h3>
-		<a href="../helpimages/DataType.png" target="_blank" id="page1"> Data Type	- Page 1</a>
-	</h3>
-	<p>Data type is where the data storage facility is chosen. As
-		mentioned before the only options are Hive and HDFS.</p>
+<h3>Description</h3> 
 
-	<h4>Hive</h4>
-	<p>Hive is a relational database that is used on Hadoop. It has a
-		query language called HiveQl that can be used like any other SQL.</p>
 
-	<h4>HDFS</h4>
-	<p>HDFS is the file system that is used on Hadoop. HDFS stands
-		for Hadoop Distributed File System.</p>
+<p>Bespoke action runs a pre-written script.</p> 
 
-	<h3><a id="page2">Data Sub-Type - Page 2</a></h3>
-	<p>With each data type there are data sub-types. These are
-		specific to the parent (data type)</p>
+<p>If you have no pre-written script, please look at <a class="stopLink"
+    id="vishelp_script" onclick="return false;"
+href="../help/script.html">script</a></p>
 
-	<h3>
-		<a href="../helpimages/HiveSubtype.png" target="_blank"> Hive</a>
-	</h3>
-	<h5>
-		Hive Table
-		</h3>
-		<p>A Hive table is a table that is stored in Hive and is similar
-			to the table that is stored in other RMDB (Oracle)</p>
+<h3>Quick Guide</h3>
+<p>
+<ul>
+    <li>Inputs - Inputs should validate pre-set conditions</li>
+    <li>Script - Choose the script to execute</li>
+    <li>Outputs - The pre-set outputs</li>
+</ul>
+</p>
 
-		<h5>
-			Hive Partition
-			</h3>
-			<p>A Hive partition is similar to a table except it is stored
-				so that partitions can be filtered based on a condition (i.e NAME
-				= "ALAN")</p>
+<h3><a id="page1">Script Selection - Page 1</a></h3>
 
-			<h3>
-				<a href="../helpimages/HDFSSubTypes.png" target="_blank"> HDFS</a>
-			</h3>
+<p>Select the script.</p>
 
-			<h5>Data File</h5>
-			<p>A Data File is the specific file that is to be used as the
-				data source</p>
 
-			<h5>Text Map Reduce Directory</h5>
-			<p>Text Map Reduce Directory is the directory that is to be
-				used that contains the data. The directory will contain all the
-				data that a Map/Reduce job will output</p>
+<h3>Create a bespoke script</h3>
 
-			<h5>Binary Map Reduce Directory</h5>
-			<p>Binary Map Reduce Directory is a directory of a Map/Reduce
-				job that stores the values in format.</p>
-			<h3><a id="page3">Browser - Page 3</a></h3>
-			<h5>
-				<a href="#" onclick="showImg('../helpimages/BrowserSelect.png')"
-					target="_blank">Select Data</a>
-			</h5>
-			<p>Browser is where the data source can be selected b browsing
-				(depending on Data Type). The directory/table/file must be
-				selected for the screen to progress</p>
+<ol>
+    <li>Create the oozie action xml extract &amp; script in the <a class="stopLink"
+    id="vishelp_script" onclick="return false;"
+href="../help/script.html">script</a> action and make sure that it runs.</li>
+    <li>Create a directory with no special characters but dash and underscore. This directory can be located in a share folder, <i>RS_HOME/scripts</i>, so that other users can use your script or in your user folder, <i>RS_HOME/users/MY_USER/scripts</i>.</li>
+    <li>Copy the action xml in a file called <i>oozie-action.xml</i> and your script in <i>script</i></li>
+    <li>Create a <i>script.properties</i> file
+    <ul>
+        <li><i>script.extension</i> the script extension, it is mandatory if you have a script</li>
+        <li><i>output.names</i> is a coma delimited list with the output name, note that if the list is empty, it defines one output with an empty name</li>
+        <li><i>output.type</i> type of the output to create. For example <i>TEXT MAP-REDUCE DIRECTORY</i>, you can find this value if you created a script in the Format page. If you have named output, you should define <i>output.type.NAME</i>.</li>
+        <li><i>output.header</i> header with types of the output. You can find this value if you created a script in the Header page. If you have named output, you should define <i>output.header.NAME</i>.</li>
+        <li><i>input.number.min</i> - optional validation - the minimum number of input expected</li>
+        <li><i>input.number.max</i> - optional validation - the maximum number of input expected</li>
+        <li><i>input.header</i> - optional validation - the header that all the inputs should have</li>
+    </ul>
+    </li>
+    <li>Create a file called <i>bespoke</i></li>
+</ol>
 
-			<h5>
-				<a href="#"
-					onclick="showImg('../helpimages/BrowserAttributes.png')"
-					target="_blank">Browser Attributes</a>
-			</h5>
-			<p>After the data source has been selected the data format can
-				be viewed and modified. Column names can be renamed and the type of data the colmun will store can also be viewed</p>
 </body>
 </html>

@@ -532,9 +532,9 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("script_0_output");
 				s.println("script_2_outputs");
 				s.println("menu:Schedule");
-				s.println("synchronuous_source");
-				s.println("synchronuous_sink");
-				s.println("synchronuous_sink_filter");
+				s.println("synchronous_source");
+				s.println("synchronous_sink");
+				s.println("synchronous_sink_filter");
 				s.close();
 
 			} catch (Exception e) {

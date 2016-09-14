@@ -159,7 +159,7 @@ public class SyncSink extends DataflowAction{
 
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous_sink";
+		return "synchronous_sink";
 	}
 
 	@Override

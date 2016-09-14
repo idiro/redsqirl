@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Synchronous Sink</title>
+</head>
+<body id="help">
+<h1>Synchronous Sink</h1>
+
+<h3>Description</h3>
+<p>Synchronous Sink is an action that registers a synchronous data set at the end of a scheduled job. A synchronous dataset contains a timestamp within its path to identify its creation date. Typically a synchronous dataset does not change for a given period of time after its creation.
+Red Sqirl supports two data storage for synchronous data-set: HCatalog and HDFS.</p>
+
+<p>In order to reuse the Sink dataset into another coordinator, you need to link it with a  <a class="stopLink"
+			id="vishelp_synchronous_sink_filter" onclick="return false;"
+            href="../help/synchronous_sink_filter.html">Synchronous Sink Filter</a>
+
+<h3>Quick Guide</h3>
+<p>
+<ul>
+    <li>Inputs - Input to register</li>
+    <li>Template path - The path in which the data is stored</li>
+    <li>Outputs - The registered output</li>
+</ul>
+</p>
+
+<h3><a id="page1">Template Path - Page 1</a></h3>
+
+<p>The path with at least one of the following variable:
+<ul>
+    <li>${YEAR}</li>
+    <li>${MONTH}</li>
+    <li>${DAY}</li>
+    <li>${HOUR}</li>
+    <li>${MINUTE}</li>
+</ul>
+
+</body>
+</html>

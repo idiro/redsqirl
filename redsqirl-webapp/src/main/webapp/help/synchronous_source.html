@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Synchronous Source</title>
+</head>
+<body id="help">
+<h1>Synchronous Source</h1>
+
+<h3>Description</h3>
+<p>Synchronous Source is an action that defines a synchronous data set. A synchronous dataset contains a timestamp within its path to identify its creation date. Typically a synchronous dataset does not change for a given period of time after its creation.
+Red Sqirl supports two data storage for synchronous data-set: HCatalog and HDFS.</p>
+<h3>Quick Guide</h3>
+<p>
+<ul>
+    <li>Inputs - No Inputs</li>
+    <li>DataType - Select the Data Storage (HDFS, HCatalog...)</li>
+    <li>SubType - Select the Data Format (Text Format, Compressed Format...)</li>
+    <li>Browser - Select a path, Change the Header</li>
+    <li>Template: define a template path</li>
+    <li>Occurrence: Define the frequency of the data</li>
+    <li>Outputs - The template path as well as the real path of the initial dataset</li>
+</ul>
+</p>
+<h3>
+
+    <a href="../helpimages/DataType.png" target="_blank" id="page1"> Data Type	- Page 1</a>
+</h3>
+<p>Data type defines the data storage used.</p>
+
+<h3><a id="page2">Data Sub-Type - Page 2</a></h3>
+<p>The data sub-type defines the format of your data. For example if the data storage is a file system the data could be file, a directory, compressed or not etc.</p>
+
+<h3><a id="page3">Browser - Page 3</a></h3>
+<h5>
+    <a href="#" onclick="showImg('../helpimages/BrowserSelect.png')"
+        target="_blank">Select Data</a>
+</h5>
+<p>Browser is where the data source can be selected by browsing
+(depending on Data Type). The directory/table/file must be
+selected for the screen to progress</p>
+
+<h5>
+    <a href="#"
+        onclick="showImg('../helpimages/BrowserAttributes.png')"
+        target="_blank">Browser Attributes</a>
+</h5>
+<p>After the data source has been selected the data format can
+be viewed and modified. Column names can be renamed and the type of data the column will store can also be viewed</p>
+
+<h3><a id="page4">Template Path - Page 4</a></h3>
+
+<p>You can define here what are the parts of your path that define the timestamp. You will be able to use the following variables for that:
+<ul>
+    <li>${YEAR}</li>
+    <li>${MONTH}</li>
+    <li>${DAY}</li>
+    <li>${HOUR}</li>
+    <li>${MINUTE}</li>
+</ul>
+
+<h3><a id="page5">Path Selection - Page 5</a></h3>
+
+<p>In here you will be able to define the frequency of your dataset, and the one you need for your analyses. We list the three different parameters here:
+<ul>
+    <li>Unit: The time unit of the frequency (year, month, day, hour or minute)</li>
+    <li>Frequency: The dataset refreshes every <i>>n</i> minutes</li>
+    <li>Number of instances: The number of the most recent instances to use for your analyses</li>
+    <li>Offset: The workflow runs at time <i>t</i> with a dataset timestamp labeled <i>t+n*freq</i>. A negative number means a delay between the data set and the running.</li>
+</ul>
+</p>
+
+</body>
+</html>
