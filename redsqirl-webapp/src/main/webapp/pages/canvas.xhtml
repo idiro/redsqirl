@@ -634,11 +634,13 @@
 	          
 	      }
 
-	      function addSelectedElement(canvasName, path, positions, links, selecteds){
+	      function addSelectedElement(canvasName, path, positions, links, selecteds, isStartVoronoi){
 
 	    	  console.log("addSelectedElement");
+	    	  
+	    	  isStartVoronoi = typeof isStartVoronoi !== 'undefined' ? isStartVoronoi : true;
 		      
-	   	      addElements(canvasName, positions, selecteds, false);
+	   	      addElements(canvasName, positions, selecteds, isStartVoronoi);
 	   	      addLinks(canvasName, links);
 	   	      canvasArray[canvasName].layer.draw();
               canvasArray[canvasName].polygonLayer.draw();
@@ -1885,7 +1887,7 @@
 
 				<a4j:jsFunction name="updateOutputStatus"
 					data="#{canvasBean.outputStatus}"
-					oncomplete="console.log('updateOutputStatus'); updateArcStatus(data);checkIfSchedule(data[0][8]);" reRender="errorTable, msnError">
+					oncomplete="console.log('updateOutputStatus'); updateArcStatus(data);checkIfScheduleArc(data[0][8]);" reRender="errorTable, msnError">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 
@@ -1959,7 +1961,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);checkIfSchedule(data[0][8]);"
+					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);checkIfScheduleArc(data[0][8]);"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -2381,7 +2383,11 @@
 			<a4j:region>
 			
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4]); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4],false); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
+					reRender="tabFlowchart" />
+				
+				<a4j:jsFunction name="rebuildJSPaste" data="#{canvasBean.positions}"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){ addSelectedElement(data[0],data[1],data[2],data[3],data[4],true); updateVoranoiAllPolygonTitle(data[6]); },900);updateAllArcsStatusRebuildJS();"
 					reRender="tabFlowchart" />
 			
 				<a4j:jsFunction name="updateAllArcsStatusRebuildJS"
@@ -2510,7 +2516,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildPasteJS'); addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildPasteJS'); addSelectedElement(data[0],data[1],data[2],data[3],data[4],false);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -2524,7 +2530,7 @@
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
-					oncomplete="console.log('pasteJS'); saveAllCanvasesStatus(getAllCanvasesStatus());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllCanvasesStatus());" />
+					oncomplete="console.log('pasteJS'); saveAllCanvasesStatus(getAllCanvasesStatus()); rebuildJSPaste(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllCanvasesStatus());" />
 			</a4j:region>
 			<a4j:region>
 
@@ -2603,6 +2609,8 @@
 
 				<a4j:jsFunction name="undoRedoVoronoiJS" data="#{canvasBean.voronoi}"
 					oncomplete="updateVoranoiAllPolygonTitle(data[0]);updateSelectedOutputStatus(getIdsFromVoronoi(data[1]));" />
+					
+				<a4j:jsFunction name="undoRedoVoronoiJSArc" data="#{canvasBean.voronoi}" oncomplete="updateVoranoiAllPolygonTitle(data[0]);" />
 			</a4j:region>
 			
 			<a4j:region>
@@ -3417,6 +3425,24 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+	<rich:modalPanel id="voronoiTextEditorModalCM" width="800" height="450" style="overflow:hidden;" >
+            
+	    <f:facet name="header">
+	    	<h:outputText value="#{messages.label_Editor}" />
+	    </f:facet>
+	    <f:facet name="controls">
+	    	<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+	            onclick="#{rich:component('voronoiTextEditorModalCM')}.hide()" />
+	    </f:facet>
+	    
+	    <h:form>
+		    <h:panelGroup>
+		    	<ui:include src="/pages/voronoiTextEditorCanvasModal.xhtml" />
+		    </h:panelGroup>
+	    </h:form>
+            
+    </rich:modalPanel>
 
 	<a4j:region>
 		<rich:modalPanel id="modalConfigureFooterTabs" width="450" height="400"

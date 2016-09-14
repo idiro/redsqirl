@@ -41,7 +41,6 @@ function Canvas(name){
     this.voronoiLayer = null;
     this.voronoiButtonLayer = null;
     this.defaultVoronoi = false;
-    this.changeTitle = false;
     this.isSchedule = false;
 }
 
@@ -3227,16 +3226,21 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	var i = 0;
 	for (;list[i];) {
 		
+		console.log("list " + list[i]);
+		
 		var colour = coloursList[i%7];
 		
-		if(polygonLayer.getChildren()[i] != undefined){
+		
+		var group = getGroupInsideVoronoiPolygon(list[i]);
+		
+		if(group != undefined){
 			
-			if(polygonLayer.getChildren()[i].voronoiTitle  != undefined){
-				voranoiPolygonTitle = polygonLayer.getChildren()[i].voronoiTitle;
-				pname = polygonLayer.getChildren()[i].getId();
+			if(group.voronoiTitle != undefined){
+				voranoiPolygonTitle = group.voronoiTitle;
+				pname = group.getId();
 				console.log("pname1A " + pname + " - " + voranoiPolygonTitle);
 			}else{
-				pname = polygonLayer.getChildren()[i].getId();
+				pname = group.getId();
 				voranoiPolygonTitle = "title";
 				console.log("pname1B " + pname);
 			}
@@ -3247,10 +3251,11 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 		
 		//check if contains
 		var index = arryNames.indexOf(voranoiPolygonTitle);
-		if(index > -1){
+		if(index != -1){
 			colour = arryColours[index]
 		}
 		
+		console.log("pname " + pname + " colour " + colour + " voranoiPolygonTitle " + voranoiPolygonTitle);
 		
 		poly = new Kinetic.Polygon({
 			name : pname,
@@ -3258,6 +3263,7 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 			fill: colour,
 			opacity: 0.1
 		});
+		poly.voronoiTitle = voranoiPolygonTitle;
 		
 		var point = getPolygonTextPosition(list[i]);
 		
@@ -3312,6 +3318,7 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	}
 	
 	voronoiButtonLayer = removeVoronoiButtonDuplicate(voronoiButtonLayer);
+	//voronoiLayer = removeVoronoiDuplicateColour(voronoiLayer);
 	
 	voronoiLayer.draw();
 	voronoiButtonLayer.draw();
@@ -3331,16 +3338,17 @@ function updateVoronoi(canvasName, idElement){
         }
     });
 	
-	var voranoiPolygonTitle;
-	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
+	var voranoiPolygonTitle = "title";
+	
+	/*jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
         if (value.getChildren()[0].getName() == idElement) {
         	voranoiPolygonTitle = value.getChildren()[0].getText();
         }
-    });
+    });*/
     
 	startVoronoi(canvasName, idElement, voranoiPolygonTitle);
-	
 }
+
 /**
  * Get the list of the element ids inside a coordinator.
  * @param coordinatorTitle
@@ -3354,6 +3362,23 @@ function getIdsFromVoronoi(coordinatorTitle){
         }
     });
 	return ans.substring(1);
+}
+
+function getGroupInsideVoronoiPolygon(polygon){
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var g;
+	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+        if(value !== undefined){
+        	if(inside([value.getParent().getX(),value.getParent().getY()] ,polygon)){
+        		console.log("value " + value.getParent());
+        		g = value.getParent();
+        		return false;
+        	}else{
+        		console.log("inside false ");
+        	}
+        }
+    });
+	return g;
 }
 
 function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
@@ -3469,7 +3494,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 		console.log("update default1 " + listNamesArrays[0][0]);
 		console.log("update default2 " + listNamesArrays[0][1]);
 		console.log(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName());
-		if (canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0] && canvasArray[selectedCanvas].changeTitle) {
+		if (canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0]) {
 			canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
 			canvasArray[selectedCanvas].voronoiButtonLayer.draw();
 		}
@@ -3486,8 +3511,9 @@ function removeVoronoiButtonDuplicate(voronoiButtonLayer){
 			value.on('mouseover', function(e) {
 				document.body.style.cursor = 'default';
 			});
+		}else{
+			newTitle.push(value.getChildren()[0].getText());
 		}
-		newTitle.push(value.getChildren()[0].getText());
 	});
 	return voronoiButtonLayer;
 }
@@ -3497,38 +3523,38 @@ function removeVoronoiDuplicateColour(voronoiLayer){
 	var colour = [];
 	var i = 0;
 	jQuery.each(voronoiLayer.getChildren(), function(index, value){
-		
 		console.log("removeVoronoiDuplicateColour " + value.voronoiTitle);
-		
 		if(newTitle.indexOf(value.voronoiTitle) != -1){
 			console.log("removeVoronoiDuplicateColour yes ");
+			console.log("idx " + newTitle.indexOf(value.voronoiTitle));
+			console.log("colour " + colour[newTitle.indexOf(value.voronoiTitle)]);
 			value.setFill(colour[newTitle.indexOf(value.voronoiTitle)]);
 		}else{
 			console.log("removeVoronoiDuplicateColour no ");
+			console.log("colour " + coloursList[i%7]);
 			value.setFill(coloursList[i%7]);
 			i++;
+			newTitle.push(value.voronoiTitle);
+			colour.push(value.getFill());
 		}
-		newTitle.push(value.voronoiTitle);
-		colour.push(value.getFill());
 	});
 	return voronoiLayer;
 }
 
 function undoRedoVoronoi(){
-	
+	reBuildListVoronoi();
+	undoRedoVoronoiJS();
+}
+
+function reBuildListVoronoi(){
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	
 	canvasArray[selectedCanvas].pointsList = [];
-	
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined && value.getParent().getId() !== undefined){
             canvasArray[selectedCanvas].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
         }
     });
-    
 	startVoronoi(selectedCanvas, "", "");
-	
-	undoRedoVoronoiJS();
 }
 
 function createDefaultVoronoi(){
@@ -3572,12 +3598,19 @@ function createDefaultVoronoi(){
 	voronoiButtonLayer.draw();
 }
 
-function checkIfSchedule(value, changeTitle){
+function checkIfSchedule(value){
 	console.log("isSchedule " + value);
 	canvasArray[selectedCanvas].isSchedule = parseBool(value);
-	canvasArray[selectedCanvas].changeTitle = typeof changeTitle !== 'undefined' ? changeTitle : false;
 	reRenderMenuMergeSplit();
 	undoRedoVoronoi();
+}
+
+function checkIfScheduleArc(value){
+	console.log("checkIfScheduleArc " + value);
+	canvasArray[selectedCanvas].isSchedule = parseBool(value);
+	reRenderMenuMergeSplit();
+	reBuildListVoronoi();
+	undoRedoVoronoiJSArc();
 }
 
 function setIfISchedule(canvasName, value){
@@ -3600,7 +3633,19 @@ function parseBool(val){
 	}
 }
 
+function inside(point, vs) {
+    var x = point[0], y = point[1];
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
 
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+};
 
 
 function capitaliseFirstLetter(string){

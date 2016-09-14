@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.redsqirl.workflow.server.action.AbstractDictionary;
 import com.redsqirl.workflow.server.action.OozieDictionary;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
@@ -31,13 +32,22 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 	private static final long serialVersionUID = 4444112770960681337L;
 	private static Logger logger = Logger.getLogger(WfCoordVariables.class);
 	private static OozieDictionary oozieDict = null;
-	
+	private static Map<String, String[][]> oozieDictFunc = null;
 	Map<String,DataFlowCoordinatorVariable> variableList = new LinkedHashMap<String,DataFlowCoordinatorVariable>();
 
 	protected WfCoordVariables() throws RemoteException {
 		super();
 		if(oozieDict == null){
 			oozieDict = OozieDictionary.getInstance();
+			oozieDictFunc = oozieDict.getFunctionsMap();
+			
+			for (String value : oozieDictFunc.keySet()) {
+				String[][] aux = oozieDictFunc.get(value);
+				for (String[] v : aux) {
+					v[3] = AbstractDictionary.convertStringtoHelp(v[3]);
+				}
+			}
+			
 		}
 	}
 
@@ -142,7 +152,7 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 
 	@Override
 	public Map<String, String[][]> getVarFunctions() throws RemoteException {
-		return oozieDict.getFunctionsMap();
+		return oozieDictFunc;
 	}
 
 	@Override

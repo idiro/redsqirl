@@ -1,6 +1,5 @@
 package com.redsqirl;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,19 +24,18 @@ import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 
-public class VoronoiBean extends BaseBean implements Serializable {
+public class VoronoiBean extends VoronoiBeanAbs {
 
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(VoronoiBean.class);
 
-	private List<VoronoiType> tableList = new ArrayList<VoronoiType>();
+	private DataFlowCoordinator dataFlowCoordinator;
 	private Date executionTime;
 	private String repeat;
 	private List<SelectItem> schedulingOptions; //= new ArrayList<SelectItem>();
 	private String selectedSchedulingOption;
 	private String[] voronoiNewName;
-	private DataFlowCoordinator dataFlowCoordinator;
 	private String name;
 	private String[] undoRedo;
 	private Integer periodic;
@@ -57,7 +55,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		}else{
 			dataFlowCoordinator = getworkFlowInterface().getWorkflow(canvasName).getCoordinators().get(0);
 		}
-		
+
 		if(dataFlowCoordinator != null){
 			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 
@@ -87,7 +85,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			}else{
 				setScheduling(false);
 			}
-			
+
 		}else{
 			setName(null);
 			setExecutionTime(null);
@@ -108,7 +106,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 
 	public void apply() throws RemoteException, JSONException{
 		logger.info("apply");
-		
+
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 		DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 		JSONArray jsonLinksOld = new JSONArray();
@@ -142,7 +140,7 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
 			dataFlowCoordinator.getTimeCondition().setFrequency(periodic);
 		}
-		
+
 
 		JSONArray jsonLinks = new JSONArray();
 		for (VoronoiType voronoiType : tableList) {
@@ -152,13 +150,13 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			jsonObj.put("description", voronoiType.getDescription());
 			jsonLinks.put(jsonObj.toString());
 		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
 		String isSchedule = canvasBean.getCheckIfSchedule();
 		logger.info("apply isSchedule " + isSchedule);
-		
-		
+
+
 		if(name != nameOld || executionTimeOld != executionTime.toString() || selectedSchedulingOptionOld != getSelectedSchedulingOption() ||
 				compereJSONArray(jsonLinksOld, jsonLinks) ){
 			setUndoRedo(new String[] {"true", nameOld, executionTimeOld, selectedSchedulingOptionOld, jsonLinksOld.toString(), name, executionTime != null ? dateFormat.format(executionTime) : "", getSelectedSchedulingOption(), jsonLinks.toString(), isSchedule });
@@ -166,22 +164,22 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			setUndoRedo(new String[] {"false", "", "", "", "", "", "", "", "", isSchedule });
 		}
 	}
-	
+
 	public void undoRedoCordinator() throws RemoteException, JSONException, ParseException{
 		logger.info("undoRedoCordinator");
-		
-		
+
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		String name = context.getExternalContext().getRequestParameterMap().get("name");
 		String executionTime = context.getExternalContext().getRequestParameterMap().get("executionTime");
 		String selectedSchedulingOption = context.getExternalContext().getRequestParameterMap().get("selectedSchedulingOption");
 		String list = context.getExternalContext().getRequestParameterMap().get("list");
-		
+
 		logger.info("name " + name);
 		logger.info("executionTime " + executionTime);
 		logger.info("selectedSchedulingOption " + selectedSchedulingOption);
 		logger.info("list " + list);
-		
+
 		if(list != null && !list.equals("null") && !list.equals("[]")){
 			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 			JSONArray json = new JSONArray(list);
@@ -194,54 +192,41 @@ public class VoronoiBean extends BaseBean implements Serializable {
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 		dataFlowCoordinator.setExecutionTime(!executionTime.equals("null") ? dateFormat.parse(executionTime) : null );
 		dataFlowCoordinator.getTimeCondition().setUnit(!selectedSchedulingOption.equals("null") ? TimeTemplate.valueOf(selectedSchedulingOption) : null);
-		
+
 	}
 
 	public boolean compereJSONArray(JSONArray jsonLinksOld, JSONArray jsonLinks) throws JSONException{
-		
+
 		if(jsonLinksOld.length() != jsonLinks.length() ){
 			return true;
 		}
-		
+
 		for (int i = 0; i < jsonLinksOld.length(); i++) {
 			JSONObject jsonObjOld = new JSONObject(jsonLinksOld.get(i).toString());
 			for (int j = 0; j < jsonLinks.length(); j++) {
 				JSONObject jsonObjLinks = new JSONObject(jsonLinks.get(j).toString());
 				if(i == j && ( !jsonObjOld.getString("key").equals(jsonObjLinks.getString("key")) || 
 						!jsonObjOld.getString("value").equals(jsonObjLinks.getString("value")) || 
-								!jsonObjOld.getString("description").equals(jsonObjLinks.getString("description")) )){
+						!jsonObjOld.getString("description").equals(jsonObjLinks.getString("description")) )){
 					return true;
 				}
 			}
 		}
-		
-		return false;
-	}
-	
-	public void deleteLine(){
-		for (Iterator<VoronoiType> iterator = tableList.iterator(); iterator.hasNext();) {
-			VoronoiType voronoiType = (VoronoiType) iterator.next();
-			if(voronoiType.isSelected()){
-				iterator.remove();
-			}
-		}
-	}
 
-	public void addNewLine(){
-		tableList.add(new VoronoiType());
+		return false;
 	}
 
 	public void retrieveVoranoiPolygonTitle(){
 
 		String error = null;
-		
+
 		try{
 
 			FacesContext context = FacesContext.getCurrentInstance();
 			String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
 			String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
 			String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
-			
+
 			String voranoiPolygonTitle;
 			CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
 			if(canvasBean != null && canvasBean.getDataFlowCoordinatorLastInserted() != null){
@@ -251,24 +236,21 @@ public class VoronoiBean extends BaseBean implements Serializable {
 			}
 
 			logger.info("retrieveVoranoiPolygonTitle " + voranoiPolygonTitle);
-			
+
 			setVoronoiNewName(new String[]{ canvasName, idElement, groupID, voranoiPolygonTitle });
 
 		}catch(Exception e){
 			logger.error(e,e);
 			error = getMessageResources("msg_error_oops");
 		}
-		
+
 		displayErrorMessage(error, "RETRIEVEVORANOIPOLYGONTITLE");
 	}
 
+	
 
-	public List<VoronoiType> getTableList() {
-		return tableList;
-	}
-	public void setTableList(List<VoronoiType> tableList) {
-		this.tableList = tableList;
-	}
+
+	
 	public Date getExecutionTime() {
 		return executionTime;
 	}
@@ -329,5 +311,5 @@ public class VoronoiBean extends BaseBean implements Serializable {
 	public void setScheduling(Boolean scheduling) {
 		this.scheduling = scheduling;
 	}
-	
+
 }

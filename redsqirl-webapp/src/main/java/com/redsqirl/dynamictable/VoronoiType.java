@@ -1,15 +1,36 @@
 package com.redsqirl.dynamictable;
 
-public class VoronoiType {
-	
+import java.io.Serializable;
+import java.rmi.RemoteException;
+
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
+
+public class VoronoiType implements Serializable {
+
 	private String key;
 	private String value;
 	private String description;
 	protected boolean selected;
-	
+
 	public VoronoiType() {
 		super();
 	}
+
+	public VoronoiType(DataFlowCoordinatorVariable dfc) {
+		super();
+		
+		try {
+			
+			key = dfc.getKey();
+			value = dfc.getValue();
+			description = dfc.getDescription();
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	public String getKey() {
 		return key;
 	}
@@ -34,5 +55,5 @@ public class VoronoiType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 }
