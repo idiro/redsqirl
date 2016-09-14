@@ -2,114 +2,99 @@
 
 <head>
 <link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
-<title>Source</title>
+<title>Script</title>
 </head>
 <body id="help">
-	<h1>Source</h1>
+<h1>Script</h1>
 
-	<h3>Description</h3>
-	<p>Source is an action that defines a data source for a workflow.
-		A data source can come from a type of storage facility. There are two
-		types of storage facilities: Hive and HDFS.</p>
-	<h3>Quick Guide</h3>
-	<p>
-	<ul>
-		<li>Inputs - No Inputs</li>
-		<li>DataType - The Type of data that is selected</li>
-		<ul>
-			<li>Hive - Select a Table</li>
-			<li>HDFS - Select a File</li>
-		</ul>
-		<li>SubType - Select the Subtype of the selected DataType</li>
-		<ul>
-			<li>Hive</li>
-			<ul>
-				<li>Table - Regular Table</li>
-				<li>Partition - Partitioned Table</li>
-			</ul>
-		</ul>
-		<ul>
-			<li>HDFS</li>
-			<ul>
-				<li>Text Map Reduce Directory - Text File</li>
-				<li>Binary Map Reduce Directory - Binary File</li>
-			</ul>
-		</ul>
-		<li>Browser</li>
-		<ul>
-			<li>Path - Path to the dataset</li>
-			<li>Header - Set Properties for the dataset</li>
-			<li>Table Preview - Preview the table</li>
-		</ul>
-		<li>Outputs - Single object specified from the DataType and
-			SubType</li>
-	</ul>
-	</p>
-	<h3>
-		<a href="../helpimages/DataType.png" target="_blank" id="page1"> Data Type	- Page 1</a>
-	</h3>
-	<p>Data type is where the data storage facility is chosen. As
-		mentioned before the only options are Hive and HDFS.</p>
+<h3>Description</h3> 
 
-	<h4>Hive</h4>
-	<p>Hive is a relational database that is used on Hadoop. It has a
-		query language called HiveQl that can be used like any other SQL.</p>
 
-	<h4>HDFS</h4>
-	<p>HDFS is the file system that is used on Hadoop. HDFS stands
-		for Hadoop Distributed File System.</p>
+<p>Script action runs a script. The script can use any Oozie action and be written in any language that the cluster slaves can interpret. To use this node, you need Oozie and scripting expertise</p> 
 
-	<h3><a id="page2">Data Sub-Type - Page 2</a></h3>
-	<p>With each data type there are data sub-types. These are
-		specific to the parent (data type)</p>
+<p>Three script nodes exist:
+<ul>
+    <li>Script 0: Doesn't create any output</li>
+    <li>Script: creates one output</li>
+    <li>Script 2: creates two outputs</li>
+</ul>
 
-	<h3>
-		<a href="../helpimages/HiveSubtype.png" target="_blank"> Hive</a>
-	</h3>
-	<h5>
-		Hive Table
-		</h3>
-		<p>A Hive table is a table that is stored in Hive and is similar
-			to the table that is stored in other RMDB (Oracle)</p>
+<p>If you want to execute a pre-written script, please look at <a class="stopLink"
+    id="vishelp_bespoke" onclick="return false;"
+href="../help/bespoke.html">bespoke</a></p>
 
-		<h5>
-			Hive Partition
-			</h3>
-			<p>A Hive partition is similar to a table except it is stored
-				so that partitions can be filtered based on a condition (i.e NAME
-				= "ALAN")</p>
+<h3>Quick Guide</h3>
+<p>
+<ul>
+    <li>Inputs - Any</li>
+    <li>Script - Choose a template</li>
+    <li>Define the output - Data Storage, Format and Field</li>
+    <li>Define the output 2 - Data Storage, Format and Field</li>
+    <li>Write the Oozie action</li>
+    <li>Write the script</li>
+    <li>Outputs - The output defined earlier</li>
+</ul>
+</p>
 
-			<h3>
-				<a href="../helpimages/HDFSSubTypes.png" target="_blank"> HDFS</a>
-			</h3>
+<h3><a id="page1">Choose a template - Page 1</a></h3>
 
-			<h5>Data File</h5>
-			<p>A Data File is the specific file that is to be used as the
-				data source</p>
+<p>On the first page, you can choose a template. It will help you by filling out the output, the Oozie action and the script fields with something that is as close as possible to what you want.</p>
 
-			<h5>Text Map Reduce Directory</h5>
-			<p>Text Map Reduce Directory is the directory that is to be
-				used that contains the data. The directory will contain all the
-				data that a Map/Reduce job will output</p>
+<h3><a id="page2">Data Storage - Page 2</a></h3>
 
-			<h5>Binary Map Reduce Directory</h5>
-			<p>Binary Map Reduce Directory is a directory of a Map/Reduce
-				job that stores the values in format.</p>
-			<h3><a id="page3">Browser - Page 3</a></h3>
-			<h5>
-				<a href="#" onclick="showImg('../helpimages/BrowserSelect.png')"
-					target="_blank">Select Data</a>
-			</h5>
-			<p>Browser is where the data source can be selected b browsing
-				(depending on Data Type). The directory/table/file must be
-				selected for the screen to progress</p>
+<p>Define in which data storage the output data will be stored.</p>
 
-			<h5>
-				<a href="#"
-					onclick="showImg('../helpimages/BrowserAttributes.png')"
-					target="_blank">Browser Attributes</a>
-			</h5>
-			<p>After the data source has been selected the data format can
-				be viewed and modified. Column names can be renamed and the type of data the colmun will store can also be viewed</p>
+<h3><a id="page3">Data Format &amp; Header- Page 3</a></h3>
+
+<p>Define the data format of your output.</p>
+
+<p>The header is optional, if you don't fill it out, you will have the opportunity to fill the details into a table. The field is nice only if you have already a prepared header</p>
+
+<h3><a id="page4">Fields- Page 4</a></h3>
+
+<p>Describe every fields of the output, you may not need to change this table, if you have filled out a header on the previous page</p>
+
+<h3><a id="page5">Data Storage For Output 2 - Page 5</a></h3>
+
+<p>Define in which data storage the output data will be stored.</p>
+
+<h3><a id="page6">Data Format &amp; Header For Output 2 - Page 6</a></h3>
+
+<p>Define the data format of your output.</p>
+
+<p>The header is optional, if you don't fill it out, you will have the opportunity to fill the details into a table. The field is nice only if you have already a prepared header</p>
+
+<h3><a id="page7">Fields For Output 2 - Page 7</a></h3>
+
+<p>Describe every fields of the output, you may not need to change this table, if you have filled out a header on the previous page</p>
+
+
+
+<h3><a id="page8">Oozie- Page 8</a></h3>
+
+<p>Define the Oozie action xml. The Oozie action xml is defining how the job is kicked off, such as environment variables, arguments and file requirement</p>
+
+<p>Below, if you don't give any file extension, you won't be able to write a script to execute.</p>
+
+<h3><a id="page9">Script- Page 9</a></h3>
+
+<p>Write your script in the given text editor.</p>
+
+<h3>Create a Template script</h3>
+
+<p>In order to create your own template you can follow the steps below.</p>
+
+<ol>
+    <li>Create a directory with no special characters but dash and underscore. This directory can be located in a share folder, <i>RS_HOME/scripts</i>, so that other users can use your template or in your user folder, <i>RS_HOME/users/MY_USER/scripts</i>.</li>
+    <li>Copy the action xml and your script in a file called respectively <i>oozie-action.xml</i> and <i>script</i></li>
+    <li>Optionally, you can create a <i>script.properties</i> file
+    <ul>
+        <li><i>output.names</i> is a coma delimited list with the output name, note that if the list is empty, it defines one output with an empty name</li>
+        <li><i>output.type</i> type of the output to create. For example <i>TEXT MAP-REDUCE DIRECTORY</i>, you can find this value if you created a script in the Format page. If you have named output, you should define <i>output.type.NAME</i>.</li>
+        <li><i>output.header</i> is a header with types of the output. You can find this value if you created a script in the Header page. If you have named output, you should define <i>output.header.NAME</i>.</li>
+    </ul>
+    </li>
+</ol>
+
 </body>
 </html>
