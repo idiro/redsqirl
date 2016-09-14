@@ -134,11 +134,20 @@ public class VoronoiBean extends VoronoiBeanAbs {
 		for (VoronoiType voronoiType : tableList) {
 			dataFlowCoordinator.getVariables().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
 		}
-		dataFlowCoordinator.setExecutionTime(executionTime);
+		
+		
 		dataFlowCoordinator.setName(name);
-		if(getSelectedSchedulingOption() != null && !getSelectedSchedulingOption().isEmpty()){
-			dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
-			dataFlowCoordinator.getTimeCondition().setFrequency(periodic);
+		
+		if(getScheduling()){
+			dataFlowCoordinator.setExecutionTime(executionTime);
+			if(getSelectedSchedulingOption() != null && !getSelectedSchedulingOption().isEmpty()){
+				dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
+				dataFlowCoordinator.getTimeCondition().setFrequency(periodic);
+			}
+		}else{
+			dataFlowCoordinator.setExecutionTime(null);
+			dataFlowCoordinator.getTimeCondition().setUnit(null);
+			dataFlowCoordinator.getTimeCondition().setFrequency(0);
 		}
 
 
