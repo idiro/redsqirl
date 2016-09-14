@@ -52,11 +52,11 @@ static Logger logger = Logger.getLogger(SendEmailTests.class);
 		
 		SendEmail conv = (SendEmail) w.getElement(idHS);
 		
-		logger.info(Source.out_name+" "+src.getComponentId());
+		logger.info(new Source().getOut_name()+" "+src.getComponentId());
 		logger.debug(SendEmail.key_input+" "+idHS);
 		
 		error = w.addLink(
-				Source.out_name, src.getComponentId(), 
+				new Source().getOut_name(), src.getComponentId(), 
 				SendEmail.key_input, idHS);
 		assertTrue("convert add link: "+error,error == null);
 		

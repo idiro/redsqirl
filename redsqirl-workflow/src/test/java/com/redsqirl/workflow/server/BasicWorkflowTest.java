@@ -69,7 +69,7 @@ public class BasicWorkflowTest{
 			
 			
 			assertTrue("link out not created",
-					dfIn.getElement(source).getOutputComponent().get(Source.out_name)
+					dfIn.getElement(source).getOutputComponent().get(new Source().getOut_name())
 					.contains(dfIn.getElement(convert)));
 			assertTrue("link in not created",
 					dfIn.getElement(convert).getInputComponent().get(Convert.key_input)
@@ -80,10 +80,10 @@ public class BasicWorkflowTest{
 			assertTrue(error,error == null);
 
 			logger.debug("remove link...");
-			error = dfIn.removeLink(Source.out_name, source,Convert.key_input,convert);
+			error = dfIn.removeLink(new Source().getOut_name(), source,Convert.key_input,convert);
 			assertTrue(error, error == null);
 			assertTrue("link out not created",
-					!dfIn.getElement(source).getOutputComponent().get(Source.out_name)
+					!dfIn.getElement(source).getOutputComponent().get(new Source().getOut_name())
 					.contains(dfIn.getElement(convert)));
 			assertTrue("link in not created",
 					!dfIn.getElement(convert).getInputComponent().get(Convert.key_input)
@@ -154,7 +154,7 @@ public class BasicWorkflowTest{
 			
 
 			assertTrue("After saving link out not created",
-					dfOut.getElement(source).getOutputComponent().get(Source.out_name)
+					dfOut.getElement(source).getOutputComponent().get(new Source().getOut_name())
 					.contains(dfOut.getElement(convert)));
 			assertTrue("After saving link in not created",
 					dfOut.getElement(convert).getInputComponent().get(Convert.key_input)
@@ -166,7 +166,7 @@ public class BasicWorkflowTest{
 			error = dfOut.removeElement(convert);
 			assertTrue("Element convert found after deleting",dfOut.getElement(convert) == null);
 			assertTrue("After element deletion, link not deleted",
-					!dfOut.getElement(source).getOutputComponent().get(Source.out_name)
+					!dfOut.getElement(source).getOutputComponent().get(new Source().getOut_name())
 					.contains(cvOut));
 			
 			logger.debug("remove Element source...");

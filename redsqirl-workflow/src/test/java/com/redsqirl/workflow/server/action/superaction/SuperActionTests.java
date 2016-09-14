@@ -56,7 +56,7 @@ public class SuperActionTests {
 		logger.info("Output of SA: "+sa.getDFEOutput().keySet().toString());
 		
 		String error = w.addLink(
-				Source.out_name, src.getComponentId(), 
+				new Source().getOut_name(), src.getComponentId(), 
 				input, idSA);
 		assertTrue("Fail to link source with superaction: "+error, error == null);
 

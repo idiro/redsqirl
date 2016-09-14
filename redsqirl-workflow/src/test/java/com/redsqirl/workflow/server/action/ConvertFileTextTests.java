@@ -34,10 +34,10 @@ public class ConvertFileTextTests {
 
 		ConvertPlainText pig = (ConvertPlainText) w.getElement(idHS);
 
-		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
+		logger.info(new PigCompressSource().getOut_name() + " " + src.getComponentId());
 		logger.debug(PigSelect.key_input + " " + idHS);
 
-		error = w.addLink(PigCompressSource.out_name, src.getComponentId(),	PigSelect.key_input, idHS);
+		error = w.addLink(new PigCompressSource().getOut_name(), src.getComponentId(),	PigSelect.key_input, idHS);
 		assertTrue("pig select add link: " + error, error == null);
 
 		updatePig(w, pig, hInt);

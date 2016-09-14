@@ -63,6 +63,7 @@ public class FieldDefinitionTableInteraction extends TableInteraction{
 			throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		createColumns();
+		setVariableDisable(true);
 	}
 
 	/**

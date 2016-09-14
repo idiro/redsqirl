@@ -52,11 +52,11 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 		
 		Convert conv = (Convert) w.getElement(idHS);
 		
-		logger.info(Source.out_name+" "+src.getComponentId());
+		logger.info(new Source().getOut_name()+" "+src.getComponentId());
 		logger.debug(Convert.key_input+" "+idHS);
 		
 		error = w.addLink(
-				Source.out_name, src.getComponentId(), 
+				new Source().getOut_name(), src.getComponentId(), 
 				Convert.key_input, idHS);
 		assertTrue("convert add link: "+error,error == null);
 		

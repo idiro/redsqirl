@@ -34,7 +34,7 @@ public class FileTextSourceTests {
 		
 		PigSelect pig = (PigSelect) w.getElement(idHS);
 		
-		logger.info(PigCompressSource.out_name+" "+src.getComponentId());
+		logger.info(new PigCompressSource().getOut_name()+" "+src.getComponentId());
 		logger.debug(PigSelect.key_input+" "+idHS);
 		
 		error = w.addLink(
@@ -134,7 +134,7 @@ public class FileTextSourceTests {
 			subtypeInt.setValue(new MapRedPlainTextHeaderType().getTypeName());
 			
 			src.updateOut();
-			src.getDFEOutput().get(FileTextSource.out_name);
+			src.getDFEOutput().get(FileTextnew Source().getOut_name());
 			src.getDFEOutput().get(FileTextSource.no_header_out_name);
 			
 			src.getDFEOutput();

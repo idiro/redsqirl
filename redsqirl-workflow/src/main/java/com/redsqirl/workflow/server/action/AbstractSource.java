@@ -114,4 +114,9 @@ public abstract class AbstractSource extends AbstractMultipleSources {
 	protected ListInteraction getDataSubtype() throws RemoteException{
 		return (ListInteraction) getInteraction(key_datasubtype);
 	}
+
+	public final String getOut_name() {
+		return out_name;
+	}
+	
 }

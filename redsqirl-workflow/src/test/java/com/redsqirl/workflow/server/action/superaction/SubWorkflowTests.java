@@ -101,19 +101,19 @@ public class SubWorkflowTests {
 		assertTrue("source update: " + error, error == null);
 		
 		assertTrue("number of fields in source should be 2 instead of "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
-				.getSize(), input.getDFEOutput().get(Source.out_name)
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
+				.getSize(), input.getDFEOutput().get(new Source().getOut_name())
 				.getFields().getSize() == 2);
 		
 		assertTrue("field list "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
 				.getFieldNames(),
-				input.getDFEOutput().get(Source.out_name).getFields()
+				input.getDFEOutput().get(new Source().getOut_name()).getFields()
 				.getFieldNames().contains("ID"));
 		assertTrue("field list "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
 				.getFieldNames(),
-				input.getDFEOutput().get(Source.out_name).getFields()
+				input.getDFEOutput().get(new Source().getOut_name()).getFields()
 				.getFieldNames().contains("VALUE"));
 		
 		return input;
@@ -151,19 +151,19 @@ public class SubWorkflowTests {
 		assertTrue("source update: " + error, error == null);
 
 		assertTrue("number of fields in source should be 2 instead of "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
-						.getSize(), input.getDFEOutput().get(Source.out_name)
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
+						.getSize(), input.getDFEOutput().get(new Source().getOut_name())
 				.getFields().getSize() == 2);
 
 		assertTrue("field list "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				input.getDFEOutput().get(Source.out_name).getFields()
+				input.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("ID"));
 		assertTrue("field list "
-				+ input.getDFEOutput().get(Source.out_name).getFields()
+				+ input.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				input.getDFEOutput().get(Source.out_name).getFields()
+				input.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("VALUE"));
 
 		return input;
@@ -305,7 +305,7 @@ public class SubWorkflowTests {
 			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
 			
 			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
-			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),Source.out_name));
+			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),new Source().getOut_name()));
 			
 
 			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();
@@ -355,7 +355,7 @@ public class SubWorkflowTests {
 			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
 			
 			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
-			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),Source.out_name));
+			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),new Source().getOut_name()));
 			
 
 			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();

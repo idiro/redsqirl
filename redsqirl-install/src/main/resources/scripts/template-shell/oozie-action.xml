@@ -13,8 +13,8 @@
         </property>
     </configuration>
     <exec>!{SCRIPT}</exec>
-    <argument>!{INPUT}</argument>
-    <argument>!{OUTPUT}</argument>
+    <argument>!{INPUT_PATH}</argument>
+    <argument>!{OUTPUT_PATH}</argument>
     <env-var>[VAR1=VALUE1]</env-var>
     <capture-output/>
 </shell>

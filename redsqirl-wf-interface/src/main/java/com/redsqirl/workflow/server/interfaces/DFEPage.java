@@ -131,4 +131,18 @@ public interface DFEPage extends Remote {
 	 */
 	public String getTextTip()throws RemoteException;
 
+	/**
+	 * Get the checker class of the page
+	 * @return
+	 * @throws RemoteException
+	 */
+	public PageChecker getChecker() throws RemoteException;
+	
+	/**
+	 * Set the checker class of the page
+	 * @param checker
+	 * @throws RemoteException
+	 */
+	public void setChecker(PageChecker checker) throws RemoteException;
+
 }

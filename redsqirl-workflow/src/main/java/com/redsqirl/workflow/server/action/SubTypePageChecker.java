@@ -25,6 +25,7 @@ public class SubTypePageChecker implements PageChecker{
 	private DataflowAction act;
 	private String outputName;
 	private ListInteraction subTypeInteraction;
+	private SavingState savingStateNew = SavingState.RECORDED;
 	
 	public SubTypePageChecker(DataflowAction act, String outputName, ListInteraction subTypeInteraction){
 		this.act = act;
@@ -53,7 +54,7 @@ public class SubTypePageChecker implements PageChecker{
 					output.put(outputName, (DFEOutput) outNew);
 					// Set the Output as RECORDED ALWAYS
 					output.get(outputName).setSavingState(
-							SavingState.RECORDED);
+							savingStateNew);
 				}
 			}
 
@@ -70,6 +71,18 @@ public class SubTypePageChecker implements PageChecker{
 
 	public final String getOutputName() {
 		return outputName;
+	}
+
+	public final void setOutputName(String outputName) {
+		this.outputName = outputName;
+	}
+
+	public final SavingState getSavingStateNew() {
+		return savingStateNew;
+	}
+
+	public final void setSavingStateNew(SavingState savingStateNew) {
+		this.savingStateNew = savingStateNew;
 	}
 
 }

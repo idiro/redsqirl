@@ -74,7 +74,12 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 		Iterator<Entry<String,String>> it = getRSVariablesAvailable().entrySet().iterator();
 		while(it.hasNext()){
 			Entry<String,String> cur = it.next();
-			ans = ans.replaceAll(Pattern.quote(cur.getKey()), Matcher.quoteReplacement(cur.getValue()));
+			if(cur.getValue() != null){
+				if(logger.isDebugEnabled()){
+					logger.debug("Replace variable "+cur.getKey()+" by "+cur.getValue());
+				}
+				ans = ans.replaceAll(Pattern.quote(cur.getKey()), cur.getValue());
+			}
 		}
 		
 		return ans;
@@ -92,7 +97,7 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 		return (Element) doc.importNode(readOozieInt(oozieActionXml), true);
 	}
 
-	protected Element readOozieInt() throws ParserConfigurationException, RemoteException, SAXException, IOException{
+	public Element readOozieInt() throws ParserConfigurationException, RemoteException, SAXException, IOException{
 		return readOozieInt(replaceRSVariables(xmlContent));
 	}
 	
@@ -115,34 +120,42 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 			DFEOutput dfeCur = inCur.getValue().getValue();
 			if(dfeCur instanceof HCatalogType){
 				String[] pathArr = HCatStore.getDatabaseTableAndPartition(dfeCur.getPath());
-				String filter = "";
-				if(pathArr[2].contains(";")){
-					filter += "(";
-				}
-				filter += pathArr[2].replaceAll(";", "' AND ").replaceAll("=","='")+"'";
-				if(pathArr[2].contains(";")){
-					filter += ")";
+				String filter = null;
+				if(pathArr.length > 2){
+					filter = "";
+					if(pathArr[2].contains(";")){
+						filter += "(";
+					}
+					filter += pathArr[2].replaceAll(";", "' AND ").replaceAll("=","='")+"'";
+					if(pathArr[2].contains(";")){
+						filter += ")";
+					}
 				}
 				if(aliases.size() == 1){
 					ans.put("!{INPUT_DATABASE}",pathArr[0]);
 					ans.put("!{INPUT_TABLE}",pathArr[1]);
-					ans.put("!{INPUT_FILTER_HIVE}",filter);
+					if(filter != null){
+						ans.put("!{INPUT_FILTER_HIVE}",filter);
+					}
 				}else{
-					ans.put("!{INPUT_DATABASE_"+inCur.getKey()+"}",pathArr[0]);
-					ans.put("!{INPUT_TABLE_"+inCur.getKey()+"}",pathArr[1]);
-					ans.put("!{INPUT_FILTER_HIVE_"+inCur.getKey()+"}",filter);
-
+					ans.put("!{INPUT_DATABASE_"+i+"}",pathArr[0]);
+					ans.put("!{INPUT_TABLE_"+i+"}",pathArr[1]);
+					if(filter != null){
+						ans.put("!{INPUT_FILTER_HIVE_"+i+"}",filter);
+					}
 				}
-				ans.put("!{INPUT_DATABASE_"+i+"}",pathArr[0]);
-				ans.put("!{INPUT_TABLE_"+i+"}",pathArr[1]);
-				ans.put("!{INPUT_FILTER_HIVE_"+i+"}",filter);
+				ans.put("!{INPUT_DATABASE_"+inCur.getKey()+"}",pathArr[0]);
+				ans.put("!{INPUT_TABLE_"+inCur.getKey()+"}",pathArr[1]);
+				if(filter != null){
+					ans.put("!{INPUT_FILTER_HIVE_"+inCur.getKey()+"}",filter);
+				}
 			}
 			if(aliases.size() == 1){
 				ans.put("!{INPUT_PATH}",dfeCur.getPath());
 			}else{
-				ans.put("!{INPUT_PATH_"+inCur.getKey()+"}",dfeCur.getPath());
+				ans.put("!{INPUT_PATH_"+i+"}",dfeCur.getPath());
 			}
-			ans.put("!{INPUT_PATH_"+i+"}",dfeCur.getPath());
+			ans.put("!{INPUT_PATH_"+inCur.getKey()+"}",dfeCur.getPath());
 			++i;
 		}
 		
@@ -152,33 +165,50 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 		while(itOut.hasNext()){
 			Entry<String,DFEOutput> curOut = itOut.next();
 			DFEOutput dfeCur = curOut.getValue();
+			String path = dfeCur.getPath();
 			if(curOut instanceof HCatalogType){
-				String[] pathArr = HCatStore.getDatabaseTableAndPartition(dfeCur.getPath());
-				String partition = "("+pathArr[2].replaceAll(";", "', ").replaceAll("=","='")+"')";
-				if(outputSize == 1){
-					ans.put("!{OUTPUT_DATABASE}",pathArr[0]);
-					ans.put("!{OUTPUT_TABLE}",pathArr[1]);
-					ans.put("!{OUTPUT_PARTITION}",partition);
-				}else{
-					ans.put("!{OUTPUT_DATABASE_"+curOut.getKey()+"}",pathArr[0]);
-					ans.put("!{OUTPUT_TABLE_"+curOut.getKey()+"}",pathArr[1]);
-					ans.put("!{OUTPUT_PARTITION_"+curOut.getKey()+"}",partition);
-
+				String partition = null;
+				String database = "TBD";
+				String table = "TBD";
+				if(path != null){
+					String[] pathArr = HCatStore.getDatabaseTableAndPartition(path);
+					database = pathArr[0];
+					table =pathArr[1];
+					if(pathArr.length > 2){
+						partition = "("+pathArr[2].replaceAll(";", "', ").replaceAll("=","='")+"')";
+					}
 				}
-				ans.put("!{OUTPUT_DATABASE_"+i+"}",pathArr[0]);
-				ans.put("!{OUTPUT_TABLE_"+i+"}",pathArr[1]);
-				ans.put("!{OUTPUT_PARTITION_"+i+"}",partition);
+				if(outputSize == 1){
+					ans.put("!{OUTPUT_DATABASE}",database);
+					ans.put("!{OUTPUT_TABLE}",table);
+					ans.put("!{OUTPUT_PARTITION}",partition);
+					
+				}else{
+					ans.put("!{OUTPUT_DATABASE_"+i+"}",database);
+					ans.put("!{OUTPUT_TABLE_"+i+"}",table);
+					ans.put("!{OUTPUT_PARTITION_"+i+"}",partition);
+				}
+				ans.put("!{OUTPUT_DATABASE_"+curOut.getKey()+"}",database);
+				ans.put("!{OUTPUT_TABLE_"+curOut.getKey()+"}",table);
+				ans.put("!{OUTPUT_PARTITION_"+curOut.getKey()+"}",partition);
 			}
-
-			if(outputSize == 1){
-				ans.put("!{OUTPUT_PATH}",dfeCur.getPath());
+			if(path == null){
+				path = "TBD";
+			}
+			if(outputSize == 1 || curOut.getKey().isEmpty()){
+				ans.put("!{OUTPUT_PATH}",path);
 			}else{
-				ans.put("!{OUTPUT_PATH_"+curOut.getKey()+"}",dfeCur.getPath());
+				ans.put("!{OUTPUT_PATH_"+i+"}",path);
 			}
-			ans.put("!{OUTPUT_PATH_"+i+"}",dfeCur.getPath());
+			if(!curOut.getKey().isEmpty()){
+				ans.put("!{OUTPUT_PATH_"+curOut.getKey()+"}",path);
+			}
 			++i;
 		}
 		
+		if(logger.isDebugEnabled()){
+			logger.debug("RS Variables: "+ans.toString());
+		}
 		
 		return ans;
 	}

@@ -33,6 +33,7 @@ import com.redsqirl.workflow.server.action.utils.ScriptTemplate;
 import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.PathType;
+import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -92,7 +93,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		page0.addInteraction(templateInt);
 		
 		if(numberOfOutput > 1){
-			for(int i=0; i < numberOfOutput;++i){
+			for(int i=1; i <= numberOfOutput;++i){
 				addOutputName(page0, i);
 			}
 			
@@ -124,7 +125,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		}
 		
 		if(numberOfOutput > 0){
-			for(int i=0; i < numberOfOutput;++i){
+			for(int i=1; i <= numberOfOutput;++i){
 				addTypePage(i);
 				addSubTypePage(i);
 				addDefFieldPage(i);
@@ -140,6 +141,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 				LanguageManagerWF.getText("script.oozie.legend"),
 				0, 
 				0);
+		oozieXmlInt.setVariableDisable(true);
 		
 		ignoreWarningsOozieInt = new AppendListInteraction(
 				key_oozie_warn, 
@@ -149,6 +151,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		warning.add(LanguageManagerWF.getText("script.ignore_warning_msg"));
 		ignoreWarningsOozieInt.setPossibleValues(warning);
 		ignoreWarningsOozieInt.setDisplayCheckBox(true);
+		ignoreWarningsOozieInt.setReplaceDisable(true);
 		
 		extensionInt = new InputInteraction(key_extensionInt, 
 				LanguageManagerWF.getText("script.extension.title"), 
@@ -182,6 +185,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 				LanguageManagerWF.getText("script.script.title"),
 				LanguageManagerWF.getText("script.script.legend"),
 				0, 0);
+		scriptInt.setVariableDisable(true);
 		/*
 		ignoreWarningsScriptInt = new ListInteraction(
 				key_script_warn, 
@@ -206,10 +210,15 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 	}
 	
 	protected void addTypePage(int id) throws RemoteException{
-		Page page = addPage(LanguageManagerWF.getText("source.page1.title"),
-				LanguageManagerWF.getText("source.page1.legend"), 1);
-
-		addTypePage(page,"");
+		Page page = null;
+		if(id == 1){
+			page = addPage(LanguageManagerWF.getText("script.type.page.title"),
+					LanguageManagerWF.getText("script.type.page.legend"), 1);
+		}else{
+			page = addPage(LanguageManagerWF.getText("script.type_multi.page.title",new Object[]{id}),
+					LanguageManagerWF.getText("script.type_multi.page.legend",new Object[]{id}), 1);
+		}
+		addTypePage(page,Integer.toString(id));
 	}
 	
 	/**
@@ -219,45 +228,78 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 	 * 
 	 */
 	protected void addSubTypePage(int id) throws RemoteException{
-		Page page = addPage(LanguageManagerWF.getText("source.page2.title"),
-				LanguageManagerWF.getText("source.page2.legend"), 1);
-
-		addSubTypePage(page, "", "");
-
-		
-		InputInteraction headerInt = new InputInteraction(key_headerInt+id, 
-				LanguageManagerWF.getText("superactioninput.header.title"), 
-				LanguageManagerWF.getText("superactioninput.header.legend"), 
-				0, 
-				1);
-		
+		Page page = null;
+		if(id == 1){
+			page = addPage(LanguageManagerWF.getText("script.subtype_page.title"),
+					LanguageManagerWF.getText("script.subtype_page.legend"), 1);
+		}else{
+			page = addPage(LanguageManagerWF.getText("script.subtype_multi_page.title",new Object[]{id}),
+					LanguageManagerWF.getText("script.subtype_page.legend"), 1);
+		}
+		addSubTypePage(page, Integer.toString(id), "");
+		InputInteraction headerInt = null;
+		if(id == 1){
+			headerInt = new InputInteraction(key_headerInt+id, 
+					LanguageManagerWF.getText("script.header.title"), 
+					LanguageManagerWF.getText("script.header.legend"), 
+					0, 
+					1);
+		}else{
+			headerInt = new InputInteraction(key_headerInt+id, 
+					LanguageManagerWF.getText("script.header_multi.title",new Object[]{id}), 
+					LanguageManagerWF.getText("script.header.legend"), 
+					0, 
+					1);
+		}
+		headerInt.setVariableDisable(true);
 		page.addInteraction(headerInt);
+		
 	}
 	
 	protected void addOutputName(Page page, int id) throws RemoteException{
-		InputInteraction outputName = new InputInteraction(key_outputname+id,
-				LanguageManagerWF
-						.getText("source.datasubtype_interaction.title"),
-				LanguageManagerWF
-						.getText("source.datasubtype_interaction.legend"), 0, id);
-		outputName.setRegex("[a-z]{0,15}");
-		
+		InputInteraction outputName = null;
+		if(id == 1){
+			outputName = new InputInteraction(key_outputname+id,
+					LanguageManagerWF
+					.getText("script.outputname_default_inter.title"),
+					LanguageManagerWF
+					.getText("script.outputname_default_inter.legend"), 0, id);
+			outputName.setRegex("[a-z]{0,15}");
+		}else{
+			outputName = new InputInteraction(key_outputname+id,
+					LanguageManagerWF
+					.getText("script.outputname_inter.title",new Object[]{id}),
+					LanguageManagerWF
+					.getText("script.outputname_inter.legend"), 0, id);
+			outputName.setRegex("[a-z]{0,15}");
+		}
 		page.addInteraction(outputName);
 	}
 	
 	protected void addDefFieldPage(int id) throws RemoteException{
-		
-		FieldDefinitionTableInteraction defFieldInt = new FieldDefinitionTableInteraction(
-				key_fieldDefInt+id, 
-				LanguageManagerWF.getText("superactioninput.field_def.title"), 
-				LanguageManagerWF.getText("superactioninput.field_def.legend"), 
-				0, 
-				0);
+		if(id == 1){
+			FieldDefinitionTableInteraction defFieldInt = new FieldDefinitionTableInteraction(
+					key_fieldDefInt+id, 
+					LanguageManagerWF.getText("script.field_def.title"), 
+					LanguageManagerWF.getText("script.field_def.legend"), 
+					0, 
+					0);
 
-		Page page = addPage(LanguageManagerWF.getText("superactioninput.page3.title"),
-				LanguageManagerWF.getText("superactioninput.page3.legend"), 1);
-		page.addInteraction(defFieldInt);
-		
+			Page page = addPage(LanguageManagerWF.getText("script.deffield_page.title"),
+					LanguageManagerWF.getText("script.deffield_page.legend"), 1);
+			page.addInteraction(defFieldInt);
+		}else{
+			FieldDefinitionTableInteraction defFieldInt = new FieldDefinitionTableInteraction(
+					key_fieldDefInt+id, 
+					LanguageManagerWF.getText("script.field_def_multi.title",new Object[]{id}), 
+					LanguageManagerWF.getText("script.field_def.legend"), 
+					0, 
+					0);
+
+			Page page = addPage(LanguageManagerWF.getText("script.deffield_page_multi.title",new Object[]{id}),
+					LanguageManagerWF.getText("script.deffield_page.legend"), 1);
+			page.addInteraction(defFieldInt);
+		}
 	}
 	
 	
@@ -285,7 +327,9 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		String error = null;
 		String oozieVal = oozieXmlInt.getValue();
 		try{
-			BespokeScriptOozieAction.readOozieInt(oozieVal);
+			BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
+			oozieAction.setXmlContent(oozieVal);
+			oozieAction.readOozieInt();
 		}catch(IOException e){
 			error = "Fail reading the oozie xml extract: "+e.getMessage();
 			logger.error(e,e);
@@ -300,18 +344,32 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		if(error == null && ignoreWarningsOozieInt.getValues().isEmpty()){
 			error = "";
 			Iterator<Entry<String,Entry<String,DFEOutput>>> it = getAliasesPerComponentInput().entrySet().iterator();
+			int i = 0;
 			while(it.hasNext()){
 				Entry<String,Entry<String,DFEOutput>> inCur = it.next();
 				DFEOutput dfeCur = inCur.getValue().getValue();
 				if(dfeCur instanceof HCatalogType){
-					if(!oozieVal.contains("TABLE_"+inCur.getKey() )){
-						error = "TABLE_"+inCur.getKey()+ " variable is not used.\n";
-					}
+					if(i == 0 && !it.hasNext()){
+						if(!oozieVal.contains("!{INPUT_TABLE_"+inCur.getKey()+"}") &&
+								!oozieVal.contains("!{INPUT_TABLE}")){
+							error = "!{INPUT_TABLE_"+inCur.getKey()+ "} variable is not used.\n";
+						}
+					}else if(!oozieVal.contains("INPUT_TABLE_"+inCur.getKey()) &&
+							!oozieVal.contains("!{INPUT_TABLE_"+i+"}")){
+						error = "!{INPUT_TABLE_"+inCur.getKey()+ "} variable is not used.\n";
+					} 
 				}else{
-					if(!oozieVal.contains(inCur.getKey())){
-						error = inCur.getKey()+ " variable is not used.\n";
+					if(i == 0 && !it.hasNext()){
+						if(!oozieVal.contains("!{INPUT_PATH_"+inCur.getKey()+"}") &&
+								!oozieVal.contains("!{INPUT_PATH}") ){
+							error = "!{INPUT_PATH_"+inCur.getKey()+ "} variable is not used.\n";
+						}
+					}else if(!oozieVal.contains("!{INPUT_PATH_"+inCur.getKey()+"}") &&
+							!oozieVal.contains("!{INPUT_PATH_"+i+"}")){
+						error = "!{INPUT_PATH_"+inCur.getKey()+ "} variable is not used.\n";
 					}
 				}
+				++i;
 			}
 			
 			if(error.isEmpty()){
@@ -353,20 +411,25 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		}catch(Exception e){
 			error = "Fail reading the oozie xml extract: "+e.getMessage();
 		}
-		
-		if(numberOfOutput == 1){
-			updateOutput("", 
-					(FieldDefinitionTableInteraction) getInteraction(key_fieldDefInt+0), 
-					((InputInteraction)getInteraction(key_datasubtype+0)).getValue());
-		}else if(numberOfOutput > 1){
-			for(int i=0; i < numberOfOutput;++i){
-				updateOutput(((InputInteraction)getInteraction(key_outputname+i)).getValue(), 
-						(FieldDefinitionTableInteraction) getInteraction(key_fieldDefInt+i), 
-						((InputInteraction)getInteraction(key_datasubtype+i)).getValue());
-			}
+		if(error == null){
+			createOutputs();
 		}
 		
 		return error;
+	}
+	
+	public void createOutputs() throws RemoteException{
+		if(numberOfOutput == 1){
+			updateOutput("", 
+					(FieldDefinitionTableInteraction) getInteraction(key_fieldDefInt+1), 
+					((ListInteraction)getInteraction(key_datasubtype+1)).getValue());
+		}else if(numberOfOutput > 1){
+			for(int i=1; i <= numberOfOutput;++i){
+				updateOutput(((InputInteraction)getInteraction(key_outputname+i)).getValue(), 
+						(FieldDefinitionTableInteraction) getInteraction(key_fieldDefInt+i), 
+						((ListInteraction)getInteraction(key_datasubtype+i)).getValue());
+			}
+		}
 	}
 	
 	public void updateOutput(String outputName, FieldDefinitionTableInteraction defFieldInt, String dataSubType) throws RemoteException{
@@ -410,7 +473,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 			
 			if(output.get(out_name) != null){
 				FieldList fl = output.get(out_name).getFields();
-				if(fl != null && checkIntegrationUserVariables() == null){
+				if(fl != null && fl.getSize() > 0 && checkIntegrationUserVariables() == null){
 
 					logger.info("checkIntegrationUserVariables pass");
 
@@ -446,24 +509,33 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		} else if(interId.equals(key_template)){
 			updateTemplate();
 		} else if (interId.equals(key_oozie)) {
+			createOutputs();
+			BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
+			String inVars = oozieAction.getRSVariablesAvailable().toString();
+			oozieXmlInt.setTextTip(LanguageManagerWF.getText("script.oozie.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "</br>")}));
 			if( (oozieXmlInt.getValue() == null || oozieXmlInt.getValue().isEmpty())&& getScriptTemplate() != null){
-				BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
 				oozieXmlInt.setValue(getScriptTemplate().readOozie());
-				String inVars = oozieAction.getRSVariablesAvailable().toString();
-				oozieXmlInt.setTextTip(LanguageManagerWF.getText("script.oozie.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "=").replaceAll(";", "\n")}));
 			}
 		} else if (interId.equals(key_script)) {
 			String extension = extensionInt.getValue();
+			BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
+			String inVars = oozieAction.getRSVariablesAvailable().toString();
+			scriptInt.setTextTip(LanguageManagerWF.getText("script.script.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "</br>")}));
 			if( (scriptInt.getValue() == null || scriptInt.getValue().isEmpty()) && getScriptTemplate() != null && (extension != null && !extension.isEmpty())){
-				BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
 				scriptInt.setValue(getScriptTemplate().readScript());
-				String inVars = oozieAction.getRSVariablesAvailable().toString();
-				scriptInt.setTextTip(LanguageManagerWF.getText("script.script.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "</br>")}));
 			}
 		} else if (interId.equals(key_extensionInt)) {
 			//Cannot specify field extension
-		}else{
-			super.update(interaction);
+		}else if (interId.startsWith(key_datasubtype)) {
+			String nameOut = "";
+			String idNbOutput = getDataSubTypeUniqueId(interaction.getId());
+			if(numberOfOutput > 1){
+				nameOut = ((InputInteraction) getInteraction(key_outputname+idNbOutput)).getValue();
+			}
+			SubTypePageChecker stPC = (SubTypePageChecker)getPageList().get(2+(Integer.valueOf(idNbOutput)-1)*3).getChecker(); 
+			stPC.setOutputName(nameOut);
+			stPC.setSavingStateNew(SavingState.TEMPORARY);
+			updateDataSubType(interaction);
 		}
 	}
 

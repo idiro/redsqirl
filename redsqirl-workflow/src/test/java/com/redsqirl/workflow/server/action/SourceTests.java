@@ -99,19 +99,19 @@ public class SourceTests {
 		assertTrue("source update: " + error, error == null);
 
 		assertTrue("number of fields in source should be 2 instead of "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
-						.getSize(), src.getDFEOutput().get(Source.out_name)
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
+						.getSize(), src.getDFEOutput().get(new Source().getOut_name())
 				.getFields().getSize() == 2);
 
 		assertTrue("field list "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				src.getDFEOutput().get(Source.out_name).getFields()
+				src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("ID"));
 		assertTrue("field list "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				src.getDFEOutput().get(Source.out_name).getFields()
+				src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("VALUE"));
 
 		return src;
@@ -161,23 +161,23 @@ public class SourceTests {
 		OrderedFieldList fl = new OrderedFieldList();
 		fl.addField("id",FieldType.STRING);
 		fl.addField("value",FieldType.INT);
-		src.getDFEOutput().get(Source.out_name).setFields(fl);
+		src.getDFEOutput().get(new Source().getOut_name()).setFields(fl);
 		
 
 		assertTrue("number of fields in source should be 2 instead of "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
-						.getSize(), src.getDFEOutput().get(Source.out_name)
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
+						.getSize(), src.getDFEOutput().get(new Source().getOut_name())
 				.getFields().getSize() == 2);
 
 		assertTrue("field list "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				src.getDFEOutput().get(Source.out_name).getFields()
+				src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("id"));
 		assertTrue("field list "
-				+ src.getDFEOutput().get(Source.out_name).getFields()
+				+ src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames(),
-				src.getDFEOutput().get(Source.out_name).getFields()
+				src.getDFEOutput().get(new Source().getOut_name()).getFields()
 						.getFieldNames().contains("value"));
 
 		return src;

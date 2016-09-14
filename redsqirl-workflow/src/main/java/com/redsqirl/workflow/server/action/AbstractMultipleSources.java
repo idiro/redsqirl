@@ -113,11 +113,20 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 	 * 
 	 */
 	protected ListInteraction initializeDataTypeInteraction(String id) throws RemoteException{
-		ListInteraction dataType = new ListInteraction(
+		ListInteraction dataType = null;
+		if(id.isEmpty() || "0".equals(id) || "1".equals(id)){
+			dataType = new ListInteraction(
 				key_datatype+id,
 				LanguageManagerWF.getText("source.datatype_interaction.title"),
 				LanguageManagerWF.getText("source.datatype_interaction.legend"),
 				0, 0);
+		}else{
+			dataType = new ListInteraction(
+					key_datatype+id,
+					LanguageManagerWF.getText("source.datatype_multi_interaction.title", new Object[]{id}),
+					LanguageManagerWF.getText("source.datatype_multi_interaction.legend", new Object[]{id}),
+					0, 0);
+		}
 		dataType.setReplaceDisable(true);
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
@@ -159,11 +168,20 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 	 * 
 	 */
 	protected ListInteraction initializeDataSubtypeInteraction(String id) throws RemoteException{
-		ListInteraction dataSubtype = new ListInteraction(key_datasubtype+id,
+		ListInteraction dataSubtype = null;
+		if(id.isEmpty() || "0".equals(id) || "1".equals(id)){
+			dataSubtype = new ListInteraction(key_datasubtype+id,
 				LanguageManagerWF
 						.getText("source.datasubtype_interaction.title"),
 				LanguageManagerWF
 						.getText("source.datasubtype_interaction.legend"), 0, 0);
+		}else{
+			dataSubtype = new ListInteraction(key_datasubtype+id,
+					LanguageManagerWF
+							.getText("source.datasubtype_multi_interaction.title", new Object[]{id}),
+					LanguageManagerWF
+							.getText("source.datasubtype_multi_interaction.legend", new Object[]{id}), 0, 0);
+		}
 		dataSubtype.setReplaceDisable(true);
 		dataSubtype.setDisplayRadioButton(true);
 		return dataSubtype;
@@ -186,11 +204,18 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 	 * 
 	 */
 	protected void addSourcePage(Page sourcePage, String id) throws RemoteException{
-
-		BrowserInteraction browser = new BrowserInteraction(key_dataset+id,
+		BrowserInteraction browser = null;
+		if(id.isEmpty() || "0".equals(id) || "1".equals(id)){
+			browser = new BrowserInteraction(key_dataset+id,
 				LanguageManagerWF.getText("source.browse_interaction.title"),
 				LanguageManagerWF.getText("source.browse_interaction.legend"),
 				0, 0);
+		}else{
+			browser = new BrowserInteraction(key_dataset+id,
+					LanguageManagerWF.getText("source.browse_multi_interaction.title", new Object[]{id}),
+					LanguageManagerWF.getText("source.browse_multi_interaction.legend", new Object[]{id}),
+					0, 0);
+		}
 		browser.setReplaceDisable(true);
 		
 		sourcePage.addInteraction(browser);
