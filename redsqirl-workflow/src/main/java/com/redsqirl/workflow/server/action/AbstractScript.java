@@ -3,6 +3,7 @@ package com.redsqirl.workflow.server.action;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -19,6 +20,7 @@ import org.xml.sax.SAXException;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
+import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.EditorInteraction;
@@ -62,7 +64,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 	
 	private ListInteraction templateInt;
 	private EditorInteraction oozieXmlInt;
-	private ListInteraction ignoreWarningsOozieInt;
+	private AppendListInteraction ignoreWarningsOozieInt;
 	private InputInteraction extensionInt;
 	private EditorInteraction scriptInt;
 	//private ListInteraction ignoreWarningsScriptInt;
@@ -139,10 +141,14 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 				0, 
 				0);
 		
-		ignoreWarningsOozieInt = new ListInteraction(
+		ignoreWarningsOozieInt = new AppendListInteraction(
 				key_oozie_warn, 
 				LanguageManagerWF.getText("script.oozie_warns.title"), 
 				LanguageManagerWF.getText("script.oozie_warns.legend"), 0, 1);
+		List<String> warning = new ArrayList<String>(1);
+		warning.add(LanguageManagerWF.getText("script.ignore_warning_msg"));
+		ignoreWarningsOozieInt.setPossibleValues(warning);
+		ignoreWarningsOozieInt.setDisplayCheckBox(true);
 		
 		extensionInt = new InputInteraction(key_extensionInt, 
 				LanguageManagerWF.getText("script.extension.title"), 
@@ -291,7 +297,7 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 			logger.error(e,e);
 		}
 		
-		if(error == null && ignoreWarningsOozieInt.getValue().isEmpty()){
+		if(error == null && ignoreWarningsOozieInt.getValues().isEmpty()){
 			error = "";
 			Iterator<Entry<String,Entry<String,DFEOutput>>> it = getAliasesPerComponentInput().entrySet().iterator();
 			while(it.hasNext()){
@@ -434,13 +440,13 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 				}
 			}
 		} else if (interId.startsWith(key_fieldDefInt)) {
-			String id = getHeaderUniqueId(interId);
+			String id = getDefFieldUniqueId(interId);
 			InputInteraction headerInt = ((InputInteraction) getInteraction(key_headerInt+id));
 			((FieldDefinitionTableInteraction) interaction).update(headerInt.getValue());
 		} else if(interId.equals(key_template)){
 			updateTemplate();
 		} else if (interId.equals(key_oozie)) {
-			if(oozieXmlInt.getValue() == null && getScriptTemplate() != null){
+			if( (oozieXmlInt.getValue() == null || oozieXmlInt.getValue().isEmpty())&& getScriptTemplate() != null){
 				BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
 				oozieXmlInt.setValue(getScriptTemplate().readOozie());
 				String inVars = oozieAction.getRSVariablesAvailable().toString();
@@ -448,11 +454,11 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 			}
 		} else if (interId.equals(key_script)) {
 			String extension = extensionInt.getValue();
-			if(scriptInt.getValue() == null && getScriptTemplate() != null && (extension != null && !extension.isEmpty())){
+			if( (scriptInt.getValue() == null || scriptInt.getValue().isEmpty()) && getScriptTemplate() != null && (extension != null && !extension.isEmpty())){
 				BespokeScriptOozieAction oozieAction = (BespokeScriptOozieAction) getOozieAction();
 				scriptInt.setValue(getScriptTemplate().readScript());
 				String inVars = oozieAction.getRSVariablesAvailable().toString();
-				scriptInt.setTextTip(LanguageManagerWF.getText("script.script.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "\n")}));
+				scriptInt.setTextTip(LanguageManagerWF.getText("script.script.texttip",new Object[]{inVars.substring(1,inVars.length()-1).replaceAll(",", "</br>")}));
 			}
 		} else if (interId.equals(key_extensionInt)) {
 			//Cannot specify field extension

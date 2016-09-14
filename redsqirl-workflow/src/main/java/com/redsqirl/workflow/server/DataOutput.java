@@ -49,6 +49,7 @@ import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.CoordinatorTimeConstraint;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
+import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
  * Data Output of a WorkflowAction.
@@ -484,7 +485,7 @@ DFEOutput {
 		}
 		if(SavingState.RECORDED.equals(savingState) && (refreshTimeOut < (System.currentTimeMillis() - cachValidTimeStamp)) ||
 				cachValidTimeStamp == 0){
-			cachValid = isPathValid(getPath());
+			cachValid = getPath() == null? LanguageManagerWF.getText("dataoutput.validpathnull"):isPathValid(getPath());
 			cachValidTimeStamp = System.currentTimeMillis();
 			oldPath = getPath();
 		}

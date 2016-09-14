@@ -1,5 +1,6 @@
 package com.redsqirl.workflow.server.oozie;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.redsqirl.workflow.server.DataflowAction;
@@ -59,7 +61,7 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
 		try{
-			action.appendChild(readOozieInt());
+			action.appendChild(readOozieInt(oozieXmlDoc));
 		}catch(Exception e){
 			logger.error(e,e);
 		}
@@ -82,12 +84,12 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 				.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(oozieActionXml);
-		return readOozieInt(doc,oozieActionXml);
+		Document doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(oozieActionXml.getBytes("utf-8"))));
+		return (Element) doc.getChildNodes().item(0);
 	}
 	
 	public static Element readOozieInt(Document doc, String oozieActionXml) throws ParserConfigurationException, RemoteException, SAXException, IOException{
-		return (Element) doc.getChildNodes().item(0);
+		return (Element) doc.importNode(readOozieInt(oozieActionXml), true);
 	}
 
 	protected Element readOozieInt() throws ParserConfigurationException, RemoteException, SAXException, IOException{

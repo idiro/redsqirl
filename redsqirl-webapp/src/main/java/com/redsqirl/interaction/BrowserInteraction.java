@@ -103,9 +103,14 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				}
 			}
 			outputName = "";
-			if (tree.getFirstChild("browse").getFirstChild("name") != null) {
-				outputName = tree.getFirstChild("browse")
-						.getFirstChild("name").getFirstChild().getHead();
+			try{
+				if (tree.getFirstChild("browse").getFirstChild("name") != null) {
+					outputName = tree.getFirstChild("browse")
+							.getFirstChild("name").getFirstChild().getHead();
+				}
+			}catch(Exception e){
+				//If outputName is empty, it can be seen as null after xml conversion.
+				outputName = "";
 			}
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());

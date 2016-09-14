@@ -13,7 +13,7 @@
     </configuration>
     <script>!{SCRIPT}</script>
     <argument>-param</argument>
-    <argument>INPUT=!{INTPUT_PATH}</argument>
+    <argument>INPUT=!{INPUT_PATH}</argument>
     <argument>-param</argument>
     <argument>OUTPUT=!{OUTPUT_PATH}</argument>
 </pig>
