@@ -3498,6 +3498,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 			canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
 			canvasArray[selectedCanvas].voronoiButtonLayer.draw();
 		}
+		canvasArray[selectedCanvas].voronoiLayer.removeChildren();
 	}
 	
 }
