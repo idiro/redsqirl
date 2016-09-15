@@ -148,7 +148,7 @@ public class SyncSource extends AbstractSource {
 				"nb_offset", 
 				LanguageManagerWF.getText("sync_source_filter.nb_offset.title"),
 				LanguageManagerWF.getText("sync_source_filter.nb_offset.legend")
-				, 0, 0);
+				, 0, 3);
 		offsetPath.setRegex("^(-?)[0-9]+$");
 		offsetPath.setValue("0");
 		
@@ -485,7 +485,7 @@ public class SyncSource extends AbstractSource {
 	 */
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous_source";
+		return "synchronous_source";
 	}
 
 	// Override default static methods

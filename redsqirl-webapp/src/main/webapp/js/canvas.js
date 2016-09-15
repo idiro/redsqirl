@@ -1891,7 +1891,7 @@ function changeFooter(canvasName) {
 					e.setOpacity(1);
 				}
 				
-				if(e.name == "synchronuous_sink" || e.name == "synchronuous_source"	|| e.name == "synchronuous_sink_filter"){
+				if(e.name == "synchronous_sink" || e.name == "synchronous_source"	|| e.name == "synchronous_sink_filter"){
 					e.setDraggable(false);
 					e.setOpacity(0.4);
 				}
@@ -1903,7 +1903,7 @@ function changeFooter(canvasName) {
 					e.setOpacity(0.4);
 				}
 				
-				if(e.name == "synchronuous_sink" || e.name == "synchronuous_source"	|| e.name == "synchronuous_sink_filter"){
+				if(e.name == "synchronous_sink" || e.name == "synchronous_source"	|| e.name == "synchronous_sink_filter"){
 					e.setDraggable(true);
 					e.setOpacity(1);
 				}

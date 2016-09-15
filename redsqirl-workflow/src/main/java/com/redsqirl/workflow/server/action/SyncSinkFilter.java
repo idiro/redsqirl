@@ -110,7 +110,7 @@ public class SyncSinkFilter extends DataflowAction{
 
 	@Override
 	public String getName() throws RemoteException {
-		return "synchronuous_sink_filter";
+		return "synchronous_sink_filter";
 	}
 
 	@Override

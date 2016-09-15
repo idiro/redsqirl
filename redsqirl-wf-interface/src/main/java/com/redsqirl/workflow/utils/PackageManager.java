@@ -614,9 +614,9 @@ public class PackageManager extends UnicastRemoteObject {
 		actions.add("hcatalog_source");
 		actions.add("superactioninput");
 		actions.add("superactionoutput");
-		actions.add("synchronuous_sink");
-		actions.add("synchronuous_source");
-		actions.add("synchronuous_sink_filter");
+		actions.add("synchronous_sink");
+		actions.add("synchronous_source");
+		actions.add("synchronous_sink_filter");
 		actions.add("script");
 		actions.add("bespoke");
 		actions.add("script_0_output");
