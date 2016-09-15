@@ -36,14 +36,14 @@ public interface DataFlowCoordinator extends Remote{
 
 	/**
 	 * All the coordinator elements
-	 * @return
+	 * @return The element contained in this coordinator.
 	 * @throws RemoteException
 	 */
 	List<DataFlowElement> getElements() throws RemoteException;
 	
 	/**
 	 * List of ids of the coordinator elements
-	 * @return
+	 * @return The element ids.
 	 * @throws RemoteException
 	 */
 	List<String> getComponentIds() throws RemoteException;
@@ -51,7 +51,7 @@ public interface DataFlowCoordinator extends Remote{
 	/**
 	 * Element with the given id
 	 * @param componentId
-	 * @return
+	 * @return The element with the given id or null.
 	 * @throws RemoteException
 	 */
 	DataFlowElement getElement(String componentId) throws RemoteException;
@@ -59,7 +59,7 @@ public interface DataFlowCoordinator extends Remote{
 	/**
 	 * Add an element to the coordinator
 	 * @param dfe
-	 * @return
+	 * @return An error message or null.
 	 * @throws RemoteException
 	 */
 	String addElement(DataFlowElement dfe) throws RemoteException;
@@ -67,14 +67,14 @@ public interface DataFlowCoordinator extends Remote{
 	/**
 	 * Remove an element to the coordinator
 	 * @param dfe
-	 * @return
+	 * @return An error message or null.
 	 * @throws RemoteException
 	 */
 	String removeElement(DataFlowElement dfe) throws RemoteException;
 	
 	/**
-	 * Get the coordinator name
-	 * @return
+	 * Get the coordinator name. This name should be unique within the workflow.
+	 * @return The coordinator name.
 	 * @throws RemoteException
 	 */
 	String getName() throws RemoteException;
@@ -87,15 +87,15 @@ public interface DataFlowCoordinator extends Remote{
 	void setName(String name)  throws RemoteException;
 	
 	/**
-	 * Get teh time condition of the coordinator
-	 * @return
+	 * Get the time condition of the coordinator
+	 * @return The Time Constraint of the coordinator.
 	 * @throws RemoteException
 	 */
 	CoordinatorTimeConstraint getTimeCondition() throws RemoteException;
 
 	/**
 	 * Get the coordinator variables
-	 * @return
+	 * @return The coordinator variables
 	 * @throws RemoteException
 	 */
 	DataFlowCoordinatorVariables getVariables() throws RemoteException;
@@ -110,7 +110,7 @@ public interface DataFlowCoordinator extends Remote{
 	/**
 	 * Create a coordinator with the given elements
 	 * @param dfe
-	 * @return
+	 * @return The new coordinator created after the split.
 	 * @throws RemoteException
 	 */
 	DataFlowCoordinator split(List<DataFlowElement> dfe) throws RemoteException;
@@ -128,7 +128,7 @@ public interface DataFlowCoordinator extends Remote{
 	 * @param doc
 	 * @param parent
 	 * @param wf
-	 * @return
+	 * @return An error message or null
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
@@ -138,7 +138,7 @@ public interface DataFlowCoordinator extends Remote{
 	 * Save into an xml document all the data coordinator (element list, links, meta-data...)
 	 * @param doc
 	 * @param rootElement
-	 * @return
+	 * @return An error message or null
 	 * @throws RemoteException
 	 */
 	String saveInXml(Document doc, Element rootElement) throws RemoteException;
@@ -150,14 +150,14 @@ public interface DataFlowCoordinator extends Remote{
 	 * @param df
 	 * @param pathInUse
 	 * @param runs
-	 * @return
+	 * @return An error message or null
 	 * @throws Exception
 	 */
 	String readInXmlLinks(Document doc, Element parent, DataFlow df, List<String> pathInUse,boolean runs) throws Exception;
 	
 	/**
 	 * Get an example of execution time
-	 * @return
+	 * @return An example of time of execution.
 	 * @throws RemoteException
 	 */
 	Date getExecutionTime() throws RemoteException;
@@ -174,7 +174,7 @@ public interface DataFlowCoordinator extends Remote{
 	 * 
 	 * This method is used if none are set by the user.
 	 * @param df
-	 * @return
+	 * @return Default Time Constraint calculated from the synchronous objects and the other coordinators.
 	 * @throws RemoteException
 	 */
 	DefaultConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;

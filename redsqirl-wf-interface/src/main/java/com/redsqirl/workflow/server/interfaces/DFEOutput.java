@@ -289,7 +289,7 @@ public interface DFEOutput extends Remote {
 	/**
 	 * Xml code for credentials needed for deleting.
 	 * @param oozieXmlDoc
-	 * @return
+	 * @return The xml credential element needed for this element. 
 	 * @throws RemoteException
 	 */
 	Element createCredentials(
@@ -386,7 +386,8 @@ public interface DFEOutput extends Remote {
 
 	/**
 	 * Get the type of the path
-	 * @return
+	 * @return The type of the Path 
+	 * @see PathType
 	 * @throws RemoteException
 	 */
 	public PathType getPathType() throws RemoteException;
@@ -400,8 +401,9 @@ public interface DFEOutput extends Remote {
 
 	/**
 	 * In case of a Materialized path, number of real path to process.
-	 * @return
+	 * @return 0 if it is not a Materialized path, number of instances otherwise.
 	 * @throws RemoteException
+	 * @see PathType
 	 */
 	public int getNumberMaterializedPath() throws RemoteException;
 
@@ -413,23 +415,26 @@ public interface DFEOutput extends Remote {
 	public void setNumberMaterializedPath(int numberMaterializedPath) throws RemoteException;
 
 	/**
-	 * In case of a Materialized path, get the offset.
-	 * @return
+	 * In case of a Materialized path, get the offset. 
+	 * @return 0 if it is not a Materialized path. The offset between the path timestamp and the coordinator running time.
 	 * @throws RemoteException
+	 * @see PathType
 	 */
 	public int getOffsetPath() throws RemoteException;
 
 	/**
 	 * In case of a Materialized path, set the offset.
-	 * @return
+	 * @return Set the offset between the path timestamp and the coordinator running time
 	 * @throws RemoteException
+	 * @see PathType
 	 */
 	public void setOffsetPath(int offsetPath) throws RemoteException;
 	
 	/**
 	 * Get the time constraint on a template dataset
-	 * @return
+	 * @return null if it is not a Materialized path, the frequency constraint help by it otherwise.
 	 * @throws RemoteException
+	 * @seee PathType
 	 */
 	public CoordinatorTimeConstraint getFrequency() throws RemoteException;
 }

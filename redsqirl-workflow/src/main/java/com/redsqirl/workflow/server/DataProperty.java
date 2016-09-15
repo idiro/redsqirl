@@ -75,7 +75,7 @@ DFELinkProperty {
 	 * 
 	 * @param typeAccepted
 	 * @param minOccurence
-	 * @param maxOccurenceç
+	 * @param maxOccurence
 	 * @param pathTypeAccepted
 	 * @throws RemoteException
 	 */

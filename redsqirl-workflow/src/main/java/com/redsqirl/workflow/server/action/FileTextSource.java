@@ -87,7 +87,7 @@ public class FileTextSource extends AbstractSource {
 	/**
 	 * Update the DataSubType Interaction
 	 * 
-	 * @param treeDatasubtype
+	 * @param interaction
 	 * @throws RemoteException
 	 */
 	@Override

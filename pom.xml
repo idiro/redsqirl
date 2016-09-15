@@ -26,11 +26,10 @@ support@redsqirl.com
     <properties>
 	<hadoop.version>2.7.0</hadoop.version>
 	<!-- hadoop-core for 1.X -->
-	<hadoop.artifactId>hadoop-client</hadoop.artifactId>
-	<idiro-hadoop.version>${hadoop.version}-0.3</idiro-hadoop.version>
+	<idiro-hadoop.version>${hadoop.version}-0.4</idiro-hadoop.version>
 	<idiro-base.version>0.3</idiro-base.version>
-	<idiro-tm.version>0.1</idiro-tm.version>
-	<oozie.version>3.1.3</oozie.version>
+	<idiro-tm.version>0.3</idiro-tm.version>
+	<oozie.version>4.2.0</oozie.version>
 
 	<zip.directory>${project.build.directory}/site/files</zip.directory>
 
@@ -541,7 +540,7 @@ support@redsqirl.com
 		</dependency>
 		<!-- Other -->
 		<dependency>
-		    <groupId>com.yahoo.oozie</groupId>
+		    <groupId>org.apache.oozie</groupId>
 		    <artifactId>oozie-client</artifactId>
 		    <version>${oozie.version}</version>
 		</dependency>

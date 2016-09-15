@@ -88,7 +88,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 	 * @param id
 	 * @param name
 	 * @param legend
-	 * @param tooltip
+	 * @param texttip
 	 * @param column
 	 * @param placeInColumn
 	 * @param hs

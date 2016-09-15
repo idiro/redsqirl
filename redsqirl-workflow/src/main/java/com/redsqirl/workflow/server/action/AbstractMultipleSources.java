@@ -262,7 +262,7 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 	/**
 	 * Update the DataSubType Interaction
 	 * 
-	 * @param treeDatasubtype
+	 * @param interaction
 	 * @throws RemoteException
 	 */
 	public void updateDataSubType(DFEInteraction interaction)

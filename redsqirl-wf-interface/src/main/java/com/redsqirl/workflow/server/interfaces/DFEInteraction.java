@@ -182,8 +182,8 @@ public interface DFEInteraction extends Remote {
 	public void setReplaceDisable(boolean replaceDisable) throws RemoteException;
 	
 	/**
-	 * Get coordinator variable used
-	 * @return
+	 * Get coordinator variable used.
+	 * @return The set of variable used which should be defined at a higher level.
 	 * @throws RemoteException
 	 */
 	public Set<String> getVariablesUsed() throws RemoteException;

@@ -42,8 +42,8 @@ public interface DFEPage extends Remote {
 	public String checkPage() throws RemoteException;
 	
 	/**
-	 * Get all the variables used by the interactions of this page
-	 * @return
+	 * Get all the Oozie variables used by the interactions of this page.
+	 * @return Get the variables
 	 * @throws RemoteException
 	 */
 	public Set<String> getVariablesUsed() throws RemoteException;
@@ -133,7 +133,7 @@ public interface DFEPage extends Remote {
 
 	/**
 	 * Get the checker class of the page
-	 * @return
+	 * @return The page checker set or null.
 	 * @throws RemoteException
 	 */
 	public PageChecker getChecker() throws RemoteException;

@@ -68,8 +68,8 @@ public interface JobManager extends Remote{
 	
 	/**
 	 * Get the Console URL for a job
-	 * @param jobId
-	 * @return
+	 * @param jobId The oozie job id
+	 * @return Get URL for the given Oozie job.
 	 * @throws RemoteException
 	 */
 	String getConsoleUrl(String jobId) throws RemoteException;
@@ -151,9 +151,9 @@ public interface JobManager extends Remote{
 	public String getElementStatus(DataFlow df, DataFlowElement e) throws RemoteException, Exception;
 	
 	/**
-	 * Get a JSON with coordinators info
+	 * Get the job info of an Oozie Bundle job (data pipeline)
 	 * @param jobId
-	 * @return
+	 * @return a JSON with coordinators info
 	 * @throws RemoteException
 	 */
 	public String getBundleJobInfo(String jobId) throws RemoteException;

@@ -20,7 +20,7 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	 * Save variables in a xml element
 	 * @param doc
 	 * @param rootElement
-	 * @return
+	 * @return Save in the given document under the given element the object.
 	 * @throws RemoteException
 	 */
 	public String saveInXml(Document doc, Element rootElement) throws RemoteException;
@@ -36,7 +36,7 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	
 	/**
 	 * Get all the coordinator variables
-	 * @return
+	 * @return Get all the variables, the returned object cannot be sent through RMI.
 	 * @throws RemoteException
 	 */
 	Collection<DataFlowCoordinatorVariable> getVariables() throws RemoteException;
@@ -57,7 +57,7 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	Map<String,String> getKeyValues() throws RemoteException;
 	
 	/**
-	 * Get the variable names
+	 * Get the variable names, the object cannot be sent through RMI.
 	 * @return
 	 * @throws RemoteException
 	 */

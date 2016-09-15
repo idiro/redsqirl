@@ -73,10 +73,11 @@ public interface DataFlow extends Remote, Cloneable{
 	String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
-	 * Run a bundle job on a period of time
+	 * Run a bundle job on a period of time.
+	 * If the end date is in the past, Red Sqirl will run the job in bash mode.
 	 * @param startTime
 	 * @param endTime
-	 * @return
+	 * @return Run a schedule workflow for a period from start date to end date. 
 	 * @throws RemoteException
 	 */
 	String run(Date startTime,Date endTime) throws RemoteException;
@@ -99,15 +100,15 @@ public interface DataFlow extends Remote, Cloneable{
 
 	/**
 	 * Check if the workflow is a schedule workflow
-	 * @return
+	 * @return True if it is a bundle job.
 	 * @throws RemoteException
 	 */
 	boolean isSchedule() throws RemoteException;
 	
 	/**
-	 * 
+	 * Get The Running status of a component.
 	 * @param componentId
-	 * @return
+	 * @return null if the component doesn't exist, ERROR, OK or KILLED otherwise.
 	 * @throws RemoteException
 	 */
 	String getRunningStatus(String componentId) throws RemoteException;
@@ -414,16 +415,17 @@ public interface DataFlow extends Remote, Cloneable{
 	List<DataFlowElement> getElement() throws RemoteException;
 	
 	/**
-	 * Get the list of coordinators
-	 * @return
+	 * Get the list of coordinators.
+	 * If the workflow is not a bundle, all the element are contained in one object, which enables variables.
+	 * @return Get all the coordinators, 
 	 * @throws RemoteException
 	 */
 	List<DataFlowCoordinator> getCoordinators() throws RemoteException;
 	
 	/**
-	 * 
+	 * Get a coordinator
 	 * @param coordinatorName
-	 * @return
+	 * @return Get the given coordinator.
 	 * @throws RemoteException
 	 */
 	DataFlowCoordinator getCoordinator(String coordinatorName) throws RemoteException;
@@ -440,7 +442,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * Check coordinator before merging
 	 * @param coordName1
 	 * @param coordName2
-	 * @return
+	 * @return null if there are no conflict, or an error message otherwise.
 	 * @throws RemoteException
 	 */
 	String checkCoordinatorMergeConflict(String  coordName1, String coordName2) throws RemoteException;
@@ -449,7 +451,7 @@ public interface DataFlow extends Remote, Cloneable{
 	 * Split elements from one coordinator into two
 	 * @param coordinatorName
 	 * @param elements
-	 * @return
+	 * @return null if the split is successful or an error message otherwise.
 	 * @throws RemoteException
 	 */
 	String splitCoordinator(String coordinatorName, List<String> elements) throws RemoteException;

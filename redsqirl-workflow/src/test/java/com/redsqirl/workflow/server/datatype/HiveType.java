@@ -224,7 +224,6 @@ public class HiveType extends DataOutput{
 	
 	/**
 	 * Generate a string for a path
-	 * @param userName
 	 * @param component
 	 * @param outputName
 	 * @return generated path
@@ -265,7 +264,6 @@ public class HiveType extends DataOutput{
 	}
 	/**
 	 * Check if the path auto-generated
-	 * @param userName
 	 * @param component
 	 * @param outputName
 	 * @return <code>true</code> if path is auto generated else <code>false</code>

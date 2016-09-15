@@ -83,9 +83,9 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 	 * @throws RemoteException
 	 */
 	public SqlTableUnionInteraction(String id, String name, String legend,
-			int column, int placeInColumn, SqlElement hs) throws RemoteException {
+			int column, int placeInColumn, SqlElement hu) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
-		this.hu = hs;
+		this.hu = hu;
 		getRootTable();
 	}
 	/**

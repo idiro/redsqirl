@@ -318,7 +318,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * Check if all the variables required are into the coordinator.
 	 * 
 	 * @param wfName The workflow name
-	 * @return
+	 * @return An error if a variable needed by the object is not defined in the coordinator.
 	 * @throws RemoteException
 	 */
 	public String checkVariables(String wfName) throws RemoteException{

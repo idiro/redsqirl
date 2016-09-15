@@ -58,28 +58,67 @@ public interface OozieAction extends Remote{
 
 
 	/**
-	 * Get the coordinator variables
-	 * @return
+	 * Get extra parameters to set on the oozie job
+	 * @return All the extra job parameters set by the users.
 	 * @throws RemoteException
 	 */
 	DataFlowCoordinatorVariables getExtraJobParameters() throws RemoteException;
 	
 	/**
-	 * True if the user can add job parameters
-	 * @return
+	 * False will mean that not job parameters can be added.
+	 * @return True if the user can add job parameters
 	 * @throws RemoteException
+	 * @see #getExtraJobParameters()
 	 */
 	boolean supportsExtraJobParameters() throws RemoteException;
 	
-	boolean addVariable(String arg0) throws RemoteException;
+	/**
+	 * Add a variable 
+	 * @param variable
+	 * @return True if the variable has been added
+	 * @throws RemoteException
+	 * @see #getVariables()
+	 */
+	boolean addVariable(String variable) throws RemoteException;
 
-	boolean addAllVariables(Collection<? extends String> arg0) throws RemoteException;
+	/**
+	 * Add all the variables
+	 * @param variables
+	 * @return True if at least one variable has been added
+	 * @throws RemoteException
+	 * @see #getVariables()
+	 */
+	boolean addAllVariables(Collection<? extends String> variables) throws RemoteException;
 
+	/**
+	 * Clear the variable list.
+	 * @throws RemoteException
+	 * @see #getVariables()
+	 */
 	void clearVariables() throws RemoteException;
 
-	boolean containsVariable(Object arg0) throws RemoteException;
+	/**
+	 * Check if a variable exists
+	 * @param var
+	 * @return True if the variable is registered
+	 * @throws RemoteException
+	 * @see #getVariables()
+	 */
+	boolean containsVariable(Object var) throws RemoteException;
 
-	boolean removeVariable(Object arg0) throws RemoteException;
+	/**
+	 * Remove a variable
+	 * @param var
+	 * @return True if a variable has been removed, false if it didn't exist in the first place.
+	 * @throws RemoteException
+	 * @see #getVariables()
+	 */
+	boolean removeVariable(Object var) throws RemoteException;
 
+	/**
+	 * Get workflow variables to parse to the action.
+	 * @return The variables to parse from the workflow to the script.
+	 * @throws RemoteException
+	 */
 	Set<String> getVariables() throws RemoteException;
 }

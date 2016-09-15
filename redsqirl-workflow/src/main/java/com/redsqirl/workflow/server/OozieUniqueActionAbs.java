@@ -63,7 +63,6 @@ public abstract class OozieUniqueActionAbs  extends OozieActionAbs{
 	 * @param oozieXmlDoc oozie xml document
 	 * @param action the action, parent element
 	 * @param fileNames the file names with path
-	 * @return credential used, null if none
 	 * @throws RemoteException
 	 */
 	public abstract void createOozieElement(
