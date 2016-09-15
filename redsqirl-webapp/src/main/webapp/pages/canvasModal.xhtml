@@ -449,8 +449,12 @@
 		                            <h:graphicImage url="../image/icons/button-pencil02.gif" style="width:35px;float:right;margin-top:10px;margin-right: 5px;" title="#{messages.label_text_editor}"/>
 								</a4j:commandLink>
 								
-								<a4j:commandLink title="Resize" onclick="toggleTexAreaSize();">
+								<a4j:commandLink title="Resize" onclick="toggleTexAreaSize();" rendered="#{interCur.editor.openPopup == 'Y'}">
 		                            <img src="../image/icons/resize-6-24.gif" style="float:right;margin-right:-30px;margin-top:60px;"/>
+		                        </a4j:commandLink>
+		                        
+		                        <a4j:commandLink title="Resize" onclick="toggleTexAreaSize();" rendered="#{interCur.editor.openPopup != 'Y'}">
+		                            <img src="../image/icons/resize-6-24.gif" style="float:right;margin-right:10px;margin-top:60px;"/>
 		                        </a4j:commandLink>
 								
 	                        </h:inputTextarea>
