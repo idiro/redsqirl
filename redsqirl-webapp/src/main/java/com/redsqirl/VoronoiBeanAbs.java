@@ -22,7 +22,7 @@ public class VoronoiBeanAbs extends BaseBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(VoronoiBeanAbs.class);
 	
-	protected List<VoronoiType> tableList = new ArrayList<VoronoiType>();
+	protected List<VoronoiType> tableList;
 	protected DataFlowCoordinatorVariables dataFlowCoordinatorVariables;
 	protected List<SelectItem> varFunctionsList;
 	protected List<String> varFunctionsListString;
@@ -50,7 +50,7 @@ public class VoronoiBeanAbs extends BaseBean implements Serializable {
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		String rowKey = context.getExternalContext().getRequestParameterMap().get("rowKey");
-		if(rowKey != null && !rowKey.isEmpty()){
+		if(rowKey != null && !rowKey.isEmpty() && tableList.size() >= Integer.parseInt(rowKey)){
 			textAreaEditor = tableList.get(Integer.parseInt(rowKey)).getValue();
 			setSelectedRowNumber(rowKey);
 		}

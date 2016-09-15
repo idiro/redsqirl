@@ -3213,43 +3213,71 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public String[] getAggregationDetails(){
+	public String[] getAggregationDetails() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String subWf = params.get("subWf");
 		String inputSubWf = params.get("inputSubWf");
 		String outputSubWf = params.get("outputSubWf");
-		String inputNameSubWorkflow = null;
-		String inputNameModel = null;
-		String inputComment = null;
-		Map<String,String> inputs = new LinkedHashMap<String,String>();
-		Map<String,String> outputs = new LinkedHashMap<String,String>();
-		try {
-			JSONObject subWfJson = new JSONObject(subWf);
-			inputNameSubWorkflow = subWfJson.get("swName").toString();
-			inputNameModel =  subWfJson.get("aggNameModel").toString();
-			inputComment =  subWfJson.get("aggComment").toString();
+		String selectedIcons = params.get("selectedIconsCommaDelimited");
 
-			JSONObject inputJSON = new JSONObject(inputSubWf);
-			Iterator inputIt = inputJSON.keys();
-			while(inputIt.hasNext()){
-				String inputKey = (String) inputIt.next();
-				inputs.put(inputKey, inputJSON.getString(inputKey).toString());
+		String error = null;
+		if(df.isSchedule()){
+			List<String> coordinatorNameList = new ArrayList<String>();
+			String[] groupIds = selectedIcons.split(",");
+			for (String groupId : groupIds) {
+				String componentId = idMap.get(nameWorkflow).get(groupId);
+				DataFlowElement el = df.getElement(componentId);
+				
+				//check if is same coordinator
+				if(!coordinatorNameList.isEmpty() && !coordinatorNameList.contains(el.getCoordinatorName())){
+					error = getMessageResources("msg_error_split_differents");
+					break;
+				}else{
+					coordinatorNameList.add(el.getCoordinatorName());
+				}
 			}
-
-			JSONObject outputJSON = new JSONObject(outputSubWf);
-			Iterator outputIt = outputJSON.keys();
-			while(outputIt.hasNext()){
-				String outputKey = (String) outputIt.next();
-				outputs.put(outputKey, outputJSON.getString(outputKey).toString());
-			}
-
-			aggregate(inputNameSubWorkflow,inputNameModel,inputComment,inputs,outputs);
-		} catch (JSONException e) {
-			logger.warn("Error updating positions",e);
 		}
+		
+		if(error == null){
+			
+			String inputNameSubWorkflow = null;
+			String inputNameModel = null;
+			String inputComment = null;
+			Map<String,String> inputs = new LinkedHashMap<String,String>();
+			Map<String,String> outputs = new LinkedHashMap<String,String>();
+			try {
+				JSONObject subWfJson = new JSONObject(subWf);
+				inputNameSubWorkflow = subWfJson.get("swName").toString();
+				inputNameModel =  subWfJson.get("aggNameModel").toString();
+				inputComment =  subWfJson.get("aggComment").toString();
 
-		return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
+				JSONObject inputJSON = new JSONObject(inputSubWf);
+				Iterator inputIt = inputJSON.keys();
+				while(inputIt.hasNext()){
+					String inputKey = (String) inputIt.next();
+					inputs.put(inputKey, inputJSON.getString(inputKey).toString());
+				}
+
+				JSONObject outputJSON = new JSONObject(outputSubWf);
+				Iterator outputIt = outputJSON.keys();
+				while(outputIt.hasNext()){
+					String outputKey = (String) outputIt.next();
+					outputs.put(outputKey, outputJSON.getString(outputKey).toString());
+				}
+
+				aggregate(inputNameSubWorkflow,inputNameModel,inputComment,inputs,outputs);
+			} catch (JSONException e) {
+				logger.warn("Error updating positions",e);
+			}
+			
+			return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
+			
+		}else{
+			displayErrorMessage(error, "GETAGGREGATIONDETAILS");
+		}
+		
+		return  new String[]{};
 	}
 
 	private void aggregate(

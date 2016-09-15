@@ -863,11 +863,11 @@
             </rich:tab>
             
 			<!-- Voronoi Start -->
-            <rich:tab id="coordinatorTab" label="#{messages.label_dynamic_coordinator_tab}" rendered="#{canvasModalBean.showCoordinatorTab}" >
+            <rich:tab id="coordinatorTab" label="#{messages.label_dynamic_coordinator_tab}" rendered="#{canvasModalBean.showCoordinatorTab}" reRender="canvasModalTableVoronoi">
             	
             	<a4j:region>
-			        <a4j:jsFunction name="openVoronoiEditorModal" action="#{canvasModalBean.openVoronoiEditorModal}" value=". . ."  
-			                reRender="commandTextVoronoi,listFunctionsVoronoi,comboboxListFunctions,msnError" 
+			        <a4j:jsFunction name="openVoronoiEditorModalCM" action="#{canvasModalBean.openVoronoiEditorModal}" value=". . ."  
+			                reRender="commandTextVoronoi,listFunctionsVoronoi,comboboxListFunctions,msnError,tableVoronoi" 
 			                oncomplete="mountComboboxTextEditorVoronoiCM('#{canvasModalBean.varFunctionsListString}');#{rich:component('voronoiTextEditorModalCM')}.show();" style="float:right;margin-right:62px;height:46px;">
 			                    <a4j:actionparam name="rowKey" value="#{rowNb}"/>
 			        </a4j:jsFunction>
@@ -924,7 +924,7 @@
 					        
 					        <h:inputText value="#{rowItem.value}" styleClass="tableInteractionTextEditor" onchange="reLoadInputEditorVoronoi();"
 					        	id="editorVoronoi#{rowNb+1}" >
-								<a4j:commandLink onclick="openVoronoiEditorModal('#{rowNb}');" >
+								<a4j:commandLink onclick="openVoronoiEditorModalCM('#{rowNb}');" >
 									<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
 								</a4j:commandLink>
 							</h:inputText>

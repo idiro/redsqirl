@@ -45,6 +45,8 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	public void openVoronoi() throws RemoteException{
 
 		logger.warn("openVoronoi");
+		
+		tableList = new ArrayList<VoronoiType>();
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		String groupId = context.getExternalContext().getRequestParameterMap().get("paramGroupId");
@@ -58,8 +60,8 @@ public class VoronoiBean extends VoronoiBeanAbs {
 
 		if(dataFlowCoordinator != null){
 			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
-
-			tableList = new ArrayList<VoronoiType>();
+			setDataFlowCoordinatorVariables(vars);
+			
 			Iterator<String> ans = vars.getKeyValues().keySet().iterator();
 			while(ans.hasNext()){
 				String key = ans.next();
@@ -132,7 +134,9 @@ public class VoronoiBean extends VoronoiBeanAbs {
 
 		dataFlowCoordinator.getVariables().removeAllVariables();
 		for (VoronoiType voronoiType : tableList) {
-			dataFlowCoordinator.getVariables().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
+			if(voronoiType.getKey() != null && !voronoiType.getKey().isEmpty() && voronoiType.getValue() != null && !voronoiType.getValue().isEmpty()){
+				dataFlowCoordinator.getVariables().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
+			}
 		}
 		
 		

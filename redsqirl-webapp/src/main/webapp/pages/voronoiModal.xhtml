@@ -52,7 +52,7 @@ function selectedScheduling(){
 	
 		<a4j:region>
 	        <a4j:jsFunction name="openVoronoiEditorModal" action="#{voronoiBean.openVoronoiEditorModal}" value=". . ."  
-	                reRender="commandTextVoronoi,listFunctionsVoronoi,comboboxListFunctions,msnError" 
+	                reRender="commandTextVoronoiVM,listFunctionsVoronoi,comboboxListFunctions,msnError,tableVoronoi" 
 	                oncomplete="mountComboboxTextEditorVoronoi('#{voronoiBean.varFunctionsListString}');#{rich:component('voronoiTextEditorModal')}.show();" style="float:right;margin-right:62px;height:46px;">
 	                    <a4j:actionparam name="rowKey" value="#{rowNb}"/>
 	        </a4j:jsFunction>

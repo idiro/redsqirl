@@ -9,7 +9,10 @@
 //<![CDATA[
 
 	function completeCommandVM(text){
-	    var txtarea = jQuery("[id$='commandTextVoronoi']");
+		
+		console.log("completeCommandVM " + text);
+		
+	    var txtarea = jQuery("[id$='commandTextVoronoiVM']");
 	    var scrollPos = txtarea.scrollTop;
 	    var strPos = 0;
 	    strPos = txtarea.getCursorPosition();
@@ -144,7 +147,7 @@ function mountComboboxTextEditorVoronoi(obj1){
 			
 		
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{voronoiBean.textAreaEditor}"
-			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandTextVoronoi" />
+			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandTextVoronoiVM" />
 
 		<div style="width:100%;overflow:auto;height:100%;overflow-x:hidden;overflow-y:auto;" >
 			
@@ -213,7 +216,7 @@ function mountComboboxTextEditorVoronoi(obj1){
 			
 			<a4j:commandButton action="#{voronoiBean.applyTableEditor}" styleClass="greenButton" value="#{messages.button_ok}"
 				oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('voronoiTextEditorModal')}.hide() };"
-				reRender="tableVoronoi, commandTextVoronoi, msnError, canvasModalTableVoronoi" />
+				reRender="tableVoronoi, commandTextVoronoiVM, msnError, canvasModalTableVoronoi" />
 			
 		</rich:panel>
 

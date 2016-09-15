@@ -888,8 +888,8 @@ function refreshCanvas() {
 	
 	//console.log("refreshCanvas");
 	
-    var layer = canvasArray[selectedCanvas].layer;
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    //var layer = canvasArray[selectedCanvas].layer;
+    //var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     
     //layer.destroyChildren();
     //polygonLayer.destroyChildren();

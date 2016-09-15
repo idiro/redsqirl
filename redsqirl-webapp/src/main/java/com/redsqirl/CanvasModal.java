@@ -436,7 +436,9 @@ public class CanvasModal extends VoronoiBeanAbs {
 		dfe.getOozieAction().getExtraJobParameters().removeAllVariables();
 		for (VoronoiType voronoiType : tableList) {
 			if(error == null){
-				error = dfe.getOozieAction().getExtraJobParameters().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
+				if(voronoiType.getKey() != null && !voronoiType.getKey().isEmpty() && voronoiType.getValue() != null && !voronoiType.getValue().isEmpty()){
+					error = dfe.getOozieAction().getExtraJobParameters().addVariable(voronoiType.getKey(), voronoiType.getValue(), voronoiType.getDescription(), false);
+				}
 			}
 		}
 		displayErrorMessage(error, "APPLYVORONOI");

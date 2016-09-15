@@ -50,7 +50,7 @@
 	<a4j:region>
 		<a4j:jsFunction name="cloneBeforeAggregate"
 			action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-			oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate(getAggregateValues(),getAggregateInputs(),getAggregateOutputs());">
+			oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate(getAggregateValues(),getAggregateInputs(),getAggregateOutputs(),getSelectedIconsCommaDelimited());">
 			<a4j:actionparam name="allpositions" />
 		</a4j:jsFunction>
 	<a4j:region>
@@ -58,10 +58,11 @@
 		<a4j:jsFunction name="aggregate"
 			data="#{canvasBean.aggregationDetails}"
 			reRender="errorTable, msnError"
-			oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();">
+			oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction();} jQuery.unblockUI();">
 			<a4j:actionparam name="subWf" />
 			<a4j:actionparam name="inputSubWf" />
 			<a4j:actionparam name="outputSubWf" />
+			<a4j:actionparam name="selectedIconsCommaDelimited" />
 		</a4j:jsFunction>
 	</a4j:region>
 	<a4j:region>
