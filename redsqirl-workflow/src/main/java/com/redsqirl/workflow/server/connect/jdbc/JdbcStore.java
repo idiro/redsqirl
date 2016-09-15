@@ -221,19 +221,7 @@ public class JdbcStore extends Storage {
 			}else if(listConnections().contains(connectionName) &&
 					lastGetConnection.get(connectionName) != null &&
 							checkConnectionTimeOut < System.currentTimeMillis() - lastGetConnection.get(connectionName)){
-				boolean validConnection = true;
-				try{
-					validConnection = ans.getConnection().isValid(10);
-				}catch(Exception e){
-					validConnection = false;
-				}
-				if(!validConnection){
-					try{
-						ans.closeConnection();
-					}catch(Exception e){
-					}
-					ans = createConnectionAndUpdateMap(connectionName);
-				}
+				ans.validateAndReset();
 			}
 			lastGetConnection.put(connectionName, System.currentTimeMillis());
 		}catch (Exception e){

@@ -21,6 +21,7 @@ package com.redsqirl.workflow.server.connect.jdbc;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import org.apache.log4j.Logger;
 import com.idiro.utils.db.BasicStatement;
 import com.idiro.utils.db.JdbcConnection;
 import com.idiro.utils.db.JdbcDetails;
-import com.redsqirl.workflow.server.connect.jdbc.JdbcQueryManager.Query;
 
 public class JdbcStoreConnection extends JdbcConnection{
 
@@ -45,6 +45,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 	protected static final long refreshTimeOut = 20000;
 	protected long updateTables = 0;
 	protected boolean listing = false;
+	private int errorInARow = 0;
 	
 	public JdbcStoreConnection(JdbcDetails arg0, RedSqirlBasicStatement arg1)
 			throws Exception {
@@ -65,26 +66,36 @@ public class JdbcStoreConnection extends JdbcConnection{
 	}
 
 	public final List<String> listTables() throws SQLException, RemoteException {
-		if(!listing){
-			if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
-				logger.debug("Refresh table list");
-				listing = true;
-				tables = execListTables();
-				updateTables = System.currentTimeMillis();
-				listing = false;
-			}
-		}else{
-			while(listing){
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-				}
-			}
+		waitForQuery();
+		if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
+			listing = true;
+			logger.debug("Refresh table list");
+			tables = execListTables();
+			updateTables = System.currentTimeMillis();
+			listing = false;
 		}
 		if(tables != null && logger.isDebugEnabled()){
 			logger.debug("tables on "+connectionDetails.getDburl()+": "+tables.toString());
 		}
 		return tables;
+	}
+	
+	private final void waitForQuery(){
+		while(listing){
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+	
+	private final void requestTicketForQuery(){
+		waitForQuery();
+		listing = true;
+	}
+	
+	private final void releaseTicket(){
+		listing = false;
 	}
 	
 	protected final List<String> execListTables() throws SQLException, RemoteException {
@@ -186,7 +197,9 @@ public class JdbcStoreConnection extends JdbcConnection{
 				nameIdx = 4;
 				typeIdx = 6;
 			}else{
+				requestTicketForQuery();
 				rs = executeQuery(query);
+				releaseTicket();
 			}
 			int i = 0;
 			Integer parts = 0;
@@ -237,8 +250,16 @@ public class JdbcStoreConnection extends JdbcConnection{
 			rs.close();
 
 		} catch (Exception e) {
+			releaseTicket();
 			logger.error("Fail to describe the table " + table,e);
+			if(errorInARow == 0){
+				++errorInARow;
+				if(validateAndReset()){
+					execDesc(table);
+				}
+			}
 		}
+		errorInARow = 0;
 		if(logger.isDebugEnabled()){
 			logger.debug("desc "+table+": "+ fieldsStr);
 			logger.debug("partition "+table+": "+ partsStr);
@@ -268,6 +289,32 @@ public class JdbcStoreConnection extends JdbcConnection{
 	
 	public RedSqirlBasicStatement getRsBs(){
 		return (RedSqirlBasicStatement) getBs();
+	}
+	
+	public boolean validateAndReset(){
+		boolean reset = false;
+		boolean validConnection = true;
+		try{
+			validConnection = getConnection().isValid(10);
+		}catch(Exception e){
+			validConnection = false;
+		}
+		if(!validConnection){
+			try{
+				closeConnection();
+			}catch(Exception e){
+			}
+			try{
+				connection = (DriverManager.getConnection(
+						connectionDetails.getDburl(),
+						connectionDetails.getUsername(),
+						connectionDetails.getPassword()));
+				reset = true;
+			}catch(Exception e){
+				logger.error(e,e);
+			}
+		}
+		return reset;
 	}
 
 }

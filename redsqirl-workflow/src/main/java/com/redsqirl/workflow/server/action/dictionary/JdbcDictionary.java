@@ -675,18 +675,18 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		logger.debug(orderByExpr);
 		if(orderByExpr.toUpperCase().startsWith("ORDER BY ")){
 			orderByExpr = orderByExpr.substring("ORDER BY ".length());
-			if(orderByExpr.endsWith(" DESC")){
-				orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" DESC"));
-			}
-			if(orderByExpr.endsWith("ASC")){
-				orderByExpr = orderByExpr.substring(0,orderByExpr.lastIndexOf(" ASC"));
-			}
 		}
 		
 		if(orderByExpr != null && !orderByExpr.isEmpty()){
 			String[] args = orderByExpr.split(",");
 			for(int j =0; j < args.length;++j){
-				if(getReturnType(args[j], fields, fieldAggreg) == null){
+				String argOrderCur = args[j];
+				if(argOrderCur.endsWith(" DESC")){
+					argOrderCur = argOrderCur.substring(0,argOrderCur.lastIndexOf(" DESC"));
+				}else if(argOrderCur.endsWith(" ASC")){
+					argOrderCur = argOrderCur.substring(0,argOrderCur.lastIndexOf(" ASC"));
+				}
+				if(getReturnType(argOrderCur, fields, fieldAggreg) == null){
 					throw new Exception("Error in expression "+args[j]);
 				}
 			}

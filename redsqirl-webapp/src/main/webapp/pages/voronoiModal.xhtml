@@ -127,8 +127,9 @@ function selectedScheduling(){
 			
 			
 			 <h1><h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/></h1>
-			 <center><h:outputText value="#{messages.label_voronoi_variables_desc}" title="#{messages.title_voronoi_variables_desc}"/></center>
 			 
+			 <h:outputText value="#{messages.label_voronoi_variables_desc}"/>
+			 <br/>
 			
 			<a4j:commandLink title="#{messages.label_add_new_line}" action="#{voronoiBean.addNewLine}" reRender="tableVoronoi" >
             	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />

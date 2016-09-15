@@ -295,6 +295,10 @@ public class OozieDictionary extends AbstractDictionary{
 				} catch (Exception e) {
 				}
 			}
+			if(type == null && expr.matches("\\w+")){
+				//Can be a variable
+				type = "STRING";
+			}
 		}
 
 		logger.debug("getting field type if null " + type + " " + expr);

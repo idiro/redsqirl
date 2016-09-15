@@ -877,9 +877,14 @@
 				<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:490px;width:100%;padding-left: 3px;padding-right: 3px;" >
 				
 					
-					 <h1><h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/></h1>
-					 <center><h:outputText value="#{messages.label_voronoi_variables_desc}" title="#{messages.title_voronoi_variables_desc}"/></center>
-					
+					 <h1><h:outputText value="#{messages.label_oozie_job_param}"/></h1>
+					 <span>
+					 <img src="../image/icons/li_msg_warn.gif" />
+					 <h:outputText value="#{messages.label_warning_job_param_desc}"/>
+					 </span>
+					 <br/>
+					 <h:outputText value="#{messages.label_oozie_job_param_desc}" />
+					<br/>
 					<a4j:commandLink title="#{messages.label_add_new_line}" action="#{canvasModalBean.addNewLine}" reRender="canvasModalTableVoronoi" >
 		            	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 					</a4j:commandLink>

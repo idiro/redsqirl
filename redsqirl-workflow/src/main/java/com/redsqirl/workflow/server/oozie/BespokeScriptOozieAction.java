@@ -212,6 +212,11 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 		
 		return ans;
 	}
+	
+	@Override
+	public boolean supportsExtraJobParameters()  throws RemoteException{
+		return false;
+	}
 
 	/**
 	 * @return the fileExtension

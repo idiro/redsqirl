@@ -55,7 +55,7 @@ public class HCatalogSource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public HCatalogSource() throws RemoteException {
-		super(new ShellAction());
+		super(null);
 
 		logger.debug("HCatalogSource - addSourcePage ");
 		idVsOutputName.put("", out_name);

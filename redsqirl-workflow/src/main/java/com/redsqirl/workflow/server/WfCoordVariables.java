@@ -165,13 +165,13 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 				String curExpr = m.group(1);
 				String errorLoc = null;
 				try{
-					errorLoc = oozieDict.getReturnType(curExpr) == null ? null:"Expression unrecognized";
+					errorLoc = oozieDict.getReturnType(curExpr) == null ? "Expression unrecognized":null;
 				}catch(Exception e){
 					logger.warn(e,e);
 					errorLoc = "Unexpected error: "+e.getMessage();
 				}
 				if(errorLoc != null){
-					error += errorLoc+"\n";
+					error += expression+": "+errorLoc+"\n";
 				}
 			}
 		}catch(Exception e){
