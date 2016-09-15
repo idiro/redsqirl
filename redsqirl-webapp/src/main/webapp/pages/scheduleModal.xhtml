@@ -8,7 +8,12 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<h:form>
-		<rich:panel id="modalSchedule" style="border:none;overflow:auto;height:510px;width:100%;padding-left: 3px;padding-right: 3px;" >
+		<rich:panel id="modalSchedule" style="border:none;overflow:auto;height:100%;width:100%;padding-left: 3px;padding-right: 3px;" >
+		
+			<p> <h:outputText value="#{messages.label_run_schedule_desc_1}" /></p>
+			<p> <h:outputText value="#{messages.label_run_schedule_desc_2}" /></p>
+			<p> <h:outputText value="#{messages.label_run_schedule_desc_3}" /></p>
+			<p> <h:outputText value="#{messages.label_run_schedule_desc_4}" /></p>
 		
 			<table>
 				<tr>
