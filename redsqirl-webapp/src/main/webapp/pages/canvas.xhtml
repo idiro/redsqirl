@@ -873,10 +873,10 @@
 	     function blockRunningWorkflowJS(){
 	     	//<![CDATA[
 	     	           
-			console.log("blockRunningWorkflowJS " + selectedCanvas);
-			console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
+			//console.log("blockRunningWorkflowJS " + selectedCanvas);
+			//console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
 	     	           
-	     	if(isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true){
+	     	if(isIfISchedule(selectedCanvas) == true){
 	     		console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
@@ -2309,7 +2309,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}"
-					oncomplete="setIfISchedule(selectedCanvas,data[3]);if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
+					oncomplete="setIfISchedule(selectedCanvas,data[3]);if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ jQuery('#mainPanelDiv').unblock(); #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -2317,7 +2317,7 @@
 				
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
+					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
@@ -2843,7 +2843,7 @@
 
 									<rich:menuItem id="runMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runitems}"
-										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') }); runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
@@ -2851,7 +2851,7 @@
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
-										onclick="runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()));"
+										onclick="jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') }); runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()));"
 										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
