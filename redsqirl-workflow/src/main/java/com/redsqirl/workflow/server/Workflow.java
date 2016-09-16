@@ -31,9 +31,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,6 +90,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOptimiser;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator.DefaultConstraint;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariables;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -312,35 +311,54 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	public String run(Date startTime,Date endTime) throws RemoteException {
-		LinkedList<String> elToRun = new LinkedList<String>();
-		Iterator<DataFlowElement> it = getElement().iterator();
-		while (it.hasNext()) {
-			DataFlowElement cur = it.next();
-			if (cur.getAllOutputComponent().size() == 0) {
-				boolean toAdd = false;
-				boolean existRecorded = false;
-				boolean notexistNotTemporary = false;
-				Collection<DFEOutput> outputList = cur.getDFEOutput().values();
-				Iterator<DFEOutput> itOutput = outputList.iterator();
-				while (itOutput.hasNext()) {
-					DFEOutput outCur = itOutput.next();
-					if (!outCur.isPathExist()) {
-						toAdd = true;
-						if(!SavingState.TEMPORARY.equals(outCur.getSavingState())){
-							notexistNotTemporary = true;
-						}
-					} else if (SavingState.RECORDED.equals(outCur
-							.getSavingState())) {
-						toAdd = false;
-						existRecorded = true;
+		String error = null;
+		if(isSchedule()){
+			//Check if the coordinators are OK.
+			Iterator<DataFlowCoordinator> itCoord = coordinators.iterator();
+			while(itCoord.hasNext() && error == null){
+				DataFlowCoordinator cur = itCoord.next();
+				
+				if(cur.getTimeCondition().getUnit() == null || cur.getTimeCondition().getFrequency() == 0){
+					DefaultConstraint dC = cur.getDefaultTimeConstraint(this);
+					if(dC.getConstraint().getUnit() == null || dC.getConstraint().getFrequency() == 0){
+						error = "Coordinator "+cur.getName()+" is not scheduled.";
 					}
-				}
-				if ( (existRecorded && notexistNotTemporary)|| (!existRecorded && toAdd) || outputList.isEmpty()) {
-					elToRun.add(cur.getComponentId());
 				}
 			}
 		}
-		return run(elToRun,startTime,endTime);
+		
+		if(error == null){
+			LinkedList<String> elToRun = new LinkedList<String>();
+			Iterator<DataFlowElement> it = getElement().iterator();
+			while (it.hasNext()) {
+				DataFlowElement cur = it.next();
+				if (cur.getAllOutputComponent().size() == 0) {
+					boolean toAdd = false;
+					boolean existRecorded = false;
+					boolean notexistNotTemporary = false;
+					Collection<DFEOutput> outputList = cur.getDFEOutput().values();
+					Iterator<DFEOutput> itOutput = outputList.iterator();
+					while (itOutput.hasNext()) {
+						DFEOutput outCur = itOutput.next();
+						if (!outCur.isPathExist()) {
+							toAdd = true;
+							if(!SavingState.TEMPORARY.equals(outCur.getSavingState())){
+								notexistNotTemporary = true;
+							}
+						} else if (SavingState.RECORDED.equals(outCur
+								.getSavingState())) {
+							toAdd = false;
+							existRecorded = true;
+						}
+					}
+					if ( (existRecorded && notexistNotTemporary)|| (!existRecorded && toAdd) || outputList.isEmpty()) {
+						elToRun.add(cur.getComponentId());
+					}
+				}
+			}
+			error = run(elToRun,startTime,endTime); 
+		}
+		return error; 
 	}
 	
 	
