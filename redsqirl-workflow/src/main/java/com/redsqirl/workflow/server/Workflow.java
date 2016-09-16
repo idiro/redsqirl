@@ -2904,6 +2904,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 		}
+		if(!ans && coordinators.size() > 1){
+			String error = null;
+			while(coordinators.size() > 1 && error == null){
+				String nameCoord1 = coordinators.get(0).getName();
+				String nameCoord2 = coordinators.get(1).getName();
+				error = mergeCoordinator(nameCoord1, nameCoord2);
+			}
+			if(error != null){
+				logger.error("Fail merging a non schedule workflow: "+error);
+			}
+		}
+		
 		return ans;
 	}
 	public boolean isChanged() throws RemoteException{
