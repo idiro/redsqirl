@@ -8,7 +8,7 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<h:form>
-		<rich:panel id="modalReRunSchedule" style="border:none;overflow:auto;height:100%;width:100%;padding-left: 3px;padding-right: 3px;" >
+		<rich:panel id="modalReRunSchedule" style="border:none;overflow:auto;height:280px;width:100%;padding-left: 3px;padding-right: 3px;" >
 			<p> <h:outputText value="#{messages.label_rerun_schedule_desc_1}" /></p>
 			
 			<table>
@@ -19,7 +19,7 @@
 					<td>
 			    		<rich:calendar id="runningStartDate" value="#{canvasBean.reRunSchedulingStartDate}" datePattern="d/M/yy HH:mm" 
 			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" 
-			    			showApplyButton="true" >
+			    			showApplyButton="true"  >
 			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
