@@ -23,7 +23,7 @@
 					<td>
 			    		<rich:calendar id="runningStartDate" value="#{canvasBean.runningStartDate}" datePattern="d/M/yy HH:mm" 
 			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" 
-			    			showApplyButton="true" >
+			    			showApplyButton="true" direction="top-right" >
 			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>
@@ -35,7 +35,7 @@
 					<td>
 			    		<rich:calendar id="runningEndDate" value="#{canvasBean.runningEndDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" 
 			    			cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" 
-			    			showApplyButton="true" >
+			    			showApplyButton="true" direction="top-right" >
 			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
 			    		</rich:calendar>
 					</td>

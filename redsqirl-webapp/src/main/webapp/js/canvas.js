@@ -3490,6 +3490,11 @@ function updateVoranoiAllPolygonTitle(listNames) {
 
 	}else{
 		console.log("updateVoranoiAllPolygonTitle false ");
+		
+		canvasArray[selectedCanvas].voronoiLayer.removeChildren();
+		canvasArray[selectedCanvas].voronoiButtonLayer.removeChildren();
+		createDefaultVoronoi();
+		
 		var listNamesArrays = JSON.parse(listNames);
 		console.log("update default1 " + listNamesArrays[0][0]);
 		console.log("update default2 " + listNamesArrays[0][1]);
@@ -3498,7 +3503,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 			canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
 			canvasArray[selectedCanvas].voronoiButtonLayer.draw();
 		}
-		canvasArray[selectedCanvas].voronoiLayer.removeChildren();
+		
 	}
 	
 }
@@ -3615,6 +3620,9 @@ function checkIfScheduleArc(value){
 }
 
 function setIfISchedule(canvasName, value){
+	
+	console.log("setIfISchedule " + value);
+	
     canvasArray[canvasName].isSchedule = parseBool(value);
     reRenderMenuMergeSplit();
 }

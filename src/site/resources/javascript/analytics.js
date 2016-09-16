@@ -1,7 +1,7 @@
 getPropreties = {
 	//url: "http://localhost:9090/analytics-store/rest/"
         //url: "http://dev:8091/analytics-store/rest/"
-        url: "http://marketplace.redsqirl.com/rest/"
+        url: "https://marketplace.redsqirl.com/rest/"
 }
 
 function sessionStorage() {

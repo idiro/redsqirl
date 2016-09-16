@@ -558,7 +558,7 @@
 					
 				}
 				rerenderCanvasTab();
-				jQuery('#mainPanelDiv').unblock()
+				jQuery('#mainPanelDiv').unblock();
 			    //]]>
 			}
 
@@ -876,7 +876,9 @@
 			//console.log("blockRunningWorkflowJS " + selectedCanvas);
 			//console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
 	     	           
-	     	if(isIfISchedule(selectedCanvas) == true){
+			console.log("igor " + isIfISchedule(selectedCanvas));
+			
+	     	if(isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true){
 	     		console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
@@ -1988,7 +1990,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfIScheduleJS();updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
+					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),'#{canvasBean.running}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 				    
@@ -2594,7 +2596,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();openVoronoihPopUp();"
-					reRender="modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,tableVoronoi">
+					reRender="selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,tableVoronoi">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
@@ -3382,7 +3384,7 @@
 	</a4j:region>
 	
 	<a4j:region>
-		<rich:modalPanel id="scheduleModal" width="500" height="350" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+		<rich:modalPanel id="scheduleModal" width="500" height="310" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
 			
 			<f:facet name="header">Run a Schedule Job</f:facet>
 			<f:facet name="controls">
@@ -3411,8 +3413,8 @@
 		</rich:modalPanel>
 	</a4j:region>
 	
-		<a4j:region>
-		<rich:modalPanel id="reRunScheduleModal" width="500" height="200" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+	<a4j:region>
+		<rich:modalPanel id="reRunScheduleModal" width="500" height="370" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
 			
 			<f:facet name="header">Rerun Schedule Job</f:facet>
 			<f:facet name="controls">
