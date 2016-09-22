@@ -37,6 +37,8 @@ import com.redsqirl.workflow.test.TestUtils;
 public class SSHInterfaceArrayTests {
 
 	Logger logger = Logger.getLogger(getClass());
+	String host1 = "dev3.local.net";
+	String host2 = "dev.local.net";
 	
 	@Test
 	public void check_save(){
@@ -49,7 +51,7 @@ public class SSHInterfaceArrayTests {
 			assertTrue("No host should be there",arr.getKnownStoreDetails().isEmpty());
 			
 			Map<String,String> host = new LinkedHashMap<String,String>();
-			host.put(SSHInterfaceArray.hostName,"namenode");
+			host.put(SSHInterfaceArray.hostName,host1);
 			host.put(SSHInterfaceArray.port,"22");
 			
 			logger.info("key needed: "+arr.getFieldsInitNeeded().toString());
@@ -57,51 +59,51 @@ public class SSHInterfaceArrayTests {
 			assertTrue("map are not contained", host.keySet().containsAll(arr.getFieldsInitNeeded().keySet()));
 			
 			assertTrue("Fail to add localhost",arr.addKnownStore(host) == null);
-			assertTrue("Does not contains namenode",
-					checkInStore(arr,"namenode")
+			assertTrue("Does not contains dev3.local.net",
+					checkInStore(arr,host1)
 					);
 			assertTrue("localhost is normally already inserted",arr.addKnownStore(host) != null);
 			
-			Map<String,String> host2 = new LinkedHashMap<String,String>();
-			host2.put(SSHInterfaceArray.hostName,"datanode2");
-			host2.put(SSHInterfaceArray.port,"22");
+			Map<String,String> mapHost2 = new LinkedHashMap<String,String>();
+			mapHost2.put(SSHInterfaceArray.hostName,host2);
+			mapHost2.put(SSHInterfaceArray.port,"22");
 			
-			logger.info("add namenode...");
+			logger.info("add dev3.local.net...");
 			
-			assertTrue("Fail to add namenode server",arr.addKnownStore(host2) == null);
-			assertTrue("List should still contain namenode",
-					checkInStore(arr,"namenode"));
-			assertTrue("List should contain datanode2", 
-					checkInStore(arr,"datanode2")
+			assertTrue("Fail to add dev3.local.net server",arr.addKnownStore(mapHost2) == null);
+			assertTrue("List should still contain dev3.local.net",
+					checkInStore(arr,host1));
+			assertTrue("List should contain dev.local.net", 
+					checkInStore(arr,host2)
 					);
 			
 			Map<String,String> removeHost2 = new LinkedHashMap<String,String>();
-			removeHost2.put(SSHInterfaceArray.hostName, "datanode2");
+			removeHost2.put(SSHInterfaceArray.hostName, host2);
 			
-			logger.info("remove namenode...");
-			assertTrue("Fail to remove datanode2", arr.removeKnownStore(removeHost2) == null);
+			logger.info("remove dev3.local.net...");
+			assertTrue("Fail to remove dev.local.net", arr.removeKnownStore(removeHost2) == null);
 			
-			assertTrue("List should still contain namenode",
-					checkInStore(arr,"namenode")
+			assertTrue("List should still contain dev3.local.net",
+					checkInStore(arr,host1)
 					);
 			
-			assertTrue("List should not contain namenode anymore", 
-					!checkInStore(arr,"datanode2"));
+			assertTrue("List should not contain dev3.local.net anymore", 
+					!checkInStore(arr,host2));
 			
 			
 			logger.info("remove localhost...");
 			arr.initKnownStores();
 			Map<String,DataStore> l = arr.getStores();
 			assertTrue(l.size() == 1);
-			l.get("namenode").close();
+			l.get(host1).close();
 			
 			Map<String,String> removeHost = new LinkedHashMap<String,String>();
-			removeHost.put(SSHInterfaceArray.hostName, "namenode");
+			removeHost.put(SSHInterfaceArray.hostName, host1);
 			
-			assertTrue("Fail to remove namenode",arr.removeKnownStore(removeHost) == null);
+			assertTrue("Fail to remove dev3.local.net",arr.removeKnownStore(removeHost) == null);
 			assertTrue("List should be empty",arr.getKnownStoreDetails().isEmpty());
 		}catch(Exception e){
-			logger.error("Exception "+e.getMessage());
+			logger.error("Exception "+e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 		

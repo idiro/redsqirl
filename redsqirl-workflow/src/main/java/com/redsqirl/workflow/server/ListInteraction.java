@@ -157,6 +157,19 @@ public class ListInteraction extends UserInteraction {
 		return ans;
 	}
 	
+	@Override
+	public String check() throws RemoteException {
+		String error = null;
+		String value = getValue();
+		if(value != null && !getPossibleValues().contains(value)){
+			error = LanguageManagerWF.getText("UserInteraction.invalidvalue",new Object[]{value});
+		}
+		if(error == null && getChecker() != null){
+			error = getChecker().check(this);
+		}
+		return error;
+	}
+	
 	public void setNonEmptyChecker() throws RemoteException{
 		setChecker(new DFEInteractionChecker() {
 			

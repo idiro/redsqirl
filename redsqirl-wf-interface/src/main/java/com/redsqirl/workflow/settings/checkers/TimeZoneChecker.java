@@ -4,6 +4,11 @@ import java.util.TimeZone;
 
 import com.redsqirl.workflow.settings.Setting;
 
+/**
+ * Check a time zone id.
+ * @author etienne
+ *
+ */
 public class TimeZoneChecker implements Setting.Checker {
 
 	@Override

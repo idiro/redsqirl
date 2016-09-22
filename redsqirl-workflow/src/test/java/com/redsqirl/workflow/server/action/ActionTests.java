@@ -54,7 +54,7 @@ public class ActionTests{
 			// a1
 			DataflowAction a1 = new TestAction();
 			a1.setComponentId("1");
-			assertTrue(a1.checkEntry() == null);
+			assertTrue(a1.checkEntry(null) == null);
 
 			// a1 -> a2
 			DataflowAction a2 = new TestAction();
@@ -65,14 +65,14 @@ public class ActionTests{
 					a1.getOutputComponent().get("output1").contains(a2));
 			assertTrue("link not created",
 					a2.getInputComponent().get("input1").contains(a1));
-			assertTrue(a1.checkEntry() == null);
+			assertTrue(a1.checkEntry(null) == null);
 
 			// a3 -> a1 -> a2
 			DataflowAction a3 = new TestAction();
 			a3.setComponentId("3");
 			a1.addInputComponent("input1", a3);
 			a3.addOutputComponent("output1", a1);
-			assertTrue(a1.checkEntry() == null);
+			assertTrue(a1.checkEntry(null) == null);
 
 			// a3 -> a1 -> a2
 			//       ^
@@ -81,7 +81,7 @@ public class ActionTests{
 			a4.setComponentId("4");
 			a1.addInputComponent("input1", a4);
 			a4.addOutputComponent("output1", a1);
-			assertTrue(a1.checkEntry() != null);
+			assertTrue(a1.checkEntry(null) != null);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			assertTrue(e.getMessage(),false);

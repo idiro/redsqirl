@@ -2,6 +2,11 @@ package com.redsqirl.workflow.settings.checkers;
 
 import com.redsqirl.workflow.settings.Setting;
 
+/**
+ * Check if the property is empty or looks like a directory.
+ * @author etienne
+ *
+ */
 public class DirectoryOrEmptyRegexChecker extends DirectoryRegexChecker{
 
 	@Override

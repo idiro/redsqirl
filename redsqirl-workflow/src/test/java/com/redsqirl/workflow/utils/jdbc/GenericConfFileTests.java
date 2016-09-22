@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import com.idiro.utils.db.JdbcConnection;
 import com.idiro.utils.db.JdbcDetails;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.connect.jdbc.RedSqirlBasicStatement;
 
 public class GenericConfFileTests {
@@ -39,8 +41,8 @@ public class GenericConfFileTests {
 	public void basicTest(){
 		JdbcConnection conn = null;
 		try{
-			
-			conn = new JdbcConnection(new URL("jar:file:"+"/home/etienne/.oracle/ojdbc6.jar"+"!/"),
+			String oracleDriver = WorkflowPrefManager.getProperty(JdbcStore.property_oracle_driver);
+			conn = new JdbcConnection(new URL("jar:file:"+oracleDriver+"!/"),
 					"oracle.jdbc.OracleDriver",
 					new JdbcDetails() {
 				

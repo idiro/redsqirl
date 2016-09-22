@@ -21,20 +21,15 @@ package com.redsqirl.workflow.server;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
-import com.redsqirl.workflow.server.OozieManager;
-import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.Convert;
-import com.redsqirl.workflow.server.action.ConvertTests;
+import com.redsqirl.workflow.server.action.Script;
+import com.redsqirl.workflow.server.action.ScriptTests;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
@@ -44,43 +39,39 @@ public class OozieManagerTests {
 
 	protected Logger logger = Logger.getLogger(getClass());
 
-	Map<String,String> getColumns(){
-		Map<String,String> ans = new HashMap<String,String>();
-		ans.put(HiveInterface.key_columns,"ID STRING, VALUE INT");
-		return ans;
+	String getColumns(){
+		return "ID STRING, VALUE INT";
 	}
 	
 	@Test
 	public void oneFork(){
 
 		TestUtils.logTestTitle(getClass().getName()+"#fork");
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
 		String new_path3 = TestUtils.getPath(3);
 		String error = null;
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			hdfsInt.delete(new_path3);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hiveInt,new_path1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hdfsInt,new_path1);
 			
-			Convert conv1 = (Convert )ConvertTests.createConvertWithSrc(w,src);
+			Script conv1 = (Script )ScriptTests.createScriptWithSrc(w,src);
 
-			conv1.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv1.getDFEOutput().get(Convert.key_output).setPath(new_path2);
+			conv1.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			conv1.getDFEOutput().get(Script.key_output).setPath(new_path2);
 			
-			Convert conv2 = (Convert )ConvertTests.createConvertWithSrc(w,src);
+			Script conv2 = (Script )ScriptTests.createScriptWithSrc(w,src);
 
-			conv2.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv2.getDFEOutput().get(Convert.key_output).setPath(new_path3);
+			conv2.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			conv2.getDFEOutput().get(Script.key_output).setPath(new_path3);
 			
 			logger.info("run...");
 			OozieClient wc = OozieManager.getInstance().getOc();
@@ -110,7 +101,7 @@ public class OozieManagerTests {
 			assertTrue(e.getMessage(),false);
 		}
 		try{
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			hdfsInt.delete(new_path3);
 		}catch(Exception e){

@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 public class Script extends AbstractScript{
 
+	public final static String key_output = "";
 	/**
 	 * 
 	 */

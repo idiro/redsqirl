@@ -42,6 +42,15 @@ import com.redsqirl.workflow.settings.SettingMenuInt;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
 
+/**
+ * Red Sqirl Property Manager.
+ * 
+ * Property are stored in menus and submenus in Red Sqirl. 
+ * A property can be stored in a user or system scope.
+ * 
+ * @author etienne
+ *
+ */
 public class LocalProperties extends UnicastRemoteObject implements PropertiesManager {
 
 	protected LocalProperties() throws RemoteException {
@@ -55,6 +64,10 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	private SettingMenuInt defaultsettingMenu = null;
 	
 
+	/**
+	 * Read the entire package setting tree for a given user.
+	 * @param user The user name.
+	 */
 	public void readSettingMenu(String user) throws RemoteException{
 
 		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
@@ -91,6 +104,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		settingMenu = new SettingMenu(ans);
 	}
 
+	/**
+	 * Read the core setting menu.
+	 */
 	public void readDefaultSettingMenu() throws RemoteException{
 		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
 
@@ -109,14 +125,26 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		defaultsettingMenu = new SettingMenu(ans);
 	}
 	
+	/**
+	 * Get the package setting menu
+	 * @return the package setting menu.
+	 */
 	public SettingMenuInt getSettingMenu() throws RemoteException{
 		return settingMenu;
 	}
 
+	/**
+	 * Get the core setting menu
+	 * @return The core setting menu.
+	 */
 	public SettingMenuInt getDefaultSettingMenu() throws RemoteException{
 		return defaultsettingMenu;
 	}
 	
+	/**
+	 * Get the setting value related to the given package.
+	 * @param name The setting name.
+	 */
 	public String getPluginSetting(String name) throws RemoteException{
 		String[] packageName = name.split("\\.",2);
 		if(getSettingMenu().getMenu().containsKey(packageName[0])){
@@ -142,15 +170,29 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		return prop;
 	}
 	
+	/**
+	 * Overwrite system properties
+	 */
 	public void storeSysProperties(Properties prop) throws IOException{
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)), "");
 	}
 	
+	/**
+	 * Overwrite lang properties.
+	 * @param prop
+	 * @throws IOException
+	 */
 	public void storeLangProperties(Properties prop) throws IOException{
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref)), "");
 	}
 	
 	
+	/**
+	 * Get the property value 
+	 * @param key the property key
+	 * @return
+	 * @throws RemoteException
+	 */
 	public String getProperty(String key) throws RemoteException{
 		
 		if(defaultsettingMenu == null){

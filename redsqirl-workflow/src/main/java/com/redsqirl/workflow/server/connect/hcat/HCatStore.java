@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server.connect.hcat;
 
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class HCatStore extends Storage{
 	/**
 	 * The logger.
 	 */
-	private static Logger logger = Logger.getLogger(JdbcStore.class);
+	private static Logger logger = Logger.getLogger(HCatStore.class);
 	
 
 	public static final String hcat_metastore_key = WorkflowPrefManager.core_settings_hcatalog+".metastore_uri";
@@ -603,5 +604,27 @@ public class HCatStore extends Storage{
 	public String canCopy() throws RemoteException {
 		return null;
 	}
+	
+	public String createTable(String tablename, String features) throws RemoteException, SQLException{
+		return createTable(tablename,features, null);
+	}
+	
+	public String createTable(String tablename, String features, String partition) throws RemoteException, SQLException{
+		String query = "CREATE TABLE "+tablename+" ("+features+")";
+		if(partition != null && !partition.isEmpty()){
+			query += " PARTITIONED BY ("+partition+")";
+		}
+		String error = null;
+		if(!getHiveConnection().execute(query)){
+			error = "Fail executing "+query;
+		}
+		return error;
+	}
+	
+	public static void clearCach(){
+		databases.clear();
+		tables.clear();
+	}
+	
 
 }

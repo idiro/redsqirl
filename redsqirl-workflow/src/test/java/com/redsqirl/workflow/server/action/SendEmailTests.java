@@ -30,10 +30,8 @@ import org.junit.Test;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.SendEmail;
-import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
@@ -102,21 +100,19 @@ static Logger logger = Logger.getLogger(SendEmailTests.class);
 	public void basic(){
 		
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
 		String error = null;
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hiveInt,new_path1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hdfsInt,new_path1);
 			
 			createSendEmailWithSrc(w,src);
 
@@ -148,7 +144,7 @@ static Logger logger = Logger.getLogger(SendEmailTests.class);
 			assertTrue(e.getMessage(),false);
 		}
 		try{
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 		}catch(Exception e){
 			logger.error(e.getMessage());

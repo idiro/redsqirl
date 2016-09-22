@@ -490,9 +490,9 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 				}
 			}else{
 				String header = null;
-				if(out_name.isEmpty()){
+				if(out_name.isEmpty() && getScriptTemplate() != null){
 					header = getScriptTemplate().getScriptProp().getProperty(ScriptTemplate.output_header);
-				}else{
+				}else if(getScriptTemplate() != null){
 					header = getScriptTemplate().getScriptProp().getProperty(ScriptTemplate.output_header+"."+out_name);
 				}
 				if( (header == null || header.isEmpty()) && !getDFEInput().get(key_input).isEmpty()){
@@ -595,4 +595,32 @@ public abstract class AbstractScript extends AbstractMultipleSources{
 		
 		return absolutePath;
 	}
+
+	public final ListInteraction getTemplateInt() {
+		return templateInt;
+	}
+
+	public final EditorInteraction getOozieXmlInt() {
+		return oozieXmlInt;
+	}
+
+	public final InputInteraction getExtensionInt() {
+		return extensionInt;
+	}
+
+	public final EditorInteraction getScriptInt() {
+		return scriptInt;
+	}
+
+	public final InputInteraction getHeaderInt(int id) throws RemoteException{
+		return (InputInteraction) getInteraction(key_headerInt+id);
+	}
+	
+	public final FieldDefinitionTableInteraction getFieldDefInt(int id) throws RemoteException{
+		return (FieldDefinitionTableInteraction) getInteraction(key_fieldDefInt+id);
+	}
+	public final ListInteraction getSubtypeInt(int id) throws RemoteException{
+		return (ListInteraction) getInteraction(key_datasubtype+id);
+	}
+	
 }

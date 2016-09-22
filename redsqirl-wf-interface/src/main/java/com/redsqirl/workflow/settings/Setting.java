@@ -28,6 +28,13 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
+/**
+ * Retrieve a Setting property.
+ * Those setting properties are read from a json.
+ * The values, are stored in a system and user property file.
+ * @author etienne
+ *
+ */
 public class Setting extends UnicastRemoteObject implements SettingInt{
 
 	/**

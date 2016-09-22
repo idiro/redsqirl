@@ -40,22 +40,22 @@ public class HDFSInterfaceTests {
 		try {
 			HDFSInterface hInt = new HDFSInterface();
 
-			String new_path0 = hInt.getPath() + TestUtils.getTablePath(0);
+			String new_path0 = hInt.getPath() + "/"+TestUtils.getName(0);
 			String new_path0_test = new_path0 + "/test";
 			assertTrue(
 					"create " + new_path0_test,
 					hInt.create(new_path0_test, new HashMap<String, String>()) == null);
 
-			String new_path1 = hInt.getPath() + TestUtils.getTablePath(1);
+			String new_path1 = hInt.getPath() + "/"+TestUtils.getName(1);
 			assertTrue(
 					"create " + new_path1,
 					hInt.create(new_path1, new HashMap<String, String>()) == null);
 
-			String new_path2 = hInt.getPath() + TestUtils.getTablePath(2);
+			String new_path2 = hInt.getPath() + "/"+TestUtils.getName(2);
 			assertTrue("copy to " + new_path2,
 					hInt.copy(new_path1, new_path2) == null);
 
-			String new_path3 = hInt.getPath() + TestUtils.getTablePath(3);
+			String new_path3 = hInt.getPath() + "/"+TestUtils.getName(3);
 			assertTrue("move to " + new_path3,
 					hInt.move(new_path1, new_path3) == null);
 
@@ -84,8 +84,8 @@ public class HDFSInterfaceTests {
 		try {
 			HDFSInterface hInt = new HDFSInterface();
 			logger.info("interface made");
-			String new_path1 = hInt.getPath() + TestUtils.getTablePath(1);
-//			 String new_path1 = "/user/keith/t2.rs";
+			String new_path1 = hInt.getPath() + "/"+TestUtils.getName(1);
+			hInt.delete(new_path1);
 			assertTrue(
 					"create " + new_path1,
 					hInt.create(new_path1, new HashMap<String, String>()) == null);
@@ -100,6 +100,8 @@ public class HDFSInterfaceTests {
 			chmod.put(HDFSInterface.key_recursive, "true");
 			assertTrue("chmod " + new_path1,
 					hInt.changeProperties(new_path1, chmod) == null);
+			
+			/* OS need to be in the hadoop group
 			logger.info(hInt.getProperties(new_path1));
 			Map<String, String> chgp = new HashMap<String, String>();
 			chgp.put(HDFSInterface.key_group, "hadoop");
@@ -107,7 +109,7 @@ public class HDFSInterfaceTests {
 			// chgp.put(HDFSInterface.key_owner, "hadoop");
 			assertTrue("chown " + new_path1,
 					hInt.changeProperties(new_path1, chgp) == null);
-
+			*/
 			logger.info(hInt.getProperties(new_path1));
 			assertTrue("delete " + new_path1, hInt.delete(new_path1) == null);
 		} catch (Exception e) {

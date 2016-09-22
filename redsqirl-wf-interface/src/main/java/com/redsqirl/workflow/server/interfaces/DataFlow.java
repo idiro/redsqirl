@@ -544,20 +544,65 @@ public interface DataFlow extends Remote, Cloneable{
 	boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
 	
+	/**
+	 * Get the HDFS path under the dataflow is saved.
+	 * @return
+	 * @throws RemoteException
+	 */
 	String getPath() throws RemoteException;
 
+	/**
+	 * Set the HDFS path under which the dataflow is saved
+	 * Note: this method doesn't actually save the dataflow.
+	 * @param path
+	 * @throws RemoteException
+	 */
 	void setPath(String path) throws RemoteException;
 
+	/**
+	 * List the Super Actions required to use this dataflow.
+	 * @return
+	 * @throws RemoteException
+	 */
 	Set<String> getSADependencies() throws RemoteException;
 
+	/**
+	 * Clean the given elements.
+	 * @param ids
+	 * @return
+	 * @throws RemoteException
+	 */
 	String cleanSelectedAction(List<String> ids) throws RemoteException;
 
+	/**
+	 * Set the output types of the given element from Buffered to Temporary or vice-versa.
+	 * 
+	 * @param elements
+	 * @param buffered
+	 * @throws RemoteException
+	 */
 	void setOutputType(List<String> elements, SavingState buffered) throws RemoteException;
 	
-	String addElement(String waName, String componentId)	throws Exception;
+	/**
+	 * Add an element with the given component id. 
+	 * @param waName
+	 * @param componentId
+	 * @return
+	 * @throws Exception
+	 */
+	String addElement(String waName, String componentId) throws Exception;
 	
+	/**
+	 * True if the canvas changed since last saved.
+	 * @return
+	 * @throws RemoteException
+	 */
 	boolean isChanged() throws RemoteException;
 	
+	/**
+	 * Set the changed flag to true. 
+	 * @throws RemoteException
+	 */
 	void setChanged() throws RemoteException;
 
 	

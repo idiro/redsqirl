@@ -60,6 +60,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 	
 	public MapRedCtrlATextType(FieldList fields) throws RemoteException {
 		super(fields);
+		dataProperty.put(key_delimiter, "#1");
 	}
 
 	@Override
@@ -89,9 +90,10 @@ public class MapRedCtrlATextType extends MapRedDir{
 
 	@Override
 	public String isPathValid(String path) throws RemoteException {
-		List<String> shouldHaveExt = new LinkedList<String>();
-		shouldHaveExt.add(".mrctra");
-		return isPathValid(path,null,shouldHaveExt);
+		//List<String> shouldHaveExt = new LinkedList<String>();
+		//shouldHaveExt.add(".mrctra");
+		//return isPathValid(path,null,shouldHaveExt);
+		return isPathValid(path,null,null);
 	}
 
 	@Override

@@ -29,6 +29,11 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Interface for elements for which an Oozie action can be created.
+ * @author etienne
+ *
+ */
 public interface RunnableElement  extends Remote{
 
 

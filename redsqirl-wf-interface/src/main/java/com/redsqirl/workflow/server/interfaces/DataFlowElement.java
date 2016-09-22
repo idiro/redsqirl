@@ -338,8 +338,18 @@ public interface DataFlowElement extends RunnableElement{
 	 */
 	Set<String> getRequiredVariables() throws RemoteException;
 	
+	/**
+	 * Get the coordinator name under which this element is.
+	 * @return
+	 * @throws RemoteException
+	 */
 	String getCoordinatorName() throws RemoteException;
 
+	/**
+	 * Set the coordinator name under which this element is.
+	 * @param coordinatorName The coordinator name.
+	 * @throws RemoteException
+	 */
 	void setCoordinatorName(String coordinatorName) throws RemoteException;
 	
 

@@ -1,5 +1,10 @@
 package com.redsqirl.workflow.settings.checkers;
 
+/**
+ * Check if a property looks like a URL.
+ * @author etienne
+ *
+ */
 public class UrlRegexChecker extends RegexChecker {
 
 	public UrlRegexChecker() {

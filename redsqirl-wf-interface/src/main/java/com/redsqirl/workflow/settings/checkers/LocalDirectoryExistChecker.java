@@ -4,6 +4,11 @@ import java.io.File;
 
 import com.redsqirl.workflow.settings.Setting;
 
+/**
+ * Check if the file path exists.
+ * @author etienne
+ *
+ */
 public class LocalDirectoryExistChecker implements Setting.Checker{
 
 	@Override

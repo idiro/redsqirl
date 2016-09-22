@@ -41,8 +41,8 @@ public class WorkflowTests {
 		try {
 			bwt = new BasicWorkflowTest(new Workflow(),new Workflow());
 			bwt.linkCreationDeletion();
-		} catch (RemoteException e) {
-			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e,e);
 			assertTrue(false);
 		}
 		logger.debug("WorkflowTests#testLink successful");
@@ -55,8 +55,8 @@ public class WorkflowTests {
 		try {
 			bwt = new BasicWorkflowTest(new Workflow(),new Workflow());
 			bwt.readSaveElementDeletion();
-		} catch (RemoteException e) {
-			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e,e);
 			assertTrue(false);
 		}
 		logger.debug("WorkflowTests#testReadSave successful");

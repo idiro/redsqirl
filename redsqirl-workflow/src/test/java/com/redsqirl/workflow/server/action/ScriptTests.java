@@ -27,90 +27,122 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
+import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.Convert;
-import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 
-public class ConvertTests {
+public class ScriptTests {
 
-static Logger logger = Logger.getLogger(ConvertTests.class);
+static Logger logger = Logger.getLogger(ScriptTests.class);
 
 	
-	public static DataFlowElement createConvertWithSrc(
+	public static DataFlowElement createScriptWithSrc(
 			DataFlow w,
 			DataFlowElement src) throws RemoteException, Exception{
 		String error = null;
-		String idHS = w.addElement((new Convert()).getName());
-		logger.debug("convert: "+idHS);
+		String idHS = w.addElement((new Script()).getName());
+		logger.debug("Script: "+idHS);
 		
-		Convert conv = (Convert) w.getElement(idHS);
+		Script conv = (Script) w.getElement(idHS);
 		
 		logger.info(new Source().getOut_name()+" "+src.getComponentId());
-		logger.debug(Convert.key_input+" "+idHS);
+		logger.debug(Script.key_input+" "+idHS);
 		
 		error = w.addLink(
 				new Source().getOut_name(), src.getComponentId(), 
-				Convert.key_input, idHS);
-		assertTrue("convert add link: "+error,error == null);
+				Script.key_input, idHS);
+		assertTrue("Script add link: "+error,error == null);
 		
-		updateConvert(w,conv);
+		updateScript(w,conv);
 		
 		
 		logger.debug("HS update out...");
 		error = conv.updateOut();
-		assertTrue("convert update: "+error,error == null);
-		logger.debug("Features "+conv.getDFEOutput().get(Convert.key_output).getFields());
+		assertTrue("Script update: "+error,error == null);
+		logger.debug("Features "+conv.getDFEOutput().get(Script.key_output).getFields());
 		
-		conv.getDFEOutput().get(Convert.key_output).generatePath(
+		conv.getDFEOutput().get(Script.key_output).generatePath(
 				conv.getComponentId(), 
-				Convert.key_output);
+				Script.key_output);
 		
 		
 		return conv;
 	}
 	
 
-	public static DataFlowElement createConvWithConv(
+	public static DataFlowElement createScriptWithScript(
 			DataFlow w,
 			DataFlowElement src) throws RemoteException, Exception{
 		String error = null;
-		String idHS = w.addElement(new Convert().getName());
-		Convert conv = (Convert)w.getElement(idHS);
-		logger.info("Convert: "+idHS);
+		String idHS = w.addElement(new Script().getName());
+		Script conv = (Script)w.getElement(idHS);
+		logger.info("Script: "+idHS);
 		
 		
 		w.addLink(
-				Convert.key_output, src.getComponentId(), 
-				Convert.key_input, idHS);
-		assertTrue("convert add input: "+error,error == null);
+				Script.key_output, src.getComponentId(), 
+				Script.key_input, idHS);
+		assertTrue("Script add input: "+error,error == null);
 		
-		updateConvert(w,conv);
+		updateScript(w,conv);
 		
 		return conv;
 	}
 	
-	public static void updateConvert(
+	public static void updateScript(
 			DataFlow w,
-			Convert conv) throws RemoteException, Exception{
+			Script script) throws RemoteException, Exception{
 		
-		logger.info("update convert...");
+		logger.info("update Script...");
+		script.getExtensionInt().setValue(".pig");
 		
-		logger.info("update format...");
-		conv.update(conv.getFormats());
+		String scriptContent = "rmf ${OUTPUT}\n";
+		scriptContent += "a90 = LOAD '${INPUT}' USING PigStorage(',') as (ID:INT, VALUE:FLOAT);\n";
+		scriptContent += "a80= FOREACH a90 GENERATE ID AS ID,\n";
+		scriptContent += "VALUE AS VALUE;\n";
+		scriptContent += "STORE a80 INTO '${OUTPUT}' USING PigStorage(',');\n";
+		script.getScriptInt().setValue(scriptContent);
+
+		String oozieContent = "<pig xmlns=\"uri:oozie:workflow:0.2\">";
+		oozieContent += "<job-tracker>${jobtracker}</job-tracker>";
+		oozieContent += "<name-node>${namenode}</name-node>";
+		oozieContent += "<configuration>";
+		oozieContent += "<property>";
+		oozieContent += "<name>mapred.job.queue.name</name>";
+		oozieContent += "<value>${default_action_queue}</value>";
+		oozieContent += "</property>";
+		oozieContent += "<property>";
+		oozieContent += "<name>oozie.launcher.mapred.job.queue.name</name>";
+		oozieContent += "<value>${default_launcher_queue}</value>";
+		oozieContent += "</property>";
+		oozieContent += "</configuration>";
+		oozieContent += "<script>!{SCRIPT}</script>";
+		oozieContent += "<argument>-param</argument>";
+		oozieContent += "<argument>INPUT=!{INPUT_PATH}</argument>";
+		oozieContent += "<argument>-param</argument>";
+		oozieContent += "<argument>OUTPUT=!{OUTPUT_PATH}</argument>";
+		oozieContent += "</pig>";
+
+		script.getOozieXmlInt().setValue(oozieContent);
 		
-		logger.info("update properties...");
-		conv.update(conv.getCpi());
+		DataOutput type = new MapRedTextFileType();
+		script.getDataType("1").setValue(type.getBrowserName());
+		script.checkEntry(null);
+		script.update(script.getDataSubType("1"));
+		script.getDataSubType("1").setValue(type.getTypeName());
 
 		logger.info("Conv update out...");
-		String error = conv.updateOut();
-		assertTrue("convert update out: "+error,error == null);
+		String error = script.checkEntry(null);
+		assertTrue("Script entry: "+error,error == null);
+		error = script.updateOut();
+		assertTrue("Script update out: "+error,error == null);
 	}
 	
 	
@@ -119,26 +151,24 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 	public void basic(){
 		
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
 		String error = null;
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hiveInt,new_path1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hdfsInt,new_path1);
 			
-			Convert conv = (Convert )createConvertWithSrc(w,src);
+			Script conv = (Script )createScriptWithSrc(w,src);
 
-			conv.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv.getDFEOutput().get(Convert.key_output).setPath(new_path2);
+			conv.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			conv.getDFEOutput().get(Script.key_output).setPath(new_path2);
 			
 			logger.info("run...");
 			OozieClient wc = OozieManager.getInstance().getOc();
@@ -168,7 +198,7 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 			assertTrue(e.getMessage(),false);
 		}
 		try{
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 		}catch(Exception e){
 			logger.error(e.getMessage());
@@ -180,32 +210,30 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 	@Test
 	public void oneBridge(){
 		TestUtils.logTestTitle(getClass().getName()+"#oneBridge");
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
-		String new_path3 =TestUtils.getTablePath(3);
+		String new_path3 =TestUtils.getPath(3);
 		String error = null;
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
-			hiveInt.delete(new_path3);
+			hdfsInt.delete(new_path3);
 			logger.info("deleted paths if existed");
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hiveInt, new_path1);
-			DataFlowElement conv1 = createConvertWithSrc(w,src); 
-			DataFlowElement conv2 = createConvWithConv(w,conv1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hdfsInt, new_path1);
+			DataFlowElement conv1 = createScriptWithSrc(w,src); 
+			DataFlowElement conv2 = createScriptWithScript(w,conv1);
 
-			conv1.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv1.getDFEOutput().get(Convert.key_output).setPath(new_path2);
+			conv1.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			conv1.getDFEOutput().get(Script.key_output).setPath(new_path2);
 			
-			conv2.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv2.getDFEOutput().get(Convert.key_output).setPath(new_path3);
+			conv2.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			conv2.getDFEOutput().get(Script.key_output).setPath(new_path3);
 			
 			logger.info("run...");
 			error = w.run();
@@ -229,13 +257,23 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 			assertTrue(e.getMessage(),false);
 		}
 		try{
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
-			hiveInt.delete(new_path3);
+			hdfsInt.delete(new_path3);
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
+	}
+	
+	public String getScriptContent(){
+		String ans = "";
+		ans += "rmf ${OUTPUT}\n";
+		ans += "a90 = LOAD '${INPUT}' USING PigStorage(',') as (ID:CHARARRAY, VALUE:INT);\n";
+		ans += "a80= FOREACH a90 GENERATE ID AS ID,\n";
+		ans += "\tVALUE AS VALUE;\n";
+		ans += "STORE a80 INTO '${OUTPUT}' USING PigStorage(',');\n";
+		return ans;
 	}
 	
 }

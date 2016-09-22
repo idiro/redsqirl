@@ -135,18 +135,6 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 		return dataType;
 	}
 	
-	protected String getDataTypeUniqueId(String dataTypeId) throws RemoteException{
-		return dataTypeId.substring(key_datatype.length());
-	}
-	
-	protected String getDataSubTypeUniqueId(String dataSubTypeId) throws RemoteException{
-		return dataSubTypeId.substring(key_datasubtype.length());
-	}
-	
-	protected String getBrowserUniqueId(String browserId) throws RemoteException{
-		return browserId.substring(key_dataset.length());
-	}
-	
 	/**
 	 * Add a page with a list interaction to select the Data Sub Type
 	 * 
@@ -328,5 +316,30 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;
+	}
+
+	
+	protected String getDataTypeUniqueId(String dataTypeId) throws RemoteException{
+		return dataTypeId.substring(key_datatype.length());
+	}
+	
+	protected String getDataSubTypeUniqueId(String dataSubTypeId) throws RemoteException{
+		return dataSubTypeId.substring(key_datasubtype.length());
+	}
+	
+	protected String getBrowserUniqueId(String browserId) throws RemoteException{
+		return browserId.substring(key_dataset.length());
+	}
+	
+	public ListInteraction getDataType(String dataTypeId) throws RemoteException{
+		return (ListInteraction) getInteraction(key_datatype+dataTypeId);
+	}
+	
+	public ListInteraction getDataSubType(String subTypeId) throws RemoteException{
+		return (ListInteraction) getInteraction(key_datasubtype+subTypeId);
+	}
+	
+	public BrowserInteraction getBrowser(String browserId) throws RemoteException{
+		return (BrowserInteraction) getInteraction(key_dataset+browserId);
 	}
 }

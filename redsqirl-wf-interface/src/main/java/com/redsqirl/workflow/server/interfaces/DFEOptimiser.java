@@ -22,6 +22,14 @@ package com.redsqirl.workflow.server.interfaces;
 import java.rmi.RemoteException;
 import java.util.List;
 
+/**
+ * Optimise the running plan, to create less Oozie actions.
+ * 
+ * The Optimiser works only the simplest daisy-chain elements.
+ * 
+ * @author etienne
+ *
+ */
 public interface DFEOptimiser extends RunnableElement {
 
 	/**
@@ -43,9 +51,24 @@ public interface DFEOptimiser extends RunnableElement {
 	 */
 	public boolean addAllElement(List<DataFlowElement> dfe) throws RemoteException;
 	
+	/**
+	 * Get the optimiser elements.
+	 * @return All elements aggregated into this optimiser.
+	 * @throws RemoteException
+	 */
 	public List<DataFlowElement> getElements() throws RemoteException;
 	
+	/**
+	 * Get the first element of the daisy-chain.
+	 * @return The first element
+	 * @throws RemoteException
+	 */
 	public DataFlowElement getFirst() throws RemoteException;
 	
+	/**
+	 * Get the last element of the daisy-chain.
+	 * @return The last element
+	 * @throws RemoteException
+	 */
 	public DataFlowElement getLast() throws RemoteException;
 }

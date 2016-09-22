@@ -36,6 +36,13 @@ import org.apache.log4j.Logger;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 
+/**
+ * Default Abstract class that implements DataStore.
+ * 
+ * The class manage the history 
+ * @author etienne
+ *
+ */
 public abstract class Storage extends UnicastRemoteObject implements DataStore {
 
 	/**
@@ -151,7 +158,7 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 
 		logger.debug("savePathList ");
 
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"hdfs_history_"+repo+".txt");
+		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")), "."+getBrowserName().toLowerCase().replaceAll("\\W", "_")+"_"+repo+".txt");
 		String newLine = System.getProperty("line.separator");
 		FileWriter fw;
 		try {
@@ -170,7 +177,7 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 
 		logger.debug("readPathList ");
 
-		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name"))+"/hdfs_history_"+repo+".txt");
+		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"."+getBrowserName().toLowerCase().replaceAll("\\W", "_")+"_"+repo+".txt");
 		LinkedHashMap<String, String> mapHistory = new LinkedHashMap<String, String>();
 
 		try {
