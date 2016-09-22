@@ -109,7 +109,7 @@
 			     						disabled="#{!packageMngBean.canEdit}" />
 			     					<h:inputSecret value="#{packageMngBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;" 
 			     						rendered="#{packageMngBean.s.properties[obj].password &amp;&amp; (packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existSysProperty &amp;&amp; packageMngBean.template != 'Y' }" 
-			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     						title="#{packageMngBean.s.properties[obj].description}" redisplay="true" />
 			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
 			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'SYSTEM' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!packageMngBean.s.properties[obj].existSysProperty or packageMngBean.template == 'Y') }" />
 			     					<br/>
@@ -153,7 +153,7 @@
 			     						title="#{packageMngBean.s.properties[obj].description}" />
 			     					<h:inputSecret id="user_core_prop_non_password" type="password" value="#{packageMngBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
 			     						rendered="#{packageMngBean.s.properties[obj].password &amp;&amp; (packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; packageMngBean.s.properties[obj].existUserProperty &amp;&amp; packageMngBean.template != 'Y' }" 
-			     						title="#{packageMngBean.s.properties[obj].description}" />
+			     						title="#{packageMngBean.s.properties[obj].description}" redisplay="true" />
 			     						
 			     					<h:outputText value="#{packageMngBean.s.properties[obj].description}" 
 			     						rendered="#{(packageMngBean.s.properties[obj].scope == 'USER' or packageMngBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!packageMngBean.s.properties[obj].existUserProperty or  packageMngBean.template == 'Y') }" />

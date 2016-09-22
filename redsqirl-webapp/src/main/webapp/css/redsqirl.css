@@ -18,7 +18,7 @@ image {
 }
 
 input {
-	font-size: 12px;
+	font-size: 13px;
 	border-style: solid;
 	border-width: 1px;
 }
@@ -379,7 +379,7 @@ table[id*="msnError"]{
 }
 
 .message {
-	font-size: 12 px;
+	font-size: 13 px;
 	font-weight: bold;
 	font-family: Verdana, Arial, sans-serif;
 	text-align:left;
@@ -472,7 +472,7 @@ table[id*="msnError"]{
 }
 
 #divTabHelp{
-    font-size:12px;
+    font-size:13px;
 }
 
 
@@ -497,7 +497,7 @@ div#body {
     position: absolute;
     z-index: 100;
     font-family: Verdana,Geneva,sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 5px;
@@ -597,7 +597,7 @@ h4 {
 }
 
 h5 {
-    font-size:12px;
+    font-size:13px;
 	padding-left: 12%;
 }
 
@@ -894,6 +894,7 @@ table.secondtable td {
 	border-bottom-right-radius: 0px;
 	border-top-left-radius: 9px;
 	border-top-right-radius: 9px;
+	font-size:13px;
 }
 
 ui-tabs ui-widget ui-widget-content ui-corner-all{
@@ -1092,7 +1093,7 @@ div.splitter-bar.ui-state-highlight {
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
 	background:none;
 	background-color:transparent;
-	
+	font-size: 13px;
 }
 
 .removeDefaults{
@@ -1368,7 +1369,7 @@ div.splitter-bar.ui-state-highlight {
 	border-right: 1px solid #FFFFFF;
 	color: #000000;
 	font-family: Verdana,Geneva,sans-serif;
-	font-size: 11px;
+	font-size: 13px;
 	padding: 4px;
 	text-align: center;
 	white-space: nowrap;
@@ -1388,7 +1389,7 @@ div.splitter-bar.ui-state-highlight {
 	padding: 4px 28px 4px 16px;
 	color: black;
 	font-family: Verdana,Geneva,sans-serif;
-	font-size: 11px;
+	font-size: 13px;
 	font-weight: bold;
 	border-radius: 5px;
 }
@@ -1472,7 +1473,7 @@ select {
     appearance: none; 
     background-color: #ffffff;
     border: 1px solid #ccc;
-    font-size: 12px;
+    font-size: 13px;
     padding: 0px;
     width: 150px;
     height: 20px;
@@ -1524,7 +1525,7 @@ select {
 	width:20%;
 	float:right;
 	text-align:right;
-	font-size:12px;
+	font-size:13px;
 }
 
 .moduleItemInstall .license{
@@ -1533,7 +1534,7 @@ select {
 	width:40%;
 	float:right;
 	text-align:right;
-	font-size:12px;
+	font-size:13px;
 }
 
 .licenseModel{
@@ -1542,12 +1543,12 @@ select {
 	margin-bottom:5px;
 	float:right;
 	text-align:right;
-	font-size:12px;
+	font-size:13px;
 }
 
 .moduleItemInstall .dependency{
 	float: left;
-    font-size: 12px;
+    font-size: 13px;
     padding-top: 5px;
     width: 100%;
 }
@@ -1558,7 +1559,7 @@ select {
 	width:70%;
 	float:left;
 	color:grey;
-	font-size:12px;
+	font-size:13px;
 }
 
 .editPackageSettings{
@@ -1592,3 +1593,11 @@ select {
     white-space: nowrap;
 }
 
+.extdt-cell, .extdt-subheadercell, .rich-table-cell, .rich-sdt-header-cell-body, .rich-sdt-column-cell-body, .rich-sdt-footer-cell-body,
+.rich-panel-body, .rich-stglpanel-header, .rich-stglpanel-body, .rich-shuttle-source-cell, .rich-shuttle-target-cell, 
+.rich-shuttle-source-cell *, .rich-shuttle-target-cell * , .rich-tab-header {
+	font-size: 13px;
+}
+.rich-calendar-cell , .rich-calendar-toolfooter, .rich-calendar-days, .rich-calendar-month{
+	font-size: 13px;
+}
