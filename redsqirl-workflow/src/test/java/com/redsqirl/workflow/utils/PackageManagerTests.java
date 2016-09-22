@@ -32,7 +32,6 @@ import org.junit.Test;
 
 import com.redsqirl.workflow.test.SetupEnvironmentTest;
 import com.redsqirl.workflow.test.TestUtils;
-import com.redsqirl.workflow.utils.PackageManager;
 
 public class PackageManagerTests{
 

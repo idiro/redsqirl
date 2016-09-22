@@ -68,12 +68,12 @@ public class TestUtils {
 		return "test_redsqirl_"+user+id;
 	}
 	
-	static public String getTablePath(int id){
-		return "/"+getTableName(id);
-	}
-	
 	static public String getPath(int id) {
 		return "/user/" + user + "/tmp/test_redsqirl_" + id;
+	}
+	
+	static public String getName(int id) {
+		return "test_redsqirl_" + id;
 	}
 	
 	public static void createStringIntIntfile(Path p) throws IOException {

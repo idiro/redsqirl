@@ -33,7 +33,7 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SourceTests;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 import com.redsqirl.workflow.utils.ModelManager;
@@ -106,15 +106,15 @@ public class SuperActionTests {
 		TestUtils.logTestTitle("SubWorkflowTests#basicTest");
 		String sName = "sa_unittest";
 
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String userName = System.getProperty("user.name");
 		String error = null;
-		HiveInterface hiveInt = null;
+		HDFSInterface hdfsInt = null;
 		try{
 			
 			//Create
 			logger.debug("CReate a sub workflow");
-			SubWorkflow sw = SubWorkflowTests.createBasicSubWorkflow(sName);
+			SubWorkflow sw = SubWorkflowTests.createBasicSubWorkflowHdfs(sName);
 			assertTrue("Fail to create subworkflow.", sw != null);
 			
 			
@@ -130,15 +130,15 @@ public class SuperActionTests {
 			logger.debug("Create a workflow");
 			Workflow w = new Workflow();
 			w.setName("unittest_superaction");
-			hiveInt = new HiveInterface();
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hiveInt,new_path1);
+			hdfsInt = new HDFSInterface();
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w,hdfsInt,new_path1);
 			
-			SuperAction sa = addSuperAction(w, sName,"in", (Source)src);
+			SuperAction sa = addSuperAction(w, sName,"act_in", (Source)src);
 			runWorkflow(w);
 		    
 		    
 		    w.cleanProject();
-		    SuperAction sa2 = addSuperAction(w, sName,"in", (Source)src);
+		    SuperAction sa2 = addSuperAction(w, sName,"act_in", (Source)src);
 		    runWorkflow(w);
 			
 		    sw.save(WorkflowPrefManager.getPathUserSuperAction(System.getProperty("user.name")));

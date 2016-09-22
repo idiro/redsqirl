@@ -35,6 +35,10 @@ support@redsqirl.com
       <fileMode>0744</fileMode>
     </fileSet>
     <fileSet>
+      <directory>${dist.script}</directory>
+      <outputDirectory>redsqirl-${project.version}/scripts</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${dist.war}</directory>
       <outputDirectory>redsqirl-${project.version}/war</outputDirectory>
     </fileSet>

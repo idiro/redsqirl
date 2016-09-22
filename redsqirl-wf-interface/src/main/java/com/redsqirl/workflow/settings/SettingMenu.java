@@ -34,6 +34,12 @@ import org.json.JSONObject;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.SettingInt.Scope;
 
+/**
+ * Setting Menu.
+ * A Setting menu contains sub-menus and properties.
+ * @author etienne
+ *
+ */
 public class SettingMenu extends UnicastRemoteObject implements SettingMenuInt{
 
 	/**

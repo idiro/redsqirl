@@ -573,7 +573,6 @@ public class SSHInterface extends Storage implements SSHDataStore {
 	 */
 	@Override
 	public String canCreate() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	/**
@@ -581,7 +580,6 @@ public class SSHInterface extends Storage implements SSHDataStore {
 	 */
 	@Override
 	public String canDelete() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	/**
@@ -589,7 +587,6 @@ public class SSHInterface extends Storage implements SSHDataStore {
 	 */
 	@Override
 	public String canMove() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	/**
@@ -597,7 +594,6 @@ public class SSHInterface extends Storage implements SSHDataStore {
 	 */
 	@Override
 	public String canCopy() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	/**

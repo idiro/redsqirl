@@ -38,6 +38,11 @@ import org.apache.log4j.Logger;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
+/**
+ * Manage Red Sqirl Package
+ * @author etienne
+ *
+ */
 public class RedSqirlPackage {
 
 	static Logger logger = Logger.getLogger(RedSqirlPackage.class);

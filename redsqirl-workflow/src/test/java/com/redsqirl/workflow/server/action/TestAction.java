@@ -31,6 +31,7 @@ import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.UserInteraction;
+import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -84,7 +85,7 @@ public class TestAction extends DataflowAction{
 				1) );
 		
 		output = new LinkedHashMap<String, DFEOutput>();
-		output.put("output1", new OutputActionTest());
+		output.put("output1", new MapRedTextType());
 		
 		
 	}
@@ -94,7 +95,7 @@ public class TestAction extends DataflowAction{
 			input = new LinkedHashMap<String, DFELinkProperty>();
 			
 			input.put("input1", 
-					new DataProperty(OutputActionTest.class, 
+					new DataProperty(MapRedTextType.class, 
 							0, 1)
 					);
 			

@@ -38,13 +38,13 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.Convert;
-import com.redsqirl.workflow.server.action.ConvertTests;
+import com.redsqirl.workflow.server.action.Script;
+import com.redsqirl.workflow.server.action.ScriptTests;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.server.datatype.HiveType;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.connect.hcat.HCatalogType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
@@ -63,14 +63,12 @@ public class SubWorkflowTests {
 
 	static Logger logger = Logger.getLogger(SubWorkflowTests.class);
 	
-	static Map<String, String> getColumns() {
-		Map<String, String> ans = new HashMap<String, String>();
-		ans.put(HiveInterface.key_columns, "ID STRING, VALUE INT");
-		return ans;
+	static String getColumns() {
+		return "ID STRING, VALUE INT";
 	}
 	
 	public static SubWorkflowInput createInput_ID_VALUE(SubWorkflow w,
-			HiveInterface hInt,String idInput) throws RemoteException,
+			HCatStore hInt,String idInput) throws RemoteException,
 			Exception {
 		
 		String tmpId = w.addElement((new SubWorkflowInput()).getName());
@@ -87,7 +85,7 @@ public class SubWorkflowTests {
 		logger.debug("Init data sub type");
 		input.update(input.getInteraction(Source.key_datasubtype));
 		((ListInteraction) input.getInteraction(Source.key_datasubtype))
-		.setValue(new HiveType().getTypeName());
+		.setValue(new HCatalogType().getTypeName());
 		
 		
 		input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
@@ -171,7 +169,7 @@ public class SubWorkflowTests {
 	
 	public static SubWorkflowOutput createOutput(SubWorkflow w, DataFlowElement dfeOutput, String outputName) throws RemoteException, Exception{
 		
-		String idOutputEl = "convertion";
+		String idOutputEl = "Scription";
 		String tmpId = w.addElement((new SubWorkflowOutput()).getName());
 		w.changeElementId(tmpId,idOutputEl);
 		SubWorkflowOutput outputEl = (SubWorkflowOutput) w.getElement(idOutputEl);
@@ -180,32 +178,11 @@ public class SubWorkflowTests {
 				outputName, dfeOutput.getComponentId(), 
 				SubWorkflowOutput.input_name,idOutputEl);
 		
-		assertTrue("convert add link: "+error,error == null);
+		assertTrue("Script add link: "+error,error == null);
 		
 		return outputEl;
 	}
 	
-	public static SubWorkflow createBasicSubWorkflow(String name) throws RemoteException{
-		SubWorkflow sw = null;
-		HiveInterface hiveInt = null;
-		try{
-			
-			hiveInt = new HiveInterface();
-			sw = new SubWorkflow(name);
-			SubWorkflowInput input = createInput_ID_VALUE(
-					sw,hiveInt,"in");
-			
-			Convert conv = (Convert )ConvertTests.createConvertWithSrc(sw,input);
-			
-			SubWorkflowOutput output = createOutput(sw, conv, Convert.key_output);
-			
-		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
-			assertTrue(e.toString(), false);
-		}
-		
-		return sw;
-	}
 	public static SubWorkflow createBasicSubWorkflowHdfs(String name) throws RemoteException{
 		SubWorkflow sw = null;
 		HDFSInterface hiveInt = null;
@@ -214,11 +191,11 @@ public class SubWorkflowTests {
 			hiveInt = new HDFSInterface();
 			sw = new SubWorkflow(name);
 			SubWorkflowInput input = createInput_ID_VALUE(
-					sw,hiveInt,"in");
+					sw,hiveInt,"act_in");
 			
-			Convert conv = (Convert )ConvertTests.createConvertWithSrc(sw,input);
+			Script conv = (Script )ScriptTests.createScriptWithSrc(sw,input);
 			
-			SubWorkflowOutput output = createOutput(sw, conv, Convert.key_output);
+			SubWorkflowOutput output = createOutput(sw, conv, Script.key_output);
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
@@ -235,7 +212,7 @@ public class SubWorkflowTests {
 		String sName = "sa_unittest";
 		logger.info(1);
 		
-		String new_path1 =TestUtils.getPath(1);
+		String new_path1 =TestUtils.getPath(1)+".srs";
 		logger.info(2);
 		String userName = System.getProperty("user.name");
 		String error = null;
@@ -245,7 +222,7 @@ public class SubWorkflowTests {
 
 			//Create
 			logger.info("create...");
-			SubWorkflow sw = createBasicSubWorkflow(sName);
+			SubWorkflow sw = createBasicSubWorkflowHdfs(sName);
 			assertTrue("Fail to create subworkflow.", sw != null);
 			
 			//Save
@@ -284,7 +261,7 @@ public class SubWorkflowTests {
 		TestUtils.logTestTitle("SubWorkflowTests#aggregate");
 		String sName = "sa_unittest2";
 
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
@@ -294,22 +271,21 @@ public class SubWorkflowTests {
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
-			HiveInterface hiveInt = new HiveInterface();
 			HDFSInterface hdfsInt = new HDFSInterface();
 			
 			logger.info("deleted paths if existed");
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hiveInt, new_path1);
-			DataFlowElement conv1 = ConvertTests.createConvertWithSrc(w,src); 
-			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hdfsInt, new_path1);
+			DataFlowElement conv1 = ScriptTests.createScriptWithSrc(w,src); 
+			DataFlowElement conv2 = ScriptTests.createScriptWithScript(w,conv1);
 			
 			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
 			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),new Source().getOut_name()));
 			
 
 			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();
-			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(conv2.getComponentId(),Convert.key_output));
+			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(conv2.getComponentId(),Script.key_output));
 			
 			List<String> components = new LinkedList<String>();
 			components.add(conv1.getComponentId());
@@ -334,7 +310,7 @@ public class SubWorkflowTests {
 		TestUtils.logTestTitle("SubWorkflowTests#expand");
 		String sName = "sa_unittest3";
 
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
@@ -344,26 +320,25 @@ public class SubWorkflowTests {
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
-			HiveInterface hiveInt = new HiveInterface();
 			HDFSInterface hdfsInt = new HDFSInterface();
 			
 			logger.info("deleted paths if existed");
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hiveInt, new_path1);
-			DataFlowElement conv1 = ConvertTests.createConvertWithSrc(w,src); 
-			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hdfsInt, new_path1);
+			DataFlowElement scriptAct1 = ScriptTests.createScriptWithSrc(w,src); 
+			DataFlowElement scriptAct2 = ScriptTests.createScriptWithScript(w,scriptAct1);
 			
 			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
 			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),new Source().getOut_name()));
 			
 
 			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();
-			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(conv2.getComponentId(),Convert.key_output));
+			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(scriptAct2.getComponentId(),Script.key_output));
 			
 			List<String> components = new LinkedList<String>();
-			components.add(conv1.getComponentId());
-			components.add(conv2.getComponentId());
+			components.add(scriptAct1.getComponentId());
+			components.add(scriptAct2.getComponentId());
 			List<String> oldComponents = w.getComponentIds();
 			
 			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);

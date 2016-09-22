@@ -23,72 +23,56 @@ import static org.junit.Assert.assertTrue;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
+import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.test.TestUtils;
 
-public class HiveInterfaceTests {
+public class HCatStoreTests {
 
-	static Logger logger = Logger.getLogger(HiveInterfaceTests.class);
+	static Logger logger = Logger.getLogger(HCatStoreTests.class);
 	public static int resultExists = 0;
 	public static int resultExecute = 0;
 	public static int resultExecuteQuery = 0;
 
-	Map<String, String> getColumns() {
-		Map<String, String> ans = new HashMap<String, String>();
-		ans.put(HiveInterface.key_columns, "ID STRING, VALUE INT");
-		return ans;
+
+	String getColumns() {
+		return "ID STRING, VALUE INT";
+	}
+	
+	String getPartitions() {
+		return "COUNTRY STRING, DT STRING";
 	}
 
-	Map<String, String> getPartitions() {
-		Map<String, String> ans = new HashMap<String, String>();
-		ans.put(HiveInterface.key_columns, "ID STRING, VALUE INT");
-		ans.put(HiveInterface.key_partitions, "COUNTRY STRING, DT STRING");
-		return ans;
+	String getPartition() {
+		return "DT STRING";
 	}
 
-	Map<String, String> getPartition() {
-		Map<String, String> ans = new HashMap<String, String>();
-		ans.put(HiveInterface.key_columns, "ID STRING, VALUE INT");
-		ans.put(HiveInterface.key_partitions, "DT STRING");
-		return ans;
-	}
-
+	
 	 @Test
 	public void basic() {
-		TestUtils.logTestTitle("HiveInterfaceTests#basic");
+		TestUtils.logTestTitle("HCatStoreTests#basic");
 		try {
 
-			HiveInterface hInt = new HiveInterface();
-			Map<String, String> columns = getColumns();
+			HCatStore hInt = new HCatStore();
 
-			String new_path1 = TestUtils.getTablePath(1);
+			String new_path1 = "/"+TestUtils.getName(1);
 			hInt.delete(new_path1);
 
 			assertTrue("create " + new_path1,
-					hInt.create(new_path1, columns) == null);
+					hInt.createTable(HCatStore.getDatabaseTableAndPartition(new_path1)[1], getColumns())== null);
 
-			String new_path2 = TestUtils.getTablePath(2);
+			String new_path2 = "/"+TestUtils.getName(2);
 			hInt.delete(new_path2);
 			assertTrue("copy to " + new_path2,
 					hInt.copy(new_path1, new_path2) == null);
@@ -96,7 +80,7 @@ public class HiveInterfaceTests {
 			assertTrue("copy to " + new_path2,
 					hInt.copy(new_path1, new_path2) != null);
 
-			String new_path3 = TestUtils.getTablePath(3);
+			String new_path3 = "/"+TestUtils.getName(3);
 			hInt.delete(new_path3);
 			assertTrue("move to " + new_path3,
 					hInt.move(new_path1, new_path3) == null);
@@ -120,17 +104,17 @@ public class HiveInterfaceTests {
 
 	 @Test
 	public void partitionMgmt() {
-		TestUtils.logTestTitle("HiveInterfaceTests#partitionMgmt");
+		TestUtils.logTestTitle("HCatStoreTests#partitionMgmt");
 		try {
 			String error = "";
-			HiveInterface hInt = new HiveInterface();
-			Map<String, String> partition = getPartition();
-			Map<String, String> partitions = getPartitions();
+			HCatStore hInt = new HCatStore();
+			String partition = getPartition();
+			String partitions = getPartitions();
 
-			String new_path1 = TestUtils.getTablePath(1);
+			String new_path1 = "/"+TestUtils.getName(1);
 			hInt.delete(new_path1);
 
-			error = hInt.create(new_path1, partition);
+			error = hInt.createTable(HCatStore.getDatabaseTableAndPartition(new_path1)[1], getColumns(),partition);
 			assertTrue("create " + new_path1 + " , " + error, error == null);
 			logger.debug("create 1 : " + new_path1);
 
@@ -143,43 +127,23 @@ public class HiveInterfaceTests {
 			assertTrue("create " + new_partition + " , " + error, error != null);
 			logger.debug("create 3 : " + new_partition);
 
-			String new_path2 = TestUtils.getTablePath(2);
+			String new_path2 = "/"+TestUtils.getName(2);
 			hInt.delete(new_path2);
 
-			String new_partitions = new_path2
-					+ "/COUNTRY='Ireland'/DT='20120102'";
-			error = hInt.create(new_partitions, partitions);
-			assertTrue("create " + new_partitions + " , " + error,
+			error = hInt.createTable(HCatStore.getDatabaseTableAndPartition(new_path2)[1], getColumns(),partitions);
+			assertTrue("create " + partitions + " , " + error,
 					error == null);
-			logger.debug("create 4 : " + new_partitions);
+			logger.debug("create 4 : " + partitions);
 
-			List<String> part = new ArrayList<String>();
-			List<String> list = hInt.getPartitions(new_partitions, part);
+			List<String> list = Arrays.asList(hInt.getDescription(HCatStore.getDatabaseTableAndPartition(new_path2)).get(JdbcStore.key_partition).split(","));
 			assertTrue("partitions empty : " + list.toString(), !list.isEmpty());
 			assertTrue("partitions " + list.toString(), list.size() == 2);
-			boolean berror = hInt.exists(new_partitions);
-			assertTrue("1) exists : " + new_partitions, berror);
-
-			String new_path3 = TestUtils.getTablePath(3);
-			new_path3 += "/SIZE=9";
-			partition.put(HiveInterface.key_partitions,
-					hInt.getTypesPartitons(new_path3));
-
-			error = hInt.create(new_path3, partition);
-			assertTrue("create : " + new_path3 + " , " + error, error == null);
-			logger.info("path : " + new_path3);
-			logger.info("partitions : "
-					+ hInt.getPartitions(new_path3, new ArrayList<String>()));
-			boolean exists = hInt.exists(new_path3);
-			assertTrue("2) exists " + new_path3, exists);
+			
 
 			error = hInt.delete(new_path1);
 			assertTrue("delete " + new_path1 + " , " + error, error == null);
 			error = hInt.delete(new_path2);
 			assertTrue("delete " + new_path2 + " , " + error, error == null);
-			
-			error = hInt.delete(new_path3);
-			assertTrue("delete " + new_path3 + " , " + error, error == null);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -188,72 +152,12 @@ public class HiveInterfaceTests {
 	}
 
 	 @Test
-	public void getTypesFromPathTest() throws RemoteException {
-		TestUtils.logTestTitle("HiveInterfaceTests#getTypesFromPathTest");
-		HiveInterface hInt = new HiveInterface();
-		String new_path1 = TestUtils.getTablePath(1);
-		new_path1 += "/COUNTRY='Ireland'/DT='20120102'/PRICE=5.0/SIZE=7";
-		// new_path1+="/DT='20120102'";
-		logger.info("result : " + hInt.getTypesPartitons(new_path1));
-	}
-
-	 @Test
-	public void selectPartitionTest() throws SQLException {
-		try {
-			HiveInterface hInt = new HiveInterface();
-			String path_1 = TestUtils.getTablePath(1);
-			String part_path = path_1 + "/COUNTRY='Ireland'/DT='20120204'";
-			logger.info("execute : " + hInt.getExecute());
-			hInt.delete(path_1);
-			String error = hInt.create(part_path, getPartitions());
-			assertTrue("create error " + error, error == null);
-			hInt.goTo(part_path);
-			List<String> result = hInt.select("\001", 5);
-			logger.info("result : " + result.toString());
-			hInt.delete(path_1);
-//			WorkflowPrefManager.resetSys();
-//			WorkflowPrefManager.resetUser();
-
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			logger.info("error in this test " + e.getMessage());
-		}
-	}
-
-	 @Test
-	public void getDescriptionTest() throws RemoteException {
-		HiveInterface hInt = new HiveInterface();
-		String path1 = TestUtils.getTablePath(1);
-
-		logger.info(hInt.delete(path1));
-		logger.info(hInt.create(path1 + "/DT='20120102'", getPartition()));
-		logger.info(hInt.exists(path1));
-		hInt.goTo(path1);
-		logger.info(hInt.getPath());
-		assertTrue(hInt.getPath() != "/");
-		Map<String, Map<String, String>> map = hInt.getChildrenProperties(true);
-		Iterator<String> it = map.keySet().iterator();
-
-		while (it.hasNext()) {
-			String key = it.next();
-			Map<String, String> desc = map.get(key);
-			Iterator<String> it2 = desc.keySet().iterator();
-			while (it2.hasNext()) {
-				String key2 = it2.next();
-				logger.info(key2 + " , " + desc.get(key2));
-			}
-
-		}
-
-	}
-
-	 @Test
 	public void selectPathPartition() {
 		try {
-			HiveInterface hInt = new HiveInterface();
+			HCatStore hInt = new HCatStore();
 			String path = "/keith_part/id=my_id";
 			hInt.goTo(path);
-			logger.info(hInt.getDescription("keith_part"));
+			logger.info(hInt.getDescription(HCatStore.getDatabaseTableAndPartition(path)));
 			hInt.select(path, "\001", 1);
 		} catch (RemoteException e) {
 			logger.error(e,e);
@@ -268,7 +172,7 @@ public class HiveInterfaceTests {
 	@Test
 	public void isValidPathTest() {
 		try {
-			HiveInterface hInt = new HiveInterface();
+			HCatStore hInt = new HCatStore();
 			String path = "/keith_part/id=my_id";
 			// String path = "/keith_part";
 			FieldList fl = new OrderedFieldList();
@@ -276,7 +180,7 @@ public class HiveInterfaceTests {
 			fl.addField("b", FieldType.INT);
 			fl.addField("weight", FieldType.INT);
 			fl.addField("id", FieldType.STRING);
-			logger.info(hInt.isPathValid(path, fl, true));
+			logger.info(hInt.isPathValid(path, fl,PathType.REAL));
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -286,15 +190,15 @@ public class HiveInterfaceTests {
 	}
 
 	@Test
-	public void deleteTest() {
+	public void deleteTest() throws SQLException {
 		try {
-			HiveInterface hInt = new HiveInterface();
-			String path = TestUtils.getTablePath(1);
+			HCatStore hInt = new HCatStore();
+			String path = "/"+TestUtils.getName(1);
 			String pathPart = path + "/DT='20100204'";
 			String error = "";
 			error = hInt.delete(path);
 			logger.info("error delete "+error);
-			error = hInt.create(pathPart, getPartition());
+			error = hInt.createTable(HCatStore.getDatabaseTableAndPartition(path)[1], getColumns());
 			assertTrue("Error creating " + pathPart + " : " + error,
 					error == null || error.isEmpty());
 			
@@ -314,8 +218,8 @@ public class HiveInterfaceTests {
 	public void interfaceConcurrency() throws RemoteException {
 		TestUtils.logTestTitle("interfaceConcurrency");
 
-		HiveInterface hInt = new HiveInterface();
-		String path1 = TestUtils.getTablePath(25);
+		HCatStore hInt = new HCatStore();
+		String path1 = "/"+TestUtils.getName(25);
 
 		int size = 15;
 		Thread[] exists = new Thread[size];
@@ -367,25 +271,17 @@ public class HiveInterfaceTests {
 			assertTrue("thread destroyed", false);
 		}
 
-		boolean ok = false;
-		int executeVal = HiveInterface.getExecute();
-		int doARefreshcount = HiveInterface.getDoARefreshcount();
-		if (executeVal == 0 && doARefreshcount == 0) {
-			ok = true;
-		}
 		assertTrue("result was not equal to size for exist " + resultExists
 				+ ", " + size, resultExists == size);
 		assertTrue("result was not equal to size for execute " + resultExecute
 				+ ", " + size, resultExecute == size);
 		assertTrue("result was not equal to size for executeQuery "
 				+ resultExecuteQuery + ", " + size, resultExecuteQuery == size);
-		assertTrue("HiveInterface Execute and doARefresh not empty : "
-				+ executeVal + " , " + doARefreshcount, ok);
 	}
 
 	public class HiveThreadexist implements Runnable {
 		String path;
-		HiveInterface hInt;
+		HCatStore hInt;
 
 		public HiveThreadexist(String p) {
 			path = p;
@@ -394,7 +290,7 @@ public class HiveInterfaceTests {
 		@Override
 		public void run() {
 			try {
-				hInt = new HiveInterface();
+				hInt = new HCatStore();
 				if (!hInt.exists(path)) {
 					++resultExists;
 				}
@@ -416,13 +312,12 @@ public class HiveInterfaceTests {
 		@Override
 		public void run() {
 			try {
-				if (HiveInterface.execute(query)) {
+				if (HCatStore.getHiveConnection().execute(query)) {
 					++resultExecute;
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error(e,e);
 			}
-
 		}
 	}
 
@@ -436,11 +331,11 @@ public class HiveInterfaceTests {
 		@Override
 		public void run() {
 			try {
-				if (HiveInterface.executeQuery(query) != null) {
+				if (HCatStore.getHiveConnection().executeQuery(query) != null) {
 					++resultExecuteQuery;
 				}
 
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 

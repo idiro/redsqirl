@@ -28,6 +28,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+/**
+ * A template setting menu, is menu for which several profiles can exist.
+ * Each profile will be stored under a unique name.
+ * @author etienne
+ *
+ */
 public class TemplateSettingMenu extends SettingMenu{
 	
 	private static Logger logger = Logger.getLogger(TemplateSettingMenu.class);

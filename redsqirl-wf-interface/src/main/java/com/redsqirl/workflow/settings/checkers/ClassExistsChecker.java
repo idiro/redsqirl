@@ -2,6 +2,11 @@ package com.redsqirl.workflow.settings.checkers;
 
 import com.redsqirl.workflow.settings.Setting;
 
+/**
+ * Check if a class can be created at run time or not.
+ * @author etienne
+ *
+ */
 public class ClassExistsChecker implements Setting.Checker{
 
 	@Override

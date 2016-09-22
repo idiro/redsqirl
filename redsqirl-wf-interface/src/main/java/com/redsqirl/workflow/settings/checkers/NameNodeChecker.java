@@ -1,5 +1,10 @@
 package com.redsqirl.workflow.settings.checkers;
 
+/**
+ * Namenode property checker.
+ * @author etienne
+ *
+ */
 public class NameNodeChecker extends RegexChecker{
 
 	public NameNodeChecker() {

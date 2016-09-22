@@ -60,4 +60,4 @@ WEBAPP_PID=`ps aux | grep $(dirname $TOMCAT_PATH_CUR}) | grep $USER | head -1 | 
 echo $WEBAPP_PID > /tmp/redsqirl.pid
 
 sleep 1
-cat ../conf/logo.txt
+cat $(dirname ${SCRIPT_PATH})/conf/logo.txt

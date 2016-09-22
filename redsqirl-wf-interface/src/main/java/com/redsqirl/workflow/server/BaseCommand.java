@@ -123,6 +123,10 @@ public class BaseCommand {
 		return command;
 	}
 	
+	/**
+	 * Add to the classpath the hadoop conf folder.
+	 * @return ":{HADOOP_HOME}/conf"
+	 */
 	static String getHadoopConf(){
 		String xmlClassPath = "";
 		try{
@@ -140,6 +144,16 @@ public class BaseCommand {
 		return xmlClassPath;
 	}
 
+	/**
+	 * Get all the package jars to add to the classpath. 
+	 * @param pathUser
+	 * @param pathSys
+	 * @param licenseKeys
+	 * @param userName
+	 * @param softwareKey
+	 * @return
+	 * @throws IOException
+	 */
 	static String getPackageClasspath(String pathUser, String pathSys,Properties licenseKeys, String userName , String softwareKey) throws IOException {
 		File fUser = new File(pathUser);
 		File userLibPath = new File(WorkflowPrefManager.getUserPackageLibPath(userName));
@@ -195,6 +209,17 @@ public class BaseCommand {
 		return classPath;
 	}
 	
+	/**
+	 * Get license error if a license key is incorrect.
+	 * 
+	 * @param pathUser
+	 * @param pathSys
+	 * @param licenseKeys
+	 * @param userName
+	 * @param softwareKey
+	 * @return
+	 * @throws IOException
+	 */
 	public static List<String> getLicenseErrorMsg(String pathUser, String pathSys,Properties licenseKeys, String userName , String softwareKey) throws IOException {
 		File fUser = new File(pathUser);
 		PackageManager pm = new PackageManager();

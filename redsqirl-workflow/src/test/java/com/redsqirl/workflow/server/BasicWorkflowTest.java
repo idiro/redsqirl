@@ -24,12 +24,12 @@ import static org.junit.Assert.assertTrue;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.action.Convert;
-import com.redsqirl.workflow.server.action.ConvertTests;
+import com.redsqirl.workflow.server.action.Script;
+import com.redsqirl.workflow.server.action.ScriptTests;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -45,34 +45,32 @@ public class BasicWorkflowTest{
 	}
 	
 	public void linkCreationDeletion(){
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
 		String file_path = TestUtils.getPath(3);
 		String error = null;
 		try{
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			hdfsInt.delete(file_path);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(dfIn,hiveInt,new_path1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(dfIn,hdfsInt,new_path1);
 			String source = src.getComponentId();
-			Convert conv = (Convert )ConvertTests.createConvertWithSrc(dfIn,src);
-			String convert = conv.getComponentId();
-			conv.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv.getDFEOutput().get(Convert.key_output).setPath(new_path2);
+			Script scriptAct = (Script )ScriptTests.createScriptWithSrc(dfIn,src);
+			String script = scriptAct.getComponentId();
+			scriptAct.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			scriptAct.getDFEOutput().get(Script.key_output).setPath(new_path2);
 			
 			
 			assertTrue("link out not created",
 					dfIn.getElement(source).getOutputComponent().get(new Source().getOut_name())
-					.contains(dfIn.getElement(convert)));
+					.contains(dfIn.getElement(script)));
 			assertTrue("link in not created",
-					dfIn.getElement(convert).getInputComponent().get(Convert.key_input)
+					dfIn.getElement(script).getInputComponent().get(Script.key_input)
 					.contains(dfIn.getElement(source)));
 			
 			logger.debug("sort...");
@@ -80,24 +78,24 @@ public class BasicWorkflowTest{
 			assertTrue(error,error == null);
 
 			logger.debug("remove link...");
-			error = dfIn.removeLink(new Source().getOut_name(), source,Convert.key_input,convert);
+			error = dfIn.removeLink(new Source().getOut_name(), source,Script.key_input,script);
 			assertTrue(error, error == null);
 			assertTrue("link out not created",
 					!dfIn.getElement(source).getOutputComponent().get(new Source().getOut_name())
-					.contains(dfIn.getElement(convert)));
+					.contains(dfIn.getElement(script)));
 			assertTrue("link in not created",
-					!dfIn.getElement(convert).getInputComponent().get(Convert.key_input)
+					!dfIn.getElement(script).getInputComponent().get(Script.key_input)
 					.contains(dfIn.getElement(source)));
 			
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e,e);
 			assertTrue(e.getMessage(),false);
 		}
 		try{
 			hdfsInt.delete(file_path);
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e,e);
 			assertTrue(e.getMessage(),false);
 		}
 	}
@@ -105,30 +103,28 @@ public class BasicWorkflowTest{
 	
 	public void readSaveElementDeletion(){
 
-		HiveInterface hiveInt = null;
 		HDFSInterface hdfsInt = null;
 		
-		String new_path1 =TestUtils.getTablePath(1);
+		String new_path1 =TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
 		String file_path = TestUtils.getPath(3);
 		String error = null;
 		try{
-			hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
 			
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 			hdfsInt.delete(new_path2);
 			hdfsInt.delete(file_path);
 			
-			DataFlowElement src = SourceTests.createSrc_ID_VALUE(dfIn,hiveInt,new_path1);
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(dfIn,hdfsInt,new_path1);
 			String source = src.getComponentId();
-			Convert conv = (Convert )ConvertTests.createConvertWithSrc(dfIn,src);
-			String convert = conv.getComponentId();
-			conv.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
-			conv.getDFEOutput().get(Convert.key_output).setPath(new_path2);
+			Script scriptAct = (Script )ScriptTests.createScriptWithSrc(dfIn,src);
+			String script = scriptAct.getComponentId();
+			scriptAct.getDFEOutput().get(Script.key_output).setSavingState(SavingState.RECORDED);
+			scriptAct.getDFEOutput().get(Script.key_output).setPath(new_path2);
 			
-			Tree<String> forTreeIn = conv.getFormats().getTree();
-			Tree<String> cpiTreeIn = conv.getCpi().getTree();
+			Tree<String> scriptTreeIn = scriptAct.getScriptInt().getTree();
+			Tree<String> oozieTreeIn = scriptAct.getOozieXmlInt().getTree();
 			
 			logger.debug("save workflow...");
 			error = dfIn.save(file_path);
@@ -139,32 +135,32 @@ public class BasicWorkflowTest{
 			assertTrue(error,error == null);
 			
 			logger.debug("check...");
-			assertTrue("Element not found after saving",dfOut.getElement(convert) != null);
+			assertTrue("Element not found after saving",dfOut.getElement(script) != null);
 
-			Tree<String> forTreeOut = ((Convert)dfOut.getElement(convert)).getFormats().getTree();
-			Tree<String> cpiTreeOut = ((Convert)dfOut.getElement(convert)).getCpi().getTree();
-			logger.debug(forTreeIn.toString());
-			logger.debug(forTreeOut.toString());
+			Tree<String> scriptTreeOut = ((Script)dfOut.getElement(script)).getScriptInt().getTree();
+			Tree<String> oozieTreeOut = ((Script)dfOut.getElement(script)).getOozieXmlInt().getTree();
+			logger.debug(scriptTreeIn.toString());
+			logger.debug(scriptTreeOut.toString());
 			assertTrue("The format Tree has been modified during the save/read process", 
-					forTreeIn.equals(forTreeOut));
-			logger.debug(cpiTreeIn.toString());
-			logger.debug(cpiTreeOut.toString());
+					scriptTreeIn.equals(scriptTreeOut));
+			logger.debug(oozieTreeIn.toString());
+			logger.debug(oozieTreeOut.toString());
 			assertTrue("The cpi Tree has been modified during the save/read process", 
-					cpiTreeIn.equals(cpiTreeOut));
+					oozieTreeIn.equals(oozieTreeOut));
 			
 
 			assertTrue("After saving link out not created",
 					dfOut.getElement(source).getOutputComponent().get(new Source().getOut_name())
-					.contains(dfOut.getElement(convert)));
+					.contains(dfOut.getElement(script)));
 			assertTrue("After saving link in not created",
-					dfOut.getElement(convert).getInputComponent().get(Convert.key_input)
+					dfOut.getElement(script).getInputComponent().get(Script.key_input)
 					.contains(dfOut.getElement(source)));
 			
 			
-			logger.debug("remove Element convert...");
-			DataFlowElement cvOut = dfOut.getElement(convert);
-			error = dfOut.removeElement(convert);
-			assertTrue("Element convert found after deleting",dfOut.getElement(convert) == null);
+			logger.debug("remove Element Script...");
+			DataFlowElement cvOut = dfOut.getElement(script);
+			error = dfOut.removeElement(script);
+			assertTrue("Element Script found after deleting",dfOut.getElement(script) == null);
 			assertTrue("After element deletion, link not deleted",
 					!dfOut.getElement(source).getOutputComponent().get(new Source().getOut_name())
 					.contains(cvOut));
@@ -173,19 +169,18 @@ public class BasicWorkflowTest{
 			error = dfIn.removeElement(source);
 			assertTrue("Element source found after deleting",dfIn.getElement(source) == null);
 			assertTrue("After element deletion, link not deleted",
-					!dfIn.getElement(convert).getInputComponent().get(Convert.key_input)
+					!dfIn.getElement(script).getInputComponent().get(Script.key_input)
 					.contains(src));
 			
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
+			logger.error(e,e);
 			assertTrue(false);
 		}
 		try{
 			hdfsInt.delete(file_path);
-			hiveInt.delete(new_path1);
+			hdfsInt.delete(new_path1);
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e,e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

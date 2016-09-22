@@ -3,6 +3,11 @@ package com.redsqirl.workflow.settings.checkers;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.settings.Setting;
 
+/**
+ * Check the xmlns for the three Oozie root elements (bundle, coordinator and workflow).
+ * @author etienne
+ *
+ */
 public class OozieXMLSchemaVersionChecker implements Setting.Checker{
 
 	@Override

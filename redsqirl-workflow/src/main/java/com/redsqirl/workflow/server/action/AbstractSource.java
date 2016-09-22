@@ -106,13 +106,13 @@ public abstract class AbstractSource extends AbstractMultipleSources {
 	}
 
 	protected BrowserInteraction getBrowser() throws RemoteException{
-		return (BrowserInteraction) getInteraction(key_dataset);
+		return getBrowser("");
 	}
 	protected ListInteraction getDatatype() throws RemoteException{
-		return (ListInteraction) getInteraction(key_datatype);
+		return getDataType("");
 	}
 	protected ListInteraction getDataSubtype() throws RemoteException{
-		return (ListInteraction) getInteraction(key_datasubtype);
+		return getDataSubType("");
 	}
 
 	public final String getOut_name() {

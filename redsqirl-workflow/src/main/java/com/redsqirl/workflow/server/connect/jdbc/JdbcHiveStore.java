@@ -7,15 +7,19 @@ import org.apache.log4j.Logger;
 
 import com.idiro.utils.db.JdbcDetails;
 
-public class JdbcHiveStore extends JdbcStore{
+public abstract class JdbcHiveStore extends JdbcStore{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1696717862331257056L;
 	private static Logger logger = Logger.getLogger(JdbcHiveStore.class);
 	protected static JdbcStoreConnection hiveConnection = null;
 	protected static Long hiveConnectionFailure = null;
 	protected static Long hiveLastGetConnection = null;
 	public static final String connectionName = "hive";
 	
-	public JdbcHiveStore() throws RemoteException {
+	private JdbcHiveStore() throws RemoteException {
 		super();
 	}
 	
