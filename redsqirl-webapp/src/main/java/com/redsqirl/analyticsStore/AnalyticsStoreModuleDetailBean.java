@@ -31,7 +31,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,31 +40,29 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+
 import org.ajax4jsf.model.KeepAlive;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
 import com.redsqirl.PackageMngBean;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.ModelInt;
 import com.redsqirl.workflow.utils.ModelManager;
 import com.redsqirl.workflow.utils.PackageManager;
-import com.redsqirl.workflow.utils.RedSqirlModel;
 import com.redsqirl.workflow.utils.RedSqirlPackage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 @KeepAlive
 public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializable{
@@ -102,6 +99,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 			JSONObject object = new JSONObject();
 			object.put("id", id);
+			String softwareVersion = ProjectID.getInstance().getVersion();
+			//object.put("softwareVersion", softwareVersion);
+
 			if (version != null){
 				object.put("version", version);
 			}
@@ -133,6 +133,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					pck.setVersionName(getString(pckObj, "versionName"));
 					pck.setPrice(getString(pckObj, "price"));
 					pck.setValidated(getString(pckObj, "validated"));
+					pck.setSoftwareVersionStar(getString(pckObj, "softwareVersionStar"));
+					pck.setSoftwareVersionEnd(getString(pckObj, "softwareVersionEnd"));
 
 					pck.setJson(getString(pckObj, "jsonObject"));
 
@@ -146,8 +148,31 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				logger.warn(e,e);
 			}
 
-			if (moduleVersion == null && versionList != null && !versionList.isEmpty()){
-				moduleVersion = versionList.get(versionList.size()-1);
+			if(softwareVersion != null && versionList != null && !versionList.isEmpty()){
+				String[] ans = softwareVersion.split("-");
+				softwareVersion = ans[1];
+				int idx = versionList.size()-1;
+				while (idx > -1) {
+					RedSqirlModule r = versionList.get(idx);
+					if(r.getSoftwareVersionStar() != null && !r.getSoftwareVersionStar().isEmpty() && r.getSoftwareVersionEnd() != null && !r.getSoftwareVersionEnd().isEmpty()){
+						if(Double.parseDouble(softwareVersion) < Double.parseDouble(r.getSoftwareVersionStar()) ||
+								Double.parseDouble(softwareVersion) > Double.parseDouble(r.getSoftwareVersionEnd())){
+							idx--;
+						}else{
+							moduleVersion = r;
+							break;
+						}
+					}else{
+						idx--;
+					}
+				}
+				if (moduleVersion == null){
+					moduleVersion = versionList.get(versionList.size()-1);
+				}
+			}else{
+				if (moduleVersion == null && versionList != null && !versionList.isEmpty()){
+					moduleVersion = versionList.get(versionList.size()-1);
+				}
 			}
 
 			//dependency

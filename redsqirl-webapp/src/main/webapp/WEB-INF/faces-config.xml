@@ -515,6 +515,39 @@ support@redsqirl.com
 	</navigation-rule>
 	
 	<navigation-rule>
+		<from-view-id>/pages/admModuleDetail.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>home</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>licensesOnLine</from-outcome>
+			<to-view-id>/pages/addLicenseOnLine.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>licensesOffLine</from-outcome>
+			<to-view-id>/pages/addLicenseOffLine.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>modulesOnLine</from-outcome>
+			<to-view-id>/pages/admModulesOnLine.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>modulesOffLine</from-outcome>
+			<to-view-id>/pages/admModulesOffLine.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>admModulesUninstall</from-outcome>
+			<to-view-id>/pages/admModulesUninstall.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>settings</from-outcome>
+			<to-view-id>/pages/admSettings.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
 		<from-view-id>/pages/modalPackage.xhtml</from-view-id>
 		<navigation-case>
 			<from-outcome>success</from-outcome>
