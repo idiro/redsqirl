@@ -331,12 +331,14 @@ public class HCatStore extends Storage{
 						Iterator<String> itS = fields.getFieldNames()
 								.iterator();
 						boolean found = false;
+						String cur = null;
 						while (itS.hasNext() && !found) {
+							cur = fieldSs[i].split(",")[0].trim();
 							found = itS
 									.next()
 									.trim()
 									.equalsIgnoreCase(
-											fieldSs[i].split(",")[0].trim());
+											cur);
 						}
 						if (!found) {
 							error = LanguageManagerWF.getText(
@@ -344,7 +346,7 @@ public class HCatStore extends Storage{
 									new Object[] {
 											fieldSs[i].split(",")[0],
 											fields.getFieldNames()
-											.toString() });
+											.toString(), cur });
 						}
 					}
 				}else if(dbTableAndPartition.length == 3 && !exists("/"+dbTableAndPartition[0]+"/"+dbTableAndPartition[1])){

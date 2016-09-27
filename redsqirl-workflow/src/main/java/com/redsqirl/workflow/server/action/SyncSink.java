@@ -181,9 +181,13 @@ public class SyncSink extends DataflowAction{
 				ans.addField(cur, inF.getFieldType(cur));
 			}
 			String[] pathOut = HCatStore.getDatabaseTableAndPartition(templatePath.getValue());
+			try{
 			it = HCatStore.getPartitionNames(pathOut[2]).iterator();
 			while(it.hasNext()){
 				ans.addField(it.next(), FieldType.STRING);
+			}
+			}catch(Exception e){
+				logger.error(e,e);
 			}
 		}
 		return ans;
