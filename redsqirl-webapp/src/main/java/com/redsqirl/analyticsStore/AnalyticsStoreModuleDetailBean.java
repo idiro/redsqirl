@@ -499,8 +499,13 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 		if(error == null || error.isEmpty()){
 
-			String tmp = WorkflowPrefManager.pathSysHome;
-			String packagePath = tmp + "/tmp/" +fileName;
+			String ans = WorkflowPrefManager.pathSysHome;
+			String folder = ans + "/tmp/";
+			File folderPath = new File(folder);
+			if(!folderPath.exists()){
+				folderPath.mkdir();
+			}
+			String packagePath = folder + fileName;
 
 			logger.debug("packagePath " + packagePath);
 

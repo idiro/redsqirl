@@ -531,7 +531,7 @@
                         
                         <table style="width:100%">
                         	<tr style="width:100%">
-                        		<td style="width:95%">
+                        		<td style="width:94%">
                         		
                         			<div id="divTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
                             
@@ -611,19 +611,19 @@
 			                    	</div>
                         			
                         		</td>
-                        		<td style="width:5%">
+                        		<td style="width:6%">
                         		
                         			<div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
                         				<h:inputText id="newNumberRow" value="#{interCur.table.tableGrid.rowNumber}" maxlength="4" size="1" title="#{messages.button_goto}" onkeyup="noLetters(this);" onkeypress="return enableEnterKey(event, 'goNumberRowButton');" style="margin-top: 50px;border:1px solid;" />
 		                            	<a4j:commandButton id="goNumberRowButton" action="#{interCur.table.tableGrid.goNumberRow}" reRender="tableInteraction,newNumberRow" style="display:none;" />
 		                            	<br/><br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorTop();this.disabled=false;" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorTop();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorUp();this.disabled=false;" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorUp();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorDown();this.disabled=false;" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorDown();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorBottom();this.disabled=false;" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:50px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorBottom();this.disabled=false;" />
 		                            </div>
                         		
                         		</td>
