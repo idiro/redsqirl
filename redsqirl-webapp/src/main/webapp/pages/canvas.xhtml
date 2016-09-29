@@ -883,6 +883,15 @@
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
 	     		console.log("blockRunningWorkflowJS B");
+	     		runningWorkflowJS();
+	     	}
+            
+            //]]>
+         }
+	     
+	     function runningWorkflowJS(){
+	    	//<![CDATA[
+	    	 console.log("runningWorkflowJS");
 	     		
 		        unblockRunningWorkflowJS();
 		         
@@ -908,10 +917,8 @@
 	
 	            runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
 	            setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
-	     	}
-            
-            //]]>
-         }
+	          //]]>
+	     }
 	     
 	     function blockRunningSchedulingWorkflowJS(){
 		     	//<![CDATA[
@@ -1963,7 +1970,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);checkIfScheduleArc(data[0][8]);"
+					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data); checkIfScheduleArc(data[0][8]);"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -2335,6 +2342,15 @@
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 				
+				<a4j:jsFunction name="runScheduleWorkflowPastDate"
+					action="#{canvasBean.runWorkflow}"
+					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); runningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
+					reRender="msnError">
+					<a4j:actionparam name="canvasStatus" />
+					<a4j:actionparam name="savedFile" />
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+				
 				<a4j:jsFunction name="checkIfScheduleJS" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="checkIfSchedule(data);" reRender="msnError">
 				</a4j:jsFunction>
@@ -2596,7 +2612,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();openVoronoihPopUp();"
-					reRender="selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,tableVoronoi">
+					reRender="selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic,tableVoronoi">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
@@ -2637,7 +2653,7 @@
 				</a4j:jsFunction>
 						
 				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" 
-					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling">
+					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic">
 					<a4j:actionparam name="name" />
 					<a4j:actionparam name="startDate" />
 					<a4j:actionparam name="selectedSchedulingOption" />
@@ -3556,7 +3572,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalReplaceAll" width="425" height="250"
+		<rich:modalPanel id="modalReplaceAll" width="470" height="260"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header">Replace All</f:facet>
@@ -3991,7 +4007,7 @@
 	</rich:modalPanel>
 	
 	<a4j:region>
-		<rich:modalPanel id="replacePanel" width="240" height="230"
+		<rich:modalPanel id="replacePanel" width="270" height="270"
 			style="overflow:auto;" resizeable="true" zindex="2000" styleClass="noMaskClass">
 
 			<f:facet name="header">Replace</f:facet>
@@ -4018,7 +4034,7 @@
 					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_replace}" onclick="jQuery('#divTableInteraction').focus();replaceTable();" reRender="divTableInteraction" />
 					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_replace_all}" onclick="jQuery('#divTableInteraction').focus();findReplaceAllTable();" reRender="divTableInteraction" />
 					<br/>
-					<a4j:commandButton styleClass="greenButton" style="width:95px;float:right;"	value="#{messages.label_menu_close}" oncomplete="setInputFocus();#{rich:component('replacePanel')}.hide();" />
+					<a4j:commandButton styleClass="greenButton" style="width:95px;float:right;" value="#{messages.label_menu_close}" oncomplete="setInputFocus();#{rich:component('replacePanel')}.hide();" />
 				</rich:panel>
 				
 			</h:form>

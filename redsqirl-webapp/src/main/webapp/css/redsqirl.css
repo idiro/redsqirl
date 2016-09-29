@@ -21,6 +21,7 @@ input {
 	font-size: 13px;
 	border-style: solid;
 	border-width: 1px;
+	-moz-user-select:text !important;
 }
 
 .shortMenuIcon {
