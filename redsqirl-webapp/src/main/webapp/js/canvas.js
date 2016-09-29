@@ -1739,11 +1739,6 @@ function mountObj(canvasName) {
                 		help.css("left",(e.pageX)+"px" );
                 		jQuery("body").append(help);
                 		help.fadeIn("slow");
-                	}else{
-                		console.log("dragDropGroup " + canvasArray[canvasName].dragDropGroup);
-                		console.log("moving " + canvasArray[canvasName].moving);
-                		console.log("canvasName " + canvasName);
-                		console.log("canvas array " + canvasName.length);
                 	}
                 });
                 
