@@ -146,7 +146,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String coordinatorsSelectedB;
 	private List<SelectItem> coordinatorsList;
 	private boolean schedule;
-	private String checkRunSchedulePast;
+	private String checkPastDate;
 	
 	
 	/**
@@ -1233,6 +1233,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		updateCanvasStatus();
 
 		String error = getDf().run(runningStartDate,runningEndDate);
+		setCheckPastDate(getCheckJobId());
 		logger.info("Run error:" + error);
 		if (error == null){
 			final String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
@@ -1342,14 +1343,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return new String[] {positions, savedFile, select, getCheckIfSchedule()};
 	}
 	
-	public void checkJobId() throws RemoteException {
+	public String getCheckJobId() throws RemoteException {
 		String checkJobId = "true";
 		if(df.getOozieJobId() != null){
+			logger.warn("checkJobId " + df.getOozieJobId());
 			if(df.getOozieJobId().endsWith("W")){
 				checkJobId = "false";
 			}
 		}
-		setCheckRunSchedulePast(checkJobId);
+		return checkJobId;
 	}
 
 	public String getCheckIfSchedule() throws RemoteException {
@@ -3917,12 +3919,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.schedule = schedule;
 	}
 
-	public String getCheckRunSchedulePast() {
-		return checkRunSchedulePast;
+	public String getCheckPastDate() {
+		return checkPastDate;
 	}
 
-	public void setCheckRunSchedulePast(String checkRunSchedulePast) {
-		this.checkRunSchedulePast = checkRunSchedulePast;
+	public void setCheckPastDate(String checkPastDate) {
+		this.checkPastDate = checkPastDate;
 	}
 
 }

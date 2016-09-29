@@ -2342,9 +2342,9 @@
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="runScheduleWorkflowPastDate"
-					action="#{canvasBean.runWorkflow}"
-					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); runningWorkflowJS(); checkPathRestoreToRun(getSelectedByName());"
+				<a4j:jsFunction name="runScheduleWorkflowCheckPastDate"
+					action="#{canvasBean.runScheduleWorkflow}" data="#{canvasBean.checkJobId}"
+					oncomplete="if(data == 'false'){ setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); runningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }else{ setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
