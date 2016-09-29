@@ -48,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -156,6 +157,11 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			JSONObject object = new JSONObject();
 			object.put("software", "RedSqirl");
 			object.put("filter", searchValue);
+			
+			String softwareVersion = ProjectID.getInstance().getVersion();
+			String[] aux = softwareVersion.split("-");
+			softwareVersion = aux[1];
+			object.put("softwareVersion", softwareVersion);
 
 			if (type != null && !type.isEmpty() && !type.equals("undefined")){
 				object.put("type", type);

@@ -323,7 +323,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 	}
 	
 	public void sortRows(String collun){
-		final int index = getTitles().indexOf(collun);
+		final int index = getTitles().indexOf(WordUtils.capitalizeFully(collun));
 		if(index != -1){
 			List<SelectableRow> list = getRows();
 			Collections.sort(list, new Comparator<SelectableRow>() {

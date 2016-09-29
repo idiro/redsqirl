@@ -146,6 +146,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String coordinatorsSelectedB;
 	private List<SelectItem> coordinatorsList;
 	private boolean schedule;
+	private String checkRunSchedulePast;
 	
 	
 	/**
@@ -1339,6 +1340,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
 
 		return new String[] {positions, savedFile, select, getCheckIfSchedule()};
+	}
+	
+	public void checkJobId() throws RemoteException {
+		String checkJobId = "true";
+		if(df.getOozieJobId() != null){
+			if(df.getOozieJobId().endsWith("W")){
+				checkJobId = "false";
+			}
+		}
+		setCheckRunSchedulePast(checkJobId);
 	}
 
 	public String getCheckIfSchedule() throws RemoteException {
@@ -3904,6 +3915,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setSchedule(boolean schedule) {
 		this.schedule = schedule;
+	}
+
+	public String getCheckRunSchedulePast() {
+		return checkRunSchedulePast;
+	}
+
+	public void setCheckRunSchedulePast(String checkRunSchedulePast) {
+		this.checkRunSchedulePast = checkRunSchedulePast;
 	}
 
 }

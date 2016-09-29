@@ -47,6 +47,8 @@ public class RedSqirlModule implements Serializable{
 	private boolean editable;
 	private boolean settings;
 	private boolean canInstall;
+	private String softwareVersionStar;
+	private String softwareVersionEnd;
 	
 	public int getId() {
 		return id;
@@ -228,6 +230,22 @@ public class RedSqirlModule implements Serializable{
 
 	public void setCanInstall(boolean canInstall) {
 		this.canInstall = canInstall;
+	}
+
+	public String getSoftwareVersionStar() {
+		return softwareVersionStar;
+	}
+
+	public void setSoftwareVersionStar(String softwareVersionStar) {
+		this.softwareVersionStar = softwareVersionStar;
+	}
+
+	public String getSoftwareVersionEnd() {
+		return softwareVersionEnd;
+	}
+
+	public void setSoftwareVersionEnd(String softwareVersionEnd) {
+		this.softwareVersionEnd = softwareVersionEnd;
 	}
 	
 }

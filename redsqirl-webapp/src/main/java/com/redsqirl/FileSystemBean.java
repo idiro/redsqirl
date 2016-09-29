@@ -229,6 +229,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 						}
 						childrenProperties.add(curPathProps);
 						getTableGrid().add(orderedProps);
+						getTableGrid().sortRows(NAME);
 					}
 				}
 			}

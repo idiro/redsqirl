@@ -3224,12 +3224,13 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	
 	var pname;
 	var i = 0;
+	var j = 0;
 	for (;list[i];) {
 		
 		console.log("list " + list[i]);
 		
-		var colour = coloursList[i%7];
-		
+		var colour = coloursList[j%7];
+		console.log("colour list idx " + j);
 		
 		var group = getGroupInsideVoronoiPolygon(list[i]);
 		
@@ -3253,6 +3254,8 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 		var index = arryNames.indexOf(voranoiPolygonTitle);
 		if(index != -1){
 			colour = arryColours[index]
+		}else{
+			j++;
 		}
 		
 		console.log("pname " + pname + " colour " + colour + " voranoiPolygonTitle " + voranoiPolygonTitle);
