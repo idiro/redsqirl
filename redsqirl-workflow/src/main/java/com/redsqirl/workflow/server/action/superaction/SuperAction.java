@@ -496,6 +496,9 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				for (Entry<String,String> cur: wfProp.entrySet()) {
 					in.addProperty(cur.getKey(), cur.getValue());
 				}
+				if(logger.isDebugEnabled()){
+					logger.debug("Sub Input Path Reset for "+curInName+": "+in.getPath()+" "+in.getPathType());
+				}
 			}
 
 			saWf.updateSuperActionTmpOutputs(tmpOutput);

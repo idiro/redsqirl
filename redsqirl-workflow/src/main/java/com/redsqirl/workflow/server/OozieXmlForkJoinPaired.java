@@ -185,6 +185,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		String error = null;
 		if(scheduleJob){
 			Date now = new Date();
+			logger.debug("End time: "+endTime);
+			logger.debug("Now: "+now);
 			boolean pastRun = endTime != null && endTime.before(now);
 			logger.debug("Create coordinators...");
 			while(it.hasNext() && error == null){
@@ -772,18 +774,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
 						if(inputsDfe.isEmpty() ){
 							nameDataset = cur.getComponentId();
-							timeConstraintCur = df.getCoordinator(cur.getCoordinatorName()).getTimeCondition();
-							if(timeConstraintCur.getUnit() == null){
-								timeConstraintCur = df.getCoordinator(cur.getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
-							}
+							timeConstraintCur = datasetCur.getFrequency();
 							initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 						}else if(!inputsDfe.get(0).getCoordinatorName().equals(coordinator.getName())){
 							if(inputsDone.add(datasetCur.getPath())){
 								nameDataset = inputsDfe.get(0).getComponentId();
-								timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getTimeCondition();
-								if(timeConstraintCur.getUnit() == null){
-									timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
-								}
+								timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
 								initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 							}
 						}

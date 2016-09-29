@@ -187,9 +187,6 @@ public class SubWorkflowInput extends AbstractSource{
 			output.put(out_name, DataOutput.getOutput(getDataSubtype().getValue()));
 		}
 		output.get(out_name).setFields(fl);
-		if(!materializedInt.getValues().isEmpty()){
-			output.get(out_name).setPathType(PathType.MATERIALIZED);
-		}
 		return error;
 	}
 
