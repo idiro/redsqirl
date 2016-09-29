@@ -39,8 +39,11 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -48,6 +51,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.apache.pig.newplan.logical.expression.ExpToPhyTranslationVisitor;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -81,6 +85,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 */
 	private static final long serialVersionUID = 5952914634333010421L;
 	private static Logger logger = Logger.getLogger(OozieXmlCreatorAbs.class);
+	
+
+	public static final String startNode = "start";
+	public static final String errorEmailNodeName = "error_email";
+	public static final String okEmailNodeName = "end_email";
+	public static final String errorFinalNodeName = "error";
+	public static final String okFinalNodeName = "end";
+	
+	public static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("YYYY");
+	public static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("MM");
+	public static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd");
+	public static final SimpleDateFormat hourDateFormat = new SimpleDateFormat("HH");
+	public static final SimpleDateFormat minuteDateFormat = new SimpleDateFormat("mm");
+	
 	/** List of elements */
 	Map<String, Element> elements = new LinkedHashMap<String, Element>();
 	/** List of elements */
@@ -238,6 +256,58 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		return error;
 	}
 	
+	private LinkedList<String> orderCoordinatorForPastRun(DataFlow df) throws RemoteException{
+		//Order the coordinators
+		Map<String,Set<String>> coordinatorLinks = new LinkedHashMap<String,Set<String>>();
+		Iterator<DataFlowElement> elIt = df.getElement().iterator();
+		while(elIt.hasNext()){
+			DataFlowElement cur = elIt.next();
+			String coordinatorFrom = cur.getCoordinatorName();
+			Iterator<DataFlowElement> itOuts = cur.getAllOutputComponent().iterator();
+			while(itOuts.hasNext()){
+				String coordinatorTo = itOuts.next().getCoordinatorName();
+				if(!coordinatorFrom.equals(coordinatorTo)){
+					Set<String> coordFromLinkList = coordinatorLinks.get(coordinatorFrom);
+					if(coordFromLinkList == null){
+						coordFromLinkList = new LinkedHashSet<String>();
+						coordinatorLinks.put(coordinatorFrom,coordFromLinkList);
+					}
+					coordFromLinkList.add(coordinatorTo);
+				}
+			}
+		}
+		logger.debug("Order Coordinators...");
+		logger.debug(coordinatorLinks.toString());
+		LinkedList<String> orderedCoordinatorList = new LinkedList<String>();
+		while(!coordinatorLinks.isEmpty()){
+			String nextEl = null;
+			Iterator<String> candidateIt = coordinatorLinks.keySet().iterator();
+			while(candidateIt.hasNext() && nextEl == null){
+				String candidate = candidateIt.next();
+				Iterator<Set<String>> checkIt = coordinatorLinks.values().iterator();
+				boolean found = false;
+				while(checkIt.hasNext()&&!found){
+					found = checkIt.next().contains(candidate);
+				}
+				if(!found){
+					nextEl = candidate;
+					orderedCoordinatorList.add(candidate);
+				}
+			}
+			coordinatorLinks.remove(nextEl);
+		}
+		
+		//Leaf coordinators
+		Iterator<DataFlowCoordinator> leafCoords = df.getCoordinators().iterator();
+		while(leafCoords.hasNext()){
+			String cur = leafCoords.next().getName();
+			if(!orderedCoordinatorList.contains(cur)){
+				orderedCoordinatorList.add(cur);
+			}
+		}
+		return orderedCoordinatorList;
+	}
+	
 	public String createPastRunXml(String wfId, DataFlow df,
 			File directory,Date startTime, Date endTime) throws RemoteException {
 
@@ -247,31 +317,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		String error = null;
 
 		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			// root elements
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("workflow-app");
-			doc.appendChild(rootElement);
-
-			{
-				Attr attrName = doc.createAttribute("name");
-				attrName.setValue(wfId);
-				rootElement.setAttributeNode(attrName);
-			}
-			Attr attrXmlns = doc.createAttribute("xmlns");
-			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
-			rootElement.setAttributeNode(attrXmlns);
+			Document doc = createXmlDoc();
+			Element rootElement = createWorkflowElement(doc, wfId);
 			
 			String email = WorkflowPrefManager.getProperty(WorkflowPrefManager.user_email);
 			logger.debug("User Email Address: '"+email+"'");
-			String startNode = "start";
-			String errorEmailNodeName = "error_email";
-			String okEmailNodeName = "end_email";
-			String errorFinalNodeName = "error";
-			String okFinalNodeName = "end";
-
 			String errorNodeName = errorFinalNodeName;
 			String okEndNodeName = okFinalNodeName;
 			if(!email.isEmpty()){
@@ -282,54 +332,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if (error == null) {
 				logger.debug("Create workflow.xml...");
 				
-				//Order the coordinators
-				Map<String,Set<String>> coordinatorLinks = new LinkedHashMap<String,Set<String>>();
-				Iterator<DataFlowElement> elIt = df.getElement().iterator();
-				while(elIt.hasNext()){
-					DataFlowElement cur = elIt.next();
-					String coordinatorFrom = cur.getCoordinatorName();
-					Iterator<DataFlowElement> itOuts = cur.getAllOutputComponent().iterator();
-					while(itOuts.hasNext()){
-						String coordinatorTo = itOuts.next().getCoordinatorName();
-						if(!coordinatorFrom.equals(coordinatorTo)){
-							Set<String> coordFromLinkList = coordinatorLinks.get(coordinatorFrom);
-							if(coordFromLinkList == null){
-								coordFromLinkList = new LinkedHashSet<String>();
-								coordinatorLinks.put(coordinatorFrom,coordFromLinkList);
-							}
-							coordFromLinkList.add(coordinatorTo);
-						}
-					}
-				}
-				logger.debug("Order Coordinators...");
-				logger.debug(coordinatorLinks.toString());
-				LinkedList<String> orderedCoordinatorList = new LinkedList<String>();
-				while(!coordinatorLinks.isEmpty()){
-					String nextEl = null;
-					Iterator<String> candidateIt = coordinatorLinks.keySet().iterator();
-					while(candidateIt.hasNext() && nextEl == null){
-						String candidate = candidateIt.next();
-						Iterator<Set<String>> checkIt = coordinatorLinks.values().iterator();
-						boolean found = false;
-						while(checkIt.hasNext()&&!found){
-							found = checkIt.next().contains(candidate);
-						}
-						if(!found){
-							nextEl = candidate;
-							orderedCoordinatorList.add(candidate);
-						}
-					}
-					coordinatorLinks.remove(nextEl);
-				}
-				
-				//Leaf coordinators
-				Iterator<DataFlowCoordinator> leafCoords = df.getCoordinators().iterator();
-				while(leafCoords.hasNext()){
-					String cur = leafCoords.next().getName();
-					if(!orderedCoordinatorList.contains(cur)){
-						orderedCoordinatorList.add(cur);
-					}
-				}
+				LinkedList<String> orderedCoordinatorList = orderCoordinatorForPastRun(df);
 				
 				//For each coordinators
 				//Check the start date, end date and step
@@ -339,7 +342,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				String curCoordinatorName = null;
 				if(itOrderedCoord.hasNext()){
 					curCoordinatorName = itOrderedCoord.next();
-					
 					Element start = doc.createElement(startNode);
 					Attr attrStartTo = doc.createAttribute("to");
 					attrStartTo.setValue(curCoordinatorName+"_0");
@@ -347,239 +349,26 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					rootElement.appendChild(start);
 				}
 				while(curCoordinatorName != null && error == null){
-					logger.debug("Create Instance of "+curCoordinatorName);
-					DataFlowCoordinator coordinator = df.getCoordinator(curCoordinatorName);
-					Date coordinatorStartDate = null;
-					Date endDate= endTime;
-					
-					CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
-					int offset = 0;
-					if(coordinatorTimeConstraint.getUnit() == null){
-						logger.debug("Calculate default...");
-						DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
-						coordinatorTimeConstraint = constraint.getConstraint();
-						offset = constraint.getOffset();
-					}
-					logger.debug(coordinatorTimeConstraint.toString());
-					
-					coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),offset);
-					
-					Date incrDate = new Date(coordinatorStartDate.getTime());
-					int incrInt = 0;
-					if(!incrDate.before(endDate)){
-						//Go to next element
-						logger.debug("Nothing to do for this coordinator go to next: "+new SimpleDateFormat().format(incrDate)+" after "+new SimpleDateFormat().format(endDate));
-						if(itOrderedCoord.hasNext()){
-							curCoordinatorName = itOrderedCoord.next();
-						}else{
-							curCoordinatorName = null;
-						}
-					}
-					while(incrDate.before(endDate) && error == null){
-						logger.debug("Iteration "+incrInt+" of "+curCoordinatorName+": "+new SimpleDateFormat().format(incrDate));
-						Element action = doc.createElement("action");
-						action.setAttribute("name", curCoordinatorName+"_"+incrInt);
-						Element subWfElement = doc.createElement("sub-workflow");
-						
-						Element pathElement = doc.createElement("app-path");
-						pathElement.appendChild(doc.createTextNode("${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName));
-						subWfElement.appendChild(pathElement);
-						
-						Element propElement = doc.createElement("propagate-configuration");
-						subWfElement.appendChild(propElement);
-						
-						//Add the variables related to the time period
-						Map<String,String> extraVariables = new LinkedHashMap<String,String>();
-						extraVariables.put(OozieManager.prop_workflowpath, "${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName);
-						{
-							Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
-							while(itDfe.hasNext()){
-								DataFlowElement cur = itDfe.next();
-								logger.debug("Element "+cur.getComponentId());
-								Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
-								while(it.hasNext()){
-									DFEOutput out = it.next();
-									
-									if(PathType.MATERIALIZED.equals(out.getPathType())){
-										String[] paths = new String[out.getNumberMaterializedPath()];
-										int freqDataset = out.getFrequency().getFrequency();
-										TimeTemplate timeDataset = out.getFrequency().getUnit();
-										if(timeDataset == null){
-											freqDataset = coordinatorTimeConstraint.getFrequency();
-											timeDataset = coordinatorTimeConstraint.getUnit();
-										}
-										for(int i = 0; i < out.getNumberMaterializedPath();++i){
-											Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), (i+out.getOffsetPath())*freqDataset , timeDataset);
-											paths[i] = out.getPath().replaceAll("\\Q" + "${YEAR}"+ "\\E", new SimpleDateFormat("YYYY").format(matDate))
-													.replaceAll("\\Q" + "${MONTH}"+ "\\E", new SimpleDateFormat("MM").format(matDate))
-													.replaceAll("\\Q" + "${DAY}"+ "\\E", new SimpleDateFormat("dd").format(matDate))
-													.replaceAll("\\Q" + "${HOUR}"+ "\\E", new SimpleDateFormat("HH").format(matDate))
-													.replaceAll("\\Q" + "${MINUTE}"+ "\\E", new SimpleDateFormat("mm").format(matDate));
-										}
-										
-										if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
-											String path = "";
-											for(int i = 0; i < paths.length;++i){
-												path += paths[i]+" ";
-											}
-											extraVariables.put(cur.getComponentId(), path.trim());
-										}else{
-											String db = null;
-											String table = null;
-											String filter = "";
-											for(int i = 0; i < paths.length;++i){
-												String[] pathArray = HCatStore.getDatabaseTableAndPartition(paths[i]);
-												db = pathArray[0];
-												table = pathArray[1];
-												if(!filter.isEmpty()){
-													filter += " OR ";
-												}
-												if(pathArray[2].contains(";")){
-													filter += "(";
-												}
-												filter += pathArray[2].replaceAll(";", "' AND ").replaceAll("=","='")+"'";
-												if(pathArray[2].contains(";")){
-													filter += ")";
-												}
-											}
-											if(paths.length > 1){
-												filter = " ("+filter+") ";
-											}else{
-												filter = " "+filter+" ";
-											}
-											extraVariables.put("DATABASE_"+cur.getComponentId(), db);
-											extraVariables.put("TABLE_"+cur.getComponentId(), table);
-											extraVariables.put("FILTER_HIVE_"+cur.getComponentId(), filter);
-											extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter);
-											extraVariables.put("FILTER_JAVA_"+cur.getComponentId(), filter);
-										}
-									}
-								}
-							}
-						}
-						
-						if(extraVariables != null && !extraVariables.isEmpty()){
-							Element configuration = doc.createElement("configuration");
-							Iterator<Entry<String,String>> itVariables = extraVariables.entrySet().iterator();
-							while(itVariables.hasNext()){
-								Entry<String,String> var = itVariables.next();
-								Element confName = doc.createElement("name");
-								confName.appendChild(doc.createTextNode(var.getKey()));
-								Element confValue = doc.createElement("value");
-								confValue.appendChild(doc.createTextNode(var.getValue()));
-
-								Element property = doc.createElement("property");
-								property.appendChild(confName);
-								property.appendChild(confValue);
-
-								configuration.appendChild(property);
-							}
-							subWfElement.appendChild(configuration);
-						}
-						action.appendChild(subWfElement);
-						
-
-						Element errorEl = doc.createElement("error");
-						errorEl.setAttribute("to", errorNodeName);
-						//Link action to the next element
-						Element okEl = doc.createElement("ok");
-						incrDate = WfCoordTimeConstraint.addToDate(incrDate, 
-								coordinatorTimeConstraint.getFrequency(), coordinatorTimeConstraint.getUnit());
-						if(incrDate.before(endDate)){
-							okEl.setAttribute("to", curCoordinatorName+"_"+(++incrInt));
-						}else{
-							if(itOrderedCoord.hasNext()){
-								curCoordinatorName = itOrderedCoord.next();
-								okEl.setAttribute("to", curCoordinatorName+"_0");
-							}else{
-								curCoordinatorName = null;
-								okEl.setAttribute("to", okEndNodeName);
-							}
-						}
-						action.appendChild(okEl);
-						action.appendChild(errorEl);
-						
-						rootElement.appendChild(action);
-						
-						if(incrInt > 1000){
-							error="Too many run";
-							break;
-						}
-						
+					try{
+						curCoordinatorName = createPastCoordinatorRunXml(
+								df, curCoordinatorName,
+								directory,startTime, endTime,
+								doc,
+								rootElement,
+								itOrderedCoord,
+								errorNodeName,
+								okEndNodeName
+								);
+					}catch(Exception e){
+						error = e.getMessage();
 					}
 				}
 			}
 
 			if (error == null) {
 				logger.debug("Finish up the xml generation...");
-				// Node kill
-				
-				if(!email.isEmpty()){
-					{
-						Element errorEmailAction = doc.createElement("action");
-						Attr attrErrorEmailName = doc.createAttribute("name");
-						attrErrorEmailName.setValue(errorEmailNodeName);
-						errorEmailAction.setAttributeNode(attrErrorEmailName);
-
-						EmailAction.createOozieElement(
-								doc, 
-								errorEmailAction,
-								email,
-								"",
-								LanguageManagerWF.getText("email.auto.error_title"),
-								LanguageManagerWF.getText("email.auto.error_body"));
-						createOKNode(doc, errorEmailAction, errorFinalNodeName);
-						createErrorNode(doc, errorEmailAction, errorFinalNodeName);
-						rootElement.appendChild(errorEmailAction);
-					}
-					{
-						Element okEmailAction = doc.createElement("action");
-						Attr attrOkEmailName = doc.createAttribute("name");
-						attrOkEmailName.setValue(okEmailNodeName);
-						okEmailAction.setAttributeNode(attrOkEmailName);
-
-						EmailAction.createOozieElement(
-								doc, 
-								okEmailAction,
-								email,
-								"",
-								LanguageManagerWF.getText("email.auto.ok_title"),
-								LanguageManagerWF.getText("email.auto.ok_body"));
-						createOKNode(doc, okEmailAction, okFinalNodeName);
-						createErrorNode(doc, okEmailAction, okFinalNodeName);
-						rootElement.appendChild(okEmailAction);
-					}
-				}
-				
-				
-				Element kill = doc.createElement("kill");
-				Attr attrKillName = doc.createAttribute("name");
-				attrKillName.setValue(errorFinalNodeName);
-				kill.setAttributeNode(attrKillName);
-				Element message = doc.createElement("message");
-				message.appendChild(doc
-						.createTextNode("Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]"));
-				kill.appendChild(message);
-				rootElement.appendChild(kill);
-
-				// Node End
-				Element end = doc.createElement("end");
-				Attr attrEndName = doc.createAttribute("name");
-				attrEndName.setValue(okFinalNodeName);
-				end.setAttributeNode(attrEndName);
-				rootElement.appendChild(end);
-
-				TransformerFactory transformerFactory = TransformerFactory
-						.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				transformer.setOutputProperty(
-						"{http://xml.apache.org/xslt}indent-amount", "4");
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(new File(directory,
-						filename));
-				transformer.transform(source, result);
+				endWorkflow(doc,email,rootElement);
+				saveXML(doc,directory,filename);
 			}
 		} catch (Exception e) {
 			error =" "+ LanguageManagerWF.getText(
@@ -589,6 +378,243 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		}
 		
 		return error;
+	}
+	
+	private int getCoordinatorStartOffset(DataFlow df, DataFlowCoordinator coordinator, CoordinatorTimeConstraint coordinatorTimeConstraint) throws RemoteException{
+		int coordinatorStartOffset = 0;
+		if(coordinatorTimeConstraint.getUnit() == null){
+			logger.debug("Calculate default...");
+			DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
+			coordinatorTimeConstraint = constraint.getConstraint();
+			coordinatorStartOffset = constraint.getOffset();
+		}
+		return coordinatorStartOffset;
+		
+	}
+	
+	private String templateToPath(String templatePath, Date matDate){
+		return templatePath.replaceAll("\\Q" + "${YEAR}"+ "\\E", yearDateFormat.format(matDate))
+		.replaceAll("\\Q" + "${MONTH}"+ "\\E", monthDateFormat.format(matDate))
+		.replaceAll("\\Q" + "${DAY}"+ "\\E", dayDateFormat.format(matDate))
+		.replaceAll("\\Q" + "${HOUR}"+ "\\E", hourDateFormat.format(matDate))
+		.replaceAll("\\Q" + "${MINUTE}"+ "\\E", minuteDateFormat.format(matDate));
+	}
+	
+	private void materialiazePathVariableForPastRun(
+			Map<String,String> extraVariables, 
+			Date incrDate,
+			CoordinatorTimeConstraint coordinatorTimeConstraint,
+			DataFlowElement cur,
+			DFEOutput out,
+			int outputDataOffset
+			) throws RemoteException{
+		if(PathType.MATERIALIZED.equals(out.getPathType())){
+			String[] paths = new String[out.getNumberMaterializedPath()];
+			int freqDataset = out.getFrequency().getFrequency();
+			TimeTemplate timeDataset = out.getFrequency().getUnit();
+			if(timeDataset == null){
+				freqDataset = coordinatorTimeConstraint.getFrequency();
+				timeDataset = coordinatorTimeConstraint.getUnit();
+			}
+			for(int i = 0; i < out.getNumberMaterializedPath();++i){
+				Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), (i+out.getOffsetPath())*freqDataset , timeDataset);
+				paths[i] = templateToPath(out.getPath(), matDate);
+			}
+			
+			if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
+				String path = "";
+				for(int i = 0; i < paths.length;++i){
+					path += paths[i]+" ";
+				}
+				extraVariables.put(cur.getComponentId(), path.trim());
+			}else{
+				String db = null;
+				String table = null;
+				String filter = "";
+				for(int i = 0; i < paths.length;++i){
+					String[] pathArray = HCatStore.getDatabaseTableAndPartition(paths[i]);
+					db = pathArray[0];
+					table = pathArray[1];
+					if(!filter.isEmpty()){
+						filter += " OR ";
+					}
+					if(pathArray[2].contains(";")){
+						filter += "(";
+					}
+					filter += pathArray[2].replaceAll(";", "' AND ").replaceAll("=","='")+"'";
+					if(pathArray[2].contains(";")){
+						filter += ")";
+					}
+				}
+				if(paths.length > 1){
+					filter = " ("+filter+") ";
+				}else{
+					filter = " "+filter+" ";
+				}
+				extraVariables.put("DATABASE_"+cur.getComponentId(), db);
+				extraVariables.put("TABLE_"+cur.getComponentId(), table);
+				extraVariables.put("FILTER_HIVE_"+cur.getComponentId(), filter);
+				extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter);
+				extraVariables.put("FILTER_JAVA_"+cur.getComponentId(), filter);
+			}
+		}else if(PathType.TEMPLATE.equals(out.getPathType()) && cur.getAllInputComponent().size() > 0 ){
+			Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), outputDataOffset*coordinatorTimeConstraint.getFrequency() , coordinatorTimeConstraint.getUnit());
+			String pathOutSync = templateToPath(out.getPath(), matDate);
+			if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
+				extraVariables.put(cur.getComponentId(), pathOutSync);
+			}else{
+				String db = null;
+				String table = null;
+				String filter = "";
+				String[] pathArray = HCatStore.getDatabaseTableAndPartition(pathOutSync);
+				db = pathArray[0];
+				table = pathArray[1];
+				filter = pathArray[2].replaceAll(";", "', ").replaceAll("=","='")+"'";
+				extraVariables.put("DATABASE_"+cur.getComponentId(), db);
+				extraVariables.put("TABLE_"+cur.getComponentId(), table);
+				extraVariables.put("PARTITION_"+cur.getComponentId(), filter);
+				Iterator<String> parts = HCatStore.getPartitionNames(HCatStore.getDatabaseTableAndPartition(out.getPath())[2]).iterator();
+				while(parts.hasNext()){
+					String partCur = parts.next();
+					String partVal = pathArray[2].substring(pathArray[2].indexOf(partCur)+partCur.length()+1);
+					if(partVal.contains(";")){
+						partVal = partVal.substring(0, partVal.indexOf(";"));
+					}
+					extraVariables.put("PARTITION_"+cur.getComponentId()+"_"+partCur, 
+							partVal);
+				}
+				extraVariables.put("PARTITION_"+cur.getComponentId(), filter);
+			}
+		}
+	}
+	
+	private String createPastCoordinatorRunXml(
+			DataFlow df, String curCoordinatorName,
+			File directory,Date startTime, Date endTime,
+			Document doc,
+			Element rootElement,
+			Iterator<String> itOrderedCoord,
+			String errorNodeName,
+			String okEndNodeName
+			) throws Exception {
+		String error = null;
+		logger.debug("Create Instance of "+curCoordinatorName);
+		DataFlowCoordinator coordinator = df.getCoordinator(curCoordinatorName);
+		Date coordinatorStartDate = null;
+		Date endDate= endTime;
+		
+		CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
+		int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
+		logger.debug(coordinatorTimeConstraint.toString());
+		coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),coordinatorStartOffset);
+		
+		Date incrDate = new Date(coordinatorStartDate.getTime());
+		int incrInt = 0;
+		int outputDataOffset = Integer.MIN_VALUE;
+		if(!incrDate.before(endDate)){
+			//Go to next element
+			logger.debug("Nothing to do for this coordinator go to next: "+new SimpleDateFormat().format(incrDate)+" after "+new SimpleDateFormat().format(endDate));
+			if(itOrderedCoord.hasNext()){
+				curCoordinatorName = itOrderedCoord.next();
+			}else{
+				curCoordinatorName = null;
+			}
+		}else{
+			Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				logger.debug("Element "+cur.getComponentId());
+				Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
+				while(it.hasNext()){
+					DFEOutput out = it.next();
+					if(PathType.MATERIALIZED.equals(out.getPathType())){
+						try{
+							if(coordinatorTimeConstraint.getFreqInMinutes() == out.getFrequency().getFreqInMinutes()){
+								outputDataOffset = Math.max(outputDataOffset, out.getOffsetPath());
+							}
+						}catch(Exception e){};
+					}
+				}
+			}
+			if(outputDataOffset == Integer.MIN_VALUE){
+				outputDataOffset = 0;
+			}
+		}
+		
+		
+		while(incrDate.before(endDate) && error == null){
+			logger.debug("Iteration "+incrInt+" of "+curCoordinatorName+": "+new SimpleDateFormat().format(incrDate));
+			Element action = doc.createElement("action");
+			action.setAttribute("name", curCoordinatorName+"_"+incrInt);
+			Element subWfElement = doc.createElement("sub-workflow");
+			
+			Element pathElement = doc.createElement("app-path");
+			pathElement.appendChild(doc.createTextNode("${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName));
+			subWfElement.appendChild(pathElement);
+			
+			Element propElement = doc.createElement("propagate-configuration");
+			subWfElement.appendChild(propElement);
+			
+			//Add the variables related to the time period
+			Map<String,String> extraVariables = new LinkedHashMap<String,String>();
+			extraVariables.put(OozieManager.prop_workflowpath, "${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName);
+			{
+				Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
+				while(itDfe.hasNext()){
+					DataFlowElement cur = itDfe.next();
+					logger.debug("Element "+cur.getComponentId());
+					Iterator<DFEOutput> it = cur.getDFEOutput().values().iterator();
+					while(it.hasNext()){
+						DFEOutput out = it.next();
+						materialiazePathVariableForPastRun(
+								extraVariables, 
+								incrDate,
+								coordinatorTimeConstraint,
+								cur,
+								out,
+								outputDataOffset
+								);
+					}
+				}
+			}
+			
+			if(extraVariables != null && !extraVariables.isEmpty()){
+				subWfElement.appendChild(getConfigurationElement(doc, extraVariables,null));
+			}
+			action.appendChild(subWfElement);
+			
+
+			Element errorEl = doc.createElement("error");
+			errorEl.setAttribute("to", errorNodeName);
+			//Link action to the next element
+			Element okEl = doc.createElement("ok");
+			incrDate = WfCoordTimeConstraint.addToDate(incrDate, 
+					coordinatorTimeConstraint.getFrequency(), coordinatorTimeConstraint.getUnit());
+			if(incrDate.before(endDate)){
+				okEl.setAttribute("to", curCoordinatorName+"_"+(++incrInt));
+			}else{
+				if(itOrderedCoord.hasNext()){
+					curCoordinatorName = itOrderedCoord.next();
+					okEl.setAttribute("to", curCoordinatorName+"_0");
+				}else{
+					curCoordinatorName = null;
+					okEl.setAttribute("to", okEndNodeName);
+				}
+			}
+			action.appendChild(okEl);
+			action.appendChild(errorEl);
+			
+			rootElement.appendChild(action);
+			
+			if(incrInt > 1000){
+				error="Too many run";
+			}
+			
+		}
+		if(error != null){
+			throw new Exception(error);
+		}
+		return curCoordinatorName;
 	}
 	
 	public String createBundleXml(String wfId, DataFlow df,
@@ -601,13 +627,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		//String jobFile = "job.properties";
 		String coordinatorFile = "coordinator.xml";
 		try {
-			
-			// Creating xml
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			// root elements
-			Document doc = docBuilder.newDocument();
+
+			Document doc = createXmlDoc();
 			Element rootElement = doc.createElement("bundle-app");
 			doc.appendChild(rootElement);
 			
@@ -628,17 +649,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				rootElement.appendChild(coordinator);
 			}
 
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(
-					"{http://xml.apache.org/xslt}indent-amount", "4");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(directory,
-					filename));
-			transformer.transform(source, result);
+			saveXML(doc, directory, filename);
 		} catch (Exception e) {
 			error =" "+ LanguageManagerWF.getText(
 					"ooziexmlforkjoinpaired.createxml.fail",
@@ -666,11 +677,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Date startDate = null;
 			Date endDate = endDateBundle;
 			// Creating xml
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			// root elements
-			Document doc = docBuilder.newDocument();
+			Document doc = createXmlDoc();
 			Element rootElement = doc.createElement("coordinator-app");
 			doc.appendChild(rootElement);
 
@@ -679,17 +686,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			dateFormat.setTimeZone(TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 			CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
-			int offset = 0;
-			if(coordinatorTimeConstraint.getUnit() == null){
-				DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
-				coordinatorTimeConstraint = constraint.getConstraint();
-				offset = constraint.getOffset();
-			}
+			int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
 			
 			if(startDateBundle == null){
-				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),offset);
+				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),coordinatorStartOffset);
 			}else{
-				startDate = WfCoordTimeConstraint.addToDate(startDateBundle, offset, coordinatorTimeConstraint.getUnit());
+				startDate = WfCoordTimeConstraint.addToDate(startDateBundle, coordinatorStartOffset, coordinatorTimeConstraint.getUnit());
 			}
 
 			{
@@ -732,7 +734,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				if(endDate != null){
 					attrName.setValue(dateFormat.format(endDate));
 				}else{
-					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate,offset)));
+					attrName.setValue(dateFormat.format(coordinatorTimeConstraint.getDefaultEndTime(startDate,coordinatorStartOffset)));
 				}
 				rootElement.setAttributeNode(attrName);
 			}
@@ -818,7 +820,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			//Define the input events
 			Element inputEvent = doc.createElement("input-events");
-			int maxOffset = Integer.MIN_VALUE;
+			int outputDataOffset = Integer.MIN_VALUE;
 			int inputNb = 0;
 			itDfe = coordinator.getElements().iterator();
 			while(itDfe.hasNext()){
@@ -868,7 +870,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						}
 						try{
 							if(coordinatorTimeConstraint.getFreqInMinutes() == out.getFrequency().getFreqInMinutes()){
-								maxOffset = Math.max(maxOffset, out.getOffsetPath());
+								outputDataOffset = Math.max(outputDataOffset, out.getOffsetPath());
 							}
 						}catch(Exception e){}
 						inputEvent.appendChild(dataIn);
@@ -876,6 +878,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					}
 				}
 				
+			}
+			if(outputDataOffset == Integer.MIN_VALUE){
+				outputDataOffset = 0;
 			}
 			
 			//Define Controls
@@ -938,19 +943,13 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 									autoVariables.put("PARTITION_"+cur.getComponentId()+"_"+partCur, 
 											"${coord:dataOutPartitionValue('"+cur.getComponentId()+"','"+partCur+"')}");
 								}
-								autoVariables.put("PARTITION_"+cur.getComponentId(), "${coord:dataOutPartitions('"+cur.getComponentId()+"')}");
 							}
 							
 							dataOut.setAttribute("dataset", cur.getComponentId());
 							
 							Element instance= doc.createElement("instance");
-							if(maxOffset > Integer.MIN_VALUE){
-								instance.appendChild(doc
-										.createTextNode("${coord:current("+maxOffset+")}"));
-							}else{
-								instance.appendChild(doc
-										.createTextNode("${coord:current(0)}"));
-							}
+							instance.appendChild(doc
+									.createTextNode("${coord:current("+outputDataOffset+")}"));
 							dataOut.appendChild(instance);
 							outputEvent.appendChild(dataOut);
 						}
@@ -968,52 +967,15 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			appPath.appendChild(doc.createTextNode("${"+OozieManager.prop_namenode+"}"+hdfsCoordPath));
 			workflow.appendChild(appPath);
 			
-			Element configuration = doc.createElement("configuration");
+
 			autoVariables.putAll(OozieManager.defaultMap(hdfsCoordPath, null));
-			Iterator<Entry<String,String>> it = autoVariables.entrySet().iterator();
-			while(it.hasNext()){
-				Entry<String,String> cur = it.next();
-				Element prop = doc.createElement("property");
-				Element propName = doc.createElement("name");
-				propName.appendChild(doc.createTextNode(cur.getKey()));
-				prop.appendChild(propName);
-				Element propValue = doc.createElement("value");
-				propValue.appendChild(doc.createTextNode(cur.getValue()));
-				prop.appendChild(propValue);
-				
-				configuration.appendChild(prop);
-			}
-			it = coordinator.getVariables().getKeyValues().entrySet().iterator();
-			while(it.hasNext()){
-				Entry<String,String> cur = it.next();
-				Element prop = doc.createElement("property");
-				Element propName = doc.createElement("name");
-				propName.appendChild(doc.createTextNode(cur.getKey()));
-				prop.appendChild(propName);
-				Element propValue = doc.createElement("value");
-				propValue.appendChild(doc.createTextNode(cur.getValue()));
-				prop.appendChild(propValue);
-				
-				configuration.appendChild(prop);
-			}
-			workflow.appendChild(configuration);
+			workflow.appendChild(getConfigurationElement(doc, autoVariables,coordinator));
 			action.appendChild(workflow);
 			rootElement.appendChild(action);
 			
 			
 
-
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(
-					"{http://xml.apache.org/xslt}indent-amount", "4");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(directory,
-					filename));
-			transformer.transform(source, result);
+			saveXML(doc, directory, filename);
 			
 			OozieManager.writeWorkflowProp(new File(directory,job), 
 					hdfsCoordPath+"/"+filename, 
@@ -1026,6 +988,39 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		}
 
 		return error;
+	}
+	
+	private Element getConfigurationElement(Document doc, Map<String,String> variables,DataFlowCoordinator coordinator) throws RemoteException{
+		Element configuration = doc.createElement("configuration");
+		Iterator<Entry<String,String>> it = variables.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<String,String> cur = it.next();
+			Element prop = doc.createElement("property");
+			Element propName = doc.createElement("name");
+			propName.appendChild(doc.createTextNode(cur.getKey()));
+			prop.appendChild(propName);
+			Element propValue = doc.createElement("value");
+			propValue.appendChild(doc.createTextNode(cur.getValue()));
+			prop.appendChild(propValue);
+			
+			configuration.appendChild(prop);
+		}
+		if(coordinator != null){
+			it = coordinator.getVariables().getKeyValues().entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> cur = it.next();
+				Element prop = doc.createElement("property");
+				Element propName = doc.createElement("name");
+				propName.appendChild(doc.createTextNode(cur.getKey()));
+				prop.appendChild(propName);
+				Element propValue = doc.createElement("value");
+				propValue.appendChild(doc.createTextNode(cur.getValue()));
+				prop.appendChild(propValue);
+
+				configuration.appendChild(prop);
+			}
+		}
+		return configuration;
 	}
 	
 	
@@ -1044,30 +1039,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		// Creating xml
 
 		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			// root elements
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("workflow-app");
-			doc.appendChild(rootElement);
-
-			{
-				Attr attrName = doc.createAttribute("name");
-				attrName.setValue(wfId);
-				rootElement.setAttributeNode(attrName);
-			}
-			Attr attrXmlns = doc.createAttribute("xmlns");
-			attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
-			rootElement.setAttributeNode(attrXmlns);
+			Document doc = createXmlDoc();
+			Element rootElement = createWorkflowElement(doc, wfId);
 			
 			String email = WorkflowPrefManager.getProperty(WorkflowPrefManager.user_email);
 			logger.debug("User Email Address: '"+email+"'");
-			String startNode = "start";
-			String errorEmailNodeName = "error_email";
-			String okEmailNodeName = "end_email";
-			String errorFinalNodeName = "error";
-			String okFinalNodeName = "end";
 
 			String errorNodeName = errorFinalNodeName;
 			String okEndNodeName = okFinalNodeName;
@@ -1186,73 +1162,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if (error == null) {
 				logger.debug("Finish up the xml generation...");
 				// Node kill
-				
-				if(!email.isEmpty()){
-					{
-						Element errorEmailAction = doc.createElement("action");
-						Attr attrErrorEmailName = doc.createAttribute("name");
-						attrErrorEmailName.setValue(errorEmailNodeName);
-						errorEmailAction.setAttributeNode(attrErrorEmailName);
-
-						EmailAction.createOozieElement(
-								doc, 
-								errorEmailAction,
-								email,
-								"",
-								LanguageManagerWF.getText("email.auto.error_title"),
-								LanguageManagerWF.getText("email.auto.error_body"));
-						createOKNode(doc, errorEmailAction, errorFinalNodeName);
-						createErrorNode(doc, errorEmailAction, errorFinalNodeName);
-						rootElement.appendChild(errorEmailAction);
-					}
-					{
-						Element okEmailAction = doc.createElement("action");
-						Attr attrOkEmailName = doc.createAttribute("name");
-						attrOkEmailName.setValue(okEmailNodeName);
-						okEmailAction.setAttributeNode(attrOkEmailName);
-
-						EmailAction.createOozieElement(
-								doc, 
-								okEmailAction,
-								email,
-								"",
-								LanguageManagerWF.getText("email.auto.ok_title"),
-								LanguageManagerWF.getText("email.auto.ok_body"));
-						createOKNode(doc, okEmailAction, okFinalNodeName);
-						createErrorNode(doc, okEmailAction, okFinalNodeName);
-						rootElement.appendChild(okEmailAction);
-					}
-				}
-				
-				
-				Element kill = doc.createElement("kill");
-				Attr attrKillName = doc.createAttribute("name");
-				attrKillName.setValue(errorFinalNodeName);
-				kill.setAttributeNode(attrKillName);
-				Element message = doc.createElement("message");
-				message.appendChild(doc
-						.createTextNode("Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]"));
-				kill.appendChild(message);
-				rootElement.appendChild(kill);
-
-				// Node End
-				Element end = doc.createElement("end");
-				Attr attrEndName = doc.createAttribute("name");
-				attrEndName.setValue(okFinalNodeName);
-				end.setAttributeNode(attrEndName);
-				rootElement.appendChild(end);
-
-				TransformerFactory transformerFactory = TransformerFactory
-						.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				transformer.setOutputProperty(
-						"{http://xml.apache.org/xslt}indent-amount", "4");
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(new File(directory,
-						filename));
-				transformer.transform(source, result);
+				endWorkflow(doc, email, rootElement);
+				saveXML(doc, directory, filename);
 			}
 		} catch (Exception e) {
 			error =" "+ LanguageManagerWF.getText(
@@ -1462,5 +1373,101 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				outEdges.put(cur.oozieLastEl, out);
 			}
 		}
+	}
+	
+
+	private Document createXmlDoc() throws ParserConfigurationException{
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		// root elements
+		Document doc = docBuilder.newDocument();
+		return doc;
+	}
+	
+	private Element createWorkflowElement(Document doc, String wfId) throws DOMException, RemoteException{
+		Element rootElement = doc.createElement("workflow-app");
+		doc.appendChild(rootElement);
+
+		{
+			Attr attrName = doc.createAttribute("name");
+			attrName.setValue(wfId);
+			rootElement.setAttributeNode(attrName);
+		}
+		Attr attrXmlns = doc.createAttribute("xmlns");
+		attrXmlns.setValue(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_xmlns));
+		rootElement.setAttributeNode(attrXmlns);
+		return rootElement;
+	}
+	
+	private void saveXML(Document doc, File directory, String filename) throws TransformerException{
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(
+				"{http://xml.apache.org/xslt}indent-amount", "4");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(new File(directory,
+				filename));
+		transformer.transform(source, result);
+	}
+	
+	private void endWorkflow(Document doc, String email, Element rootElement){
+		if(!email.isEmpty()){
+			{
+				Element errorEmailAction = doc.createElement("action");
+				Attr attrErrorEmailName = doc.createAttribute("name");
+				attrErrorEmailName.setValue(errorEmailNodeName);
+				errorEmailAction.setAttributeNode(attrErrorEmailName);
+
+				EmailAction.createOozieElement(
+						doc, 
+						errorEmailAction,
+						email,
+						"",
+						LanguageManagerWF.getText("email.auto.error_title"),
+						LanguageManagerWF.getText("email.auto.error_body"));
+				createOKNode(doc, errorEmailAction, errorFinalNodeName);
+				createErrorNode(doc, errorEmailAction, errorFinalNodeName);
+				rootElement.appendChild(errorEmailAction);
+			}
+			{
+				Element okEmailAction = doc.createElement("action");
+				Attr attrOkEmailName = doc.createAttribute("name");
+				attrOkEmailName.setValue(okEmailNodeName);
+				okEmailAction.setAttributeNode(attrOkEmailName);
+
+				EmailAction.createOozieElement(
+						doc, 
+						okEmailAction,
+						email,
+						"",
+						LanguageManagerWF.getText("email.auto.ok_title"),
+						LanguageManagerWF.getText("email.auto.ok_body"));
+				createOKNode(doc, okEmailAction, okFinalNodeName);
+				createErrorNode(doc, okEmailAction, okFinalNodeName);
+				rootElement.appendChild(okEmailAction);
+			}
+		}
+		
+		
+		Element kill = doc.createElement("kill");
+		Attr attrKillName = doc.createAttribute("name");
+		attrKillName.setValue(errorFinalNodeName);
+		kill.setAttributeNode(attrKillName);
+		Element message = doc.createElement("message");
+		message.appendChild(doc
+				.createTextNode("Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]"));
+		kill.appendChild(message);
+		rootElement.appendChild(kill);
+
+		// Node End
+		Element end = doc.createElement("end");
+		Attr attrEndName = doc.createAttribute("name");
+		attrEndName.setValue(okFinalNodeName);
+		end.setAttributeNode(attrEndName);
+		rootElement.appendChild(end);
 	}
 }
