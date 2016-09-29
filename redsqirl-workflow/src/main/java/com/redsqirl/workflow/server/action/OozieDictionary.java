@@ -59,11 +59,6 @@ public class OozieDictionary extends AbstractDictionary{
 							"STRING",
 							"@function:concat()@short:It returns the concatenation of 2 strings." }, 
 					new String[] {
-							"concat()",
-							"STRING,STRING",
-							"STRING",
-							"@function:concat()@short:It returns the concatenation of 2 strings." }, 
-					new String[] {
 							"replaceAll()",
 							"STRING,STRING,STRING",
 							"STRING",

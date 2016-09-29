@@ -50,6 +50,7 @@ public abstract class JdbcHiveStore extends JdbcStore{
 					validConnection = false;
 				}
 				if(!validConnection){
+					logger.warn("Connection invalid, has to be closed and open again");
 					try{
 						hiveConnection.closeConnection();
 					}catch(Exception e){

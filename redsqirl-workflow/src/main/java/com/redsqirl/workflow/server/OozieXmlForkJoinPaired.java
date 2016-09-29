@@ -46,6 +46,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.apache.pig.newplan.logical.expression.ExpToPhyTranslationVisitor;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -95,9 +96,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	/**
 	 * Create the xml that contains the all details of the workflow
 	 * properties and the scripts
-	 * @param df
-	 * @param list
-	 * @param directory
+	 * @param df The workflow
+	 * @param list If scheduled null, otherwise the actions to run
+	 * @param directory The directory to write the xmls
+	 * @param startTime
+	 * @param endTime
 	 * @throws RemoteException
 	 */
 	@Override
@@ -118,6 +121,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		return error;
 	}
 	
+	/**
+	 * Create Sub Workflows for all super actions contained in th elist
+	 * @param df
+	 * @param list
+	 * @param directory
+	 * @return
+	 * @throws RemoteException
+	 */
 	public String createSubXmls(DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		String error = null;
@@ -147,12 +158,24 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		}
 		return error;
 	}
+	
 	public String createSubXml(String dfId, DataFlow df, List<RunnableElement> list,
 			File directory) throws RemoteException {
 		df.cleanProject();
 		return createWorkflowXml(dfId,df, list,new File(directory,dfId),true);
 	}
 	
+	/**
+	 * Create the Main XML.
+	 * If it is a schedule job, writes all the coordinators xml as well. 
+	 * @param df
+	 * @param list
+	 * @param directory
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * @throws RemoteException
+	 */
 	public String createMainXml(DataFlow df, List<RunnableElement> list,
 			File directory,Date startTime, Date endTime) throws RemoteException {
 
@@ -185,7 +208,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								logger.debug(itLog.next().getComponentId());
 							}
 						}
-						error = createWorkflowXml(df.getName(),df,toRun, dirCoordinator,true);
+						error = createWorkflowXml(cur.getName(),df,toRun, dirCoordinator,true);
 						
 						if(error == null){
 							error = createSubXmls(df, toRun,dirCoordinator);
@@ -276,6 +299,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						}
 					}
 				}
+				logger.debug("Order Coordinators...");
+				logger.debug(coordinatorLinks.toString());
 				LinkedList<String> orderedCoordinatorList = new LinkedList<String>();
 				while(!coordinatorLinks.isEmpty()){
 					String nextEl = null;
@@ -295,17 +320,19 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					coordinatorLinks.remove(nextEl);
 				}
 				
-				Iterator<DataFlowCoordinator> noLinkCoords = df.getCoordinators().iterator();
-				while(noLinkCoords.hasNext()){
-					String cur = noLinkCoords.next().getName();
+				//Leaf coordinators
+				Iterator<DataFlowCoordinator> leafCoords = df.getCoordinators().iterator();
+				while(leafCoords.hasNext()){
+					String cur = leafCoords.next().getName();
 					if(!orderedCoordinatorList.contains(cur)){
-						orderedCoordinatorList.addFirst(cur);
+						orderedCoordinatorList.add(cur);
 					}
 				}
 				
 				//For each coordinators
 				//Check the start date, end date and step
 				//Create a subworkflow action link it to the next
+				logger.debug("Create coordinators instances...");
 				Iterator<String> itOrderedCoord = orderedCoordinatorList.iterator();
 				String curCoordinatorName = null;
 				if(itOrderedCoord.hasNext()){
@@ -317,8 +344,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					start.setAttributeNode(attrStartTo);
 					rootElement.appendChild(start);
 				}
-				while(curCoordinatorName != null){
-					
+				while(curCoordinatorName != null && error == null){
+					logger.debug("Create Instance of "+curCoordinatorName);
 					DataFlowCoordinator coordinator = df.getCoordinator(curCoordinatorName);
 					Date coordinatorStartDate = null;
 					Date endDate= endTime;
@@ -326,16 +353,28 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
 					int offset = 0;
 					if(coordinatorTimeConstraint.getUnit() == null){
+						logger.debug("Calculate default...");
 						DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
 						coordinatorTimeConstraint = constraint.getConstraint();
 						offset = constraint.getOffset();
 					}
+					logger.debug(coordinatorTimeConstraint.toString());
 					
 					coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),offset);
 					
 					Date incrDate = new Date(coordinatorStartDate.getTime());
 					int incrInt = 0;
-					while(incrDate.before(endDate)){
+					if(!incrDate.before(endDate)){
+						//Go to next element
+						logger.debug("Nothing to do for this coordinator go to next: "+new SimpleDateFormat().format(incrDate)+" after "+new SimpleDateFormat().format(endDate));
+						if(itOrderedCoord.hasNext()){
+							curCoordinatorName = itOrderedCoord.next();
+						}else{
+							curCoordinatorName = null;
+						}
+					}
+					while(incrDate.before(endDate) && error == null){
+						logger.debug("Iteration "+incrInt+" of "+curCoordinatorName+": "+new SimpleDateFormat().format(incrDate));
 						Element action = doc.createElement("action");
 						action.setAttribute("name", curCoordinatorName+"_"+incrInt);
 						Element subWfElement = doc.createElement("sub-workflow");
@@ -349,6 +388,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						
 						//Add the variables related to the time period
 						Map<String,String> extraVariables = new LinkedHashMap<String,String>();
+						extraVariables.put(OozieManager.prop_workflowpath, "${"+OozieManager.prop_workflowpath+"}/"+curCoordinatorName);
 						{
 							Iterator<DataFlowElement> itDfe = coordinator.getElements().iterator();
 							while(itDfe.hasNext()){
@@ -458,6 +498,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						action.appendChild(errorEl);
 						
 						rootElement.appendChild(action);
+						
+						if(incrInt > 1000){
+							error="Too many run";
+							break;
+						}
 						
 					}
 				}

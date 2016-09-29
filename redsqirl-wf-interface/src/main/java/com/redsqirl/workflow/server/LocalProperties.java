@@ -92,7 +92,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 						JSONObject json = new JSONObject();
 						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
 					}
-					
+					r.close();
 				}catch(Exception e){
 					logger.error("error "+ e,e);
 				}
@@ -118,6 +118,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 			JSONTokener tokener = new JSONTokener(r);
 			JSONObject json = new JSONObject(tokener);
 			ans.put("core", new SettingMenu("core", json));
+			r.close();
 		}catch(Exception e){
 			logger.info("read error " + e,e);
 		}
@@ -162,7 +163,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getSysProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysCfgPref)));
+			FileReader fr = new FileReader(new File(WorkflowPrefManager.pathSysCfgPref));
+			prop.load(fr);
+			fr.close();
 		} catch (Exception e) {
 			logger.error("Error when loading '" + WorkflowPrefManager.pathSysCfgPref + "', "
 					+ e.getMessage());
@@ -174,7 +177,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	 * Overwrite system properties
 	 */
 	public void storeSysProperties(Properties prop) throws IOException{
-		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)), "");
+		FileWriter fw = new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)); 
+		prop.store(fw, "");
+		fw.close();
 	}
 	
 	/**
@@ -183,7 +188,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	 * @throws IOException
 	 */
 	public void storeLangProperties(Properties prop) throws IOException{
-		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref)), "");
+		FileWriter fw = new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref));
+		prop.store(fw, "");
+		fw.close();
 	}
 	
 	
@@ -218,7 +225,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getLangProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref)));
+			FileReader fr = new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref));
+			prop.load(fr);
+			fr.close();
 		} catch (Exception e) {
 			logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref + "', "
 					+ e.getMessage());
@@ -234,7 +243,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getUserProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref)));
+			FileReader fr = new FileReader(new File(WorkflowPrefManager.pathUserCfgPref));
+			prop.load(fr);
+			fr.close();
 		} catch (Exception e) {
 			logger.debug("Error when loading '" + WorkflowPrefManager.pathUserCfgPref + "', "
 					+ e.getMessage(), e);
@@ -244,11 +255,13 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	
 	public void storeUserProperties(Properties prop) throws IOException{
 		File userProp = new File(WorkflowPrefManager.pathUserCfgPref);
-		prop.store(new FileWriter(userProp), "");
+		FileWriter fw = new FileWriter(userProp);
+		prop.store(fw, "");
 		userProp.setWritable(false, false);
 		userProp.setReadable(false, false);
 		userProp.setWritable(true, true);
 		userProp.setReadable(true, true);
+		fw.close();
 	}
 	
 	/**
@@ -261,8 +274,10 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getUserProperties(String user) {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.getPathUserPref(user)
-					+ "/redsqirl_user.properties")));
+			FileReader fr = new FileReader(new File(WorkflowPrefManager.getPathUserPref(user)
+					+ "/redsqirl_user.properties"));
+			prop.load(fr);
+			fr.close();
 		} catch (Exception e) {
 			logger.error("Error when loading '" + WorkflowPrefManager.getPathUserPref(user)
 					+ "/redsqirl_user.properties', " + e.getMessage());

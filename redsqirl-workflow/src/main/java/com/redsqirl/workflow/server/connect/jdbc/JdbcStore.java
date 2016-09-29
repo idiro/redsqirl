@@ -599,12 +599,14 @@ public class JdbcStore extends Storage {
 					Iterator<String> itS = fields.getFieldNames()
 							.iterator();
 					boolean found = false;
+					String cur = null;
 					while (itS.hasNext() && !found) {
+						cur = fieldSs[i].split(",")[0].trim();
 						found = itS
 								.next()
 								.trim()
 								.equalsIgnoreCase(
-										fieldSs[i].split(",")[0].trim());
+										cur);
 					}
 					if (!found) {
 						error = LanguageManagerWF.getText(
@@ -612,7 +614,8 @@ public class JdbcStore extends Storage {
 								new Object[] {
 										fieldSs[i].split(",")[0],
 										fields.getFieldNames()
-										.toString() });
+										.toString(),
+										cur});
 					}
 				}
 			}

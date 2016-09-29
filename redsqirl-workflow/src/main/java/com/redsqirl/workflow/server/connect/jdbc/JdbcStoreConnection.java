@@ -51,22 +51,24 @@ public class JdbcStoreConnection extends JdbcConnection{
 			throws Exception {
 		super(arg0, (BasicStatement) arg1);
 		setMaxTimeInMinuteBeforeCleaningStatement(2);
+		setMaxNumberOfQueryRunningInParallel(1);
 	}
 	
 	public JdbcStoreConnection(URL jarPath, String driverClassname,
 			JdbcDetails connectionDetails, RedSqirlBasicStatement bs) throws Exception {
 		super(jarPath, driverClassname, connectionDetails, (BasicStatement) bs);
 		setMaxTimeInMinuteBeforeCleaningStatement(2);
+		setMaxNumberOfQueryRunningInParallel(1);
 	}
 	
 	public JdbcStoreConnection(String driverClassname,
 			JdbcDetails connectionDetails, RedSqirlBasicStatement bs) throws Exception {
 		super(driverClassname, connectionDetails, (BasicStatement) bs);
 		setMaxTimeInMinuteBeforeCleaningStatement(2);
+		setMaxNumberOfQueryRunningInParallel(1);
 	}
 
 	public final List<String> listTables() throws SQLException, RemoteException {
-		waitForQuery();
 		if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
 			listing = true;
 			logger.debug("Refresh table list");
@@ -78,24 +80,6 @@ public class JdbcStoreConnection extends JdbcConnection{
 			logger.debug("tables on "+connectionDetails.getDburl()+": "+tables.toString());
 		}
 		return tables;
-	}
-	
-	private final void waitForQuery(){
-		while(listing){
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-	
-	private final void requestTicketForQuery(){
-		waitForQuery();
-		listing = true;
-	}
-	
-	private final void releaseTicket(){
-		listing = false;
 	}
 	
 	protected final List<String> execListTables() throws SQLException, RemoteException {
@@ -197,9 +181,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 				nameIdx = 4;
 				typeIdx = 6;
 			}else{
-				requestTicketForQuery();
 				rs = executeQuery(query);
-				releaseTicket();
 			}
 			int i = 0;
 			Integer parts = 0;
@@ -247,10 +229,11 @@ public class JdbcStoreConnection extends JdbcConnection{
 					++i;
 				}
 			}
-			rs.close();
+			try{
+				rs.close();
+			}catch(Exception e){}
 
 		} catch (Exception e) {
-			releaseTicket();
 			logger.error("Fail to describe the table " + table,e);
 			if(errorInARow == 0){
 				++errorInARow;
@@ -300,6 +283,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			validConnection = false;
 		}
 		if(!validConnection){
+			logger.warn("Connection not valid anymore, try to reset!");
 			try{
 				closeConnection();
 			}catch(Exception e){

@@ -254,7 +254,10 @@ public class HCatStore extends Storage{
 		}
 		
 		if(ans && pathArray.length == 3){
-			ans = listPartitions(pathArray[0],pathArray[1]).contains(reformatPartition(pathArray[2]));
+			Set<String> partitions = listPartitions(pathArray[0],pathArray[1]);
+			if( ans = partitions != null){
+				ans = partitions.contains(reformatPartition(pathArray[2]));
+			}
 		}
 		return ans;
 	}
@@ -394,12 +397,28 @@ public class HCatStore extends Storage{
 							fieldExpected.removeAll(partName);
 						}
 						if(fields.getSize() != fieldExpected.size() || !fieldsStr.containsAll(fieldExpected)){
-							error = LanguageManagerWF.getText(
-									"hcatstore.featsnotasexpected",
-									new Object[] {
-											fieldsStr.toString(), 
-											fieldExpected
-											});
+							List<String> diff = new LinkedList<String>();
+							if(fieldsStr.size() < fieldExpected.size()){
+								diff.addAll(fieldExpected);
+								diff.removeAll(fieldsStr);
+								error = LanguageManagerWF.getText(
+										"hcatstore.featsnotasexpected",
+										new Object[] {
+												fieldsStr.toString(), 
+												fieldExpected,
+												diff
+										});
+							}else{
+								diff.addAll(fieldsStr);
+								diff.removeAll(fieldExpected);
+								error = LanguageManagerWF.getText(
+										"hcatstore.featsnotasexpected",
+										new Object[] {
+												fieldsStr.toString(), 
+												fieldExpected.toString(),
+												diff
+										});
+							}
 						}
 					}
 				}

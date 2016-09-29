@@ -111,30 +111,33 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		Calendar cl = new GregorianCalendar(
 				TimeZone.getTimeZone(
 						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone)));
+		if(unit == null || frequency == 0){
+			throw new RemoteException("This coordinator is not periodic please configure it.");
+		}
 		if(executionTime == null){
 			cl.setTime(referenceTime);
 			tmpDate = cl.getTime();
 		}else{
 			tmpDate = executionTime;
-			cl.setTime(tmpDate);
 			while(true){
 				long search = (tmpDate.getTime() - referenceTime.getTime())/60000;
-				cl.setTime(addToDate(cl.getTime(), (int)((search < 0 ? 1:-1) * frequency), unit));
-				long newSearch = (cl.getTime().getTime() - referenceTime.getTime());
-				if(newSearch*search < 1){
+				Date newDate = addToDate(tmpDate, (int)((search < 0 ? 1:-1) * frequency), unit);
+				long newSearch = (newDate.getTime() - referenceTime.getTime());
+				if(newSearch*search < 1 || search == 0){
 					if(newSearch > 1){
-						tmpDate  = cl.getTime();
+						tmpDate  = newDate;
 					}
 					break;
 				}
+				tmpDate = newDate;
 			}
 			cl.setTime(tmpDate);
 		}
 		if( unit != null && offset > 0){
-			cl.setTime(addToDate(cl.getTime(), frequency * offset, unit));
+			tmpDate = addToDate(tmpDate, frequency * offset, unit);
 		}
 		
-		return cl.getTime();
+		return tmpDate;
 	}
 	
 	public static Date addToDate(Date myDate, int offset, TimeTemplate unit) throws RemoteException{
@@ -210,6 +213,10 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	@Override
 	public void setInitialInstance(Date initialInstance) throws RemoteException {
 		this.initialInstance = initialInstance;
+	}
+	
+	public String toString(){
+		return "Every "+frequency+" "+unit+". Initial Instance: "+initialInstance;
 	}
 
 }

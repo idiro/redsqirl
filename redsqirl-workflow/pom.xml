@@ -27,7 +27,7 @@ support@redsqirl.com
 	<dist.lib>${dist}/lib</dist.lib>
 	<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
 	<hadoop.version>2.7.0</hadoop.version>
-	<idiro-hadoop.version>${hadoop.version}-0.4</idiro-hadoop.version>
+	<idiro-hadoop.version>${hadoop.version}-0.5</idiro-hadoop.version>
 	<dep-exclude>,hadoop-core</dep-exclude>
     </properties>
 

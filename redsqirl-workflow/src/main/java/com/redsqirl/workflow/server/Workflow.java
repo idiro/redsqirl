@@ -2043,10 +2043,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		// Add the new output links
+		logger.debug("Old elements: " + copy.getComponentIds());
 		entries = outputs.keySet().iterator();
 		while (entries.hasNext() && error == null) {
 			String outputName = entries.next();
-			logger.debug("Old elements: " + copy.getComponentIds());
 			logger.debug("Get element " + outputs.get(outputName).getKey()
 					+ "," + outputs.get(outputName).getValue());
 			Map<String, List<DataFlowElement>> outEls = copy.getElement(
@@ -2058,39 +2058,41 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						outputs.get(outputName).getValue()).iterator();
 				while (it.hasNext()) {
 					DataFlowElement curEl = it.next();
-					if (logger.isDebugEnabled()) {
-						logger.debug("link "
-								+ outputName
-								+ ","
-								+ idSA
-								+ "->"
-								+ copy.getElement(
-										outputs.get(outputName).getKey())
-										.getInputNamePerOutput()
-										.get(outputs.get(outputName).getValue())
-										.get(curEl.getComponentId()) + ","
-										+ curEl.getComponentId());
-					}
-					error = addLink(
-							outputName,
-							idSA,
-							copy.getElement(outputs.get(outputName).getKey())
-							.getInputNamePerOutput()
-							.get(outputs.get(outputName).getValue())
-							.get(curEl.getComponentId()),
-							curEl.getComponentId());
+					if(getElement(curEl.getComponentId()) != null){
+						if (logger.isDebugEnabled()) {
+							logger.debug("link "
+									+ outputName
+									+ ","
+									+ idSA
+									+ "->"
+									+ copy.getElement(
+											outputs.get(outputName).getKey())
+									.getInputNamePerOutput()
+									.get(outputs.get(outputName).getValue())
+									.get(curEl.getComponentId()) + ","
+									+ curEl.getComponentId());
+						}
+						error = addLink(
+								outputName,
+								idSA,
+								copy.getElement(outputs.get(outputName).getKey())
+								.getInputNamePerOutput()
+								.get(outputs.get(outputName).getValue())
+								.get(curEl.getComponentId()),
+								curEl.getComponentId());
 
-					if (error == null) {
+						if (error == null) {
 
-						String newAlias = getElement(curEl.getComponentId())
-								.getAliasesPerComponentInput().get(idSA)
-								.getKey();
-						String oldAlias = curEl.getAliasesPerComponentInput()
-								.get(outputs.get(outputName).getKey()).getKey();
+							String newAlias = getElement(curEl.getComponentId())
+									.getAliasesPerComponentInput().get(idSA)
+									.getKey();
+							String oldAlias = curEl.getAliasesPerComponentInput()
+									.get(outputs.get(outputName).getKey()).getKey();
 
-						getElement(curEl.getComponentId())
-						.replaceInAllInteraction(
-								"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
+							getElement(curEl.getComponentId())
+							.replaceInAllInteraction(
+									"([_ \\W]|^)("+Pattern.quote(oldAlias)+")([_ \\W]|$)", "$1"+newAlias+"$3",true);
+						}
 					}
 
 				}

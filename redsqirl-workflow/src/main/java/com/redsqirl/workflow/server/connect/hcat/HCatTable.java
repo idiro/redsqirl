@@ -31,6 +31,9 @@ public class HCatTable extends HCatObject{
 			logger.error(e,e);
 			ans = null;
 		}
+		if(logger.isDebugEnabled() && ans != null){
+			logger.debug(ans.toString());
+		}
 		return ans;
 	}
 

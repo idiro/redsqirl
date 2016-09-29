@@ -27,7 +27,7 @@ support@redsqirl.com
 	<hadoop.version>2.7.0</hadoop.version>
 	<!-- hadoop-core for 1.X -->
 	<idiro-hadoop.version>${hadoop.version}-0.4</idiro-hadoop.version>
-	<idiro-base.version>0.3</idiro-base.version>
+	<idiro-base.version>0.4</idiro-base.version>
 	<idiro-tm.version>0.3</idiro-tm.version>
 	<oozie.version>4.2.0</oozie.version>
 

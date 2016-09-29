@@ -194,7 +194,7 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 			}
 			br.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e,e);
 		}
 
 		return mapHistory;
