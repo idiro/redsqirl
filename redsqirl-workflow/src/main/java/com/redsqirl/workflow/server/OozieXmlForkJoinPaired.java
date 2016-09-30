@@ -454,7 +454,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				extraVariables.put("DATABASE_"+cur.getComponentId(), db);
 				extraVariables.put("TABLE_"+cur.getComponentId(), table);
 				extraVariables.put("FILTER_HIVE_"+cur.getComponentId(), filter);
-				extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter);
+				extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter.replaceAll("='", "=='"));
 				extraVariables.put("FILTER_JAVA_"+cur.getComponentId(), filter);
 			}
 		}else if(PathType.TEMPLATE.equals(out.getPathType()) && cur.getAllInputComponent().size() > 0 ){
