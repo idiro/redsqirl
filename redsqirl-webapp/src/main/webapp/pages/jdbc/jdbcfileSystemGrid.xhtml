@@ -63,6 +63,11 @@
 					oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
 				</a4j:commandLink>
+				
+				<a4j:commandLink id="jdbcfsExecuteBtn" oncomplete="#{rich:component('jdbcOpenExecuteCommandModal')}.show();" title="#{jdbcBean.canExecuteCommand}" 
+					rendered="#{jdbcBean.canExecuteCommand != null}" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.jdbcOpenExecuteCommandModal}" styleClass="fileSystemIcon"/>
+				</a4j:commandLink>
 			</div>
 
 			<rich:extendedDataTable id="jdbcfs" value="#{jdbcBean.tableGrid.rows}"
@@ -164,6 +169,43 @@
 				</h:panelGrid>
 			</h:form>
 	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="jdbcOpenExecuteCommandModal" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value='#{messages.jdbcOpenExecuteCommandModal}' />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('jdbcOpenExecuteCommandModal')}.hide()" />
+			</f:facet>
+
+			<h:form>
+				<h:panelGrid>
+					
+					<h:inputTextarea maxlength="100" cols="90" rows="19" value="#{jdbcBean.commandToExecute}"
+	                	style="resize:none;border:1pxsolid;width:100%;" id="jdbcCommand" />
+	                	
+	                	
+	                <rich:panel style="border:none; float:right;" >
+			
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('jdbcOpenExecuteCommandModal')}.hide();" 
+							reRender="jdbcCommand msnError" />
+							
+						<a4j:commandButton action="#{jdbcBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
+							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('jdbcOpenExecuteCommandModal')}.hide() };"
+							reRender="jdbcCommand msnError" />
+						
+					</rich:panel>
+	                	
+					
+				</h:panelGrid>
+			</h:form>
+
 		</rich:modalPanel>
 	</a4j:region>
 

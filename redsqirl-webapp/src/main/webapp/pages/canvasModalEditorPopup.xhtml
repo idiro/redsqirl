@@ -219,7 +219,7 @@ function mountComboboxTextEditor(obj1, obj2){
 									<h:outputText value="#{messages.label_word}" />
 								</f:facet>
 								<a4j:commandLink id="btCompleteFunction" onclick="completeCommand('#{item[0]}');"
-									onmouseover="addtooltip('#{item[3]}', event)" onmouseout="removetoottip()">
+									onmouseover="addtooltip('#{item[3]}', event);" >
 									<f:param name="nameFunctions" value="#{item[0]}" />
 									<h:outputText value="#{item[0]}" title="#{item[0]}" />
 								</a4j:commandLink>
@@ -263,7 +263,7 @@ function mountComboboxTextEditor(obj1, obj2){
 									<h:outputText value="#{messages.label_operation}" />
 								</f:facet>
 								<a4j:commandLink id="btCompleteFunction" onclick="completeCommand('#{item[0]}');"
-									onmouseover="addtooltip('#{item[3]}', event)" onmouseout="removetoottip()">
+									onmouseover="addtooltip('#{item[3]}', event);" >
 									<f:param name="nameFunctions" value="#{item[0]}" />
 									<h:outputText value="#{item[0]}" title="#{item[0]}" />
 								</a4j:commandLink>

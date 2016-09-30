@@ -83,6 +83,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private Map<String, ParamProperty> propsParam; 
 	private Integer currentFileIndex;
 	private LinkedHashMap<String, String> newProp;
+	
+	private String commandToExecute;
+	private String canExecuteCommand;
 
 	/**
 	 * Have the same xhtml page for copy and move.
@@ -339,6 +342,29 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void refreshPath() throws RemoteException {
 		setPath(null);
 		updateTable(true);
+	}
+	
+	public void executeCommand() throws RemoteException {
+		String error = getDataStore().execute(getCommandToExecute());
+		displayErrorMessage(error, "EXECUTECOMMAND");
+		if(error == null){
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}
+	}
+
+	public String getCanExecuteCommand() {
+		try {
+			return getDataStore() != null ? getDataStore().canExecute() : null;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void setCanExecuteCommand(String canExecuteCommand) {
+		this.canExecuteCommand = canExecuteCommand;
 	}
 
 	/**
@@ -939,6 +965,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public final void setChildrenProperties(List<Map<String, String>> childrenProperties) {
 		this.childrenProperties = childrenProperties;
+	}
+
+	public String getCommandToExecute() {
+		return commandToExecute;
+	}
+
+	public void setCommandToExecute(String commandToExecute) {
+		this.commandToExecute = commandToExecute;
 	}
 	
 }
