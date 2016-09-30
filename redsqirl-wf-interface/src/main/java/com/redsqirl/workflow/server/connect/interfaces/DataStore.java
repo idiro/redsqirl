@@ -277,6 +277,14 @@ public interface DataStore extends Remote {
 	 */
 	List<String> select(String delimiter, int maxToRead) throws RemoteException;
 	
+	/**
+	 * Execute the following string.
+	 * 
+	 * @param executionStr
+	 * @return An error message or null
+	 * @throws RemoteException
+	 */
+	String execute(String executionStr) throws RemoteException;
 	
 	/**
 	 * ASCII Human readable only select display from the given path the n first elements with a delimiter.
@@ -415,5 +423,10 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	String canCopy() throws RemoteException;
+	
+	/**
+	 * Check if the DataStore supports execution of a text area
+	 */
+	String canExecute() throws RemoteException;
 
 }

@@ -647,5 +647,21 @@ public class HCatStore extends Storage{
 		tables.clear();
 	}
 	
+	@Override
+	public String execute(String executionStr) throws RemoteException{
+		String error = null;
+		try{
+			getHiveConnection().execute(executionStr);
+		}catch(Exception e){
+			logger.error(e,e);
+			error = "Fail during execution: "+e.getMessage();
+		}
+		return error;
+	}
+	
+	@Override
+	public String canExecute() throws RemoteException {
+		return LanguageManagerWF.getText("jdbcstore.execute_help");
+	}
 
 }

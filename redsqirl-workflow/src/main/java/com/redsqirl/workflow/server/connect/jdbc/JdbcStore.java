@@ -793,14 +793,34 @@ public class JdbcStore extends Storage {
 
 	@Override
 	public String canMove() throws RemoteException {
-		// return LanguageManagerWF.getText("jdbcstore.move_help");
 		return null;
 	}
 
 	@Override
 	public String canCopy() throws RemoteException {
-		// return LanguageManagerWF.getText("jdbcstore.copy_help");
 		return null;
+	}
+	
+	@Override
+	public String execute(String executionStr) throws RemoteException{
+		String error = null;
+		try{
+			String[] pathArr = getConnectionAndTable(getPath());
+			if(pathArr.length == 0){
+				error = "No database connection selected";
+			}else{
+				getConnection(pathArr[0]).execute(executionStr);
+			}
+		}catch(Exception e){
+			logger.error(e,e);
+			error = "Fail during execution: "+e.getMessage();
+		}
+		return error;
+	}
+	
+	@Override
+	public String canExecute() throws RemoteException {
+		return LanguageManagerWF.getText("jdbcstore.execute_help");
 	}
 
 	@Override

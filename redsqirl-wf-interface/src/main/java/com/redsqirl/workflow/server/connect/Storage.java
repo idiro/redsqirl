@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
  * Default Abstract class that implements DataStore.
@@ -286,5 +287,15 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 	@Override
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
 		return displaySelect(history.get(cur), maxToRead);
+	}
+	
+	@Override
+	public String execute(String executionStr) throws RemoteException{
+		return null;
+	}
+	
+	@Override
+	public String canExecute() throws RemoteException {
+		return null;
 	}
 }
