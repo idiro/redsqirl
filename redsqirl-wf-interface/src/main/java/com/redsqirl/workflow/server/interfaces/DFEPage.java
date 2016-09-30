@@ -145,4 +145,13 @@ public interface DFEPage extends Remote {
 	 */
 	public void setChecker(PageChecker checker) throws RemoteException;
 
+	/**
+	 * Set the text tip of the page.
+	 * text tip is display when the tip image is hovered.
+	 * 
+	 * @param textTip
+	 * @throws RemoteException
+	 */
+	void setTextTip(String textTip) throws RemoteException;
+
 }

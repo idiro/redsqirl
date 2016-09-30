@@ -383,4 +383,8 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 		return textTip;
 	}
 
+	@Override
+	public void setTextTip(String textTip) throws RemoteException {
+		this.textTip = textTip;
+	}
 }

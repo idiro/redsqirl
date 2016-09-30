@@ -50,13 +50,14 @@ public class SyncSink extends DataflowAction{
 
 	public static final String key_input = "in",key_output="";
 	
+	protected Page page1;
 	protected InputInteraction templatePath;
 	
 	public SyncSink() throws RemoteException {
 		super(new DistcpAction());
 		init();
 		
-		Page page1 = addPage(LanguageManagerWF.getText("sync_sink.page1.title"),
+		page1 = addPage(LanguageManagerWF.getText("sync_sink.page1.title"),
 				LanguageManagerWF.getText("sync_sink.page1.legend"), 1);
 		
 		//Data Set Type
@@ -329,6 +330,14 @@ public class SyncSink extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		DFEOutput out = output.get(key_output);
+		if(out != null &&  new HCatalogType().getTypeName().equals(out.getTypeName())){
+			String createQuery = ((HCatalogType) out).createTableStatement();
+			if(createQuery.indexOf("LOCATION") > -1){
+				createQuery = createQuery.substring(0, createQuery.indexOf("LOCATION"));
+			}
+			page1.setTextTip(createQuery);
+		}
 	}
 	
 	/**
