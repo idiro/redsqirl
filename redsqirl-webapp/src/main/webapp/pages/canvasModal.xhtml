@@ -252,7 +252,7 @@
             rendered="#{canvasModalBean.listPageSize != 0}" 
             oncomplete="createOptionTitles();if(#{canvasModalBean.sourceNode}){resetCurrentOutputBrowser();}">
             
-        <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:465px;width:100%;padding-left: 3px;padding-right: 3px;" >
+        <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:465px;width:100%;padding-left:3px;padding-right:3px;-webkit-user-select:text;" >
             
             
             <span id="canvasModalHeader">
@@ -272,7 +272,7 @@
                 
                 <p>
                 	<h:graphicImage value="../image/icons/question_mark.gif" 
-                	   onmouseover="addtooltip('#{canvasModalBean.pageTextTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
+                	   onmouseover="addtooltip('#{canvasModalBean.pageTextTip}', event);" styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
                 	<h:outputText value="#{canvasModalBean.pageLegend}"/>
                 </p>
             
@@ -285,7 +285,7 @@
                     <h2><h:outputText value="#{interCur.name}"/></h2>
                     
                     <p>
-                    	<h:graphicImage value="../image/icons/question_mark.gif" onmouseover="addtooltip('#{interCur.textTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
+                    	<h:graphicImage value="../image/icons/question_mark.gif" onmouseover="addtooltip('#{interCur.textTip}', event);" styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
                     	<h:outputText value="#{interCur.legend}"/>
                     </p>
                     

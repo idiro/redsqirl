@@ -63,6 +63,11 @@
 					oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.filesystem_refresh_path}" styleClass="fileSystemIcon"/>
 				</a4j:commandLink>
+				
+				<a4j:commandLink id="hcatExecuteBtn" oncomplete="#{rich:component('hcatOpenExecuteCommandModal')}.show();" title="#{hcatBean.canExecuteCommand}" 
+					rendered="#{hcatBean.canExecuteCommand != null}" >
+					<h:graphicImage value="../image/icons/button-refresh.gif" title="#{messages.hcatOpenExecuteCommandModal}" styleClass="fileSystemIcon"/>
+				</a4j:commandLink>
 			</div>
 
 			<rich:extendedDataTable id="hcatfs" value="#{hcatBean.tableGrid.rows}"
@@ -144,6 +149,43 @@
 				</h:panelGrid>
 			</h:form>
 	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hcatOpenExecuteCommandModal" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value='#{messages.hcatOpenExecuteCommandModal}' />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('hcatOpenExecuteCommandModal')}.hide();" />
+			</f:facet>
+
+			<h:form>
+				<h:panelGrid>
+					
+					<h:inputTextarea maxlength="100" cols="90" rows="19" value="#{hcatBean.commandToExecute}"
+	                	style="resize:none;border:1pxsolid;width:100%;" id="hcatCommand" />
+	                	
+	                	
+	                <rich:panel style="border:none; float:right;" >
+			
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hcatOpenExecuteCommandModal')}.hide();" 
+							reRender="hcatCommand msnError" />
+							
+						<a4j:commandButton action="#{hcatBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
+							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('hcatOpenExecuteCommandModal')}.hide(); };"
+							reRender="hcatCommand msnError,msnSuccess" />
+						
+					</rich:panel>
+	                	
+					
+				</h:panelGrid>
+			</h:form>
+
 		</rich:modalPanel>
 	</a4j:region>
 
