@@ -198,7 +198,6 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	public void undoRedoCordinator() throws RemoteException, JSONException, ParseException{
 		logger.info("undoRedoCordinator");
 
-
 		FacesContext context = FacesContext.getCurrentInstance();
 		String name = context.getExternalContext().getRequestParameterMap().get("name");
 		String executionTime = context.getExternalContext().getRequestParameterMap().get("executionTime");
@@ -210,19 +209,21 @@ public class VoronoiBean extends VoronoiBeanAbs {
 		logger.info("selectedSchedulingOption " + selectedSchedulingOption);
 		logger.info("list " + list);
 
+		DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables();
 		if(list != null && !list.equals("null") && !list.equals("[]")){
-			DataFlowCoordinatorVariables vars = dataFlowCoordinator.getVariables(); 
 			JSONArray json = new JSONArray(list);
 			for (int i = 0; i < json.length(); i++) {
 				JSONObject jsonObj = new JSONObject(json.get(i).toString());
 				vars.addVariable(jsonObj.getString("key"), jsonObj.getString("value"), jsonObj.getString("description"), false);
 			}
+		}else{
+			vars.removeAllVariables();
 		}
+		
 		dataFlowCoordinator.setName(name);
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-		dataFlowCoordinator.setExecutionTime(!executionTime.equals("null") ? dateFormat.parse(executionTime) : null );
-		dataFlowCoordinator.getTimeCondition().setUnit(!selectedSchedulingOption.equals("null") ? TimeTemplate.valueOf(selectedSchedulingOption) : null);
-
+		dataFlowCoordinator.setExecutionTime((executionTime != null && !executionTime.equals("null") && !executionTime.isEmpty()) ? dateFormat.parse(executionTime) : null );
+		dataFlowCoordinator.getTimeCondition().setUnit((selectedSchedulingOption != null && !selectedSchedulingOption.equals("null") && !selectedSchedulingOption.isEmpty()) ? TimeTemplate.valueOf(selectedSchedulingOption) : null);
 	}
 
 	public boolean compereJSONArray(JSONArray jsonLinksOld, JSONArray jsonLinks) throws JSONException{
