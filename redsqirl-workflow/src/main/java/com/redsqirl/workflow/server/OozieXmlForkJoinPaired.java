@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -382,10 +383,15 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	
 	private int getCoordinatorStartOffset(DataFlow df, DataFlowCoordinator coordinator, CoordinatorTimeConstraint coordinatorTimeConstraint) throws RemoteException{
 		int coordinatorStartOffset = 0;
-		if(coordinatorTimeConstraint.getUnit() == null){
-			logger.debug("Calculate default...");
-			DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df); 
-			coordinatorTimeConstraint = constraint.getConstraint();
+		DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df);
+		CoordinatorTimeConstraint  defaultConstraint = constraint.getConstraint();
+		if(logger.isDebugEnabled()){
+			logger.debug("Calculate default: "+
+					coordinatorTimeConstraint.getFreqInMinutes()+","+defaultConstraint.getFreqInMinutes()+":"
+					+constraint.getOffset());
+		}
+		if(coordinatorTimeConstraint.getUnit() == null ||
+				coordinatorTimeConstraint.getFreqInMinutes() == defaultConstraint.getFreqInMinutes()){ 
 			coordinatorStartOffset = constraint.getOffset();
 		}
 		return coordinatorStartOffset;
@@ -454,7 +460,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				extraVariables.put("DATABASE_"+cur.getComponentId(), db);
 				extraVariables.put("TABLE_"+cur.getComponentId(), table);
 				extraVariables.put("FILTER_HIVE_"+cur.getComponentId(), filter);
-				extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter.replaceAll("='", "=='"));
+				extraVariables.put("FILTER_PIG_"+cur.getComponentId(), filter.replaceAll("='", Matcher.quoteReplacement("\\=\\='")));
 				extraVariables.put("FILTER_JAVA_"+cur.getComponentId(), filter);
 			}
 		}else if(PathType.TEMPLATE.equals(out.getPathType()) && cur.getAllInputComponent().size() > 0 ){
