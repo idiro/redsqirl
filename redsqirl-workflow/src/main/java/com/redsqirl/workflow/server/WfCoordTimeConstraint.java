@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,6 +20,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 	 * 
 	 */
 	private static final long serialVersionUID = -9222678978810373856L;
+	private static Logger logger = Logger.getLogger(WfCoordTimeConstraint.class);
 	public static final int numberDefaultIteration = 10;
 	
 	int frequency;
@@ -131,7 +133,6 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 				}
 				tmpDate = newDate;
 			}
-			cl.setTime(tmpDate);
 		}
 		if( unit != null && offset > 0){
 			tmpDate = addToDate(tmpDate, frequency * offset, unit);
@@ -162,6 +163,7 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 			cl.add(Calendar.YEAR, offset);
 			break;
 		}
+		logger.debug(myDate+" + "+offset+" "+unit+" = "+cl.getTime());
 		return cl.getTime();
 	}
 	

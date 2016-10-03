@@ -633,7 +633,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 								tmpOffset = prevConstraint.getOffset();
 							}
 						}
-						tmpOffset += datasetCur.getNumberMaterializedPath() - 1;
+						tmpOffset += datasetCur.getNumberMaterializedPath() - 1 - datasetCur.getOffsetPath();
 					}
 				}
 				if(curTimeConstraint != null){
@@ -641,9 +641,15 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 						minCT = curTimeConstraint;
 						offset = tmpOffset;
 					}else{
-						minCT = WfCoordTimeConstraint.getMostFrequent(minCT,curTimeConstraint);
-						if(minCT == curTimeConstraint){
-							offset = tmpOffset;
+						CoordinatorTimeConstraint tmpCT = WfCoordTimeConstraint.getMostFrequent(minCT,curTimeConstraint);
+						if(minCT.getFreqInMinutes() == curTimeConstraint.getFreqInMinutes()){
+							minCT = tmpCT;
+							offset = Math.max(offset, tmpOffset);
+						}else{
+							minCT = tmpCT;
+							if(minCT == curTimeConstraint){
+								offset = tmpOffset;
+							}
 						}
 					}
 				}

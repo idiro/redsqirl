@@ -7,7 +7,6 @@
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:form>
 
 		<div id="domMessageDivModalSubWFInstall" style="display: none;">
 			<img src="../image/icons/waiting.gif" />
@@ -20,8 +19,8 @@
 				onstop="jQuery.unblockUI();" />
 			
 			<a4j:region renderRegionOnly="true">
-				<a4j:jsFunction name="savePositionsAndSWInstall" 
-				action="#{canvasBean.updateAllPosition}"
+				<a4j:jsFunction name="saveCanvasesStatusAndSWInstall" 
+				action="#{canvasBean.updateAllCanvasesStatus}"
 				oncomplete="intallSW();">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
@@ -37,7 +36,6 @@
 
 		<div style="width: 270px; height: 200px;">
 
-				<h:form>
 			<rich:panel id="installSubWfParams"
 				style="padding-left:5px; overflow: auto; height:200px;">
 
@@ -77,12 +75,8 @@
 					reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 					action="#{modelBean.checkExistenceCurrentSubWorkflow}"
 					data="#{modelBean.exists}"
-					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists, Do you want to overwrite the existing one?')){savePositionsAndSWInstall(getAllIconPositions());}else{#{rich:component('modalSubWfInstall')}.hide();}" />
+					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists, Do you want to overwrite the existing one?')){saveCanvasesStatusAndSWInstall(getAllCanvasesStatus());}else{#{rich:component('modalSubWfInstall')}.hide();}" />
 			</h:panelGrid>
-
-				</h:form>
 		</div>
-
-	</h:form>
 
 </ui:composition>
