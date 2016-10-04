@@ -595,7 +595,7 @@ function rectSelectAllObj(canvasName, e) {
 function toggleSelectOnClick(canvasName, obj, e) {
     // <![CDATA[
     
-	console.log("toggleSelectOnClick");
+	//console.log("toggleSelectOnClick");
 	
     var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
@@ -603,7 +603,7 @@ function toggleSelectOnClick(canvasName, obj, e) {
 
     if (!e.ctrlKey) {
     	
-    	console.log("toggleSelectOnClick no ctrl");
+    	//console.log("toggleSelectOnClick no ctrl");
     	
         jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
             //value.setStroke('white');
@@ -639,7 +639,7 @@ function toggleSelectOnClick(canvasName, obj, e) {
 
 function dragAndDropGroup(canvasName, obj, e) {
 	
-	console.log("dragAndDropGroup");
+	//console.log("dragAndDropGroup");
     
 	var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
@@ -1591,7 +1591,7 @@ function ready(canvasName) {
             console.log(exception);
         }
         
-        configureGroupListeners(canvasName, group);
+        //configureGroupListeners(canvasName, group);
 
         polygon1.on('mousedown', function(e) {
             toggleSelectOnClick(canvasName, this, e);
@@ -2131,7 +2131,7 @@ function configureCircle(canvasName, circle1) {
 
 function createLink(circleGp){
 
-		console.log("createLink");
+		//console.log("createLink");
         
         var arrow = canvasArray[selectedCanvas].arrow;
         
@@ -2231,13 +2231,13 @@ function configureGroupListeners(canvasName, group) {
 	
 	group.on('click', function(e) {
     	
-    	console.log("group on click " + e.button);
+    	//console.log("group on click " + e.button);
         
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
         if(e.button != 2){
         
-        	console.log("group on click A ");
+        	//console.log("group on click A ");
         	
           group.getChildren()[2].on('click', function(e) {
             polygonOnClick(this, e, canvasName);
@@ -2245,7 +2245,7 @@ function configureGroupListeners(canvasName, group) {
           
         }else{
         	
-        	console.log("group on click B ");
+        	//console.log("group on click B ");
         	
             showContextMenu(this, e);
             return false;
@@ -2259,7 +2259,7 @@ function configureGroupListeners(canvasName, group) {
     
     group.on('dragmove', function(e) {
     	
-    	console.log("configureGroupListeners dragmove");
+    	//console.log("configureGroupListeners dragmove");
     	
     	//Always have the element dragged selected....
     	this.getChildren()[2].selected = true;
@@ -2281,7 +2281,7 @@ function configureGroupListeners(canvasName, group) {
 
     group.on('dragend', function(e) {
     	
-    	console.log("configureGroupListeners dragend");
+    	//console.log("configureGroupListeners dragend");
     	
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
@@ -2369,7 +2369,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     
     group1.on('click',function() {
     	
-    	console.log("createGroup click");
+    	//console.log("createGroup click");
     	
     	//Display Help
     	if (this.elementType) {
@@ -2714,20 +2714,20 @@ function findGroup(groupId){
 
 function polygonOnClick(obj,e, canvasName){
 	
-	console.log("polygonOnClick");
+	//console.log("polygonOnClick");
 	
 	var arrow = canvasArray[canvasName].arrow;
 
 	if (!e.ctrlKey) {
 		if (canvasArray[canvasName].down) {
 			
-			console.log("polygonOnClick arrow");
+			//console.log("polygonOnClick arrow");
 			
 			canvasArray[canvasName].down = false;
 			
 			if(canvasArray[canvasName].oldIdSelected != obj.getParent().getId()){
 				
-				console.log("polygonOnClick oldId");
+				//console.log("polygonOnClick oldId");
 				
 				deleteArrowOutsideStandard(canvasName);
 				
@@ -2735,11 +2735,11 @@ function polygonOnClick(obj,e, canvasName){
 				var input = obj.getParent().getChildren()[4].getText();
 				var arrowClone = addLink(canvasName, output, input);
 				
-				console.log("polygonOnClick A");
+				//console.log("polygonOnClick A");
 				
 				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
-				console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
+				//console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				
 				cloneVoronoi(getAllCanvasesStatus());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
@@ -2749,7 +2749,7 @@ function polygonOnClick(obj,e, canvasName){
 			}
 
 		}else{
-			console.log("polygonOnClick down false");
+			//console.log("polygonOnClick down false");
 		}
 	}
 	
@@ -3242,6 +3242,7 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 			}
 		}else{
 			pname = idElement;
+			voranoiPolygonTitle = "title";
 			console.log("pname2 " + pname);
 		}
 		
@@ -3367,15 +3368,21 @@ function getGroupInsideVoronoiPolygon(polygon){
 	var g;
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined){
-        	if(inside([value.getParent().getX(),value.getParent().getY()] ,polygon)){
-        		console.log("value " + value.getParent());
+        	if(inside([value.getParent().getX()+40,value.getParent().getY()+50] ,polygon)){
+        		//console.log("value " + value.getParent());
         		g = value.getParent();
         		return false;
         	}else{
         		console.log("inside false ");
+        		//console.log(value.getParent().getX()+40 + "  " +value.getParent().getY()+50);
         	}
         }
     });
+	
+	/*if(g == undefined){
+		console.log("value " + polygon);
+	}*/
+	
 	return g;
 }
 
@@ -3641,6 +3648,9 @@ function parseBool(val){
 }
 
 function inside(point, vs) {
+	//console.log("inside");
+	//console.log(point);
+	//console.log(vs);
     var x = point[0], y = point[1];
     var inside = false;
     for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {

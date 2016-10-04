@@ -207,7 +207,7 @@ function selectedScheduling(){
 		<rich:panel columns="2" style="border:none; float:right;">
 		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('voronoiModal')}.hide();" />
 		    <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{voronoiBean.apply}" data="#{voronoiBean.undoRedo}"
-		    	oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('voronoiModal')}.hide();checkIfSchedule(data[9]); undoRedoCoordinator(data); }" reRender="msnError, errorTable" />
+		    	oncomplete="if(#{requestScope['msnError'] == null} ){ #{rich:component('voronoiModal')}.hide();checkIfSchedule(data[12]); undoRedoCoordinator(data); }" reRender="msnError, errorTable" />
 		</rich:panel>
 	
 	</h:form>

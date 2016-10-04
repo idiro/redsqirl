@@ -147,8 +147,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<SelectItem> coordinatorsList;
 	private boolean schedule;
 	private String checkPastDate;
-	
-	
+
+
 	/**
 	 * 
 	 * @return
@@ -470,14 +470,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return new String[] { };
 	}
-	
+
 	public void openModalMergeCoordinator() throws RemoteException {
 		logger.info("openModalMergeCoordinator");
-		
+
 		DataFlow df = getDf();
-		
+
 		setCoordinatorsList(new ArrayList<SelectItem>());
-		
+
 		if (df != null) {
 			List<DataFlowCoordinator> l = df.getCoordinators();
 			for (DataFlowCoordinator dataFlowCoordinator : l) {
@@ -486,14 +486,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	public void applyMergeCoordinator() throws RemoteException {
 		logger.info("applyMergeCoordinator");
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String coordinatorsSelectedA = params.get("coordinatorsSelectedA");
 		String coordinatorsSelectedB = params.get("coordinatorsSelectedB");
-		
+
 		String error = null;
 		//check if selected the same coordinator
 		if(coordinatorsSelectedA.equals(coordinatorsSelectedB)){
@@ -504,23 +504,23 @@ public class CanvasBean extends BaseBean implements Serializable {
 				df.mergeCoordinators(coordinatorsSelectedA,coordinatorsSelectedB);
 			}
 		}
-		
+
 		displayErrorMessage(error, "APPLYMERGECOORDINATOR");
 	}
-	
+
 	public void splitCoordinator() throws RemoteException {
-		
+
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectedIcons = params.get("selectedIcons");
 		String error = null;
-		
+
 		String coordinatorName = null;
 		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
 		for (String groupId : groupIds) {
 			String componentId = idMap.get(nameWorkflow).get(groupId);
 			DataFlowElement el = df.getElement(componentId);
-			
+
 			//check if is same coordinator
 			if(coordinatorName != null && !coordinatorName.equals(el.getCoordinatorName())){
 				error = getMessageResources("msg_error_split_differents");
@@ -529,22 +529,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 				coordinatorName = el.getCoordinatorName();
 				componentIds.add(componentId);
 			}
-			
+
 		}
-		
+
 		//check if is selected all elements from one coordinator
 		if(error == null && df.getCoordinator(coordinatorName).getElements().size() == componentIds.size()){
 			error = getMessageResources("msg_error_split_all_elements");
 		}
-		
+
 		if(error == null){
 			if (df != null) {
 				error = df.splitCoordinator(coordinatorName, componentIds);
 			}
 		}
-		
+
 		displayErrorMessage(error, "SPLITCOORDINATOR");
-		
+
 	}
 
 	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA, DataFlowElement dfeObjB) {
@@ -764,7 +764,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					dfi.removeWorkflow(newWfName);
 				}
 			}
-			
+
 			if(copy){
 				dfi.copyDF(path, newWfName);
 				df = dfi.getWorkflow(newWfName);
@@ -828,7 +828,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return error;
 
 	}
-	
+
 	public void copyRunningWorkflow() {
 		String newWfName = getNameWorkflow()+"-copy";
 		loadDataFlow(getNameWorkflow(), newWfName, true, true,true);
@@ -1342,7 +1342,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return new String[] {positions, savedFile, select, getCheckIfSchedule()};
 	}
-	
+
 	public String getCheckJobId() throws RemoteException {
 		String checkJobId = "true";
 		if(df.getOozieJobId() != null){
@@ -1453,11 +1453,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 				String json = getOozie().getBundleJobInfo(getDf().getOozieJobId());
 				logger.info(json);
 				JSONObject jsonObj = new JSONObject(json);
-				
+
 				if(listScheduling == null){
 					listScheduling = new ArrayList<Scheduling>();
 				}
-				
+
 				List<String> status = new ArrayList<String>();
 				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
 					String nameObj = (String) iterator.next();
@@ -1470,7 +1470,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						if(sc.getJobId().equals(obj.getString("job-id"))){
 							exist = true;
 							scheduling = sc;
-							
+
 							scheduling.setNameScheduling(nameObj);
 							scheduling.setJobId(obj.getString("job-id"));
 							scheduling.setLastActionScheduling(obj.getString("last-action"));
@@ -1492,11 +1492,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 							scheduling.setRunningScheduling(obj.getString("running"));
 
 							scheduling.setStatusScheduling(obj.getString("status"));
-							
+
 							break;
 						}
 					}
-					
+
 					if(!exist){
 						scheduling = new Scheduling();
 
@@ -1529,11 +1529,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 						listScheduling.add(scheduling);
 					}
 					exist = false;
-					
+
 					if(!status.contains(obj.getString("status"))){
 						status.add(obj.getString("status"));
 					}
-					
+
 				}
 
 				if(!status.contains("SUSPENDED")){
@@ -1565,7 +1565,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void suspendScheduling() throws Exception {
 		logger.info("suspendScheduling");
 		if(df != null){
@@ -1595,8 +1595,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
-	
+
+
 	public void suspendCoordWfScheduling() throws Exception {
 		logger.info("suspendCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
@@ -1615,7 +1615,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void resumeCoordWfScheduling() throws Exception {
 		logger.info("resumeCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
@@ -1634,7 +1634,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void killCoordWfScheduling() throws Exception {
 		logger.info("killCoordWfScheduling");
 		String selectedScheduling = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selectedScheduling");
@@ -1724,9 +1724,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (df != null && df.getOozieJobId() != null) {
 				getOozie().kill(df.getOozieJobId());
 			}
-			
+
 			listScheduling = null;
-			
+
 		}catch(Exception e){
 			error = getMessageResources("msg_error_oops");
 		}
@@ -2254,122 +2254,137 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			boolean pathExists = false;
-			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-				boolean curPathExist = e.getValue().isPathExist();
-				String stateCur = e.getValue().getSavingState().toString();
+			String stateCur = null;
+			boolean curPathExist = false;
 
-				logger.info("path: " + e.getValue().getPath());
+			try{
 
-				//Arcs regarding path calculations
-				{
-					pathExists |= curPathExist;
-					if (stateCur != null) {
-						if (outputType == null) {
-							outputType = stateCur;
-						} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
-								.toString())
-								&& stateCur.equalsIgnoreCase(SavingState.RECORDED
-										.toString())) {
-							outputType = stateCur;
-						} else if (outputType
-								.equalsIgnoreCase(SavingState.TEMPORARY.toString())
-								&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
-										.toString()) || stateCur
-										.equalsIgnoreCase(SavingState.BUFFERED
-												.toString()))) {
-							outputType = stateCur;
-						}
-					}
-				}
-				
-				{
-					tooltip.append("<br/>");
-					if (!e.getKey().isEmpty()) {
-						tooltip.append("Output Name: " + e.getKey() + "<br/>");
-					} else {
-						tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
-								+ "</span><br/>");
-					}
-				}
-				tooltip.append("Output Type: " + e.getValue().getTypeName()
-						+ "<br/>");
+				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
+					curPathExist = e.getValue().isPathExist();
+					stateCur = e.getValue().getSavingState().toString();
 
-				if("W".equals(workflowType)){
-					String pathTypeCur = e.getValue().getPathType().toString();
-					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
-						tooltip.append("Output Path: "
-								+ e.getValue().getPath() + "<br/>");
-					}else{
-						if (curPathExist) {
-							tooltip.append("Output Path: <span style='color:#008B8B'>"
-									+ e.getValue().getPath() + "</span><br/>");
-						} else {
-							tooltip.append("Output Path: <span style='color:#d2691e'>"
-									+ e.getValue().getPath() + "</span><br/>");
-						}
-					}
-					tooltip.append("Output State: ");
-					if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
-					tooltip.append("<span style='color:#f08080'>");
-					}else if(SavingState.BUFFERED.toString().equalsIgnoreCase(stateCur)){
-						tooltip.append("<span style='color:#4682b4'>");
-					}else if(SavingState.TEMPORARY.toString().equalsIgnoreCase(stateCur)){
-						tooltip.append("<span style='color:#800080'>");
-					}
-					tooltip.append(stateCur+"</span><br/>");
+					logger.info("path: " + e.getValue().getPath());
 
-					
-					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
-						CoordinatorTimeConstraint ctcCur = e.getValue().getFrequency();
-						if(ctcCur.getUnit() != null){
-							String frequencyStr = "Every "+ctcCur.getFrequency()+" "+ctcCur.getUnit().toString().toLowerCase();
-							tooltip.append("Frequency: "+frequencyStr + "<br/>");
-							if(PathType.MATERIALIZED.toString().equalsIgnoreCase(pathTypeCur)){
-								tooltip.append("Number of dataset: "+e.getValue().getNumberMaterializedPath() + "<br/>");
+					//Arcs regarding path calculations
+					{
+						pathExists |= curPathExist;
+						if (stateCur != null) {
+							if (outputType == null) {
+								outputType = stateCur;
+							} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
+									.toString())
+									&& stateCur.equalsIgnoreCase(SavingState.RECORDED
+											.toString())) {
+								outputType = stateCur;
+							} else if (outputType
+									.equalsIgnoreCase(SavingState.TEMPORARY.toString())
+									&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
+											.toString()) || stateCur
+											.equalsIgnoreCase(SavingState.BUFFERED
+													.toString()))) {
+								outputType = stateCur;
 							}
 						}
 					}
-				}
 
-				if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
-					tooltip.append("<br/>");
-					tooltip.append("<table style='border:1px solid;width:100%;'>");
-					if (e.getKey() != null) {
-						tooltip.append("<tr><td colspan='1'>" + e.getKey() + "</td></tr>");
-					}
-					tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
-					int row = 0;
-					int index = 1;
-					for (String name : e.getValue().getFields().getFieldNames()) {
-						if ((row % 2) == 0) {
-							tooltip.append("<tr class='odd-row'>");
+					{
+						tooltip.append("<br/>");
+						if (!e.getKey().isEmpty()) {
+							tooltip.append("Output Name: " + e.getKey() + "<br/>");
 						} else {
-							tooltip.append("<tr>");
+							tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
+									+ "</span><br/>");
 						}
-						tooltip.append("<td>" + index + "</td>");
-						tooltip.append("<td>" + name + "</td>");
-						tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
-						row++;
-						index++;
 					}
-					tooltip.append("</table>");
-					tooltip.append("<br/>");
+					tooltip.append("Output Type: " + e.getValue().getTypeName()
+							+ "<br/>");
+
+					if("W".equals(workflowType)){
+						String pathTypeCur = e.getValue().getPathType().toString();
+						if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+							tooltip.append("Output Path: "
+									+ e.getValue().getPath() + "<br/>");
+						}else{
+							if (curPathExist) {
+								tooltip.append("Output Path: <span style='color:#008B8B'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							} else {
+								tooltip.append("Output Path: <span style='color:#d2691e'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							}
+						}
+						tooltip.append("Output State: ");
+						if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
+							tooltip.append("<span style='color:#f08080'>");
+						}else if(SavingState.BUFFERED.toString().equalsIgnoreCase(stateCur)){
+							tooltip.append("<span style='color:#4682b4'>");
+						}else if(SavingState.TEMPORARY.toString().equalsIgnoreCase(stateCur)){
+							tooltip.append("<span style='color:#800080'>");
+						}
+						tooltip.append(stateCur+"</span><br/>");
+
+
+						if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+							CoordinatorTimeConstraint ctcCur = e.getValue().getFrequency();
+							if(ctcCur.getUnit() != null){
+								String frequencyStr = "Every "+ctcCur.getFrequency()+" "+ctcCur.getUnit().toString().toLowerCase();
+								tooltip.append("Frequency: "+frequencyStr + "<br/>");
+								if(PathType.MATERIALIZED.toString().equalsIgnoreCase(pathTypeCur)){
+									tooltip.append("Number of dataset: "+e.getValue().getNumberMaterializedPath() + "<br/>");
+								}
+							}
+						}
+					}
+
+					if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
+						tooltip.append("<br/>");
+						tooltip.append("<table style='border:1px solid;width:100%;'>");
+						if (e.getKey() != null) {
+							tooltip.append("<tr><td colspan='1'>" + e.getKey() + "</td></tr>");
+						}
+						tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
+						int row = 0;
+						int index = 1;
+						for (String name : e.getValue().getFields().getFieldNames()) {
+							if ((row % 2) == 0) {
+								tooltip.append("<tr class='odd-row'>");
+							} else {
+								tooltip.append("<tr>");
+							}
+							tooltip.append("<td>" + index + "</td>");
+							tooltip.append("<td>" + name + "</td>");
+							tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
+							row++;
+							index++;
+						}
+						tooltip.append("</table>");
+						tooltip.append("<br/>");
+					}
+
+
+
+					DFEOutput dfeOut  = e.getValue();
+					String link = null;
+					try{
+						link = ((DFELinkOutput) dfeOut).getLink();
+					} catch(Exception exc){
+						//logger.error("");
+					}
+					if(link != null){
+						externalLink = link;
+					}
+
+
 				}
 
-
-
-				DFEOutput dfeOut  = e.getValue();
-				String link = null;
-				try{
-					link = ((DFELinkOutput) dfeOut).getLink();
-				} catch(Exception exc){
-					//logger.error("");
-				}
-				if(link != null){
-					externalLink = link;
-				}
-
-
+			} catch (OutOfMemoryError e) {
+				long heapsize = Runtime.getRuntime().totalMemory();
+				logger.warn("heapsize is :: " + heapsize);
+				System.gc();
+				logger.error(e, e);
+			} catch (Exception e) {
+				System.gc();
+				logger.error(e, e);
 			}
 
 			arrows = new String[dfe.getAllOutputComponent().size()][];
@@ -3241,7 +3256,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			for (String groupId : groupIds) {
 				String componentId = idMap.get(nameWorkflow).get(groupId);
 				DataFlowElement el = df.getElement(componentId);
-				
+
 				//check if is same coordinator
 				if(!coordinatorNameList.isEmpty() && !coordinatorNameList.contains(el.getCoordinatorName())){
 					error = getMessageResources("msg_error_split_differents");
@@ -3251,9 +3266,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
+
 		if(error == null){
-			
+
 			String inputNameSubWorkflow = null;
 			String inputNameModel = null;
 			String inputComment = null;
@@ -3283,13 +3298,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 			} catch (JSONException e) {
 				logger.warn("Error updating positions",e);
 			}
-			
+
 			return new String[]{getInputNameModel(),getInputNameSubWorkflow()};
-			
+
 		}else{
 			displayErrorMessage(error, "GETAGGREGATIONDETAILS");
 		}
-		
+
 		return  new String[]{};
 	}
 
