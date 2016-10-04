@@ -433,7 +433,11 @@ DFEOutput {
 		}
 		
 		if( (SavingState.RECORDED.equals(savingState) && refreshTimeOut < (System.currentTimeMillis() - cachExistTimeStamp)) || cachExistTimeStamp == 0){
-			cachExist = exists();
+			if(PathType.REAL.equals(pathType)){
+				cachExist = exists();	
+			}else{
+				cachExist = false;
+			}
 			cachExistTimeStamp = System.currentTimeMillis();
 			oldPath = getPath();
 		}
@@ -483,8 +487,8 @@ DFEOutput {
 			cachValidTimeStamp = 0;
 			cachSelectTimeStamp = 0;
 		}
-		if(SavingState.RECORDED.equals(savingState) && (refreshTimeOut < (System.currentTimeMillis() - cachValidTimeStamp)) ||
-				cachValidTimeStamp == 0){
+		if(SavingState.RECORDED.equals(savingState) && (cachValid != null && refreshTimeOut < (System.currentTimeMillis() - cachValidTimeStamp)) ||
+				cachValidTimeStamp == 0 ){
 			cachValid = getPath() == null? LanguageManagerWF.getText("dataoutput.validpathnull"):isPathValid(getPath());
 			cachValidTimeStamp = System.currentTimeMillis();
 			oldPath = getPath();
