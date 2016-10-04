@@ -502,7 +502,7 @@ public class HCatStore extends Storage{
 			if(pathArray.length == 2 || pathArray.length == 3){
 				ans = new ArrayList<String>(maxToRead);
 				try {
-					ans = JdbcStoreConnection.displaySelect(
+					ans = getHiveConnection().displaySelect(
 							getHiveConnection().executeQuery(getSelectStatement(pathArray, maxToRead)),maxToRead);
 				} catch (Exception e) {
 					logger.error("Fail to select the path " + path);

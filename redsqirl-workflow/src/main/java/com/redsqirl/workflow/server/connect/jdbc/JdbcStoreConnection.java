@@ -96,7 +96,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			while (rs.next()) {
 				results.add(rs.getString(1).trim().toUpperCase());
 			}
-			rs.close();
+			cleanOldStatement(rs);
 		}catch(Exception e){
 			logger.error(e,e);
 		}
@@ -104,7 +104,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 		return results;
 	}
 	
-	public static List<String> displaySelect(ResultSet rs,int maxToRead) throws SQLException{
+	public List<String> displaySelect(ResultSet rs,int maxToRead) throws SQLException{
 		int colNb = 0;
 		List<Integer> sizes = new LinkedList<Integer>();
 		List<List<String>> cells = new LinkedList<List<String>>();
@@ -136,7 +136,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			}
 			cells.add(row);
 		}
-		rs.close();
+		cleanOldStatement(rs);
 
 		// logger.info("displaySelect list size" + sizes.size() + " " +
 		// ans.size());
@@ -229,9 +229,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 					++i;
 				}
 			}
-			try{
-				rs.close();
-			}catch(Exception e){}
+			cleanOldStatement(rs);
 
 		} catch (Exception e) {
 			logger.error("Fail to describe the table " + table,e);

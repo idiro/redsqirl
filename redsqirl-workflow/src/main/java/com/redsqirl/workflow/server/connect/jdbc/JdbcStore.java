@@ -855,7 +855,7 @@ public class JdbcStore extends Storage {
 
 			String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],maxToRead);
 			try {
-				ans = JdbcStoreConnection.displaySelect(getConnection(connectionAndTable[0]).executeQuery(statement),maxToRead);
+				ans = getConnection(connectionAndTable[0]).displaySelect(getConnection(connectionAndTable[0]).executeQuery(statement),maxToRead);
 			} catch (Exception e) {
 				logger.error("Fail to select the table " + connectionAndTable[0]);
 				logger.error(e.getMessage(),e);
