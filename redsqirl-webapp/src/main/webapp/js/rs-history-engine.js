@@ -706,11 +706,17 @@ function CommandCoordinator(obj) {
     this.nameOld = obj[1]; 
     this.startDateOld = obj[2];
     this.selectedSchedulingOptionOld = obj[3];
-    this.positionsArraysOld = obj[4];
-    this.name = obj[5];
-    this.startDate = obj[6];
-    this.selectedSchedulingOption = obj[7];
-    this.positionsArrays = obj[8];
+    this.periodicOld = obj[4];
+    this.positionsArraysOld = obj[5];
+    this.isScheduleOld = obj[6];
+    
+    this.name = obj[7];
+    this.startDate = obj[8];
+    this.selectedSchedulingOption = obj[9];
+    this.periodic = obj[10];
+    this.positionsArrays = obj[11];
+    this.isSchedule = obj[12];
+    	
     this.obj = obj;
 };
 
@@ -718,11 +724,11 @@ CommandCoordinator.prototype = Object.create(Command.prototype);
 CommandCoordinator.prototype.constructor = CommandCoordinator;
 
 CommandCoordinator.prototype.undo = function(){
-	applyUndoRedoCoordinator(this.nameOld, this.startDateOld, this.selectedSchedulingOptionOld, this.positionsArraysOld);
+	applyUndoRedoCoordinator(this.nameOld, this.startDateOld, this.selectedSchedulingOptionOld, this.periodicOld, this.positionsArraysOld, this.isScheduleOld);
 };
 
 CommandCoordinator.prototype.redo = function(){
-	applyUndoRedoCoordinator(this.name, this.startDate, this.selectedSchedulingOption, this.positionsArrays);
+	applyUndoRedoCoordinator(this.name, this.startDate, this.selectedSchedulingOption, this.periodic, this.positionsArrays, this.isSchedule);
 	undoRedoCoordinator(obj);
 };
 

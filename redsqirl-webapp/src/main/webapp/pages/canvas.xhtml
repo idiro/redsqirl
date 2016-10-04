@@ -2654,12 +2654,14 @@
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
 						
-				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" 
-					oncomplete="undoRedoVoronoiJS();" reRender="msnError, errorTable, modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic">
+				<a4j:jsFunction name="applyUndoRedoCoordinator"	action="#{voronoiBean.undoRedoCordinator}" data="#{voronoiBean.scheduling}"
+					oncomplete="checkIfSchedule(data);" reRender="msnError, errorTable, selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic,tableVoronoi">
 					<a4j:actionparam name="name" />
-					<a4j:actionparam name="startDate" />
+					<a4j:actionparam name="executionTime" />
 					<a4j:actionparam name="selectedSchedulingOption" />
+					<a4j:actionparam name="periodic" />
 					<a4j:actionparam name="list" />
+					<a4j:actionparam name="isSchedule" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="openModalMerge" action="#{canvasBean.openModalMergeCoordinator}" 

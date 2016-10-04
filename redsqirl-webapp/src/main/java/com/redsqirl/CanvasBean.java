@@ -2257,7 +2257,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			String stateCur = null;
 			boolean curPathExist = false;
 
-			//try{
+			try{
 
 				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
 					curPathExist = e.getValue().isPathExist();
@@ -2377,7 +2377,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				}
 
-			/*} catch (OutOfMemoryError e) {
+			} catch (OutOfMemoryError e) {
 				long heapsize = Runtime.getRuntime().totalMemory();
 				logger.warn("heapsize is :: " + heapsize);
 				System.gc();
@@ -2385,7 +2385,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			} catch (Exception e) {
 				System.gc();
 				logger.error(e, e);
-			}*/
+			}
 
 			arrows = new String[dfe.getAllOutputComponent().size()][];
 			int i = 0;
