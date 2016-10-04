@@ -2255,135 +2255,126 @@ public class CanvasBean extends BaseBean implements Serializable {
 			String stateCur = null;
 			boolean curPathExist = false;
 
-			try{
 
-				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-					String pathTypeCur = e.getValue().getPathType().toString();
-					curPathExist = "W".equals(workflowType) && PathType.REAL.toString().equalsIgnoreCase(pathTypeCur) && e.getValue().isPathExist();
-					stateCur = e.getValue().getSavingState().toString();
+			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
+				curPathExist = "W".equals(workflowType) && PathType.REAL.toString().equalsIgnoreCase(pathTypeCur) && e.getValue().isPathExist();
+				stateCur = e.getValue().getSavingState().toString();
 
-					logger.info("path: " + e.getValue().getPath());
+				logger.info("path: " + e.getValue().getPath());
 
-					//Arcs regarding path calculations
-					{
-						pathExists |= curPathExist;
-						if (stateCur != null) {
-							if (outputType == null) {
-								outputType = stateCur;
-							} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
-									.toString())
-									&& stateCur.equalsIgnoreCase(SavingState.RECORDED
-											.toString())) {
-								outputType = stateCur;
-							} else if (outputType
-									.equalsIgnoreCase(SavingState.TEMPORARY.toString())
-									&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
-											.toString()) || stateCur
-											.equalsIgnoreCase(SavingState.BUFFERED
-													.toString()))) {
-								outputType = stateCur;
-							}
+				//Arcs regarding path calculations
+				{
+					pathExists |= curPathExist;
+					if (stateCur != null) {
+						if (outputType == null) {
+							outputType = stateCur;
+						} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
+								.toString())
+								&& stateCur.equalsIgnoreCase(SavingState.RECORDED
+										.toString())) {
+							outputType = stateCur;
+						} else if (outputType
+								.equalsIgnoreCase(SavingState.TEMPORARY.toString())
+								&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
+										.toString()) || stateCur
+										.equalsIgnoreCase(SavingState.BUFFERED
+												.toString()))) {
+							outputType = stateCur;
 						}
 					}
-
-					{
-						tooltip.append("<br/>");
-						if (!e.getKey().isEmpty()) {
-							tooltip.append("Output Name: " + e.getKey() + "<br/>");
-						} else {
-							tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
-									+ "</span><br/>");
-						}
-					}
-					tooltip.append("Output Type: " + e.getValue().getTypeName()
-							+ "<br/>");
-
-					if("W".equals(workflowType)){
-						if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
-							tooltip.append("Output Path: "
-									+ e.getValue().getPath() + "<br/>");
-						}else{
-							if (curPathExist) {
-								tooltip.append("Output Path: <span style='color:#008B8B'>"
-										+ e.getValue().getPath() + "</span><br/>");
-							} else {
-								tooltip.append("Output Path: <span style='color:#d2691e'>"
-										+ e.getValue().getPath() + "</span><br/>");
-							}
-						}
-						tooltip.append("Output State: ");
-						if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
-							tooltip.append("<span style='color:#f08080'>");
-						}else if(SavingState.BUFFERED.toString().equalsIgnoreCase(stateCur)){
-							tooltip.append("<span style='color:#4682b4'>");
-						}else if(SavingState.TEMPORARY.toString().equalsIgnoreCase(stateCur)){
-							tooltip.append("<span style='color:#800080'>");
-						}
-						tooltip.append(stateCur+"</span><br/>");
-
-
-						if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
-							CoordinatorTimeConstraint ctcCur = e.getValue().getFrequency();
-							if(ctcCur.getUnit() != null){
-								String frequencyStr = "Every "+ctcCur.getFrequency()+" "+ctcCur.getUnit().toString().toLowerCase();
-								tooltip.append("Frequency: "+frequencyStr + "<br/>");
-								if(PathType.MATERIALIZED.toString().equalsIgnoreCase(pathTypeCur)){
-									tooltip.append("Number of dataset: "+e.getValue().getNumberMaterializedPath() + "<br/>");
-								}
-							}
-						}
-					}
-
-					if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
-						tooltip.append("<br/>");
-						tooltip.append("<table style='border:1px solid;width:100%;'>");
-						if (e.getKey() != null) {
-							tooltip.append("<tr><td colspan='1'>" + e.getKey() + "</td></tr>");
-						}
-						tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
-						int row = 0;
-						int index = 1;
-						for (String name : e.getValue().getFields().getFieldNames()) {
-							if ((row % 2) == 0) {
-								tooltip.append("<tr class='odd-row'>");
-							} else {
-								tooltip.append("<tr>");
-							}
-							tooltip.append("<td>" + index + "</td>");
-							tooltip.append("<td>" + name + "</td>");
-							tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
-							row++;
-							index++;
-						}
-						tooltip.append("</table>");
-						tooltip.append("<br/>");
-					}
-
-
-
-					DFEOutput dfeOut  = e.getValue();
-					String link = null;
-					try{
-						link = ((DFELinkOutput) dfeOut).getLink();
-					} catch(Exception exc){
-						//logger.error("");
-					}
-					if(link != null){
-						externalLink = link;
-					}
-
-
 				}
 
-			} catch (OutOfMemoryError e) {
-				long heapsize = Runtime.getRuntime().totalMemory();
-				logger.warn("heapsize is :: " + heapsize);
-				System.gc();
-				logger.error(e, e);
-			} catch (Exception e) {
-				System.gc();
-				logger.error(e, e);
+				{
+					tooltip.append("<br/>");
+					if (!e.getKey().isEmpty()) {
+						tooltip.append("Output Name: " + e.getKey() + "<br/>");
+					} else {
+						tooltip.append("<span style='font-size:14px;'>&nbsp;Output "
+								+ "</span><br/>");
+					}
+				}
+				tooltip.append("Output Type: " + e.getValue().getTypeName()
+						+ "<br/>");
+
+				if("W".equals(workflowType)){
+					String pathTypeCur = e.getValue().getPathType().toString();
+					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+						tooltip.append("Output Path: "
+								+ e.getValue().getPath() + "<br/>");
+					}else{
+						if (curPathExist) {
+							tooltip.append("Output Path: <span style='color:#008B8B'>"
+									+ e.getValue().getPath() + "</span><br/>");
+						} else {
+							tooltip.append("Output Path: <span style='color:#d2691e'>"
+									+ e.getValue().getPath() + "</span><br/>");
+						}
+					}
+
+					tooltip.append("Output State: ");
+					if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
+						tooltip.append("<span style='color:#f08080'>");
+					}else if(SavingState.BUFFERED.toString().equalsIgnoreCase(stateCur)){
+						tooltip.append("<span style='color:#4682b4'>");
+					}else if(SavingState.TEMPORARY.toString().equalsIgnoreCase(stateCur)){
+						tooltip.append("<span style='color:#800080'>");
+					}
+					tooltip.append(stateCur+"</span><br/>");
+
+
+					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
+						CoordinatorTimeConstraint ctcCur = e.getValue().getFrequency();
+						if(ctcCur.getUnit() != null){
+							String frequencyStr = "Every "+ctcCur.getFrequency()+" "+ctcCur.getUnit().toString().toLowerCase();
+							tooltip.append("Frequency: "+frequencyStr + "<br/>");
+							if(PathType.MATERIALIZED.toString().equalsIgnoreCase(pathTypeCur)){
+								tooltip.append("Number of dataset: "+e.getValue().getNumberMaterializedPath() + "<br/>");
+							}
+						}
+					}
+				}
+
+				if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
+					tooltip.append("<br/>");
+					tooltip.append("<table style='border:1px solid;width:100%;'>");
+					if (e.getKey() != null) {
+						tooltip.append("<tr><td colspan='1'>" + e.getKey() + "</td></tr>");
+					}
+					tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
+					int row = 0;
+					int index = 1;
+					for (String name : e.getValue().getFields().getFieldNames()) {
+						if ((row % 2) == 0) {
+							tooltip.append("<tr class='odd-row'>");
+						} else {
+							tooltip.append("<tr>");
+						}
+						tooltip.append("<td>" + index + "</td>");
+						tooltip.append("<td>" + name + "</td>");
+						tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
+						row++;
+						index++;
+					}
+					tooltip.append("</table>");
+					tooltip.append("<br/>");
+				}
+
+
+
+				DFEOutput dfeOut  = e.getValue();
+				String link = null;
+				try{
+					link = ((DFELinkOutput) dfeOut).getLink();
+				} catch(Exception exc){
+					//logger.error("");
+				}
+				if(link != null){
+					externalLink = link;
+				}
+
+
 			}
+
 
 			arrows = new String[dfe.getAllOutputComponent().size()][];
 			int i = 0;
