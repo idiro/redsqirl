@@ -361,7 +361,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								okEndNodeName
 								);
 					}catch(Exception e){
-						error = e.getMessage();
+						logger.error(e,e);
+						error = "Unexpected exception: "+e.getMessage();
 					}
 				}
 			}
@@ -385,14 +386,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		int coordinatorStartOffset = 0;
 		DataFlowCoordinator.DefaultConstraint constraint = coordinator.getDefaultTimeConstraint(df);
 		CoordinatorTimeConstraint  defaultConstraint = constraint.getConstraint();
-		if(logger.isDebugEnabled()){
-			logger.debug("Calculate default: "+
-					coordinatorTimeConstraint.getFreqInMinutes()+","+defaultConstraint.getFreqInMinutes()+":"
-					+constraint.getOffset());
-		}
-		if(coordinatorTimeConstraint.getUnit() == null ||
-				coordinatorTimeConstraint.getFreqInMinutes() == defaultConstraint.getFreqInMinutes()){ 
-			coordinatorStartOffset = constraint.getOffset();
+		if(defaultConstraint != null){
+			if(logger.isDebugEnabled()){
+				logger.debug("Calculate default: "+
+						coordinatorTimeConstraint.getFreqInMinutes()+","+defaultConstraint.getFreqInMinutes()+":"
+						+constraint.getOffset());
+			}
+			if(coordinatorTimeConstraint.getUnit() == null ||
+					coordinatorTimeConstraint.getFreqInMinutes() == defaultConstraint.getFreqInMinutes()){ 
+				coordinatorStartOffset = constraint.getOffset();
+			}
 		}
 		return coordinatorStartOffset;
 		
@@ -510,6 +513,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		Date endDate= endTime;
 		
 		CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
+		logger.debug(coordinatorTimeConstraint.toString());
 		int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
 		logger.debug(coordinatorTimeConstraint.toString());
 		coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),coordinatorStartOffset);

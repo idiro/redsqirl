@@ -582,10 +582,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				label = "";
 			}
 
-		} catch (RemoteException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn(e,e);
 		}
 
 		return label;
