@@ -2257,7 +2257,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-				curPathExist = e.getValue().isPathExist();
+				String pathTypeCur = e.getValue().getPathType().toString();
+				curPathExist = "W".equals(workflowType) && PathType.REAL.toString().equalsIgnoreCase(pathTypeCur) && e.getValue().isPathExist();
 				stateCur = e.getValue().getSavingState().toString();
 
 				logger.info("path: " + e.getValue().getPath());
@@ -2297,7 +2298,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 						+ "<br/>");
 
 				if("W".equals(workflowType)){
-					String pathTypeCur = e.getValue().getPathType().toString();
 					if(!PathType.REAL.toString().equalsIgnoreCase(pathTypeCur)){
 						tooltip.append("Output Path: "
 								+ e.getValue().getPath() + "<br/>");
@@ -2310,6 +2310,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 									+ e.getValue().getPath() + "</span><br/>");
 						}
 					}
+
 					tooltip.append("Output State: ");
 					if(SavingState.RECORDED.toString().equalsIgnoreCase(stateCur)){
 						tooltip.append("<span style='color:#f08080'>");
