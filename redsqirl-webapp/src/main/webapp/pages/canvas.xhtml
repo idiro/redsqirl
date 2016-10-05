@@ -2931,18 +2931,20 @@
 									
 									<rich:menuGroup value="#{messages.label_remove_from_stores}" >
 										<rich:menuItem id="remove_from_all_stores" submitMode="ajax"
-											value="#{messages.label_all_store}"
+											value="#{messages.label_all_store}" 
+											onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 											action="#{canvasBean.cleanTmp}"
-											oncomplete="updateAllArcsStatus();">
+											oncomplete="jQuery('#canvas-tabs').unblock();updateAllArcsStatus();">
 											<f:param name="browserName"
 											value="all" />
 										</rich:menuItem>
 										<rich:menuSeparator />
 										<c:forEach items="#{canvasBean.browsers}" var="curBrowserName" >
-										<rich:menuItem submitMode="ajax"
+										<rich:menuItem submitMode="ajax" 
 											value="#{curBrowserName}"
 											action="#{canvasBean.cleanTmp}"
-											oncomplete="updateAllArcsStatus();">
+											onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+											oncomplete="jQuery('#canvas-tabs').unblock();updateAllArcsStatus();">
 											<f:param name="browserName" value="#{curBrowserName}" />
 										</rich:menuItem>
 										</c:forEach>
