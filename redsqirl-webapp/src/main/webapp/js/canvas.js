@@ -3454,7 +3454,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 		        if (value.getChildren()[0].getName() == listNamesArrays[i][0]) {
 		        	value.getChildren()[0].setText(listNamesArrays[i][1]);
 		        	console.log("update text " + listNamesArrays[i][1]);
-		        	value.getChildren()[0].setOpacity(1);
+		        	value.getChildren()[0].show();
 					value.on('mouseover', function(e) {
 						document.body.style.cursor = 'pointer';
 					});
@@ -3518,7 +3518,7 @@ function removeVoronoiButtonDuplicate(voronoiButtonLayer){
 	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value){
 		if(newTitle.indexOf(value.getChildren()[0].getText()) != -1){
 			console.log("newTitle " + newTitle);
-			value.getChildren()[0].setOpacity(0);
+			value.getChildren()[0].hide();
 			value.on('mouseover', function(e) {
 				document.body.style.cursor = 'default';
 			});
