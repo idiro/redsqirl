@@ -20,6 +20,7 @@
 			onerror="jQuery.unblockUI();"
 			onsuccess="jQuery.unblockUI();"
 			onstop="jQuery.unblockUI();" />
+		
 		<a4j:jsFunction name="renameSubWF"
 			reRender="msnError, subwfList"
 			action="#{modelBean.renameSubWorkflow}"
@@ -37,10 +38,10 @@
 	<h:panelGrid columns="2">
 		
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
-			onclick="#{rich:component('modalAddModel')}.hide();" />
+			onclick="#{rich:component('modalRenameSubWF')}.hide();" />
 		
-		<a4j:commandButton id="renameSubWFButton"  value="#{messages.button_ok}"
-			styleClass="greenButton" onclick="renameSubWF(getSubWFRenameValueJS())" />
+		<a4j:commandButton id="renameSubWFButton" value="#{messages.button_ok}"
+			styleClass="greenButton" onclick="renameSubWF(getSubWFRenameValueJS());" />
 	</h:panelGrid>
 
 </h:panelGrid>
