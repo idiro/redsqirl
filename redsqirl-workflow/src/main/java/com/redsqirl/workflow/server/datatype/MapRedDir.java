@@ -58,7 +58,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 	/** Delimiter Key */
 	public final static String key_delimiter = "delimiter";
 	
-	protected int NB_FILE_TO_READ_MAX = 100;
+	protected int NB_FILE_TO_READ_MAX = 3;
 	private static Logger logger = Logger.getLogger(MapRedDir.class);
 
 	public MapRedDir() throws RemoteException{
@@ -213,14 +213,14 @@ public abstract class MapRedDir extends MapRedHdfs{
 							}
 							);
 					//We limit the number of file to be 100
-					int max_read = Math.min(stat.length, NB_FILE_TO_READ_MAX);
-					for(int k=0; k <  max_read;++k){
+					for(int k=0; k <  stat.length;++k){
 						filesSortedBySize.add(new AbstractMap.SimpleEntry<FileStatus, Long>(stat[k],stat[k].getLen()));
 					}
 
 					//Read the biggest files first
 					Iterator<Map.Entry<FileStatus,Long>>  fileIt = filesSortedBySize.iterator();
-					while(fileIt.hasNext() && ans.size() < maxToRead){
+					int k=0;
+					while(fileIt.hasNext() && ans.size() < maxToRead && k < NB_FILE_TO_READ_MAX){
 						Map.Entry<FileStatus,Long> cur = fileIt.next();
 						FileStatus file = cur.getKey();
 						logger.debug("Number of line already read: "+ans.size());
@@ -228,6 +228,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 								",",
 								maxToRead - ans.size()
 								));
+						++k;
 					}
 					
 					logger.debug("Number of line read in "+getPath()+": "+ans.size());
