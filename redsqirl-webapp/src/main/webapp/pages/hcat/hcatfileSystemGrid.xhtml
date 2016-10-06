@@ -174,11 +174,11 @@
 	                <rich:panel style="border:none; float:right;" >
 			
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hcatOpenExecuteCommandModal')}.hide();" 
-							reRender="hcatCommand msnError" />
+							reRender="hcatCommand, msnError" />
 							
 						<a4j:commandButton action="#{hcatBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
 							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('hcatOpenExecuteCommandModal')}.hide(); };"
-							reRender="hcatCommand msnError,msnSuccess" />
+							reRender="hcatCommand, msnError,msnSuccess" />
 						
 					</rich:panel>
 	                	

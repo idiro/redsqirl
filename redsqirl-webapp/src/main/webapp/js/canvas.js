@@ -42,6 +42,7 @@ function Canvas(name){
     this.voronoiButtonLayer = null;
     this.defaultVoronoi = false;
     this.isSchedule = false;
+    this.scheduleNoPastDate = true;
 }
 
 var selectedCanvas = "canvas-1";
@@ -3740,4 +3741,12 @@ function getWorkflowType(canvasName){
 
 function getSelectedWorkflowType(){
     return getWorkflowType(selectedCanvas);
+}
+
+function getScheduleNoPastDate(canvasName){
+    return canvasArray[canvasName].scheduleNoPastDate;
+}
+
+function setScheduleNoPastDate(canvasName, value){
+    canvasArray[canvasName].scheduleNoPastDate = value;
 }

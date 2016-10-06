@@ -403,7 +403,13 @@ function addtooltip(text, event){
 	help.css("top",(y+10)+"px" );
 	help.css("background-color", "#F1F1F1");
 	help.css("color", "black");
+	
 	help.css("-webkit-user-select", "text");
+	help.css("-khtml-user-select", "text");
+	help.css("-moz-user-select", "text");
+	help.css("-o-user-select", "text");
+	help.css("user-select", "text");
+	
 	jQuery("body").append(help);
 	help.fadeIn("slow");
 	help.dblclick(function() {

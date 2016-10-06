@@ -138,6 +138,14 @@ public class SyncSink extends DataflowAction{
 				error = "The path "+templateParentStr+" doesn't exist";
 			}
 			updateOut();
+			DFEOutput out = output.get(key_output);
+			if(out != null &&  new HCatalogType().getTypeName().equals(out.getTypeName())){
+				String createQuery = ((HCatalogType) out).createTableStatement();
+				if(createQuery.indexOf("LOCATION") > -1){
+					createQuery = createQuery.substring(0, createQuery.indexOf("LOCATION"));
+				}
+				page1.setTextTip(createQuery);
+			}
 		}
 		return error;
 	}
@@ -331,14 +339,7 @@ public class SyncSink extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		DFEOutput out = output.get(key_output);
-		if(out != null &&  new HCatalogType().getTypeName().equals(out.getTypeName())){
-			String createQuery = ((HCatalogType) out).createTableStatement();
-			if(createQuery.indexOf("LOCATION") > -1){
-				createQuery = createQuery.substring(0, createQuery.indexOf("LOCATION"));
-			}
-			page1.setTextTip(createQuery);
-		}
+		
 	}
 	
 	/**

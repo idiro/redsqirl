@@ -749,6 +749,9 @@ public class CanvasModal extends VoronoiBeanAbs {
 			}
 			logger.info("check page...");
 			error = getPageList().get(getListPosition()).checkPage();
+			
+			setPageTextTip(getPageList().get(getListPosition()).getTextTip());
+			
 			//if(e == null && sourceNode){
 			if(sourceNode){
 				for (int i = 0; i < inters.size(); i++) {

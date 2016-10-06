@@ -194,11 +194,11 @@
 	                <rich:panel style="border:none; float:right;" >
 			
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('jdbcOpenExecuteCommandModal')}.hide();" 
-							reRender="jdbcCommand msnError" />
+							reRender="jdbcCommand, msnError" />
 							
 						<a4j:commandButton action="#{jdbcBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
 							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('jdbcOpenExecuteCommandModal')}.hide() };"
-							reRender="jdbcCommand msnError" />
+							reRender="jdbcCommand, msnError" />
 						
 					</rich:panel>
 	                	

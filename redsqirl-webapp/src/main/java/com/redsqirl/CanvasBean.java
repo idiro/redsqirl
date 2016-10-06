@@ -1349,6 +1349,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				checkJobId = "false";
 			}
 		}
+		logger.warn("checkJobId " + checkJobId);
 		return checkJobId;
 	}
 
@@ -1450,24 +1451,56 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				String json = getOozie().getBundleJobInfo(getDf().getOozieJobId());
 				logger.info(json);
-				JSONObject jsonObj = new JSONObject(json);
 
-				if(listScheduling == null){
-					listScheduling = new ArrayList<Scheduling>();
-				}
+				try{
 
-				List<String> status = new ArrayList<String>();
-				for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
-					String nameObj = (String) iterator.next();
+					JSONObject jsonObj = new JSONObject(json);
 
-					JSONObject obj = (JSONObject) jsonObj.get(nameObj);
+					if(listScheduling == null){
+						listScheduling = new ArrayList<Scheduling>();
+					}
 
-					boolean exist = false;
-					Scheduling scheduling = null;
-					for (Scheduling sc : listScheduling) {
-						if(sc.getJobId().equals(obj.getString("job-id"))){
-							exist = true;
-							scheduling = sc;
+					List<String> status = new ArrayList<String>();
+					for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
+						String nameObj = (String) iterator.next();
+
+						JSONObject obj = (JSONObject) jsonObj.get(nameObj);
+
+						boolean exist = false;
+						Scheduling scheduling = null;
+						for (Scheduling sc : listScheduling) {
+							if(sc.getJobId().equals(obj.getString("job-id"))){
+								exist = true;
+								scheduling = sc;
+
+								scheduling.setNameScheduling(nameObj);
+								scheduling.setJobId(obj.getString("job-id"));
+								scheduling.setLastActionScheduling(obj.getString("last-action"));
+								scheduling.setNextActionScheduling(obj.getString("next-action"));
+								scheduling.setActionsScheduling(obj.getString("actions"));
+								scheduling.setOkScheduling(obj.getString("ok"));
+
+								List<String[]> listJobsScheduling = new ArrayList<String[]>();
+								JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
+								for (int i = 0; i < jsonArray.length(); i++) {
+									JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
+									String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
+									listJobsScheduling.add(aux);
+								}
+								scheduling.setListJobsScheduling(listJobsScheduling);
+
+								scheduling.setSkippedScheduling(obj.getString("skipped"));
+								scheduling.setErrorsScheduling(obj.getString("errors"));
+								scheduling.setRunningScheduling(obj.getString("running"));
+
+								scheduling.setStatusScheduling(obj.getString("status"));
+
+								break;
+							}
+						}
+
+						if(!exist){
+							scheduling = new Scheduling();
 
 							scheduling.setNameScheduling(nameObj);
 							scheduling.setJobId(obj.getString("job-id"));
@@ -1491,59 +1524,37 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 							scheduling.setStatusScheduling(obj.getString("status"));
 
-							break;
+							if(!status.contains(obj.getString("status"))){
+								status.add(obj.getString("status"));
+							}
+
+							listScheduling.add(scheduling);
 						}
-					}
-
-					if(!exist){
-						scheduling = new Scheduling();
-
-						scheduling.setNameScheduling(nameObj);
-						scheduling.setJobId(obj.getString("job-id"));
-						scheduling.setLastActionScheduling(obj.getString("last-action"));
-						scheduling.setNextActionScheduling(obj.getString("next-action"));
-						scheduling.setActionsScheduling(obj.getString("actions"));
-						scheduling.setOkScheduling(obj.getString("ok"));
-
-						List<String[]> listJobsScheduling = new ArrayList<String[]>();
-						JSONArray jsonArray = new JSONArray(obj.getString("jobs"));
-						for (int i = 0; i < jsonArray.length(); i++) {
-							JSONObject jObj = new JSONObject(jsonArray.get(i).toString());
-							String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
-							listJobsScheduling.add(aux);
-						}
-						scheduling.setListJobsScheduling(listJobsScheduling);
-
-						scheduling.setSkippedScheduling(obj.getString("skipped"));
-						scheduling.setErrorsScheduling(obj.getString("errors"));
-						scheduling.setRunningScheduling(obj.getString("running"));
-
-						scheduling.setStatusScheduling(obj.getString("status"));
+						exist = false;
 
 						if(!status.contains(obj.getString("status"))){
 							status.add(obj.getString("status"));
 						}
 
-						listScheduling.add(scheduling);
-					}
-					exist = false;
-
-					if(!status.contains(obj.getString("status"))){
-						status.add(obj.getString("status"));
 					}
 
-				}
-
-				if(!status.contains("SUSPENDED")){
-					setShowSuspendScheduling(true);
-					setShowResumeScheduling(false);
-				}else{
-					setShowResumeScheduling(true);
-					if(status.contains("RUNNING")){
+					if(!status.contains("SUSPENDED")){
 						setShowSuspendScheduling(true);
+						setShowResumeScheduling(false);
 					}else{
-						setShowSuspendScheduling(false);
+						setShowResumeScheduling(true);
+						if(status.contains("RUNNING")){
+							setShowSuspendScheduling(true);
+						}else{
+							setShowSuspendScheduling(false);
+						}
 					}
+
+				}catch(Exception e){
+					Scheduling scheduling = new Scheduling();
+					scheduling.setNameScheduling(json.replaceAll("[{}\":]","").trim());
+					listScheduling = new ArrayList<Scheduling>();
+					listScheduling.add(scheduling);
 				}
 
 			}
@@ -1811,7 +1822,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			wfNameList = null;
 		}
 		return new String[]{ans, wfNameList};
-
 	}
 
 	/**

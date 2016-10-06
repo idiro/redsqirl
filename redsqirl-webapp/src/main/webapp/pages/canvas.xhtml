@@ -459,16 +459,19 @@
 		    		 jQuery('*').css('-moz-user-select', 'none');
 		    		 jQuery('*').css('-o-user-select', 'none');
 		    		 jQuery('*').css('user-select', 'none');
-		    		 		    		 
-		    		 jQuery('#contentHelp').css('-webkit-user-select', 'text');
-		    		 jQuery('#contentHelp').css('-khtml-user-select', 'text');
-		    		 jQuery('#contentHelp').css('-moz-user-select', 'text');
-		    		 jQuery('#contentHelp').css('-o-user-select', 'text');
-		    		 jQuery('#contentHelp').css('user-select', 'text');
 		    		 
 		    		 jQuery('#divTabHelp *').css('-webkit-user-select', 'text');
+		    		 jQuery('#divTabHelp *').css('-khtml-user-select', 'text');
+		    		 jQuery('#divTabHelp *').css('-moz-user-select', 'text');
+		    		 jQuery('#divTabHelp *').css('-o-user-select', 'text');
+		    		 jQuery('#divTabHelp *').css('user-select', 'text');
 		    		 
-		    		 jQuery('input').css('-webkit-user-select', 'text');
+		    		 jQuery(':input').css('-webkit-user-select', 'text');
+		    		 jQuery(':input').css('-khtml-user-select', 'text');
+		    		 jQuery(':input').css('-moz-user-select', 'text');
+		    		 jQuery(':input').css('-o-user-select', 'text');
+		    		 jQuery(':input').css('user-select', 'text');
+		    		 
 		    		 jQuery('#flowchart-canvas-1').css('position', 'fixed');
 		    		 
 				 //}
@@ -878,9 +881,10 @@
 			//console.log("blockRunningWorkflowJS " + selectedCanvas);
 			//console.log("blockRunningWorkflowJS " + isIfISchedule(selectedCanvas));
 	     	           
-			console.log("igor " + isIfISchedule(selectedCanvas));
+			console.log("ISchedule " + isIfISchedule(selectedCanvas));
+			console.log("scheduleNoPastDate " + getScheduleNoPastDate(selectedCanvas));
 			
-	     	if(isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true){
+	     	if((isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true) && (getScheduleNoPastDate(selectedCanvas) == 'true' || getScheduleNoPastDate(selectedCanvas) == true)){
 	     		console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
@@ -1999,7 +2003,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),'#{canvasBean.running}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
+					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),'#{canvasBean.running}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },1500); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 				    
@@ -2346,7 +2350,7 @@
 				
 				<a4j:jsFunction name="runScheduleWorkflowCheckPastDate"
 					action="#{canvasBean.runScheduleWorkflow}" data="#{canvasBean.checkPastDate}"
-					oncomplete="if(data == 'false'){ setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); runningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }else{ setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }"
+					oncomplete="setScheduleNoPastDate(getSelectedByName(), data); if(data == 'false'){ setRunning(getSelectedByName(), true); jQuery('#mainPanelDiv').unblock(); runningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }else{ setRunning(getSelectedByName(), true);blockRunningWorkflowJS(); checkPathRestoreToRun(getSelectedByName()); }"
 					reRender="msnError">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
@@ -2359,6 +2363,10 @@
 				
 				<a4j:jsFunction name="setIfIScheduleJS" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError">
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="setcheckJobId" data="#{canvasBean.checkJobId}"
+					oncomplete="setScheduleNoPastDate(getSelectedByName(), data);" reRender="msnError">
 				</a4j:jsFunction>
 				
 			</a4j:region>

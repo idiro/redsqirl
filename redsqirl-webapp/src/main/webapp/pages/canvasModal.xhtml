@@ -271,7 +271,7 @@
                 </table>
                 
                 <p>
-                	<h:graphicImage value="../image/icons/question_mark.gif" 
+                	<h:graphicImage value="../image/icons/question_mark.gif"  
                 	   onmouseover="addtooltip('#{canvasModalBean.pageTextTip}', event);" styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
                 	<h:outputText value="#{canvasModalBean.pageLegend}"/>
                 </p>
@@ -651,11 +651,11 @@
 	                
 	                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();jQuery.unblockUI();" />
 	                
-	                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, coordinatorTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" oncomplete="jQuery.unblockUI();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();if(browserTableData){reLoadTabs();}" />
+	                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, coordinatorTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue, canvasModalHeader, panelDynamicForm" oncomplete="jQuery.unblockUI();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();if(browserTableData){reLoadTabs();}" />
 	    
 	                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();jQuery.unblockUI();" />
 	                
-	                <a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_ok}" onclick="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });" oncomplete="if(#{requestScope['msnError'] == null} ){closeDynamicForm();}else{jQuery.unblockUI();}" styleClass="greenButton" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
+	                <a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_ok}" onclick="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });" oncomplete="if(#{requestScope['msnError'] == null} ){closeDynamicForm();}else{jQuery.unblockUI();}" styleClass="greenButton" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable, canvasModalHeader, panelDynamicForm" />
 	            
 	            </rich:panel>
             </h:panelGrid>
