@@ -137,6 +137,7 @@ public class SyncSink extends DataflowAction{
 			if(!in.getBrowser().exists(templateParentStr)){
 				error = "The path "+templateParentStr+" doesn't exist";
 			}
+			updateOut();
 		}
 		return error;
 	}
