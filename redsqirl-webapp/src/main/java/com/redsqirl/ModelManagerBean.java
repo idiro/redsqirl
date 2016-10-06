@@ -772,14 +772,16 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	protected void renameSubWorkflow(String oldNameSubWf, String newNameSubWf) throws RemoteException{
 		logger.info("rename "+oldNameSubWf+" to "+newNameSubWf);
-		DataFlowInterface dfi = getworkFlowInterface();
-		SubDataFlow sdf = dfi.getNewSubWorkflow();
-		sdf.setName(rsModel.getFullName(oldNameSubWf));
-		sdf.readFromLocal(new File(rsModel.getFile(),oldNameSubWf));
-		sdf.setName(rsModel.getFullName(newNameSubWf));
-		
-		modelMan.installSA(rsModel, sdf, sdf.getPrivilege());
-		modelMan.uninstallSA(rsModel, rsModel.getFullName(oldNameSubWf));
+		if(!oldNameSubWf.equalsIgnoreCase(newNameSubWf)){
+			DataFlowInterface dfi = getworkFlowInterface();
+			SubDataFlow sdf = dfi.getNewSubWorkflow();
+			sdf.setName(rsModel.getFullName(oldNameSubWf));
+			sdf.readFromLocal(new File(rsModel.getFile(),oldNameSubWf));
+			sdf.setName(rsModel.getFullName(newNameSubWf));
+			
+			modelMan.installSA(rsModel, sdf, sdf.getPrivilege());
+			modelMan.uninstallSA(rsModel, rsModel.getFullName(oldNameSubWf));
+		}
 	}
 	
 	private void updateModelGrid() throws RemoteException{
