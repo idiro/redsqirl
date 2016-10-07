@@ -419,14 +419,21 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			) throws RemoteException{
 		if(PathType.MATERIALIZED.equals(out.getPathType())){
 			String[] paths = new String[out.getNumberMaterializedPath()];
+			
+			
 			int freqDataset = out.getFrequency().getFrequency();
 			TimeTemplate timeDataset = out.getFrequency().getUnit();
 			if(timeDataset == null){
 				freqDataset = coordinatorTimeConstraint.getFrequency();
 				timeDataset = coordinatorTimeConstraint.getUnit();
 			}
+			Date ref = incrDate;
+			Date initialInstance = out.getFrequency().getInitialInstance();
+			if(initialInstance != null){
+				ref = out.getFrequency().getStartTime(incrDate, initialInstance, 0);
+			}
 			for(int i = 0; i < out.getNumberMaterializedPath();++i){
-				Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), (i+out.getOffsetPath())*freqDataset , timeDataset);
+				Date matDate = WfCoordTimeConstraint.addToDate(new Date(ref.getTime()), (-i-1+out.getOffsetPath())*freqDataset , timeDataset);
 				paths[i] = templateToPath(out.getPath(), matDate);
 			}
 			
@@ -701,7 +708,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if(startDateBundle == null){
 				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),coordinatorStartOffset);
 			}else{
-				startDate = WfCoordTimeConstraint.addToDate(startDateBundle, coordinatorStartOffset, coordinatorTimeConstraint.getUnit());
+				startDate = coordinatorTimeConstraint.getStartTime(startDateBundle,coordinator.getExecutionTime(),coordinatorStartOffset);
+				//startDate = WfCoordTimeConstraint.addToDate(startDateBundle, coordinatorStartOffset, coordinatorTimeConstraint.getUnit());
 			}
 
 			{
