@@ -286,7 +286,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 	}
 
 	public void goNumberRow() {
-		String regex = "([0-9]*)";
+		String regex = "([0-9]+)";
 		List<SelectableRow> list = getRows();
 		List<Integer> listSelected = getAllSelected();
 		if(getRowNumber() != null && checkString(regex, getRowNumber())){

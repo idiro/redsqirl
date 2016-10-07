@@ -48,6 +48,7 @@ import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.connect.Storage;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.ModelInt;
@@ -259,17 +260,22 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		logger.info("path '" + pathHdfs + "'");
 		if (pathHdfs == null || pathHdfs.isEmpty()) {
 			error = "Path to get SubWorkflow is Empty";
-		} else if(pathHdfs.lastIndexOf('-') == -1 ){
+		} else if(pathHdfs.lastIndexOf('-') == -1 || !pathHdfs.endsWith(".zip")){
 			error = "File should have the format {name}-{version}.zip";
 		}else {
+			Map<String,String> prop = getHDFS().getProperties(pathHdfs);
+			if(prop == null || "false".equalsIgnoreCase(prop.get(Storage.key_children))){
+				error = "File does not exist or is a folder.";
+			}
 			
 			String[] path = pathHdfs.split("/");
 			String tmpPath = WorkflowPrefManager.getSysPathTmp()+"/"+path[path.length-1];
 			File tmpFile = new File(tmpPath);
-			
 			String modelName = path[path.length-1].substring(0, path[path.length-1].lastIndexOf('-'));
 			logger.info("Copy "+pathHdfs+" "+tmpPath);
-			error = getHDFS().copyToLocal(pathHdfs, tmpPath,true);
+			if(error == null){
+				error = getHDFS().copyToLocal(pathHdfs, tmpPath,true);
+			}
 			if(error == null){
 				ModelInt model = null;
 				if(system){

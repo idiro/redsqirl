@@ -1343,7 +1343,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public String getCheckJobId() throws RemoteException {
 		String checkJobId = "true";
-		if(df.getOozieJobId() != null){
+		if(df != null && df.getOozieJobId() != null){
 			logger.warn("checkJobId " + df.getOozieJobId());
 			if(df.getOozieJobId().endsWith("W")){
 				checkJobId = "false";
