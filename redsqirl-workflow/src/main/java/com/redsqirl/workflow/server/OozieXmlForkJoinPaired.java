@@ -422,6 +422,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			
 			int freqDataset = out.getFrequency().getFrequency();
+			int extraOff = 0;
 			TimeTemplate timeDataset = out.getFrequency().getUnit();
 			if(timeDataset == null){
 				freqDataset = coordinatorTimeConstraint.getFrequency();
@@ -431,9 +432,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Date initialInstance = out.getFrequency().getInitialInstance();
 			if(initialInstance != null){
 				ref = out.getFrequency().getStartTime(incrDate, initialInstance, 0);
+				extraOff = -1;
 			}
 			for(int i = 0; i < out.getNumberMaterializedPath();++i){
-				Date matDate = WfCoordTimeConstraint.addToDate(new Date(ref.getTime()), (-i-1+out.getOffsetPath())*freqDataset , timeDataset);
+				Date matDate = WfCoordTimeConstraint.addToDate(new Date(ref.getTime()), (-i+extraOff+out.getOffsetPath())*freqDataset , timeDataset);
 				paths[i] = templateToPath(out.getPath(), matDate);
 			}
 			
