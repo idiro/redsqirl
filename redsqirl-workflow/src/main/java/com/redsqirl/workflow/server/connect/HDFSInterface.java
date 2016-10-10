@@ -629,25 +629,34 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties(String pathStr)
 			throws RemoteException {
-		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
-		Path pathHdfs = new Path(pathStr);
-		HdfsFileChecker fCh = new HdfsFileChecker(pathHdfs);
-		try {
-			FileSystem fs = NameNodeVar.getFS();
-			if (fCh.isDirectory()) {
-				FileStatus[] fsA = fs.listStatus(pathHdfs);
+		Map<String, Map<String, String>> ans = null; 
+		if(cach.get(getBrowserName()) != null){
+			ans = cach.get(getBrowserName()).get(pathStr);
+		}
+		if(ans == null){
+			ans = new LinkedHashMap<String, Map<String, String>>();
+			Path pathHdfs = new Path(pathStr);
+			HdfsFileChecker fCh = new HdfsFileChecker(pathHdfs);
+			try {
+				FileSystem fs = NameNodeVar.getFS();
+				if (fCh.isDirectory()) {
+					FileStatus[] fsA = fs.listStatus(pathHdfs);
 
-				for (int i = 0; i < fsA.length; ++i) {
-					String path = pathStr +"/"+fsA[i].getPath().getName();
-					ans.put(path, getProperties(path,fsA[i]));
+					for (int i = 0; i < fsA.length; ++i) {
+						String path = pathStr +"/"+fsA[i].getPath().getName();
+						ans.put(path, getProperties(path,fsA[i]));
+					}
+				} else {
+					ans = null;
 				}
-			} else {
-				ans = null;
+				// fs.close();
+			} catch (IOException e) {
+				logger.error("Cannot open the directory: " + pathStr);
+				logger.error(e.getMessage());
 			}
-			// fs.close();
-		} catch (IOException e) {
-			logger.error("Cannot open the directory: " + pathStr);
-			logger.error(e.getMessage());
+			if(ans != null){
+				cach.get(getBrowserName()).put(pathStr, ans);
+			}
 		}
 		// fCh.close();
 
@@ -941,7 +950,6 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 		return paramProp;
 	}
 
-	// TODO
 	/**
 	 * 
 	 * @param path
@@ -1141,41 +1149,6 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 			logger.error(error, e);
 		}
 		return error;
-	}
-
-	/**
-	 * Check if end of stream
-	 * 
-	 * @param in
-	 * @return b
-	 * @throws IOException
-	 */
-	private static int checkAck(InputStream in) throws IOException {
-		int b = in.read();
-		// b may be 0 for success,
-		// 1 for error,
-		// 2 for fatal error,
-		// -1
-		if (b == 0)
-			return b;
-		if (b == -1)
-			return b;
-
-		if (b == 1 || b == 2) {
-			StringBuffer sb = new StringBuffer();
-			int c;
-			do {
-				c = in.read();
-				sb.append((char) c);
-			} while (c != '\n');
-			if (b == 1) { // error
-				System.out.print(sb.toString());
-			}
-			if (b == 2) { // fatal error
-				System.out.print(sb.toString());
-			}
-		}
-		return b;
 	}
 
 	@Override

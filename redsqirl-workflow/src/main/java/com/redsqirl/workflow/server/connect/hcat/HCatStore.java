@@ -55,6 +55,16 @@ public class HCatStore extends Storage{
 		history.add("/");
 	}
 	
+	protected void clearCachPath(String path){
+		String[] pathArray = getDatabaseTableAndPartition(path);
+		if(pathArray.length == 0){
+			conn.clear();
+		}else if(pathArray.length == 1){
+			databases.get(pathArray[0]).clear();
+		}else if(pathArray.length == 2){
+			tables.get(pathArray[0]+"."+pathArray[1]).clear();
+		}
+	}
 	
 	public static JdbcStoreConnection getHiveConnection() throws RemoteException{
 		return JdbcHiveStore.getHiveConnection();

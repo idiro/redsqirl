@@ -231,7 +231,7 @@ public class JdbcStore extends Storage {
 	}
 	
 	public static Set<String> listConnections() throws RemoteException {
-		if (connections == null || refreshTimeOut < System.currentTimeMillis() - updateConnections) {
+		if (connections == null || updateConnections == 0) {
 			connectionList = JdbcPropertiesDetails.getConnectionNames();
 			if(connectionList != null){
 				if(!connectionList.containsAll(connections.keySet())){
@@ -399,6 +399,25 @@ public class JdbcStore extends Storage {
 		}
 
 		return error;
+	}
+	
+	protected void clearCachPath(String path) throws RemoteException{
+		logger.debug("table : " + path);
+		if (path != null && !path.isEmpty()){
+			String[] connectionAndTable = getConnectionAndTable(path);
+			if (path.equals("/")) {
+				updateConnections = 0;
+			}else if (connectionAndTable.length == 1){
+				getConnection(connectionAndTable[0]).updateTables = 0;
+				Iterator<String> cachDescIt = cachDesc.keySet().iterator();
+				while(cachDescIt.hasNext()){
+					String key = cachDescIt.next();
+					if(key.startsWith(connectionAndTable[0]+"/")){
+						cachDescIt.remove();
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -671,7 +690,7 @@ public class JdbcStore extends Storage {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
 		String[] fields = null;
 		Object[] obj = cachDesc.get(connectionName+"/"+table);
-		if(!cachDesc.containsKey(connectionName+"/"+table) || refreshTimeOut < System.currentTimeMillis() - (Long)obj[0]){
+		if(!cachDesc.containsKey(connectionName+"/"+table)){
 			fields = storeConnection.execDesc(table);
 			cachDesc.put(connectionName+"/"+table, new Object[]{System.currentTimeMillis(),fields});
 		}else{

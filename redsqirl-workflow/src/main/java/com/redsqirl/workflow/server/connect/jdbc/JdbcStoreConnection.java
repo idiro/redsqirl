@@ -40,9 +40,6 @@ public class JdbcStoreConnection extends JdbcConnection{
 	private static Logger logger = Logger.getLogger(JdbcStoreConnection.class);
 	protected List<String> tables;
 
-	// Refresh every 3 seconds
-	/** Refresh count */
-	protected static final long refreshTimeOut = 20000;
 	protected long updateTables = 0;
 	protected boolean listing = false;
 	private int errorInARow = 0;
@@ -69,7 +66,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 	}
 
 	public final List<String> listTables() throws SQLException, RemoteException {
-		if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
+		if (tables == null || updateTables == 0) {
 			listing = true;
 			logger.debug("Refresh table list");
 			tables = execListTables();

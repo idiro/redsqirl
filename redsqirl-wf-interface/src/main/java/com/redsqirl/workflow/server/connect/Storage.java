@@ -235,12 +235,18 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 		Map<String,Map<String,String>> ans = null;
 		if(!refresh){
 			ans = browserMap.get(path);
+		}else{
+			browserMap.remove(path);
+			clearCachPath(path);
 		}
 		if(ans == null){
 			ans = getChildrenProperties(path);
 			browserMap.put(path,ans);
 		}
 		return ans;
+	}
+	
+	protected void clearCachPath(String path) throws RemoteException{
 	}
 
 	/**
