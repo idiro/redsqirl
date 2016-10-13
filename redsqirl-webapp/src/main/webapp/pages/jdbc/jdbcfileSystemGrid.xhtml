@@ -197,8 +197,8 @@
 							reRender="jdbcCommand, msnError" />
 							
 						<a4j:commandButton action="#{jdbcBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
-							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('jdbcOpenExecuteCommandModal')}.hide() };"
-							reRender="jdbcCommand, msnError" />
+							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('jdbcOpenExecuteCommandModal')}.hide(); };"
+							reRender="jdbcCommand, msnError, msnSuccess" />
 						
 					</rich:panel>
 	                	

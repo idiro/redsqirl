@@ -178,7 +178,7 @@
 							
 						<a4j:commandButton action="#{hcatBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
 							oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('hcatOpenExecuteCommandModal')}.hide(); };"
-							reRender="hcatCommand, msnError,msnSuccess" />
+							reRender="hcatCommand, msnError, msnSuccess" />
 						
 					</rich:panel>
 	                	
