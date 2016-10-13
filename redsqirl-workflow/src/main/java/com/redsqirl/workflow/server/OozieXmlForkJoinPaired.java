@@ -34,28 +34,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.apache.pig.newplan.logical.expression.ExpToPhyTranslationVisitor;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.redsqirl.workflow.server.action.SyncSource;
 import com.redsqirl.workflow.server.connect.hcat.HCatStore;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.PathType;
@@ -825,6 +824,10 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						if(new MapRedTextType().getBrowserName().equals(datasetCur.getBrowserName())){
 							uriTemplate.appendChild(doc
 									.createTextNode("${"+OozieManager.prop_namenode+"}"+datasetCur.getPath()));
+							if(cur instanceof SyncSource && !((SyncSource) cur).isSuccessDirExists() ){
+								Element doneFlag = doc.createElement("done-flag");
+								dataset.appendChild(doneFlag);
+							}
 						}else{
 							uriTemplate.appendChild(doc
 									.createTextNode(WorkflowPrefManager.getProperty(HCatStore.hcat_metastore_key).replaceAll("thrift", "hcat")+datasetCur.getPath()));

@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
@@ -160,6 +159,17 @@ public class SyncSource extends AbstractSource {
 		
 	}
 	
+	public boolean isSuccessDirExists(){
+		try{
+			DFEOutput out = output.get(out_name);
+			if(!new HCatalogType().getTypeName().equals(out.getTypeName())){
+				return new HDFSInterface().exists(out.getPath()+"/_SUCCESS");
+			}
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		return true;
+	}
 
 	
 	public int getNbPath(){
