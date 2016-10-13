@@ -1456,9 +1456,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 					JSONObject jsonObj = new JSONObject(json);
 
-					if(listScheduling == null){
+					//if(listScheduling == null){
 						listScheduling = new ArrayList<Scheduling>();
-					}
+					//}
 
 					List<String> status = new ArrayList<String>();
 					for (Iterator<?> iterator = jsonObj.keys(); iterator.hasNext();) {
@@ -1469,7 +1469,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						boolean exist = false;
 						Scheduling scheduling = null;
 						for (Scheduling sc : listScheduling) {
-							if(sc.getJobId().equals(obj.getString("job-id"))){
+							if(sc.getJobId() != null && sc.getJobId().equals(obj.getString("job-id"))){
 								exist = true;
 								scheduling = sc;
 
@@ -1551,10 +1551,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 
 				}catch(Exception e){
-					Scheduling scheduling = new Scheduling();
-					scheduling.setNameScheduling(json.replaceAll("[{}\":]","").trim());
+					String j = json.replaceAll("[{}\":]","").trim();
 					listScheduling = new ArrayList<Scheduling>();
-					listScheduling.add(scheduling);
+					if(j.contains(",")){
+						String ans[] = j.split(",");
+						for (int i = 0; i < ans.length; i++) {
+							Scheduling scheduling = new Scheduling();
+							scheduling.setNameScheduling(ans[i]);
+							listScheduling.add(scheduling);
+						}
+					}else{
+						Scheduling scheduling = new Scheduling();
+						scheduling.setNameScheduling(j);
+						listScheduling.add(scheduling);
+					}
 				}
 
 			}

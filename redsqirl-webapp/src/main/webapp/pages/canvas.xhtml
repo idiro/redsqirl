@@ -82,6 +82,7 @@
 		           
 		 var contTabCanvas = 1;
 		 var lastBlockedRunningWorkflow
+		 var lastBlockedRunningSchedulingWorkflow
 		 
 		 var isResizing = false;
 		           
@@ -899,7 +900,9 @@
 	    	//<![CDATA[
 	    	 console.log("runningWorkflowJS");
 	     		
-		        unblockRunningWorkflowJS();
+		        //unblockRunningWorkflowJS();
+		        lastBlockedRunningWorkflow = null;
+	         	clearInterval(runningIntervalID);
 		         
 	            lastBlockedRunningWorkflow = getSelectedById();
 	             
@@ -928,18 +931,21 @@
 	     
 	     function blockRunningSchedulingWorkflowJS(){
 		     	//<![CDATA[
-		        unblockRunningSchedulingWorkflowJS();
+		        
+		        //unblockRunningSchedulingWorkflowJS();
+		        lastBlockedRunningSchedulingWorkflow = null;
+		        clearInterval(runningIntervalID);
 		         
-	            lastBlockedRunningWorkflow = getSelectedById();
+		        lastBlockedRunningSchedulingWorkflow = getSelectedById();
 	             
-		    	console.log("blockRunningSchedulingWorkflowJS" , lastBlockedRunningWorkflow);
+		    	console.log("blockRunningSchedulingWorkflowJS" , lastBlockedRunningSchedulingWorkflow);
 
 				try{
 		            
-		            jQuery('#'+lastBlockedRunningWorkflow).block({ message: jQuery('#domMessageSchedulingRunning') });
+		            jQuery('#'+lastBlockedRunningSchedulingWorkflow).block({ message: jQuery('#domMessageSchedulingRunning') });
 		            
 		     	}catch(exception){
-			    	console.log("error " + lastBlockedRunningWorkflow + " " + exception);
+			    	console.log("error " + lastBlockedRunningSchedulingWorkflow + " " + exception);
 			    }
 	             
 	            resizeBlockUICanvas();
@@ -953,16 +959,16 @@
 	     function unblockRunningSchedulingWorkflowJS(){
 		     	//<![CDATA[
 			         
-		         if(lastBlockedRunningWorkflow){
-		        	 console.log("unblockRunningSchedulingWorkflowJS ", lastBlockedRunningWorkflow);
+		         if(lastBlockedRunningSchedulingWorkflow){
+		        	 console.log("unblockRunningSchedulingWorkflowJS ", lastBlockedRunningSchedulingWorkflow);
 		             
-		        	 jQuery('#'+lastBlockedRunningWorkflow).unblock();
+		        	 jQuery('#'+lastBlockedRunningSchedulingWorkflow).unblock();
 		             
 		         }else{
 			    	 console.log("unblockRunningSchedulingWorkflowJS");
 			     }
 
-		         lastBlockedRunningWorkflow = null;
+		         lastBlockedRunningSchedulingWorkflow = null;
 		         clearInterval(runningIntervalID);
 		         
 		     	//]]>
@@ -2003,7 +2009,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),'#{canvasBean.running}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },1500); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
+					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),'#{canvasBean.running}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },2000); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 				    
