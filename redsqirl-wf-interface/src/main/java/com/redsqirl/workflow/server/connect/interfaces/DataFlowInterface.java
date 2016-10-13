@@ -22,6 +22,7 @@ package com.redsqirl.workflow.server.connect.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,6 +107,12 @@ public interface DataFlowInterface extends Remote{
 	 * @throws RemoteException
 	 */
 	DataStore getBrowser(String browserName) throws RemoteException;
+	
+	/**
+	 * Clear all browser cach, if the last reset happened before a given date
+	 * @throws RemoteException
+	 */
+	void clearAllBrowserCach(Date time) throws RemoteException;
 	
 	/**
 	 * Clone a data flow

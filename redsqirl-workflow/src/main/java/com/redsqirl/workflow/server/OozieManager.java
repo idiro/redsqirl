@@ -623,6 +623,14 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		return found;
 	}
 	
+	public Date getEndTime(String jobId) throws RemoteException{
+		try{
+			return oc.getJobInfo(jobId).getEndTime();
+		}catch(Exception e){
+		}
+		return null;
+	}
+	
 	public String getBundleJobInfo(String jobId) throws RemoteException{
 		String ans = "{";
 		try{

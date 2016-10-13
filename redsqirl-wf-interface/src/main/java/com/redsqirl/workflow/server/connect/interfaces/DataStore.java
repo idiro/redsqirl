@@ -239,6 +239,12 @@ public interface DataStore extends Remote {
 			throws RemoteException;
 
 	/**
+	 * Clear the browser cach.
+	 * @throws RemoteException
+	 */
+	void clearBrowserCach() throws RemoteException;
+	
+	/**
 	 * Delete a datastore element
 	 * 
 	 * @param path

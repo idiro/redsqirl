@@ -2116,7 +2116,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("getAllOutputStatus");
 
 		logger.info("getAllOutputStatus nameWorkflow " + getNameWorkflow());
-
 		return getSelectedOutputStatus(getReverseIdMap());
 	}
 
@@ -2178,13 +2177,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Object[][] getSelectedOutputStatus(Map<String, String> elements) throws Exception {
 
 		logger.info("getSelectedOutputStatus");
-
+		
 		Object[][] result = null;
 		if (elements != null && getDf() != null) {
 			DataFlow dfCur = getDf();
 			result = new Object[elements.size()][];
 
 			try{
+				dfCur.clearCachAfterRunning();
+				
 				Map<String, String> inverseIdMap = new LinkedHashMap<String, String>();
 				String wfName = nameWorkflow;
 				for (Entry<String, String> e : idMap.get(wfName).entrySet()) {

@@ -74,6 +74,12 @@ public class HCatStore extends Storage{
 		history.add("/");
 	}
 	
+	protected void clearAllCach() throws RemoteException{
+		conn.clear();
+		databases.clear();
+		tables.clear();
+	}
+	
 	protected void clearCachPath(String path){
 		String[] pathArray = getDatabaseTableAndPartition(path);
 		if(pathArray.length == 0){

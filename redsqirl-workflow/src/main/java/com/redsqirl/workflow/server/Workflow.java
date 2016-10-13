@@ -705,6 +705,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return runningStatus;
 	}
+	
+	public void clearCachAfterRunning() throws RemoteException{
+		if(oozieJobId != null){
+			Date endTime = OozieManager.getInstance().getEndTime(oozieJobId);
+			if(endTime != null){
+				WorkflowInterface.getInstance().clearAllBrowserCach(endTime);
+			}else{
+				logger.debug("Job not finished, cannot clear");
+			}
+		}else{
+			logger.debug("Job id null, cannot clear");
+		}
+	}
 	/**
 	 * Clean the Projects outputs
 	 * 

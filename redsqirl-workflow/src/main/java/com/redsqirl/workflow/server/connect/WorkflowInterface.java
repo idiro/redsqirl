@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,17 +45,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.apache.pig.parser.AliasMasker.load_clause_return;
 
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.WorkflowCoordinator;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.SyncSink;
-import com.redsqirl.workflow.server.action.SyncSource;
 import com.redsqirl.workflow.server.action.SyncSinkFilter;
+import com.redsqirl.workflow.server.action.SyncSource;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
@@ -64,7 +63,6 @@ import com.redsqirl.workflow.server.enumeration.PathType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
-import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -112,6 +110,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	private Map<String,Set<String>> typesPerDataStore;
 
 	protected Map<String, String> mapCanvasToOpen;
+	
+	private long lastCachReset = System.currentTimeMillis();
 	
 	/**
 	 * Constructor
@@ -235,6 +235,24 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 	public DataStore getBrowser(String browserName){
 		return datastores.get(browserName);
+	}
+	
+	public void clearAllBrowserCach(Date time) throws RemoteException {
+		
+		if(time != null && time.getTime() > lastCachReset){
+			logger.debug("Refresh all cach...");
+			if(datastores != null){
+				Iterator<DataStore> it = datastores.values().iterator();
+				while(it.hasNext()){
+					try{
+						it.next().clearBrowserCach();
+					}catch(Exception e){}
+				}
+			}
+			lastCachReset = System.currentTimeMillis();
+		}else{
+			logger.debug("Cach more recent that given date");
+		}
 	}
 
 	/**

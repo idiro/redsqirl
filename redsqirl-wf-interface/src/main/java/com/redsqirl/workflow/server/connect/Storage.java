@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,10 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 	
 	//Hierarchy: Browser>Folder>Children>Properties
 	protected static Map<String,Map<String,Map<String, Map<String, String>>>> cach = new LinkedHashMap<String,Map<String,Map<String, Map<String, String>>>>();
+	
+	//Every minute reset maximum
+	protected long maxReset = 1000*60;
+	protected static Map<String,Long> resetCach = new LinkedHashMap<String,Long>();
 	
 	protected Storage() throws RemoteException {
 		super();
@@ -249,6 +254,17 @@ public abstract class Storage extends UnicastRemoteObject implements DataStore {
 	protected void clearCachPath(String path) throws RemoteException{
 	}
 
+	protected void clearAllCach() throws RemoteException{
+	}
+	
+	public void clearBrowserCach() throws RemoteException{
+		Long resCach = resetCach.get(getBrowserName());
+		if(resCach == null || maxReset < System.currentTimeMillis() - resCach){
+			cach.remove(getBrowserName());
+			clearAllCach();
+			resetCach.put(getBrowserName(),System.currentTimeMillis());
+		}
+	}
 	/**
 	 * Change the property of the current path
 	 * 

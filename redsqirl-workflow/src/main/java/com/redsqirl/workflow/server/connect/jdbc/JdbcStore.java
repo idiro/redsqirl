@@ -401,6 +401,18 @@ public class JdbcStore extends Storage {
 		return error;
 	}
 	
+	protected void clearAllCach() throws RemoteException{
+		cachDesc.clear();
+		Iterator<String> it = connections.keySet().iterator();
+		while(it.hasNext()){
+			String conName = it.next();
+			try{
+				getConnection(conName).resetUpdateTables();
+			}catch(Exception e){
+			}
+		}
+	}
+	
 	protected void clearCachPath(String path) throws RemoteException{
 		logger.debug("table : " + path);
 		if (path != null && !path.isEmpty()){

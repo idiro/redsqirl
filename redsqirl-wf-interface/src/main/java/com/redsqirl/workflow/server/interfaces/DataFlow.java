@@ -99,6 +99,12 @@ public interface DataFlow extends Remote, Cloneable{
 	boolean isrunning() throws RemoteException;
 
 	/**
+	 * Clear the cach after running
+	 * @throws RemoteException
+	 */
+	void clearCachAfterRunning() throws RemoteException;
+	
+	/**
 	 * Check if the workflow is a schedule workflow
 	 * @return True if it is a bundle job.
 	 * @throws RemoteException
