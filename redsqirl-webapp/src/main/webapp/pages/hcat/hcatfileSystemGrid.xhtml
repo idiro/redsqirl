@@ -153,7 +153,7 @@
 	</a4j:region>
 	
 	<a4j:region>
-		<rich:modalPanel id="hcatOpenExecuteCommandModal" width="600" height="400"
+		<rich:modalPanel id="hcatOpenExecuteCommandModal" width="800" height="600"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
@@ -167,13 +167,13 @@
 			<h:form>
 				<h:panelGrid>
 					
-					<h:inputTextarea maxlength="100" cols="90" rows="19" value="#{hcatBean.commandToExecute}"
+					<h:inputTextarea maxlength="100" cols="150" rows="32" value="#{hcatBean.commandToExecute}"
 	                	style="resize:none;border:1pxsolid;width:100%;" id="hcatCommand" />
 	                	
 	                	
 	                <rich:panel style="border:none; float:right;" >
 			
-						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hcatOpenExecuteCommandModal')}.hide();" 
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_close}" onclick="#{rich:component('hcatOpenExecuteCommandModal')}.hide();" 
 							reRender="hcatCommand, msnError" />
 							
 						<a4j:commandButton action="#{hcatBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
