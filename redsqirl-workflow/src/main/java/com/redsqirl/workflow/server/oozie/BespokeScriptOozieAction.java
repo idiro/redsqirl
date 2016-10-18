@@ -185,7 +185,7 @@ public class BespokeScriptOozieAction extends OozieUniqueActionAbs{
 			Entry<String,DFEOutput> curOut = itOut.next();
 			DFEOutput dfeCur = curOut.getValue();
 			String path = dfeCur.getPath();
-			if(curOut instanceof HCatalogType){
+			if(dfeCur instanceof HCatalogType){
 				String partition = null;
 				String database = "TBD";
 				String table = "TBD";

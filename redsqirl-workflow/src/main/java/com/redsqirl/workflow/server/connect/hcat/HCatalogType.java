@@ -110,28 +110,33 @@ public class HCatalogType extends DataOutput{
 		String[] pathArray = HCatStore.getDatabaseTableAndPartition(getPath());
 		String tableName = pathArray[0]+"."+pathArray[1];
 		String partStr = "";
-		List<String> partColumns = null;
+		Set<String> partColumns = null;
 		if(pathArray.length == 3){
-			Map<String,String> desc = hcatS.getDescription(pathArray);
-			partStr = desc.get(HCatStore.key_part);
-			partColumns = Arrays.asList(partStr.split(","));
+			logger.debug("Partition string: "+pathArray[2]);
+			partColumns = HCatStore.getPartitionNames(pathArray[2]);
+			logger.debug("Partition columns: "+partColumns.toString());
 		}else{
-			partColumns = new LinkedList<String>();
+			partColumns = new LinkedHashSet<String>();
 		}
 		Iterator<String>  it = fields.getFieldNames().iterator();
 		JdbcTypeManager tm = new JdbcTypeManager();
 		while(it.hasNext()){
 			String cur = it.next();
 			if(!partColumns.contains(cur)){
-				feats += cur +" "+ tm.getDbType("hive", fields.getFieldType(cur));
-				if(it.hasNext()){
-					feats+=", ";
+				if(!feats.isEmpty()){
+					feats+=",";
 				}
+				feats += cur +" "+ tm.getDbType("hive", fields.getFieldType(cur));
+			}else{
+				if(!partStr.isEmpty()){
+					partStr+=",";
+				}
+				partStr+=cur;
 			}
 		}
 		String createStatement = "CREATE TABLE "+tableName+" ("+feats+" ) ";
 		if(pathArray.length == 3){
-			createStatement+="PARTITIONED BY ("+partStr.replaceAll(",", "STRING, ")+" STRING ) ";
+			createStatement+="PARTITIONED BY ("+partStr.replaceAll(",", " STRING, ")+" STRING ) ";
 		}
 		createStatement+="LOCATION \""+getHdfsPath()+"\"";
 		
@@ -149,7 +154,7 @@ public class HCatalogType extends DataOutput{
 		String tablePath = tableName;
 		if(pathArray.length == 3){
 			String[] partValues = pathArray[2].split(",");
-			String[] partNames = hcatS.getDescription(pathArray).get(HCatStore.key_part).split(",");
+			String[] partNames = pathArray[2].split(HCatStore.partitionDelimiter);
 			for(String partName :partNames){
 				for(String partValue: partValues){
 					if(partValue.startsWith(partName+"=")){

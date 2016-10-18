@@ -441,7 +441,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
 				String path = "";
 				for(int i = 0; i < paths.length;++i){
-					path += paths[i]+" ";
+					path += "${"+OozieManager.prop_namenode+"}"+paths[i]+" ";
 				}
 				extraVariables.put(cur.getComponentId(), path.trim());
 			}else{
@@ -478,7 +478,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			Date matDate = WfCoordTimeConstraint.addToDate(new Date(incrDate.getTime()), outputDataOffset*coordinatorTimeConstraint.getFrequency() , coordinatorTimeConstraint.getUnit());
 			String pathOutSync = templateToPath(out.getPath(), matDate);
 			if(new MapRedTextType().getBrowserName().equals(out.getBrowserName())){
-				extraVariables.put(cur.getComponentId(), pathOutSync);
+				extraVariables.put(cur.getComponentId(), "${"+OozieManager.prop_namenode+"}"+pathOutSync);
 			}else{
 				String db = null;
 				String table = null;
