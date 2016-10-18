@@ -173,7 +173,7 @@
 	</a4j:region>
 	
 	<a4j:region>
-		<rich:modalPanel id="jdbcOpenExecuteCommandModal" width="600" height="400"
+		<rich:modalPanel id="jdbcOpenExecuteCommandModal" width="800" height="600"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
@@ -187,13 +187,13 @@
 			<h:form>
 				<h:panelGrid>
 					
-					<h:inputTextarea maxlength="100" cols="90" rows="19" value="#{jdbcBean.commandToExecute}"
+					<h:inputTextarea maxlength="100" cols="150" rows="32" value="#{jdbcBean.commandToExecute}"
 	                	style="resize:none;border:1pxsolid;width:100%;" id="jdbcCommand" />
 	                	
 	                	
 	                <rich:panel style="border:none; float:right;" >
 			
-						<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('jdbcOpenExecuteCommandModal')}.hide();" 
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_close}" onclick="#{rich:component('jdbcOpenExecuteCommandModal')}.hide();" 
 							reRender="jdbcCommand, msnError" />
 							
 						<a4j:commandButton action="#{jdbcBean.executeCommand}" styleClass="greenButton" value="#{messages.button_execute}"
