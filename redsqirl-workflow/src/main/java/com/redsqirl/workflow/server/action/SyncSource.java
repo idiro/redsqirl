@@ -404,19 +404,16 @@ public class SyncSource extends AbstractSource {
 			}catch(Exception e){
 			}
 		}
-		Calendar cl = new GregorianCalendar(
-				TimeZone.getTimeZone(
-						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		Date dateAns = null;
 		SimpleDateFormat formatterOut = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		formatterOut.setTimeZone(TimeZone.getTimeZone(
 				WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 		try{
-			Date dateStr = formatterOut.parse(year+"-"+month+"-"+day+"T"+hour+":"+minute);
-			cl.setTime(dateStr);
+			dateAns = formatterOut.parse(year+"-"+month+"-"+day+"T"+hour+":"+minute);
 		}catch(Exception e){
 			logger.error(e,e);
 		}
-		return cl.getTime();
+		return dateAns;
 	}
 	
 	@Override

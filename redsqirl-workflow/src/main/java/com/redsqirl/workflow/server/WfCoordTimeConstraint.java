@@ -123,29 +123,36 @@ public class WfCoordTimeConstraint extends UnicastRemoteObject implements Coordi
 		return tc2.getFreqInMinutes() == 0 || (tc1.getFreqInMinutes() < tc2.getFreqInMinutes() && tc1.getFreqInMinutes() != 0) ? tc1 : tc2;
 	}
 	
-	public Date getStartTime(Date executionTime,int offset) throws RemoteException{
-		return getStartTime(new Date(),executionTime,offset);
+	public Date getTimeAfterReference(Date executionTime,int offset) throws RemoteException{
+		return getTimeAfterReference(new Date(),executionTime,offset);
 	}
 	
-	public Date getStartTime(Date referenceTime, Date executionTime,int offset) throws RemoteException{
+	public Date getTimeAfterReference(Date referenceTime, Date executionTime,int offset) throws RemoteException{
+		return getTime(referenceTime,executionTime,offset,true);
+	}
+	
+	public Date getTimeBeforeReference(Date referenceTime, Date executionTime,int offset) throws RemoteException{
+		return getTime(referenceTime,executionTime,offset,false);
+	}
+	
+	private Date getTime(Date referenceTime, Date executionTime,int offset, boolean after) throws RemoteException{
 		Date tmpDate = null;
-		Calendar cl = new GregorianCalendar(
-				TimeZone.getTimeZone(
-						WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_user_timezone)));
 		if(unit == null || frequency == 0){
 			throw new RemoteException("This coordinator is not periodic please configure it.");
 		}
 		if(executionTime == null){
-			cl.setTime(referenceTime);
-			tmpDate = cl.getTime();
+			tmpDate = referenceTime;
 		}else{
+			//tmpDate = new Date(approxSearch(executionTime,referenceTime,60000*getFreqInMinutes()));
 			tmpDate = executionTime;
 			while(true){
 				long search = (tmpDate.getTime() - referenceTime.getTime())/60000;
 				Date newDate = addToDate(tmpDate, (int)((search < 0 ? 1:-1) * frequency), unit);
 				long newSearch = (newDate.getTime() - referenceTime.getTime());
-				if(newSearch*search < 1 || search == 0){
-					if(newSearch > 1){
+				if(newSearch*search < 1 || newSearch == 0){
+					if(after && newSearch >= 0){
+						tmpDate  = newDate;
+					}else if(!after && newSearch <= 0){
 						tmpDate  = newDate;
 					}
 					break;

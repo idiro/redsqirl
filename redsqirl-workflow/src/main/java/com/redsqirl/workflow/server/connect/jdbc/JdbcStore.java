@@ -708,12 +708,9 @@ public class JdbcStore extends Storage {
 		}else{
 			fields = ((String[]) obj[1]);
 		}
-		if(fields != null){
+		if(fields != null && fields[0] != null){
 			ans.put(key_describe, fields[0]);
 			ans.put(key_partition, fields[1]);
-		}else{
-			ans.put(key_describe, null);
-			ans.put(key_partition, null);
 		}
 		logger.debug("desc : " + ans);
 		return ans;

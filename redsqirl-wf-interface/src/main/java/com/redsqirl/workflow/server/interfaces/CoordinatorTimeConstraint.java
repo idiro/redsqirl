@@ -125,23 +125,37 @@ public interface CoordinatorTimeConstraint extends Remote{
 	
 	
 	/**
-	 * Get the start time of the coordinator before now. 
+	 * Get the time after now. 
 	 * @param executionTime
 	 * @param offset Number of frequency unit to wait before starting the coordinator
 	 * @return The closest execution date in the past.
 	 * @throws RemoteException
 	 */
-	Date getStartTime(Date executionTime,int offset) throws RemoteException;
+	Date getTimeAfterReference(Date executionTime,int offset) throws RemoteException;
 	
 	/**
-	 * Get the start time of the coordinator before a reference time.
+	 * Get the time after the reference time.
+	 * 
+	 *  Get the time after the reference time, that execute at the executionTime and with the known periodicity
 	 * @param referenceTime
 	 * @param executionTime
 	 * @param offset
 	 * @return The closest execution date before a given date.
 	 * @throws RemoteException
 	 */
-	public Date getStartTime(Date referenceTime, Date executionTime,int offset) throws RemoteException;
+	public Date getTimeAfterReference(Date referenceTime, Date executionTime,int offset) throws RemoteException;
+	
+	/**
+	 * Get the time before the reference time.
+	 * 
+	 * Get the time before the reference time, that execute at the executionTime and with the known periodicity.
+	 * @param referenceTime
+	 * @param executionTime
+	 * @param offset
+	 * @return The closest execution date before a given date.
+	 * @throws RemoteException
+	 */
+	public Date getTimeBeforeReference(Date referenceTime, Date executionTime,int offset) throws RemoteException;
 	
 	/**
 	 * Get the end time of the coordinator.

@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -93,6 +94,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	public static final String errorFinalNodeName = "error";
 	public static final String okFinalNodeName = "end";
 	
+	protected static TimeZone oozieTimezone = TimeZone.getTimeZone("UTC");
 	public static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("YYYY");
 	public static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("MM");
 	public static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("dd");
@@ -109,6 +111,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	/** Default Constructor */
 	protected OozieXmlForkJoinPaired() throws RemoteException {
 		super();
+		try{
+			oozieTimezone = TimeZone.getTimeZone(
+					WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
+		}catch(Exception e){}
+		
+		yearDateFormat.setTimeZone(oozieTimezone);
+		monthDateFormat.setTimeZone(oozieTimezone);
+		dayDateFormat.setTimeZone(oozieTimezone);
+		hourDateFormat.setTimeZone(oozieTimezone);
+		minuteDateFormat.setTimeZone(oozieTimezone);
 	}
 
 	/**
@@ -421,20 +433,20 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			
 			
 			int freqDataset = out.getFrequency().getFrequency();
-			int extraOff = 0;
 			TimeTemplate timeDataset = out.getFrequency().getUnit();
 			if(timeDataset == null){
 				freqDataset = coordinatorTimeConstraint.getFrequency();
 				timeDataset = coordinatorTimeConstraint.getUnit();
 			}
+			logger.debug("Hour: "+hourDateFormat.format(incrDate));
 			Date ref = incrDate;
 			Date initialInstance = out.getFrequency().getInitialInstance();
 			if(initialInstance != null){
-				ref = out.getFrequency().getStartTime(incrDate, initialInstance, 0);
-				extraOff = -1;
+				ref = out.getFrequency().getTimeBeforeReference(incrDate, initialInstance, 0);
 			}
+			logger.debug("Ref Hour: "+hourDateFormat.format(ref));
 			for(int i = 0; i < out.getNumberMaterializedPath();++i){
-				Date matDate = WfCoordTimeConstraint.addToDate(new Date(ref.getTime()), (-i+extraOff+out.getOffsetPath())*freqDataset , timeDataset);
+				Date matDate = WfCoordTimeConstraint.addToDate(new Date(ref.getTime()), (-i+out.getOffsetPath())*freqDataset , timeDataset);
 				paths[i] = templateToPath(out.getPath(), matDate);
 			}
 			
@@ -524,7 +536,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		logger.debug(coordinatorTimeConstraint.toString());
 		int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
 		logger.debug(coordinatorTimeConstraint.toString());
-		coordinatorStartDate = coordinatorTimeConstraint.getStartTime(startTime,coordinator.getExecutionTime(),coordinatorStartOffset);
+		coordinatorStartDate = coordinatorTimeConstraint.getTimeAfterReference(startTime,coordinator.getExecutionTime(),coordinatorStartOffset);
 		
 		Date incrDate = new Date(coordinatorStartDate.getTime());
 		int incrInt = 0;
@@ -707,9 +719,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
 			
 			if(startDateBundle == null){
-				startDate = coordinatorTimeConstraint.getStartTime(coordinator.getExecutionTime(),coordinatorStartOffset);
+				startDate = coordinatorTimeConstraint.getTimeAfterReference(coordinator.getExecutionTime(),coordinatorStartOffset);
 			}else{
-				startDate = coordinatorTimeConstraint.getStartTime(startDateBundle,coordinator.getExecutionTime(),coordinatorStartOffset);
+				startDate = coordinatorTimeConstraint.getTimeAfterReference(startDateBundle,coordinator.getExecutionTime(),coordinatorStartOffset);
 				//startDate = WfCoordTimeConstraint.addToDate(startDateBundle, coordinatorStartOffset, coordinatorTimeConstraint.getUnit());
 			}
 
