@@ -1276,6 +1276,7 @@
 	   			alert("Please, don't forget to save "+canvasName+"!");
 	   		}else{
 	   		  //remove star if necessary
+	   		  setSaved(canvasName, true);
 		      var canvasNameStar = jQuery('#canvasNameStar-'+canvasName).text();
 		      if(canvasNameStar[canvasNameStar.length-1] == "*" ){
 		 		jQuery('#canvasNameStar-'+canvasName).text(canvasName);
