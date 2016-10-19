@@ -6,4 +6,4 @@ For compiling you will need the [Idiro repository](http://archiva.idiro.com).
 
 You can choose the hadoop version with the hadoop.version parameter, such as:
 
-    mvn clean install  -Dhadoop.version=2.6.0
+    mvn clean install  -Dhadoop.version=2.7.0
