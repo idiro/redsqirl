@@ -87,7 +87,7 @@ support@redsqirl.com
 	<repository>
 	    <id>archiva.idiro.com</id>
 	    <name>Idiro Release Repository</name>
-	    <url>http://archiva.idiro.com/repository/internal/</url>
+	    <url>https://archiva.idiro.com/repository/internal/</url>
 	</repository>
     </distributionManagement>
 
@@ -95,7 +95,7 @@ support@redsqirl.com
 	<pluginRepository>
 	    <id>archiva.idiro.com</id>
 	    <name>Idiro Release Repository</name>
-	    <url>http://archiva.idiro.com/repository/internal</url>
+	    <url>https://archiva.idiro.com/repository/internal</url>
 	</pluginRepository>
     </pluginRepositories>
 
@@ -103,7 +103,7 @@ support@redsqirl.com
 	<repository>
 	    <id>archiva.idiro.com</id>
 	    <name>Idiro Release Repository</name>
-	    <url>http://archiva.idiro.com/repository/internal</url>
+	    <url>https://archiva.idiro.com/repository/internal</url>
 	</repository>
     </repositories>
 
