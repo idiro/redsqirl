@@ -264,7 +264,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 			error = "File should have the format {name}-{version}.zip";
 		}else {
 			Map<String,String> prop = getHDFS().getProperties(pathHdfs);
-			if(prop == null || "false".equalsIgnoreCase(prop.get(Storage.key_children))){
+			if(prop == null || !"false".equalsIgnoreCase(prop.get(Storage.key_children))){
 				error = "File does not exist or is a folder.";
 			}
 			
