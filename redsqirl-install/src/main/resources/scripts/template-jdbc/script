@@ -1,0 +1,30 @@
+#!/bin/bash
+
+################################################################
+#To Change
+USER_NAME="SCHEMA_USER"
+PASSWORD=`/usr/hdp/current/hadoop-client/bin/hadoop fs -cat /user/etienne/.redsqirl/jdbc_password/password_CONNECTION`
+URL="jdbc:oracle:thin:@MYSERVER:1521:xe"
+CLASS="oracle.jdbc.OracleDriver"
+INPUT_PATH=!{INPUT_PATH}
+OUTPUT_PATH=!{OUTPUT_PATH}
+INPUT_TABLE=${INPUT_PATH:`expr match $INPUT_PATH ".*/"`}
+OUTPUT_TABLE=${OUTPUT_PATH:`expr match $OUTPUT_PATH ".*/"`}
+EXECUTE="CREATE TABLE ${OUTPUT_TABLE} AS SELECT * FROM ${INPUT_TABLE}"
+################################################################
+
+MAIN_CLASS="com.idiro.tm.SQLRunner"
+# Get jars from HDFS
+/usr/hdp/current/hadoop-client/bin/hadoop fs  -get /user/etienne/.redsqirl/jdbc_script-runner .
+
+CLASSPATH=.
+for i in ./jdbc_script-runner/*.jar ; do
+   CLASSPATH=$CLASSPATH:$i
+done
+JAVA_PATH=java
+if [ "$JAVA_HOME" != "" ]; then
+   JAVA_PATH=$JAVA_HOME/bin/java
+fi
+set -e
+exec $JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS sqlrunner  -d "$CLASS" -u "$URL" -s "$USER_NAME" -p "$PASSWORD" -e "$EXECUTE"
+
