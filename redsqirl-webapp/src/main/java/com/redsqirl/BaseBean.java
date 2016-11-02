@@ -384,11 +384,13 @@ public class BaseBean {
 			}
 			
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			if(admins != null){
+			if(admins != null && admins.length > 0){
 				for(String cur: admins){
 					admin = admin || cur.equals(user);
 					bb_logger.debug("admin user: "+cur);
 				}
+			}else{
+				admin = true;
 			}
 		}catch(Exception e){
 			bb_logger.warn("Exception in isAdmin: "+e.getMessage());

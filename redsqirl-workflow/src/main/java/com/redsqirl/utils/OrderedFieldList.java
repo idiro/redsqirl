@@ -60,7 +60,7 @@ FieldList {
 	 */
 	private static Logger logger = Logger.getLogger(OrderedFieldList.class);
 
-	public static String regexOnName = "[a-zA-Z]([A-Za-z0-9_]{0,29})";
+	public static String regexOnName = "[a-zA-Z]([A-Za-z0-9_]{0,59})";
 	public static String replaceOnName = "[^\\w]+";
 
 	/** Default constructor */
@@ -123,8 +123,8 @@ FieldList {
 		if(nameValidation){
 			if(!name.matches(regexOnName)){
 				String tmp = name.replaceAll(replaceOnName, "");
-				if(tmp.length() > 30){
-					tmp = tmp.substring(0,30);
+				if(tmp.length() > 60){
+					tmp = tmp.substring(0,60);
 				}
 				if(!tmp.matches(regexOnName)){
 					name = "FIELD_"+RandomString.getRandomName(4);

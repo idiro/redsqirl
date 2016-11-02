@@ -155,7 +155,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 				error = "Error trying to add store with empty Host Name";
 			}
 
-			if(getPort() != null && !"".equals(getPort())){
+			if(error == null && getPort() != null && !"".equals(getPort())){
 				if(NumberUtils.isNumber(getPort())){
 					values.put("port", getPort());
 				}else{
@@ -163,7 +163,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 				}
 			}
 
-			if(getPassword() != null && !"".equals(getPassword())){
+			if(error == null && getPassword() != null && !"".equals(getPassword())){
 				values.put("password", getPassword());
 
 				setSelectedSaveSsh(false);
@@ -216,9 +216,9 @@ public class SshBean extends FileSystemBean implements Serializable{
 				for(Map<String, String> map : dsa.getKnownStoreDetails()){
 					if (map.get("host name").equals(getHost())){
 						dsa.removeKnownStore(map);
-						dsa.removeStore(getHost());
 					}
 				}
+				dsa.removeStore(getHost());
 
 			}
 

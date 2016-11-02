@@ -76,7 +76,7 @@
 													<rich:columns
 														value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
 														var="column" index="ind"
-														style="border-bottom:0px;border-right:0px;">
+														style="border-bottom:0px;border-right:0px;max-width:150px;word-wrap:break-word;">
 														<f:facet name="header">
 															<h:outputText value="#{column}" />
 														</f:facet>
@@ -106,25 +106,25 @@
 										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goNumberRow}"
 										reRender="tableInteraction,newNumberRow" style="display:none;" />
 									<br /> <br />
-									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+									<a4j:commandButton styleClass="greenButton" style="width:50px;"
 										value="#{messages.button_first}"
 										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goFirst}"
 										reRender="tableInteraction" onclick="this.disabled=true"
 										oncomplete="this.disabled=false;" />
 									<br />
-									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+									<a4j:commandButton styleClass="greenButton" style="width:50px;"
 										value="#{messages.button_up}"
 										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goUp}"
 										reRender="tableInteraction" onclick="this.disabled=true"
 										oncomplete="this.disabled=false;" />
 									<br />
-									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+									<a4j:commandButton styleClass="greenButton" style="width:50px;"
 										value="#{messages.button_down}"
 										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goDown}"
 										reRender="tableInteraction" onclick="this.disabled=true"
 										oncomplete="this.disabled=false;" />
 									<br />
-									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+									<a4j:commandButton styleClass="greenButton" style="width:50px;"
 										value="#{messages.button_last}"
 										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goLast}"
 										reRender="tableInteraction" onclick="this.disabled=true"
@@ -185,7 +185,7 @@
 								<rich:columns
 									value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
 									var="column" index="ind"
-									style="border-bottom:0px;border-right:0px;">
+									style="border-bottom:0px;border-right:0px;max-width:150px;word-wrap:break-word;">
 									<f:facet name="header">
 										<h:outputText value="#{column}" />
 									</f:facet>

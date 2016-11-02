@@ -44,18 +44,15 @@
 					<h:graphicImage id="jdbcbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.JdbcInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{jdbcBean.goPrevious}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
-					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{jdbcBean.goPrevious}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage id="jdbcbtUndo" value="../image/icons/button-previous.gif" title="#{messages.JdbcInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{jdbcBean.goNext}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
-					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{jdbcBean.goNext}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage id="jdbcbtRedo" value="../image/icons/button-next.gif" title="#{messages.JdbcInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{jdbcBean.goUp}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();"
-					rendered="#{not empty jdbcBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{jdbcBean.goUp}" reRender="jdbcpath,jdbcfs" oncomplete="createFilterOnChangeTriggerJdbc();" >
 					<h:graphicImage id="jdbcgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				

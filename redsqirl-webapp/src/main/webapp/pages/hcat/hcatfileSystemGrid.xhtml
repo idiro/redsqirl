@@ -44,18 +44,15 @@
 					<h:graphicImage id="hcatbtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HcatInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hcatBean.goPrevious}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
-					rendered="#{not empty hcatBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{hcatBean.goPrevious}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage id="hcatbtUndo" value="../image/icons/button-previous.gif" title="#{messages.HcatInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hcatBean.goNext}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
-					rendered="#{not empty hcatBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{hcatBean.goNext}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage id="hcatbtRedo" value="../image/icons/button-next.gif" title="#{messages.HcatInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hcatBean.goUp}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();"
-					rendered="#{not empty hcatBean.tableGrid.rows}" >
+				<a4j:commandLink action="#{hcatBean.goUp}" reRender="hcatpath,hcatfs" oncomplete="createFilterOnChangeTriggerHCat();" >
 					<h:graphicImage id="hcatgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				

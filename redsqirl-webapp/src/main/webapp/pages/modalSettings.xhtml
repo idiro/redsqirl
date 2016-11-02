@@ -112,10 +112,12 @@
 			     					<h:inputText title="#{settingsBean.s.properties[obj].description}" value="#{settingsBean.s.properties[obj].sysValue}" 
 			     						style="background-color:#FF3333;border: 1px solid;" 
 			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
-			     						disabled="#{!settingsBean.canEdit}" />
+			     						disabled="#{!settingsBean.canEdit}" 
+			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
 			     					<h:inputSecret value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;" 
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
-			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" />
+			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
+			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existSysProperty or settingsBean.template == 'Y')  }" />
 			     						
@@ -156,10 +158,12 @@
 			     					<h:graphicImage url="../image/icons/username_icon.gif" style="width:20px;vertical-align:-6px;" title="#{messages.label_user}" rendered="#{settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY'}" />
 			     					<h:inputText id="user_core_prop_password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
 			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
-			     						title="#{settingsBean.s.properties[obj].description}" />
+			     						title="#{settingsBean.s.properties[obj].description}" 
+			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
 			     					<h:inputSecret id="user_core_prop_non_password" type="password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
-			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" />
+			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
+			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existUserProperty  or settingsBean.template == 'Y') }" />
 			     					<br/>
@@ -223,7 +227,7 @@
 		    &#32;&#32;
 		    <a4j:commandButton value="#{messages.button_apply}" action="#{settingsBean.applySettings}" styleClass="greenButton" reRender="pathSetting, listSubMenuSettings, listSettingSettings" />
 		    &#32;&#32;
-		    <a4j:commandButton value="#{messages.button_ok}" action="#{settingsBean.saveSettings}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();" />
+		    <a4j:commandButton value="#{messages.button_ok}" action="#{settingsBean.saveSettings}" styleClass="greenButton" oncomplete="#{rich:component('modalSettings')}.hide();" id="btSettingsApply" />
 	    </div>
     
 </h:form>
