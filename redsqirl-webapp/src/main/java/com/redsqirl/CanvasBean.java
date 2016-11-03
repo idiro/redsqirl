@@ -2720,7 +2720,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 									tooltip.append("<tr>");
 								}
 								tooltip.append("<td>" + index + "</td>");
-								tooltip.append("<td>" + name + "</td>");
+								tooltip.append("<td style='max-width:200px;word-wrap:break-word;' >" + name + "</td>");
 								tooltip.append("<td>"
 										+ outputCur.getFields()
 										.getFieldType(name)
