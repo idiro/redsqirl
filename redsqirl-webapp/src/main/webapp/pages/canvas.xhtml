@@ -475,6 +475,8 @@
 		    		 
 		    		 jQuery('#flowchart-canvas-1').css('position', 'fixed');
 		    		 
+		    		 jQuery('.messageerro').css('word-break', 'break-word');
+		    		 
 				 //}
 
 	    		 jQuery("#tabsFooter").find("a").click(function() {
@@ -4071,7 +4073,7 @@
 			<rich:messages id="msg" globalOnly="false" layout="list"
 				styleClass="message" infoClass="messageok" errorClass="messageerro"
 				warnClass="messagealert" showDetail="true" showSummary="false"
-				ajaxRendered="false" style="word-wrap:break-word;" />
+				ajaxRendered="false" />
 
 			<a4j:commandButton styleClass="greenButton"
 				value="#{messages.button_ok}"
