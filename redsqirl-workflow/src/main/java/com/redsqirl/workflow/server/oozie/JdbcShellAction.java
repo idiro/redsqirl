@@ -84,7 +84,7 @@ public class JdbcShellAction  extends ShellAction {
 		content += "FILE=\""+sqlFile.getName()+"\"\n\n";
 		content += getSedCommand("$FILE");
 		content += "\n\n";
-		content += "MAIN_CLASS=\"com.idiro.ScriptRunnerMain\"\n";
+		content += "MAIN_CLASS=\"com.idiro.tm.SQLRunner\"\n";
 		content += "\n\n\n";
 		
 		String hdfsJars=writeJdbcJars();
@@ -102,11 +102,12 @@ public class JdbcShellAction  extends ShellAction {
 		content += "fi\n";
 		content += "set -e\n";
 		content += "exec $JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS"
-				+" \"$CLASS\""
-				+" \"$URL\""
-				+" \"$USER_NAME\""
-				+" \"$PASSWORD\""
-				+" \"$FILE\""
+				+" sqlrunner "
+				+" -d \"$CLASS\""
+				+" -u \"$URL\""
+				+" -s \"$USER_NAME\""
+				+" -p \"$PASSWORD\""
+				+" -f \"$FILE\""
 				+"\n";
 		return content;
 	}
@@ -122,8 +123,13 @@ public class JdbcShellAction  extends ShellAction {
 				fs.mkdirs(scriptRunnerPath);
 			}
 			//Copy Run Jar
-			String scriptRunnerVersion = "1.1";
-			String scriptRunnerJarStr = "script-runner-"+scriptRunnerVersion+".jar";
+			String scriptRunnerVersion = "1.2";
+			String stringRunnerClassifier= "jar-with-dependencies";
+			String scriptRunnerJarStr = "script-runner-"+scriptRunnerVersion;
+			if(!stringRunnerClassifier.isEmpty()){
+				scriptRunnerJarStr+="-"+stringRunnerClassifier;
+			}
+			scriptRunnerJarStr+=".jar";
 			Path scriptRunnerJar = new Path(scriptRunnerPath,scriptRunnerJarStr);
 			if(!fs.exists(scriptRunnerJar)){
 				String classPath = System.getProperty("java.class.path");

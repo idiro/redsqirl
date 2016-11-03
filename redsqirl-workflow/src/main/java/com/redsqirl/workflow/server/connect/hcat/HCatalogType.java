@@ -531,7 +531,7 @@ public class HCatalogType extends DataOutput{
 		if(lines != null){
 			Iterator<String> it = lines.iterator();
 			while(it.hasNext()){
-				String[] line = it.next().split("\001");
+				String[] line = it.next().split("\001",-1);
 				List<String> fieldNames = getFields().getFieldNames(); 
 				if(fieldNames.size() == line.length){
 					Map<String,String> cur = new LinkedHashMap<String,String>();
