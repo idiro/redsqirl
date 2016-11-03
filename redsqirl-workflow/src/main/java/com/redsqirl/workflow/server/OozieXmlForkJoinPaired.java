@@ -921,6 +921,16 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			//Define Controls
 			Element controls = doc.createElement("controls");
 			{
+				Element timeout = doc.createElement("timeout");
+				timeout.appendChild(doc.createTextNode("-1"));
+				controls.appendChild(timeout);
+			}
+			{
+				Element concurrency = doc.createElement("concurrency");
+				concurrency.appendChild(doc.createTextNode("1"));
+				controls.appendChild(concurrency);
+			}
+			{
 				Element execution = doc.createElement("execution");
 				if(inputNb > 0){
 					execution.appendChild(doc.createTextNode("FIFO"));
@@ -934,16 +944,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				throttle.appendChild(doc.createTextNode("12"));
 				controls.appendChild(throttle);
 			}
-			/*{
-			Element concurrency = doc.createElement("concurrency");
-			concurrency.appendChild(doc.createTextNode("1"));
-			controls.appendChild(concurrency);
-		}
-		{
-			Element timeout = doc.createElement("timeout");
-			timeout.appendChild(doc.createTextNode("-1"));
-			controls.appendChild(timeout);
-		}*/
 			rootElement.appendChild(controls);
 			
 			if(datasets.hasChildNodes()){
