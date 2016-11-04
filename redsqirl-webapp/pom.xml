@@ -32,15 +32,15 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro.redsqirl</groupId>
+	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
     </parent>
 
-    <groupId>idiro.redsqirl</groupId>
+    <groupId>com.idiro.redsqirl</groupId>
     <artifactId>redsqirl-webapp</artifactId>
     <packaging>war</packaging>
-    <version>${hadoop.version}-1.0</version>
+    <version>${hadoop.version}-1.1</version>
     <name>Red Sqirl - Web Application</name>
 
 
@@ -171,7 +171,7 @@ support@redsqirl.com
 
 	<!-- Idiro Dep -->
 	<dependency>
-	    <groupId>idiro.redsqirl</groupId>
+	    <groupId>com.idiro.redsqirl</groupId>
 	    <artifactId>redsqirl-wf-interface</artifactId>
 	    <version>${project.version}</version>
 	    <exclusions>

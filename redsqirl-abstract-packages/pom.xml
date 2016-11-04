@@ -25,16 +25,16 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro.redsqirl</groupId>
+	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
     </parent>
 
-    <groupId>idiro.redsqirl</groupId>
+    <groupId>com.idiro.redsqirl</groupId>
     <artifactId>redsqirl-abstract-packages</artifactId>
     <name>Red Sqirl - Abstract Packages</name>
     <packaging>pom</packaging>
-    <version>${hadoop.version}-1.0</version>
+    <version>${hadoop.version}-1.1</version>
 
     <modules>
 	<module>redsqirl-base-sql</module>
@@ -73,7 +73,7 @@ support@redsqirl.com
 
     <dependencies>
 	<dependency>
-	    <groupId>idiro.redsqirl</groupId>
+	    <groupId>com.idiro.redsqirl</groupId>
 	    <artifactId>redsqirl-workflow</artifactId>
 	    <version>${project.version}</version>
 	</dependency>
