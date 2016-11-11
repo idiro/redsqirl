@@ -1355,7 +1355,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public String getCheckIfSchedule() throws RemoteException {
 		DataFlow df = getDf();
-		if(df.isSchedule()){
+		if(df != null && df.isSchedule()){
 			setSchedule(true);
 			return "true";
 		}else{

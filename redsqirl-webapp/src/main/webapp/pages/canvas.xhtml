@@ -2011,7 +2011,7 @@
                     
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
-					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfScheduleBeforeRun}"
+					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),data);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },2000); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
