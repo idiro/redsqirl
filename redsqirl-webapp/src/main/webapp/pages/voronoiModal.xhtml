@@ -20,6 +20,20 @@ function openVoronoihPopUp(){
 		jQuery('[id$="voronoiSchedulingCombobox"]').attr('disabled','true');
 		jQuery('[id$="voronoiPeriodic"]').attr('readonly','readonly');
 	}
+	
+	if(jQuery("[id$='clock1']").children().attr('class') != "jcgmt-lbl"){
+		var aux  = jQuery('[id$="oozieTime"]').val();
+		console.log(aux);
+		var d = moment().tz(aux);
+		console.log(d.utcOffset());
+		
+		var d1 = d.toDate();
+		console.log(d1);
+		
+		jQuery('#clock1').jClocksGMT({offset: 0, title: 'Local Time'});
+		jQuery('#clock2').jClocksGMT({offset: (d.utcOffset()/60), title: 'Oozie Time'});
+	}
+	
 }
 
 function selectedScheduling(){
@@ -48,7 +62,8 @@ function selectedScheduling(){
 
 
 	<h:form>
-	
+
+		<h:inputHidden value="#{voronoiBean.oozieTime}" id="oozieTime" />
 	
 		<a4j:region>
 	        <a4j:jsFunction name="openVoronoiEditorModal" action="#{voronoiBean.openVoronoiEditorModal}" value=". . ."  
@@ -72,11 +87,16 @@ function selectedScheduling(){
 				</tr>
 			</table>
 			
-			<h1>
+			<h1 style="padding-top:0%">
 			<h:selectBooleanCheckbox id="selectedScheduling" value="#{voronoiBean.scheduling}" title="#{messages.title_voronoi_scheduling}" onclick="selectedScheduling();" />
 			<h:outputText value="#{messages.label_voronoi_scheduling}" title="#{messages.title_voronoi_scheduling}" />
 			</h1>
 			<center><h:outputText value="#{messages.label_voronoi_scheduling_desc}" title="#{messages.title_voronoi_scheduling_desc}"/></center>
+			
+			<div style="text-align: center;display: inline-flex;">
+				<div id="clock1"></div>
+				<div id="clock2"></div>
+			</div>
 			
 			<table>
 				<tr>
@@ -126,7 +146,9 @@ function selectedScheduling(){
 			</table>
 			
 			
-			 <h1><h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/></h1>
+			 <h1 style="padding-top:0%">
+			 <h:outputText value="#{messages.label_voronoi_variables}" title="#{messages.title_voronoi_variables}"/>
+			 </h1>
 			 
 			 <h:outputText value="#{messages.label_voronoi_variables_desc}"/>
 			 <br/>
@@ -135,6 +157,9 @@ function selectedScheduling(){
             	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 			</a4j:commandLink>
 			
+			
+			<div style="height:170px;overflow:auto;">
+						
 			<rich:dataTable id="tableVoronoi" value="#{voronoiBean.tableList}" var="rowItem" rowKeyVar="rowNb" width="100%" 
 				style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" 
 	            onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
@@ -193,11 +218,7 @@ function selectedScheduling(){
              
          	</rich:dataTable>
 			
-			
-			
-			
-			
-			
+			</div>
 			
 		
 		</rich:panel>

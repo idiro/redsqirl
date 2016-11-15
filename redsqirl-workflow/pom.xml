@@ -32,18 +32,18 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro.redsqirl</groupId>
+	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>idiro.redsqirl</groupId>
+    <groupId>com.idiro.redsqirl</groupId>
     <artifactId>redsqirl-workflow</artifactId>
     <packaging>jar</packaging>
     <name>Red Sqirl - Workflow</name>
     <description>Programme to interact with a Hadoop cluster</description>
-    <version>${hadoop.version}-1.0</version>
+    <version>${hadoop.version}-1.1</version>
 
     <distributionManagement>
 	<repository>
@@ -236,7 +236,7 @@ support@redsqirl.com
 	    <scope>compile</scope>
 	</dependency>
 	<dependency>
-	    <groupId>idiro.redsqirl</groupId>
+	    <groupId>com.idiro.redsqirl</groupId>
 	    <artifactId>redsqirl-wf-interface</artifactId>
 	    <version>${project.version}</version>
 	    <scope>compile</scope>

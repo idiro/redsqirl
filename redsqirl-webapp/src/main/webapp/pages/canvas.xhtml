@@ -12,12 +12,10 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 <head>
-<link rel="icon" type="image/gif"
-	href="../image/logo_redsqirl_favicon.gif" />
-<link rel="stylesheet" type="text/css"
-	href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css"
-	href="#{facesContext.externalContext.requestContextPath}/css/redsqirl.css" />
+<link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/redsqirl.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jClocksGMT.css" />
 
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js" type="text/javascript" />
@@ -33,7 +31,10 @@
 <script	src="#{facesContext.externalContext.requestContextPath}/js/plusTabs.js"	type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.hotkeys.js" type="text/javascript" />
-	
+<script src="#{facesContext.externalContext.requestContextPath}/js/jClocksGMT.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery.rotate.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/moment.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/moment-timezone-with-data-2010-2020.js" type="text/javascript" />
 	
 <script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.core.js" type="text/javascript" />
 <script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.ajax.js" type="text/javascript" />
@@ -2011,7 +2012,7 @@
                     
 				<a4j:jsFunction name="setWorkflow"
 					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
-					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfScheduleBeforeRun}"
+					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),data);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },2000); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
@@ -2631,7 +2632,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openVoronoiModal" action="#{voronoiBean.openVoronoi}" oncomplete="#{rich:component('voronoiModal')}.show();openVoronoihPopUp();"
-					reRender="selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic,tableVoronoi">
+					reRender="oozieTime, selectedScheduling,modalVoronoi,voronoiName,voronoiExecutionTime,voronoiScheduling,voronoiPeriodic,tableVoronoi">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>

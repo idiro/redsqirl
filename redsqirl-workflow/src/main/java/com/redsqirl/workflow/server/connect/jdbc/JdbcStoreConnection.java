@@ -177,7 +177,11 @@ public class JdbcStoreConnection extends JdbcConnection{
 			List<String> row = cells.get(i);
 			String rowStr = "|";
 			for (int j = 0; j < row.size(); j++) {
-				rowStr += StringUtils.rightPad(row.get(j), sizes.get(j))+"|";
+				String aux = row.get(j);
+				if(aux == null){
+					aux = "null";
+				}
+				rowStr += StringUtils.rightPad(aux, sizes.get(j))+"|";
 			}
 			// logger.info("displaySelect -" + newLine + "-");
 			ans.add(rowStr);

@@ -423,9 +423,30 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		displayErrorMessage(error,"DELETESUBWORKFLOW");
 	}
 	
+	public void applyEdit() throws RemoteException {
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String newModelName = params.get("modelName");
+		String modelVersion = params.get("modelVersion");
+		String comment = params.get("modelComment");
+		
+		String error = null;
+		error = renameModel(newModelName);
+		error = updateModelVersion(modelVersion);
+		updateModelComment(comment);
+		
+		displayErrorMessage(error, "APPLYEDIT");
+	}
+	
 	public void renameModel() throws RemoteException {
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String newModelName = params.get("modelName");
+		String error = renameModel(newModelName);
+		displayErrorMessage(error, "RENAMEMODEL");
+	}
+	
+	public String renameModel(String newModelName) throws RemoteException {
+		
 		String error = null;
 		ModelInt newModel = null;
 		if(rsModel.isSystem()){
@@ -456,7 +477,8 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 		}else{
 			error = "Model already exists.";
 		}
-		displayErrorMessage(error, "RENAMEMODEL");
+		
+		return error;
 	}
 
 
@@ -704,8 +726,13 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 	
 	public void updateModelComment() throws RemoteException{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		comment = params.get("modelComment");
+		String comment = params.get("modelComment");
+		updateModelComment(comment);
+	}
+	
+	public void updateModelComment(String comment) throws RemoteException{
 		logger.info("updateModelComment: "+comment);
+		setComment(comment);
 		rsModel.setComment(comment);
 		if(rsModel.isSystem()){
 			calcSystemModels();
@@ -716,9 +743,16 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 
 	public void updateModelVersion() throws RemoteException{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String modelVersion = params.get("modelVersion");
+		String error = updateModelVersion(modelVersion);
+		displayErrorMessage(error, "UPDATEMODELVERSION");
+	}
+	
+	public String updateModelVersion(String modelVersion) throws RemoteException{
+		
 		String error = null;
 		String regex="[0-9]+(\\.{0,1}[0-9]+)*";
-		String modelVersion = params.get("modelVersion");
+		
 		if(!modelVersion.matches(regex)){
 			error = "A version should only include number with optional dots between them.";
 		}else{
@@ -731,7 +765,7 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 				calcUserModels();
 			}
 		}
-		displayErrorMessage(error, "UPDATEMODELVERSION");
+		return error;
 	}
 	
 	public void updateSubWorkflowFromModel() throws RemoteException{

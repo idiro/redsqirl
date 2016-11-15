@@ -32,13 +32,13 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro.redsqirl</groupId>
+	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl-abstract-packages</artifactId>
-	<version>${hadoop.version}-1.0</version>
+	<version>${hadoop.version}-1.1</version>
     </parent>
 
     <artifactId>redsqirl-base-sql</artifactId>
-    <version>${hadoop.version}-1.0</version>
+    <version>${hadoop.version}-1.1</version>
 
     <packaging>jar</packaging>
     <name>Red Sqirl - Sql Base Package</name>
@@ -160,7 +160,7 @@ support@redsqirl.com
     <dependencies>
 
 	<dependency>
-	    <groupId>idiro.redsqirl</groupId>
+	    <groupId>com.idiro.redsqirl</groupId>
 	    <artifactId>redsqirl-workflow</artifactId>
 	    <version>${project.version}</version>
 	</dependency>

@@ -27,17 +27,17 @@ support@redsqirl.com
     </properties>
 
     <parent>
-	<groupId>idiro.redsqirl</groupId>
+	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
     </parent>
 
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>idiro.redsqirl</groupId>
+    <groupId>com.idiro.redsqirl</groupId>
     <artifactId>redsqirl-wf-interface</artifactId>
     <packaging>jar</packaging>
-    <version>${hadoop.version}-1.0</version>
+    <version>${hadoop.version}-1.1</version>
     <name>Red Sqirl - Interface</name>
     <description>Provide the interface used by Red Sqirl app</description>
 
