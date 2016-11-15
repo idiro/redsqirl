@@ -184,6 +184,8 @@
 									rendered="#{item.row[0] == 'database'}" styleClass="btfileSystem" />
 								<h:graphicImage value="../image/icons/icon-table.gif" title='#{messages.HdfsInterface_properties_help}' 
 									rendered="#{item.row[0] == 'table' || item.row[0] == 'partition'}" styleClass="btfileSystem" />
+								<h:graphicImage value="../image/icons/icon-view.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{item.row[0] == 'view'}" styleClass="btfileSystem" />
 							</rich:column>
 					
 							<rich:column sortBy="#{item.row[1]}"

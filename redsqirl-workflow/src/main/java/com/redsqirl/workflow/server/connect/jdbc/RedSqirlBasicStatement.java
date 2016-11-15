@@ -53,10 +53,20 @@ public class RedSqirlBasicStatement implements BasicStatement {
 	public String showAllTables() {
 		return qm.getQuery(dictionaryName, Query.LIST_TABLES);
 	}
+	
+	@Override
+	public String showAllViews() {
+		return qm.getQuery(dictionaryName, Query.LIST_VIEWS);
+	}
 
 	@Override
 	public String deleteTable(String tableName) {
-		return qm.getQuery(dictionaryName, Query.DROP,new String[]{tableName});
+		return qm.getQuery(dictionaryName, Query.DROP_TABLE,new String[]{tableName});
+	}
+	
+	@Override
+	public String deleteView(String viewName) {
+		return qm.getQuery(dictionaryName, Query.DROP_VIEW,new String[]{viewName});
 	}
 	
 	public String truncateTable(String tableName) {

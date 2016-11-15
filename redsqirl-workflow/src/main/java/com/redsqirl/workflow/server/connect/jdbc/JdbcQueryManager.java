@@ -39,9 +39,11 @@ public class JdbcQueryManager {
 	public enum Query{
 		SELECT,
 		LIST_TABLES,
+		LIST_VIEWS,
 		INSERT_VALUES,
 		INSERT_SELECT,
-		DROP,
+		DROP_TABLE,
+		DROP_VIEW,
 		CREATE,
 		DESCRIBE,
 		TRUNCATE

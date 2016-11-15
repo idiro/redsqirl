@@ -36,7 +36,8 @@ public class OracleConfFile extends DbConfFile{
 
 		ans +=JdbcQueryManager.Query.CREATE.toString()+":CREATE TABLE {0} ({1})\n";
 		ans +=JdbcQueryManager.Query.DESCRIBE.toString()+":SELECT COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE OWNER||'.'||TABLE_NAME = '{0}' OR (OWNER = USER AND TABLE_NAME = '{0}') ORDER BY COLUMN_ID\n";
-		ans +=JdbcQueryManager.Query.DROP.toString()+":DROP TABLE {0}\n";
+		ans +=JdbcQueryManager.Query.DROP_TABLE.toString()+":DROP TABLE {0}\n";
+		ans +=JdbcQueryManager.Query.DROP_VIEW.toString()+":DROP VIEW {0}\n";
 		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} ({1})\n";
 		ans +=JdbcQueryManager.Query.INSERT_VALUES.toString()+":INSERT INTO {0} ({1}) VALUES ({2})\n";
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":"
@@ -47,6 +48,7 @@ public class OracleConfFile extends DbConfFile{
 		+" union "
 		+" select table_name from user_tables "
 		+" ORDER BY TABLE_NAME\n";
+		ans +=JdbcQueryManager.Query.LIST_VIEWS.toString()+":select view_name from user_views ORDER BY view_name\n";
 		ans +=JdbcQueryManager.Query.SELECT.toString()+":SELECT * FROM {0} WHERE ROWNUM <= {1}\n";
 		ans +=JdbcQueryManager.Query.TRUNCATE.toString()+":TRUNCATE TABLE {0}\n";
 		

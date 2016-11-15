@@ -21,10 +21,6 @@ package com.redsqirl.workflow.server.connect.jdbc;
 
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -35,12 +31,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -54,7 +49,6 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.DSParamProperty;
 import com.redsqirl.workflow.server.connect.Storage;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.jdbc.DbConfFile;
 import com.redsqirl.workflow.utils.jdbc.GenericConfFile;
@@ -121,6 +115,11 @@ public class JdbcStore extends Storage {
 	/***/
 	protected static long updateConnections = 0;
 
+
+	public enum SelectableType{
+		TABLE,
+		VIEW
+	}
 	
 	/**
 	 * Constructor
@@ -344,8 +343,13 @@ public class JdbcStore extends Storage {
 			logger.info("Delete object " + path);
 			String[] connectionAndTable = getConnectionAndTable(path);
 			try {
-				getConnection(connectionAndTable[0]).deleteTable(connectionAndTable[1]);
-				getConnection(connectionAndTable[0]).listTables().remove(connectionAndTable[1]);
+				Map<String,SelectableType> selectables = getConnection(connectionAndTable[0]).listSelectables();
+				if(SelectableType.VIEW.equals(selectables.get(connectionAndTable[1]))){
+					getConnection(connectionAndTable[0]).deleteView(connectionAndTable[1]);
+				}else{
+					getConnection(connectionAndTable[0]).deleteTable(connectionAndTable[1]);
+				}
+				selectables.remove(connectionAndTable[1]);
 			} catch (Exception e) {
 				ok = false;
 				error = LanguageManagerWF.getText("jdbcstore.changetable",
@@ -420,7 +424,7 @@ public class JdbcStore extends Storage {
 			if (path.equals("/")) {
 				updateConnections = 0;
 			}else if (connectionAndTable.length == 1){
-				getConnection(connectionAndTable[0]).updateTables = 0;
+				getConnection(connectionAndTable[0]).updateSelectables = 0;
 				Iterator<String> cachDescIt = cachDesc.keySet().iterator();
 				while(cachDescIt.hasNext()){
 					String key = cachDescIt.next();
@@ -521,13 +525,23 @@ public class JdbcStore extends Storage {
 	 */
 	public Map<String, String> getPropertiesPathExist(String path)
 			throws RemoteException {
+		return getPropertiesPathExist(path,null);
+	}
+
+	
+	public Map<String, String> getPropertiesPathExist(String path,SelectableType type)
+			throws RemoteException {
 		if(path == null){
 			return null;
 		}
 		String[] connectionAndTable = getConnectionAndTable(path);
 		Map<String, String> ans = new HashMap<String, String>();
 		if(connectionAndTable.length == 2){
-			ans.put(key_type, "table");
+			if(type == null){
+				ans.put(key_type, "table");
+			}else{
+				ans.put(key_type, type.toString().toLowerCase());
+			}
 			ans.put(key_children, "false");
 		}else{
 			ans.put(key_type, "connection");
@@ -585,7 +599,7 @@ public class JdbcStore extends Storage {
 			} else if (connectionAndTable.length == 1 ||connectionAndTable.length == 2) {
 				ok = listConnections().contains(connectionAndTable[0]);
 				if (connectionAndTable.length == 2 && ok){
-					ok = getConnection(connectionAndTable[0]).listTables().contains(connectionAndTable[1]);
+					ok = getConnection(connectionAndTable[0]).listSelectables().keySet().contains(connectionAndTable[1]);
 				}
 			} else{
 				logger.warn("Irregular path: "+path);
@@ -944,6 +958,7 @@ public class JdbcStore extends Storage {
 		
 		String[] connectionAndTable = getConnectionAndTable(path);
 		logger.info("getting table and partitions");
+		Map<String,SelectableType> listSelectables = null;
 		Iterator<String> it = null;
 		if(path.equals("/") || path.isEmpty()){
 			it = listConnections().iterator();
@@ -951,7 +966,8 @@ public class JdbcStore extends Storage {
 			if(connectionAndTable.length > 1){
 				return null;
 			}
-			it = getConnection(connectionAndTable[0]).listTables().iterator();
+			listSelectables = getConnection(connectionAndTable[0]).listSelectables(); 
+			it = listSelectables.keySet().iterator();
 		}
 		while (it.hasNext()) {
 			String table = it.next();
@@ -959,8 +975,13 @@ public class JdbcStore extends Storage {
 			if(path.equals("/") || path.isEmpty()){
 				prop = getPropertiesPathExist("/"+table);
 			}else{
-				prop = getPropertiesPathExist("/"+connectionAndTable[0]+"/"
+				if(listSelectables != null){
+					prop = getPropertiesPathExist("/"+connectionAndTable[0]+"/"
+							+ table,listSelectables.get(table));
+				}else{
+					prop = getPropertiesPathExist("/"+connectionAndTable[0]+"/"
 						+ table);
+				}
 			}
 			
 			if (prop == null) {

@@ -25,8 +25,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,9 +41,9 @@ import com.idiro.utils.db.JdbcDetails;
 public class JdbcStoreConnection extends JdbcConnection{
 
 	private static Logger logger = Logger.getLogger(JdbcStoreConnection.class);
-	protected List<String> tables;
+	protected Map<String,JdbcStore.SelectableType> selectables;
 
-	protected long updateTables = 0;
+	protected long updateSelectables = 0;
 	protected boolean listing = false;
 	private int errorInARow = 0;
 	
@@ -65,18 +68,30 @@ public class JdbcStoreConnection extends JdbcConnection{
 		setMaxNumberOfQueryRunningInParallel(1);
 	}
 
-	public final List<String> listTables() throws SQLException, RemoteException {
-		if (tables == null || updateTables == 0) {
+	public final Map<String,JdbcStore.SelectableType> listSelectables() throws SQLException, RemoteException {
+		if (selectables == null || updateSelectables == 0) {
+			selectables = new LinkedHashMap<String,JdbcStore.SelectableType>();
 			listing = true;
 			logger.debug("Refresh table list");
-			tables = execListTables();
-			updateTables = System.currentTimeMillis();
+			try{
+				Iterator<String> it = execListTables().iterator();
+				while(it.hasNext()){
+					selectables.put(it.next(),JdbcStore.SelectableType.TABLE);
+				}
+				it = execListViews().iterator();
+				while(it.hasNext()){
+					selectables.put(it.next(),JdbcStore.SelectableType.VIEW);
+				}
+			}catch(Exception e){
+				logger.debug(e,e);
+			}
+			updateSelectables = System.currentTimeMillis();
 			listing = false;
 		}
-		if(tables != null && logger.isDebugEnabled()){
-			logger.debug("tables on "+connectionDetails.getDburl()+": "+tables.toString());
+		if(selectables != null && logger.isDebugEnabled()){
+			logger.debug("tables on "+connectionDetails.getDburl()+": "+selectables.toString());
 		}
-		return tables;
+		return selectables;
 	}
 	
 	protected final List<String> execListTables() throws SQLException, RemoteException {
@@ -94,6 +109,26 @@ public class JdbcStoreConnection extends JdbcConnection{
 				results.add(rs.getString(1).trim().toUpperCase());
 			}
 			cleanOldStatement(rs);
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		
+		return results;
+	}
+	
+	protected final List<String> execListViews() throws SQLException, RemoteException {
+		
+		List<String> results = new ArrayList<String>();
+		try{
+			String query = getBs().showAllViews();
+			ResultSet rs = null;
+			if(query !=  null){
+				rs = executeQuery(query);
+				while (rs.next()) {
+					results.add(rs.getString(1).trim().toUpperCase());
+				}
+				cleanOldStatement(rs);
+			}
 		}catch(Exception e){
 			logger.error(e,e);
 		}
@@ -246,7 +281,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 	}
 	
 	public void resetUpdateTables(){
-		updateTables = 0;
+		updateSelectables = 0;
 	}
 	
 	public String getConnType() throws RemoteException{

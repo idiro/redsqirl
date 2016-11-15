@@ -123,7 +123,7 @@ public class JdbcShellAction  extends ShellAction {
 				fs.mkdirs(scriptRunnerPath);
 			}
 			//Copy Run Jar
-			String scriptRunnerVersion = "1.2";
+			String scriptRunnerVersion = "1.3";
 			String stringRunnerClassifier= "jar-with-dependencies";
 			String scriptRunnerJarStr = "script-runner-"+scriptRunnerVersion;
 			if(!stringRunnerClassifier.isEmpty()){
