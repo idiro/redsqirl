@@ -24,10 +24,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -38,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.redsqirl.dynamictable.VoronoiType;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.TimeTemplate;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
@@ -59,6 +63,8 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	private String[] undoRedo;
 	private Integer periodic;
 	private Boolean scheduling;
+	
+	private String oozieTime;
 
 
 	public void openVoronoi() throws RemoteException{
@@ -122,6 +128,9 @@ public class VoronoiBean extends VoronoiBeanAbs {
 			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
 		}*/
 
+		Calendar cl = new GregorianCalendar(TimeZone.getTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		setOozieTime(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
+		logger.info(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 	}
 
 
@@ -376,5 +385,11 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	public void setScheduling(Boolean scheduling) {
 		this.scheduling = scheduling;
 	}
-
+	public String getOozieTime() {
+		return oozieTime;
+	}
+	public void setOozieTime(String oozieTime) {
+		this.oozieTime = oozieTime;
+	}
+	
 }

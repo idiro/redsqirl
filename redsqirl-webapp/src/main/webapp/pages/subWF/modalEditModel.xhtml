@@ -103,6 +103,14 @@
 				oncomplete="if(#{requestScope['msnError'] == null}){hideEditModelVersion();}">
 				<a4j:actionparam  name="modelVersion"  />
 			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="applyEdit"
+				reRender="msnError, modelNameOutput, modelsList"
+				action="#{modelBean.applyEdit}">
+				<a4j:actionparam  name="modelName" />
+				<a4j:actionparam  name="modelComment" />
+				<a4j:actionparam  name="modelVersion" />
+			</a4j:jsFunction>
 
 		</a4j:region>
 
@@ -173,7 +181,7 @@
 		<h:inputText id="modelCommentInput" style="display:none"
 			value="#{modelBean.comment}"
 			reRender="modelCommentOutput"
-			onkeypress="if(event.keyCode == 13){event.preventDefault();updateModelComment(getCommentValueJS())}" />
+			onkeypress="if(event.keyCode == 13){event.preventDefault();updateModelComment(getCommentValueJS());}" />
 		<a4j:commandLink id="modelCommentEditBefore"
 			onclick="showEditModelComment()">
 			<h:graphicImage url="../image/icons/button-pencil02.gif"
@@ -281,8 +289,12 @@
 
 		<br/><br/>
 
-		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
-			<a4j:commandButton styleClass="greenButton" value="ok" onclick="#{rich:component('modalEditModel')}.hide();" />
+		<rich:panel style="float:right;margin-right:25px;">
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_close}" reRender="msnError"
+				onclick="#{rich:component('modalEditModel')}.hide();" />
+				
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_apply}" reRender="msnError"
+				onclick="applyEdit(getModelNameValueJS(),getCommentValueJS(),getModelVersionValueJS());" />
 		</rich:panel>
 		
 	</h:form>
