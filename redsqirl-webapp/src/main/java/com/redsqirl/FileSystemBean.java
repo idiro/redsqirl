@@ -240,6 +240,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			updateSelection();
 			
 		}catch(Exception e){
+			logger.info(e,e);
 			error = e.getMessage();
 		}
 		

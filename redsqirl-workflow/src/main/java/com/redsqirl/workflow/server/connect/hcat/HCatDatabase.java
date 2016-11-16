@@ -20,15 +20,19 @@
 package com.redsqirl.workflow.server.connect.hcat;
 
 import java.sql.ResultSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import com.redsqirl.workflow.server.connect.jdbc.JdbcStore;
 
 public class HCatDatabase extends HCatObject{
 
 	private static Logger logger = Logger.getLogger(HCatConnection.class);
 	protected final String databaseName;
+	protected Map<String,JdbcStore.SelectableType> selectables;
 	
 	public HCatDatabase(String databaseName){
 		this.databaseName = databaseName;
@@ -36,23 +40,39 @@ public class HCatDatabase extends HCatObject{
 	
 	@Override
 	protected Set<String> listObjectsPriv() {
-		Set<String> ans = new LinkedHashSet<String>();
+		selectables = new LinkedHashMap<String,JdbcStore.SelectableType>();
 		try{
 			ResultSet rs = getHiveConnection().executeQuery("SHOW TABLES IN "+databaseName);
 			while(rs.next()){
-				ans.add(rs.getString(1));
+				selectables.put(rs.getString(1),JdbcStore.SelectableType.TABLE);
 			}
 			rs.close();
+			try{
+				rs = getHiveConnection().executeQuery("SHOW VIEWS IN "+databaseName);
+				while(rs.next()){
+					selectables.put(rs.getString(1),JdbcStore.SelectableType.VIEW);
+				}
+				rs.close();
+			}catch(Exception e){
+				//View not supported in this Hive version
+			}
 		}catch(Exception e){
 			logger.error(e,e);
-			ans = null;
+			selectables = null;
 		}
-		if(logger.isDebugEnabled() && ans != null){
-			logger.debug(ans.toString());
+		if(logger.isDebugEnabled() && selectables != null){
+			logger.debug(selectables.toString());
 		}
-		return ans;
+		return selectables.keySet();
 	}
 
+	public JdbcStore.SelectableType getSelectableType(String selectable){
+		if(selectable == null){
+			return null;
+		}
+		return selectables.get(selectable);
+	}
+	
 	public String getDatabaseName() {
 		return databaseName;
 	}

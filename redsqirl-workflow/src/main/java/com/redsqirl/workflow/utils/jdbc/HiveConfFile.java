@@ -34,10 +34,12 @@ public class HiveConfFile extends DbConfFile {
 		String ans = "";
 		ans +=JdbcQueryManager.Query.CREATE.toString()+":CREATE TABLE {0} ({1})\n";
 		ans +=JdbcQueryManager.Query.DESCRIBE.toString()+":DESCRIBE {0}\n";
-		ans +=JdbcQueryManager.Query.DROP.toString()+":DROP TABLE {0}\n";
+		ans +=JdbcQueryManager.Query.DROP_TABLE.toString()+":DROP TABLE {0}\n";
+		ans +=JdbcQueryManager.Query.DROP_VIEW.toString()+":DROP VIEW {0}\n";
 		ans +=JdbcQueryManager.Query.INSERT_SELECT.toString()+":INSERT INTO {0} \n";
 		ans +=JdbcQueryManager.Query.INSERT_VALUES.toString()+":INSERT INTO {0} VALUES ({2})\n";
 		ans +=JdbcQueryManager.Query.LIST_TABLES.toString()+":SHOW TABLES\n";
+		ans +=JdbcQueryManager.Query.LIST_VIEWS.toString()+":SHOW VIEWS\n";
 		ans +=JdbcQueryManager.Query.SELECT.toString()+":SELECT * FROM {0} LIMIT {1}\n";
 		ans +=JdbcQueryManager.Query.TRUNCATE.toString()+":DELETE FROM {0}\n";
 		return ans;

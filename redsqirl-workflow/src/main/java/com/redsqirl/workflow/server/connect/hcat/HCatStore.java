@@ -51,6 +51,12 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
 public class HCatStore extends Storage{
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7600416491123238435L;
+
+
+	/**
 	 * The logger.
 	 */
 	private static Logger logger = Logger.getLogger(HCatStore.class);
@@ -60,7 +66,6 @@ public class HCatStore extends Storage{
 	
 	public static final String key_type = "type",
 			key_db = "database",
-			key_table = "table",
 			key_part = "partition";
 
 	public static final String partitionDelimiter = ";";
@@ -109,7 +114,7 @@ public class HCatStore extends Storage{
 		return dbs;
 	}
 	
-	private static Set<String> listTables(String database){
+	private static Set<String> listSelectables(String database){
 		HCatDatabase db = databases.get(database);
 		if(db == null){
 			listDatabases();
@@ -135,7 +140,7 @@ public class HCatStore extends Storage{
 	private static Set<String> listPartitions(String database,String tableName){
 		HCatTable table = tables.get(database+"."+tableName);
 		if(table == null){
-			listTables(database);
+			listSelectables(database);
 			table = tables.get(database+"."+tableName);
 		}
 		Set<String> partitions = null;
@@ -244,7 +249,11 @@ public class HCatStore extends Storage{
 				try{
 					String statement = getDeleteStatement(path);
 					if(pathArray.length == 2){
-						getHiveConnection().execute(statement);
+						if(JdbcStore.SelectableType.VIEW.equals(databases.get(pathArray[0]).getSelectableType(pathArray[1]))){
+							getHiveConnection().deleteView(pathArray[0]+"."+pathArray[1]);
+						}else{
+							getHiveConnection().execute(statement);
+						}
 						databases.get(pathArray[0]).removeObject(pathArray[1]);
 						tables.remove(pathArray[0]+"."+pathArray[1]);
 					}else if(pathArray.length == 3){
@@ -285,7 +294,7 @@ public class HCatStore extends Storage{
 			ans = listDatabases().contains(pathArray[0]);
 		}
 		if(ans && pathArray.length >= 2){
-			ans = listTables(pathArray[0]).contains(pathArray[1]);
+			ans = listSelectables(pathArray[0]).contains(pathArray[1]);
 		}
 		
 		if(ans && pathArray.length == 3){
@@ -559,7 +568,12 @@ public class HCatStore extends Storage{
 			ans.put(key_children, "true");
 		}else if(pathArray.length == 1){
 			ans = new HashMap<String,String>(1);
-			ans.put(key_type, key_table);
+			/*if(JdbcStore.SelectableType.VIEW.equals(databases.get(pathArray[0]).getSelectableType(pathArray[1]))){
+				ans.put(key_type, JdbcStore.SelectableType.VIEW.toString().toLowerCase());
+				ans.put(key_children, "false");
+			}else{
+			}*/
+			ans.put(key_type, JdbcStore.SelectableType.TABLE.toString().toLowerCase());
 			ans.put(key_children, "true");
 		}else if(pathArray.length == 2){
 			ans = new HashMap<String,String>(1);
@@ -587,8 +601,8 @@ public class HCatStore extends Storage{
 				prop.put(key_children, "true");
 				prefix = "/";
 			}else if(pathArray.length == 1){
-				logger.debug("list tables");
-				obs = listTables(pathArray[0]);
+				logger.debug("list selectables");
+				obs = listSelectables(pathArray[0]);
 				prefix = "/"+pathArray[0]+"/";
 				if(obs != null){
 					ans = new HashMap<String,Map<String,String>>(obs.size());
@@ -596,7 +610,7 @@ public class HCatStore extends Storage{
 					while(it.hasNext()){
 						String tblName = it.next();
 						prop = new HashMap<String,String>(1);
-						prop.put(key_type, key_table);
+						prop.put(key_type, databases.get(pathArray[0]).getSelectableType(tblName).toString().toLowerCase());
 						logger.debug("Describe: "+pathArray[0]+"."+tblName);
 						prop.putAll(JdbcHiveStore.getDescription(pathArray[0]+"."+tblName));
 						prop.put(key_children, prop.get(JdbcStore.key_partition) != null && !prop.get(JdbcStore.key_partition).isEmpty() ? "true":"false");
