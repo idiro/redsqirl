@@ -25,7 +25,9 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -148,7 +150,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean schedule;
 	private String checkPastDate;
 
-
+	private String oozieTimeZone;
+	
 	/**
 	 * 
 	 * @return
@@ -1674,6 +1677,34 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public void openSchedulModal() throws RemoteException{
+		setOozieTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
+		logger.info(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
+	}
+	
+	public void killWaitingSelectedScheduling() throws RemoteException {
+		logger.info("killWaitingSelectedScheduling");
+		String error = null;
+		if(df != null){
+			if(df.isrunning() && df.isSchedule()){
+				boolean sel = true;
+				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
+					if(value[0] == "true"){
+						sel = false;
+						logger.info(getSelectedScheduling().getJobId() + " - "  + "action-num" + " - "  + value[1]);
+						getOozie().kill(getSelectedScheduling().getJobId(), "action-num", value[1]);
+					}
+				}
+				if(sel){
+					error = "No actions selected";
+				}
+			}else{
+				error = "Job is not running.";
+			}
+		}
+		displayErrorMessage(error,"KILLWAITINGSELECTEDSCHEDULING");
+	}
+	
 	public void reRunSelectedScheduling() throws RemoteException {
 		String error = null;
 		logger.info("reRunSelectedScheduling");
@@ -3951,4 +3982,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.checkPastDate = checkPastDate;
 	}
 
+	public String getOozieTimeZone() {
+		return oozieTimeZone;
+	}
+
+	public void setOozieTimeZone(String oozieTimeZone) {
+		this.oozieTimeZone = oozieTimeZone;
+	}
+	
 }

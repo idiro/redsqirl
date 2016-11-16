@@ -128,7 +128,6 @@ public class VoronoiBean extends VoronoiBeanAbs {
 			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
 		}*/
 
-		Calendar cl = new GregorianCalendar(TimeZone.getTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 		setOozieTime(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 		logger.info(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 	}

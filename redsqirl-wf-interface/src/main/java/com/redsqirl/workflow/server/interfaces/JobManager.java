@@ -36,6 +36,14 @@ public interface JobManager extends Remote{
 	 * @throws RemoteException
 	 */
 	public void kill(String jobId) throws RemoteException;
+	
+	/**
+	 * Kill a coordinator materialized job
+	 * @param jobId
+	 * @throws RemoteException
+	 */
+	public void kill(String jobId, String rangeType, String scope) throws RemoteException;
+	
 	/**
 	 * Resume a job that is suspended
 	 * @param jobId
