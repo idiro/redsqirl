@@ -288,23 +288,24 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_kerberos_realm = core_settings_security+".realm",
 			/** Hostname */
 			sys_sec_hostname = core_settings_security+".hostname";
-			
+
 
 	public static final String 
-			/** Path to Private Key */
-			user_rsa_private = "private_rsa_key",
-			/** Backup Path of workflow on HFDS */
-			user_backup = "backup_path",
-			/** Maximum Number of Paths */
-			user_nb_backup = "number_backup",
-			/** Number of oozie job directories to keep */
-			user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
-			/** Path on HDFS to store Oozie Jobs */
-			user_hdfspath_oozie_job = "hdfspath_oozie_job",
-			/** Parallel clause for pig */
-			user_pig_parallel = "pig_parallel",
-			/** Address to be used on SendEmail action */
-			user_email = "core.email.user_email_address";
+	/** Path to Private Key */
+	user_rsa_private = "private_rsa_key",
+	/** Backup Path of workflow on HFDS */
+	user_backup = "backup_path",
+	/** Maximum Number of Paths */
+	user_nb_backup = "number_backup",
+	/** Number of oozie job directories to keep */
+	user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
+	/** Path on HDFS to store Oozie Jobs */
+	user_hdfspath_oozie_job = "hdfspath_oozie_job",
+	/** Parallel clause for pig */
+	user_pig_parallel = "pig_parallel",
+	/** Address to be used on SendEmail action */
+	user_email = "core.email.user_email_address",
+	old_rs_home="core.old_rs_home";
 
 
 	//set defaultTomcat path
@@ -313,7 +314,7 @@ public class WorkflowPrefManager extends BlockManager {
 	private static LocalProperties props;
 
 	private static Boolean secEnable = null;
-	
+
 
 	/**
 	 * Constructor.
@@ -411,9 +412,9 @@ public class WorkflowPrefManager extends BlockManager {
 		File home = new File(getPathUserPref(userName));
 		logger.info(home.getAbsolutePath());
 		{
-			
+
 		}
-		
+
 		if (!home.exists()) {
 
 			String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
@@ -440,12 +441,12 @@ public class WorkflowPrefManager extends BlockManager {
 			home.setWritable(true, false);
 			home.setReadable(true, false);
 			superactionF.setReadable(true, false);
-			
+
 			File userTmp = new File(getPathTmpFolder(userName));
 			userTmp.mkdirs();
 			userTmp.setWritable(true,false);
 			userTmp.setReadable(true,false);
-			
+
 		}
 		createSysHome();
 	}
@@ -466,6 +467,20 @@ public class WorkflowPrefManager extends BlockManager {
 			if(!sysSADir.exists()){
 				sysSADir.mkdirs();
 				sysSADir.setReadable(true,false);
+				String old_home = getSysProperty(old_rs_home);
+				if(old_home != null && !old_home.isEmpty()){
+					File lang_prop = new File(old_home,"conf/redsqirl_sys_lang.properties");
+					Properties oldLang = new Properties();
+					try{
+						oldLang.load(new FileInputStream(lang_prop));
+						if(lang_prop.exists()){
+							oldLang.putAll(props.getLangProperties());
+							props.storeLangProperties(oldLang);
+						}
+					}catch(Exception e){
+						logger.debug(e,e);
+					}
+				}
 			}
 		}
 		{
@@ -549,7 +564,20 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void setupHome() {
 		File userProp = new File(pathUserCfgPref);
 		if (!userProp.exists()) {
+			String old_home = getSysProperty(old_rs_home);
+			File oldSettingFile = null;
+			if(old_home != null && !old_home.isEmpty()){
+				oldSettingFile = new File(old_rs_home+"/users/"+System.getProperty("user.name")+"/redsqirl_user.properties");
+			}
 			Properties prop = new Properties();
+			try{
+				if(oldSettingFile != null && oldSettingFile.exists()){
+					prop.load(new FileInputStream(oldSettingFile));
+				}
+			} catch (IOException e) {
+				logger.warn("Fail to write default properties");
+			}
+
 			try {
 				prop.store(new FileWriter(userProp), "");
 				userProp.setWritable(false, false);
@@ -902,7 +930,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String getPathtmpfolder() {
 		return pathTmpFolder;
 	}
-	
+
 	public static final String getSysPathTmp(){
 		return pathSysHome+"/tmp";
 	}
@@ -1043,7 +1071,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static Properties getUserProperties(String user) {
 		return props.getUserProperties(user);
 	}
-	
+
 	public static String getProperty(String key) throws RemoteException {
 		return props.getProperty(key);
 	}
@@ -1184,7 +1212,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String getPathFooterPackageNotification() {
 		return pathFooterPackageNotification;
 	}
-	
+
 	/**
 	 * @return the pathUserSuperAction
 	 */
@@ -1211,7 +1239,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static final String getPathSysScripts() {
 		return pathSysScripts;
 	}
-	
+
 	/**
 	 * 
 	 * @return

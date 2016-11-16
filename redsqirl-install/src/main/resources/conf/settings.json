@@ -40,6 +40,13 @@
             "type": "BOOLEAN"
         },
         {
+            "default": "",
+            "optional": "true",
+            "property": "old_rs_home",
+            "scope": "system",
+            "type": "BOOLEAN"
+        },
+        {
             "default": "true",
             "optional": "true",
             "property": "data_usage",
@@ -47,7 +54,7 @@
             "type": "BOOLEAN"
         },
         {
-            "default": "http://154.50.192.12:8091/analytics-store",
+            "default": "https://marketplace.redsqirl.com",
             "optional": "false",
             "property": "pack_manager_url",
             "scope": "system",
