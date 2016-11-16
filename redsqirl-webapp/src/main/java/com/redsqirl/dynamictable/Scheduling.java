@@ -29,17 +29,17 @@ public class Scheduling implements Serializable{
 	 */
 	private static final long serialVersionUID = 7291616326471561973L;
 	
-	private String nameScheduling;
-	private String jobId;
-	private String lastActionScheduling;
-	private String nextActionScheduling;
-	private String actionsScheduling;
-	private String okScheduling;
-	private String skippedScheduling;
-	private String errorsScheduling;
-	private String runningScheduling;
+	private String nameScheduling = "DOES NOT EXIST";
+	private String jobId = "DOES NOT EXIST";
+	private String lastActionScheduling = "DOES NOT EXIST";
+	private String nextActionScheduling = "DOES NOT EXIST";
+	private String actionsScheduling = "DOES NOT EXIST";
+	private String okScheduling = "0";
+	private String skippedScheduling = "0";
+	private String errorsScheduling = "0";
+	private String runningScheduling = "0";
 	private List<String[]> listJobsScheduling;
-	private String statusScheduling;
+	private String statusScheduling = "DOES NOT EXIST";
 	private boolean selected;
 	
 	public Scheduling() {

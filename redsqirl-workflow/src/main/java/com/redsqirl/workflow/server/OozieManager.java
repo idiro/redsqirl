@@ -115,7 +115,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			prop_timezone = "timezone";
 
 	public static final String oozie_mode_default = "default";
-	
+
 	public enum Type{
 		WORKFLOW,
 		COORDINATOR,
@@ -334,7 +334,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					return false;
 				}
 			});
-			
+
 			if(children != null && children.length > 0){
 				for (FileStatus child : children) {
 					number = Math.max(
@@ -404,7 +404,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					logger.debug(df.getCoordinators().get(0).getVariables().getKeyValues());
 					props = writeWorkflowProp(new File(parentDir, "job.properties"),
 							hdfsWfPath, bundle,Type.WORKFLOW.equals(bundle) ?
-								df.getCoordinators().get(0).getVariables().getKeyValues():null);
+									df.getCoordinators().get(0).getVariables().getKeyValues():null);
 					logger.debug(props);
 				} catch (Exception e) {
 					error = LanguageManagerWF.getText(
@@ -423,7 +423,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				fs = NameNodeVar.getFS();
 				Path wCur = new Path(hdfsWfPath);
 				fs.copyFromLocalFile(false, true,
-							new Path(parentDir.getAbsolutePath()), wCur);
+						new Path(parentDir.getAbsolutePath()), wCur);
 			} catch (Exception e) {
 				logger.error(e,e);
 				error = LanguageManagerWF.getText(
@@ -458,7 +458,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			throw new Exception(error);
 		}
 
-		
+
 		new Thread() {
 			public void run() {
 				try {
@@ -483,7 +483,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 		return console;
 	}
-	
+
 	/**
 	 * Get the Console URL for Oozie
 	 * 
@@ -505,7 +505,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String jobId = df.getOozieJobId();
 
 		if (jobId != null) {
-			
+
 			Set<String> actionNames = dfe.getLastRunOozieElementNames();
 			int found = 0;
 			Iterator<String> it = actionNames.iterator();
@@ -559,7 +559,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 		return ans;
 	}
-	
+
 	public boolean jobExists(DataFlow df){
 		boolean ans = false;
 		try{
@@ -625,13 +625,13 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					}else{
 						found = cur.getConsoleUrl();
 					}
-					 
+
 				}
 			}
 		}
 		return found;
 	}
-	
+
 	public Date getEndTime(String jobId) throws RemoteException{
 		try{
 			return oc.getJobInfo(jobId).getEndTime();
@@ -639,27 +639,27 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 		return null;
 	}
-	
+
 	public String getBundleJobInfo(String jobId) throws RemoteException{
 		String ans = "{";
 		try{
-		Iterator<CoordinatorJob> cJobIt = oc.getBundleJobInfo(jobId).getCoordinators().iterator();
-		while(cJobIt.hasNext()){
-			CoordinatorJob cur = cJobIt.next();
-			ans+= "\""+cur.getAppName()+"\":";
-			ans+= getCoordinatorJobInfo(cur.getId());
-			if(cJobIt.hasNext()){
-				ans+=",";
+			Iterator<CoordinatorJob> cJobIt = oc.getBundleJobInfo(jobId).getCoordinators().iterator();
+			while(cJobIt.hasNext()){
+				CoordinatorJob cur = cJobIt.next();
+				ans+= "\""+cur.getAppName()+"\":";
+				ans+= getCoordinatorJobInfo(cur.getId());
+				if(cJobIt.hasNext()){
+					ans+=",";
+				}
 			}
-		}
-		ans+="}";
+			ans+="}";
 		}catch(Exception e){
 			logger.error(e,e);
-			ans="";
+			ans="{}";
 		}
 		return ans;
 	}
-	
+
 	public String getCoordinatorJobInfo(String jobId) throws RemoteException{
 		String ans = "{";
 		try{
@@ -712,12 +712,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			ans+="}";
 		}catch(Exception e){
 			logger.error(e,e);
-			ans="";
+			ans="{}";
 		}
 		return ans;
 	}
-	
-	
+
+
 
 	public void reRunCoord(String jobId, String rerunType, String scope, boolean refresh,
 			boolean noCleanup) throws RemoteException {
@@ -731,7 +731,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	}
 
 	public void reRunBundle(String jobId, String coordScope, String dateScope, boolean refresh, boolean noCleanup)
-			 throws RemoteException {
+			throws RemoteException {
 		try{
 			logger.debug("rerun bundle: "+jobId+" "+coordScope+" "+dateScope+" "+refresh+" "+noCleanup);
 			oc.reRunBundle(jobId, coordScope, dateScope, refresh, noCleanup);
