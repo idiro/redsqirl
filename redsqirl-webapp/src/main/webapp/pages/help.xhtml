@@ -23,7 +23,8 @@
     });
     
     function clickOnStopLink(origLink, force){
-
+	//<![CDATA[
+    	           
 	    if(!jQuery('#notMoveHelp').is(':checked') || force){
 			showTabResult();
 			jQuery("#divTabHelp").scrollTop( 0 );
@@ -34,8 +35,7 @@
 			    jQuery("#helpIndex").hide();
 	            jQuery("#helpPanel").show();
 			    jQuery("#contentHelp").load(jQuery(origLink).attr("href"));
-	            
-			    //<![CDATA[
+			    
 			    if(id != "help_main" && id.substring(0,5) == "help_"){
 			      var obj = jQuery("#image_"+id);
 			      document.getElementById("imageHelp").innerHTML = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
@@ -48,7 +48,6 @@
 			      document.getElementById("imageHelp").innerHTML = "";
 			      jQuery("#imageHelp").hide();
 			    }
-	            //]]>
 	            
 	            jQuery("#btIndex").show();
 	            if(jQuery(origLink).attr("href").indexOf('#') == -1){
@@ -58,18 +57,19 @@
 	            	jQuery("#divTabHelp").animate({ scrollTop: jQuery(jQuery(origLink,'href')).offset().top}, 800);
 			    }
 			    
-			    //<![CDATA[
 			    while( historyHelpIndex + 1 < historyHelp.length ){
 					historyHelp.pop();
 			    }
 			    if(historyHelp.length > 100){
 					historyHelp.shift();
 			    }
-			    //]]>
+			    
 			    historyHelpIndex = historyHelp.length;
 			    historyHelp[historyHelpIndex] = id;
 			}
 	    }
+	    
+	//]]>
     }
     
     jQuery(document).on("click", ".stopLink", function(e){
@@ -273,7 +273,9 @@
 			<h2>Available Actions (#{helpBean.helpSize})</h2>
 			
 			<ui:repeat value="#{helpBean.helpHtmlList}" var="pck">
-				<h:outputText value="#{pck[1]}" style="padding-left:10px;font-size:20px;" />
+				<a class="stopLink" id="package_#{pck[0]}" href="#{pck[2]}" onclick="return false;">
+					<h:outputText value="#{pck[1]}" style="padding-left:10px;font-size:20px;" />
+				</a>
 				<ul>
 				    <ui:repeat value="#{helpBean.helpAns[pck[0]]}" var="action">
 					    <li>

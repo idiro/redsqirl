@@ -1658,8 +1658,8 @@
 				
 				<rich:panel columns="2" style="border:none; float:right;">
 				
-					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_all}"
-						oncomplete="#{rich:component('reRunScheduleModal')}.show();" reRender="modalReRunSchedule" />
+					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_all}" action="#{canvasBean.openSchedulModal}"
+						oncomplete="#{rich:component('reRunScheduleModal')}.show(); reRunOpenSchedulModal();" reRender="modalReRunSchedule, reRunOozieTimeZone" />
 					
 					<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_KillProcess}"
 						action="#{canvasBean.stopRunningWorkflow}" />
@@ -1801,10 +1801,10 @@
 				<rich:panel columns="3" style="border:none; float:right;">
 				
 				<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_kill_waiting}" action="#{canvasBean.killWaitingSelectedScheduling}"
-					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSchedulingRunning')}.hide();}" reRender="msnErrorRunning" />
 				
 				<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_selected}" action="#{canvasBean.reRunSelectedScheduling}"
-					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSchedulingRunning')}.hide();}" reRender="msnErrorRunning" />
 				
 				<a4j:commandButton styleClass="greenButton"	style="float:right;margin-right:5px;" value="Close"
 					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
@@ -1814,6 +1814,38 @@
 			</h:form>
 	
 	    </rich:modalPanel>
+	    
+	    <rich:modalPanel id="msnErrorRunning" showWhenRendered="#{requestScope['msnError'] != null}">
+			<div style="width: 100%; height: 100%; overflow: auto; z-index: 1000; position: relative;">
+				<rich:messages id="msgErrorRunning" globalOnly="false" layout="list"
+					styleClass="message" infoClass="messageok" errorClass="messageerro"
+					warnClass="messagealert" showDetail="true" showSummary="false"
+					ajaxRendered="false" />
+	
+				<a4j:commandButton styleClass="greenButton"
+					value="#{messages.button_ok}"
+					onclick="#{rich:component('msnErrorRunning')}.hide(); return false;"
+					style="bottom:14%;position:relative;"
+					reRender="msnError, msgErrorRunning, errorTable" />
+	
+			</div>
+		</rich:modalPanel>
+	    
+	    <a4j:region>
+			<rich:modalPanel id="reRunScheduleModal" width="500" height="430" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+				
+				<f:facet name="header">Rerun Schedule Job</f:facet>
+				<f:facet name="controls">
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('reRunScheduleModal')}.hide();" />
+				</f:facet>
+	
+				<h:panelGroup>
+					<a4j:include viewId="/pages/reRunScheduleModal.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+	
+			</rich:modalPanel>
+		</a4j:region>
+	    
     </a4j:region>
 	
 	
@@ -3456,20 +3488,7 @@
 		</rich:modalPanel>
 	</a4j:region>
 	
-	<a4j:region>
-		<rich:modalPanel id="reRunScheduleModal" width="500" height="390" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
-			
-			<f:facet name="header">Rerun Schedule Job</f:facet>
-			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;" onclick="#{rich:component('reRunScheduleModal')}.hide();" />
-			</f:facet>
-
-			<h:panelGroup>
-				<a4j:include viewId="/pages/reRunScheduleModal.xhtml" ajaxRendered="false" />
-			</h:panelGroup>
-
-		</rich:modalPanel>
-	</a4j:region>
+	
 	
 	<rich:modalPanel id="voronoiTextEditorModalCM" width="800" height="450" style="overflow:hidden;" >
             
