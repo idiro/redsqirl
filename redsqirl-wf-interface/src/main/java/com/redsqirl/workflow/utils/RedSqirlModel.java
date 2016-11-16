@@ -33,8 +33,11 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,6 +73,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	private static Logger logger = Logger.getLogger(RedSqirlModel.class);
 	
 	public static final String conf_dir = "conf",
+			backup_dir="_BACKUP",
 			properties_file = "properties",
 			private_file = "private_sw",
 			dependency_file = "dependencies",
@@ -221,6 +225,21 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	@Override
 	public void setVersion(String version) {
 		Properties prop = getPackageProperties();
+		String oldVersion = prop.getProperty(version_prop, "0.0");
+		
+		if(!oldVersion.equals(version)){
+			DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date date = new Date();
+			File backup = new File(modelFile,backup_dir);
+			backup.mkdirs();
+			new ZipUtils().zipIt(
+					modelFile, 
+					new File(backup,
+							getName()+"-"+oldVersion+"-to-"+version+"-"+dateFormat.format(date)+".zip"
+							),
+					".*"+backup_dir+".*");
+		}
+		
 		prop.put(version_prop, String.valueOf(version));
 		try{
 			prop.store(new FileWriter(new File(new File(modelFile,conf_dir),properties_file)), "");
@@ -289,7 +308,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 			
 			@Override
 			public boolean accept(File pathname) {
-				return !pathname.getName().equals(conf_dir);
+				return !pathname.getName().equals(conf_dir) && !pathname.getName().equals(backup_dir);
 			}
 		});
 		if(fModels != null){
