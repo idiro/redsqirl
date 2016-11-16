@@ -6,10 +6,41 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
+	
+<script>
+//<![CDATA[
+
+	function reRunOpenSchedulModal(){
+		console.log("reRunOpenSchedulModal");
+		console.log(jQuery("[id$='reRunClockSchedule1']").children().attr('class'));
+		if(jQuery("[id$='reRunClockSchedule1']").children().attr('class') !== 'undefined' && jQuery("[id$='reRunClockSchedule1']").children().attr('class') != "jcgmt-lbl"){
+			var aux  = jQuery('[id$="reRunOozieTimeZone"]').val();
+			console.log("hidden " + aux);
+			var d = moment().tz(aux);
+			console.log(d.utcOffset());
+			
+			var d1 = d.toDate();
+			console.log(d1);
+			
+			jQuery('#reRunClockSchedule1').jClocksGMT({offset: 0, title: 'Local Time'});
+			jQuery('#reRunClockSchedule2').jClocksGMT({offset: (d.utcOffset()/60), title: 'Oozie Time'});
+		}
+	}
+           
+//]]>
+</script>
 
 	<h:form>
-		<rich:panel id="modalReRunSchedule" style="border:none;overflow:auto;height:300px;width:100%;padding-left: 3px;padding-right: 3px;" >
+	
+		<h:inputHidden value="#{canvasBean.oozieTimeZone}" id="reRunOozieTimeZone" />
+	
+		<rich:panel id="modalReRunSchedule" style="border:none;overflow:auto;height:340px;width:100%;padding-left: 3px;padding-right: 3px;" >
 			<p> <h:outputText value="#{messages.label_rerun_schedule_desc_1}" /></p>
+			
+			<div style="text-align: center;display: inline-flex;">
+				<div id="reRunClockSchedule1"></div>
+				<div id="reRunClockSchedule2"></div>
+			</div>
 			
 			<table>
 				<tr>

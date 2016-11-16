@@ -229,7 +229,14 @@ public class HelpBean extends BaseBean implements Serializable {
 	public final List<String[]> getHelpHtmlList() {
 		List<String[]> result = new ArrayList<String[]>();
 		for (String name : helpHtml.keySet()) {
-			result.add(new String[] { name , WordUtils.capitalizeFully(name.replace("_", " ")) });
+			String path = null;
+			Map<String, String[]> a = helpHtml.get(name);
+			for (String val : a.keySet()) {
+				String[] aux = a.get(val);
+				path = aux[2].substring(0, aux[2].lastIndexOf("/"));
+				break;
+			}
+			result.add(new String[] { name , WordUtils.capitalizeFully(name.replace("_", " ")), path+"/"+name+".html" }); 
 		}
 		
 		Collections.sort(result, new Comparator<String[]>() {

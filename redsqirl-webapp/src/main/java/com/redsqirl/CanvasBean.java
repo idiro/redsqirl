@@ -1690,9 +1690,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 				boolean sel = true;
 				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
 					if(value[0] == "true"){
-						sel = false;
-						logger.info(getSelectedScheduling().getJobId() + " - "  + "action-num" + " - "  + value[1]);
-						getOozie().kill(getSelectedScheduling().getJobId(), "action-num", value[1]);
+						if(value[3].equals("WAITING")){
+							sel = false;
+							logger.info(getSelectedScheduling().getJobId() + " - "  + "action-num" + " - "  + value[1]);
+							getOozie().kill(getSelectedScheduling().getJobId(), "action-num", value[1]);
+						}
 					}
 				}
 				if(sel){
