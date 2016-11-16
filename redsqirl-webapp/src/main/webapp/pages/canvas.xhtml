@@ -1798,7 +1798,10 @@
 				
 				<br/>
 				
-				<rich:panel columns="2" style="border:none; float:right;">
+				<rich:panel columns="3" style="border:none; float:right;">
+				
+				<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_kill_waiting}" action="#{canvasBean.killWaitingSelectedScheduling}"
+					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
 				
 				<a4j:commandButton styleClass="greenButton"	value="#{messages.oozie_reRun_selected}" action="#{canvasBean.reRunSelectedScheduling}"
 					oncomplete="#{rich:component('modalSchedulingRunning')}.hide();" />
@@ -2333,8 +2336,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}"
-					oncomplete="setIfISchedule(selectedCanvas,data[3]);if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ jQuery('#mainPanelDiv').unblock(); #{rich:component('scheduleModal')}.show(); }" reRender="msnError">
+				<a4j:jsFunction name="runWorkflowBtnFct" data="#{canvasBean.checkIfScheduleBeforeRun}" action="#{canvasBean.openSchedulModal}"
+					oncomplete="setIfISchedule(selectedCanvas,data[3]);if(data[3] == 'false'){ runWorkflow(data[0],data[1],data[2]);}else{ jQuery('#mainPanelDiv').unblock(); #{rich:component('scheduleModal')}.show(); openSchedulModal(); }" reRender="msnError,oozieTimeZone">
 					<a4j:actionparam name="canvasStatus" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -3424,7 +3427,7 @@
 	</a4j:region>
 	
 	<a4j:region>
-		<rich:modalPanel id="scheduleModal" width="500" height="390" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
+		<rich:modalPanel id="scheduleModal" width="500" height="430" style="overflow:hidden;" resizeable="false" styleClass="noMaskClass">
 			
 			<f:facet name="header">Run a Schedule Job</f:facet>
 			<f:facet name="controls">

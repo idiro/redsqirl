@@ -183,6 +183,15 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		}
 	}
 
+	public void kill(String jobId, String rangeType, String scope) throws RemoteException {
+		try{
+			oc.kill(jobId, rangeType, scope);
+		}catch(OozieClientException e ){
+			logger.warn(e,e);
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	/**
 	 * Resume a suspended job that is in Oozie
 	 * 
