@@ -1008,8 +1008,6 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			action.appendChild(workflow);
 			rootElement.appendChild(action);
 			
-			
-
 			saveXML(doc, directory, filename);
 			
 			OozieManager.writeWorkflowProp(new File(directory,job), 

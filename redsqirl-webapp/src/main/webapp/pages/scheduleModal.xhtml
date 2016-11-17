@@ -22,7 +22,7 @@
 			var d1 = d.toDate();
 			console.log(d1);
 			
-			jQuery('#clockSchedule1').jClocksGMT({offset: 0, title: 'Local Time'});
+			jQuery('#clockSchedule1').jClocksGMT({offset: (-new Date().getTimezoneOffset()/60), title: 'Local Time'});
 			jQuery('#clockSchedule2').jClocksGMT({offset: (d.utcOffset()/60), title: 'Oozie Time'});
 		}
 	}
@@ -33,7 +33,7 @@
 
 	<h:form>
 	
-		<h:inputHidden value="#{canvasBean.oozieTimeZone}" id="oozieTimeZone" />
+		<h:inputHidden value="#{canvasBean.oozieTimeZone.ID}" id="oozieTimeZone" />
 	
 		<rich:panel id="modalSchedule" style="border:none;overflow:auto;height:100%;width:100%;padding-left: 3px;padding-right: 3px;" >
 		
@@ -54,10 +54,9 @@
 						<h:outputText value="#{messages.label_voronoi_data_start}" title="#{messages.title_voronoi_data_start}" />
 					</td>
 					<td>
-			    		<rich:calendar id="runningStartDate" value="#{canvasBean.runningStartDate}" datePattern="d/M/yy HH:mm" 
+			    		<rich:calendar id="runningStartDate" value="#{canvasBean.runningStartDate}" datePattern="d/M/yy HH:mm"
 			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_start}" 
-			    			showApplyButton="true" direction="top-right" >
-			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
+			    			showApplyButton="true" direction="top-right" timeZone="#{canvasBean.oozieTimeZone}" >
 			    		</rich:calendar>
 					</td>
 				</tr>
@@ -66,10 +65,9 @@
 						<h:outputText value="#{messages.label_voronoi_data_end}" title="#{messages.title_voronoi_data_end}" />
 					</td>
 					<td>
-			    		<rich:calendar id="runningEndDate" value="#{canvasBean.runningEndDate}" datePattern="d/M/yy HH:mm" cellWidth="24px" 
-			    			cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" 
-			    			showApplyButton="true" direction="top-right" >
-			    			<f:convertDateTime type="date" pattern="d/M/yy HH:mm" timeZone="#{timeZone.timeZone}"/>
+			    		<rich:calendar id="runningEndDate" value="#{canvasBean.runningEndDate}" datePattern="d/M/yy HH:mm" 
+			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_data_end}" 
+			    			showApplyButton="true" direction="top-right" timeZone="#{canvasBean.oozieTimeZone}" >
 			    		</rich:calendar>
 					</td>
 				</tr>

@@ -29,8 +29,7 @@ function openVoronoihPopUp(){
 		
 		var d1 = d.toDate();
 		console.log(d1);
-		
-		jQuery('#clock1').jClocksGMT({offset: 0, title: 'Local Time'});
+		jQuery('#clock1').jClocksGMT({offset: (-new Date().getTimezoneOffset()/60), title: 'Local Time'});
 		jQuery('#clock2').jClocksGMT({offset: (d.utcOffset()/60), title: 'Oozie Time'});
 	}
 	
@@ -63,7 +62,7 @@ function selectedScheduling(){
 
 	<h:form>
 
-		<h:inputHidden value="#{voronoiBean.oozieTime}" id="oozieTime" />
+		<h:inputHidden value="#{canvasBean.oozieTimeZone.ID}" id="oozieTime" />
 	
 		<a4j:region>
 	        <a4j:jsFunction name="openVoronoiEditorModal" action="#{voronoiBean.openVoronoiEditorModal}" value=". . ."  
@@ -105,9 +104,10 @@ function selectedScheduling(){
 					</td>
 					<td>
 			    		<rich:calendar id="voronoiExecutionTime" value="#{voronoiBean.executionTime}" datePattern="d/M/yy HH:mm" 
-			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_executionTime}" 
+			    			cellWidth="24px" cellHeight="22px" style="width:200px" title="#{messages.title_voronoi_executionTime}"
+			    			timeZone="#{canvasBean.oozieTimeZone}" 
 			    			showApplyButton="true" >
-			    		<f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm" timeZone="#{timeZone.timeZone}"/>
+			    			<f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm" timeZone="#{canvasBean.oozieTimeZone}"/>
 			    		</rich:calendar>
 					</td>
 				</tr>

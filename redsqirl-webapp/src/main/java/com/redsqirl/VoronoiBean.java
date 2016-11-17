@@ -64,8 +64,6 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	private Integer periodic;
 	private Boolean scheduling;
 	
-	private String oozieTime;
-
 
 	public void openVoronoi() throws RemoteException{
 
@@ -128,7 +126,6 @@ public class VoronoiBean extends VoronoiBeanAbs {
 			setSelectedSchedulingOption(schedulingOptions.get(0).getLabel());
 		}*/
 
-		setOozieTime(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 		logger.info(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 	}
 
@@ -180,6 +177,8 @@ public class VoronoiBean extends VoronoiBeanAbs {
 
 			dataFlowCoordinator.setName(name);
 			if(getScheduling()){
+				DateFormat dateFormatWithZone = new SimpleDateFormat("dd-MM-yyyy hh:mm Z");
+				logger.info("Execution time: "+dateFormatWithZone.format(executionTime));
 				dataFlowCoordinator.setExecutionTime(executionTime);
 				if(getSelectedSchedulingOption() != null && !getSelectedSchedulingOption().isEmpty()){
 					dataFlowCoordinator.getTimeCondition().setUnit(TimeTemplate.valueOf(getSelectedSchedulingOption()));
@@ -383,12 +382,6 @@ public class VoronoiBean extends VoronoiBeanAbs {
 	}
 	public void setScheduling(Boolean scheduling) {
 		this.scheduling = scheduling;
-	}
-	public String getOozieTime() {
-		return oozieTime;
-	}
-	public void setOozieTime(String oozieTime) {
-		this.oozieTime = oozieTime;
 	}
 	
 }
