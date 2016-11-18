@@ -150,7 +150,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean schedule;
 	private String checkPastDate;
 
-	private String oozieTimeZone;
+	private TimeZone oozieTimeZone;
+	private TimeZone oozieTimeZoneStr;
 	
 	/**
 	 * 
@@ -158,7 +159,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public CanvasBean() {
-
+		try{
+			setOozieTimeZone(TimeZone.getTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
+		}catch(Exception e){
+			setOozieTimeZone(TimeZone.getTimeZone("UTC"));
+		}
 	}
 
 	/**
@@ -1689,7 +1694,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void openSchedulModal() throws RemoteException{
-		setOozieTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
+		setOozieTimeZone(TimeZone.getTimeZone(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone)));
 		logger.info(WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_oozie_processing_timezone));
 	}
 	
@@ -3999,11 +4004,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.checkPastDate = checkPastDate;
 	}
 
-	public String getOozieTimeZone() {
+	public TimeZone getOozieTimeZone() {
 		return oozieTimeZone;
 	}
 
-	public void setOozieTimeZone(String oozieTimeZone) {
+	public void setOozieTimeZone(TimeZone oozieTimeZone) {
 		this.oozieTimeZone = oozieTimeZone;
 	}
 	
