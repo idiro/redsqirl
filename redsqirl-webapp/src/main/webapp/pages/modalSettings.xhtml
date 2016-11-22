@@ -23,6 +23,18 @@
 		jQuery('[id$="listSettingSettings"]').scrollTop(scrollPosition);
 	}
 	
+	function setSecretToInpu() {
+		console.log("setSecretToInpu");
+		jQuery('[id$="user_core_prop_non_password"]').attr('type','text');
+		jQuery('[id$="system_core_prop_non_password"]').attr('type','text');
+	}
+	
+	function setInpuToSecret() {
+		console.log("setSecretToInpu");
+		jQuery('[id$="user_core_prop_non_password"]').attr('type','password');
+		jQuery('[id$="system_core_prop_non_password"]').attr('type','password');
+	}
+	
 </script>
         
 <h:form>
@@ -114,10 +126,14 @@
 			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						disabled="#{!settingsBean.canEdit}" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
-			     					<h:inputSecret value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;" 
+			     					<h:inputSecret id="system_core_prop_non_password" value="#{settingsBean.s.properties[obj].sysValue}" style="background-color:#FF3333;border:1px solid;width:80%;" 
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
+			     					<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" 
+										title="#{messages.label_show_password}" onmousedown="setSecretToInpu();" onmouseup="setInpuToSecret();" onmouseover="jQuery(this).css('cursor', 'pointer');"
+										rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" />
+			     						
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existSysProperty or settingsBean.template == 'Y')  }" />
 			     						
@@ -160,10 +176,14 @@
 			     						rendered="#{!settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
-			     					<h:inputSecret id="user_core_prop_non_password" type="password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;" 
+			     					<h:inputSecret id="user_core_prop_non_password" value="#{settingsBean.s.properties[obj].userValue}" style="background-color:#33FF99;border:1px solid;width:80%;" 
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
+									<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" 
+										title="#{messages.label_show_password}" onmousedown="setSecretToInpu();" onmouseup="setInpuToSecret();" onmouseover="jQuery(this).css('cursor', 'pointer');"
+										rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" />
+			     						
 			     					<h:outputText value="#{settingsBean.s.properties[obj].description}" 
 			     						rendered="#{(settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; (!settingsBean.s.properties[obj].existUserProperty  or settingsBean.template == 'Y') }" />
 			     					<br/>
