@@ -42,6 +42,7 @@ public class HiveConfFile extends DbConfFile {
 		ans +=JdbcQueryManager.Query.LIST_VIEWS.toString()+":SHOW VIEWS\n";
 		ans +=JdbcQueryManager.Query.SELECT.toString()+":SELECT * FROM {0} LIMIT {1}\n";
 		ans +=JdbcQueryManager.Query.TRUNCATE.toString()+":DELETE FROM {0}\n";
+		ans +=JdbcQueryManager.Query.CREATE_SELECT.toString()+":CREATE TABLE {0} AS {1} {2}\n";
 		return ans;
 	}
 

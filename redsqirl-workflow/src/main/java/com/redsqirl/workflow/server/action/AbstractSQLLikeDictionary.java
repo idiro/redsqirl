@@ -162,7 +162,6 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
 		}
-		logger.debug("expression is ok");
 		logger.debug("nonAggregFeats " + nonAggregFeats);
 		logger.debug("fields " + fields.getFieldNames().toString());
 

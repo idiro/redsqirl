@@ -485,7 +485,7 @@ public class JdbcStore extends Storage {
 		try{
 			ans = getConnection(connection).getConnType();
 		}catch(Exception e){
-			logger.error(e,e);
+			logger.error("Connection: "+connection+"; "+e,e);
 		}
 		return ans;
 	}
@@ -929,12 +929,12 @@ public class JdbcStore extends Storage {
 			if(fileSystem.exists(passwordPath)){
                 BufferedReader br=new BufferedReader(new InputStreamReader(fileSystem.open(passwordPath)));
                 String line=br.readLine();
-                if(!line.equals(details.getPassword())){
+                if(line == null || !line.equals(details.getPassword())){
                 	fileSystem.delete(passwordPath,false);
                 }
                 br.close();
 			}
-			if(!fileSystem.exists(passwordPath)){
+			if(!fileSystem.exists(passwordPath) && details.getPassword() != null){
 				if(!fileSystem.exists(passwordPath.getParent())){
 					fileSystem.mkdirs(passwordPath.getParent());
 					fileSystem.setPermission(passwordPath.getParent(), new FsPermission("700"));

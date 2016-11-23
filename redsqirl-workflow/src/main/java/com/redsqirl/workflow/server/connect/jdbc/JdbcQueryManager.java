@@ -46,7 +46,8 @@ public class JdbcQueryManager {
 		DROP_VIEW,
 		CREATE,
 		DESCRIBE,
-		TRUNCATE
+		TRUNCATE,
+		CREATE_SELECT
 	}
 	
 	protected  File getFile(String dictionary){

@@ -110,6 +110,11 @@ public class RedSqirlBasicStatement implements BasicStatement {
 				});
 	}
 
+	public String createSelect(String tableName, String select, String other){
+		return qm.getQuery(dictionaryName, Query.CREATE_SELECT, 
+				new String[]{tableName,select,other});
+	}
+
 	public String createTable(String tableName, FieldList features) throws RemoteException {
 		Map<String,String> feats = new LinkedHashMap<String,String>();
 		Iterator<String>  it = features.getFieldNames().iterator();
