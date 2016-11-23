@@ -5,91 +5,58 @@
 </head>
 <body>
 
-	<h1>Building a Workflow</h1>
-
-	<p>The initial step in builidng a workflow is to add/drag a source
-		to the canvas, from there the source configuration must be complete.
-		The Source Help File shows step by step</p>
-
-	<p>Adding the source and configuring it means that actions can be
-		added and linked to the Source. Depending on the action more than one
-		source may be needed. Read each action help file to learn how to use
-		the action.</p>
-	<table class="secondtable">
-		<tr>
-			<td><img width="100%" src="../helpimages/OrganizedTabs.png" /></td>
-			<td><img width="100%" src="../helpimages/CanvasWithSource.png" /></td>
-		</tr>
-		<tr>
-			<td><img width="100%" src="../helpimages/AddedAction.png" /></td>
-			<td><img width="100%" src="../helpimages/Workflow.png" /></td>
-		</tr>
-	</table>
-
-	<p>Actions can be linked together depending on the action type and
-		output. This will lead to building workflows that may be quicker than
-		running multiple workflows.</p>
-		
-	<p>
-		When the workflow is ready to run, the <a class="stopLink" id="helpmain_menu" onclick="return false;" href="../help/menu.html">menu</a>
-		holds the option to run the project under Projects.
-	</p>
-
-	<h1>Schedule a Workflow</h1>
-
-    <p>When scheduling a workflow, it is recommended to use synchronous dataset, as it will help keeping a history and allow rerun in case of process or data changes, asynchronous dataset can be used as a quick fix or when the data is not available on HDFS.</p>
-    
-    <h2>Synchronous Dataset</h2>
-
-    <p>For Synchronous dataset, the three synchronous object should be used. 
-    <ul>
-        <li>Sync Source: loads a synchronous dataset</li>
-        <li>Sync Sink: store a synchronous dataset</li>
-        <li>Sync Sink Filter: reuse the result of a Sync Sink</li>
-    </p>
-    <table class="secondtable">
-		<tr>
-			<td><img width="100%" src="../helpimages/build_schedule1.png" /></td>
-			<td><img width="100%" src="../helpimages/build_schedule2.png" /></td>
-		</tr>
-		<tr>
-			<td><img width="100%" src="../helpimages/build_schedule3.png" /></td>
-		</tr>
-	</table>
-    <h2>Asynchronous Dataset</h2>
-
-    <p>For Asynchronous dataset, use the coordinator view</p>
-    <table class="secondtable">
-		<tr>
-			<td><img width="100%" src="../helpimages/build_schedule_async1.png" /></td>
-			<td><img width="100%" src="../helpimages/build_schedule_async2.png" /></td>
-		</tr>
-		<tr>
-			<td><img width="100%" src="../helpimages/build_schedule_async3.png" /></td>
-		</tr>
-	</table>
-
 	<h1>Tutorials</h1>
 
-	<p>This section list all the tutorials we have on Red Sqirl. The sources
-	needed to complete those tutorials are in the Red Sqirl installation
-	folder and on the Red Sqirl documentation website under the files
-	folder. In order to access it, you can go to the Remote File System tab,
-	connect to localhost and go to Red Sqirl installation path as explained
-	in the first part of the Apache Pig tutorial.
+	<div style="padding:10px 20px;">
+	
+		<p>There are three main windows that make up the basic Red Sqirl layout which can be seen in the image below. Workflows are built by dragging and dropping icons onto the canvas area and joining them together to perform an action. 
+		</p>
+	
+		<img src="../helpimages/tutorial_image00.png" 
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	
+		<p>To get started with Red Sqirl, we recommend you watch our 'first step' tutorial video
+		</p>
+	
+		<a href="https://www.youtube.com/watch?v=LL6adYq4YL4" target="_blank" style="text-decoration: none;" >
+			<input type="submit" class="contentButtonSubPages" value="Here" >
+		</a>
+		<br>
+	
+		<p>You can also find other videos including a Spanish version of the 'first step' tutorial on our youtube channel 
+		<a href="https://www.youtube.com/watch?v=u9A3m2ZNm-s" target="_blank" style="text-decoration: none;" >
+			here
+		</a>
+		</p>
+	
+		<h4>Written tutorials</h4>
+	
+		<ul>
+			<li>
+			<a class="stopLink" id="helpmain_pigtuto" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
+			- How to copy data from remote servers into HDFS
+			</li>
+			<li>
+			<a class="stopLink" id="helpmain_mltuto" onclick="return false;" href="../help/mltutorial.html">Machine Learning Tutorial</a>
+			- Run a logistic regression in Red Sqirl and create an evaluation method
+			</li>
+		</ul>
+	
+		<h4>Advanced guides</h4>
+	
+		<ul>
+			<li>
+			<a class="stopLink" id="aaa" onclick="return false;" href="../help/twittertorial.html">Twitter analysis guide</a>
+			- Build a data pipeline and schedule a workflow
+			</li>
+		</ul>
+	
+		<p>
+			Any source files needed to complete these tutorials can be found in the Red Sqirl installation folder. In order to access it, you can go to the Remote File System tab within Red Sqirl, connect to localhost and go to the Red Sqirl installation path.
+		</p>
+	
+	</div>
 
-	<ul>
-	    <li><a class="stopLink" id="helpmain_pigtuto" 
-		onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
-	    </li>
-	    <li><a class="stopLink" id="helpmain_mltuto" 
-		onclick="return false;" href="../help/mltutorial.html">Machine Learning Tutorial</a>
-	    </li>
-	    
-	</ul>
-
-	</p>
-
-	<a class="stopLink" id="help_main" onclick="return false;" href="../help/main.html">return to Red Sqirl help</a>
 </body>
 </html>
