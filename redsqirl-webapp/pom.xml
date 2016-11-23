@@ -33,13 +33,13 @@ support@redsqirl.com
     <parent>
 	<groupId>com.idiro.redsqirl</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
     </parent>
 
     <groupId>com.idiro.redsqirl</groupId>
     <artifactId>redsqirl-webapp</artifactId>
     <packaging>war</packaging>
-    <version>${hadoop.version}-1.1</version>
+    <version>${hadoop.version}-1.2</version>
     <name>Red Sqirl - Web Application</name>
 
 
