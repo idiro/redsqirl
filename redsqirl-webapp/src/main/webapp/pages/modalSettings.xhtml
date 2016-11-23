@@ -130,7 +130,7 @@
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
-			     					<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" 
+			     					<h:graphicImage url="../image/icons/view.gif" style="width:15px;float:right" 
 										title="#{messages.label_show_password}" onmousedown="setSecretToInpu();" onmouseup="setInpuToSecret();" onmouseover="jQuery(this).css('cursor', 'pointer');"
 										rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'SYSTEM' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existSysProperty &amp;&amp; settingsBean.template != 'Y' }" />
 			     						
@@ -180,7 +180,7 @@
 			     						rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" 
 			     						title="#{settingsBean.s.properties[obj].description}" redisplay="true" 
 			     						onkeypress="return enableEnterKey(event, 'btSettingsApply');" />
-									<h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" 
+									<h:graphicImage url="../image/icons/view.gif" style="width:15px;float:right" 
 										title="#{messages.label_show_password}" onmousedown="setSecretToInpu();" onmouseup="setInpuToSecret();" onmouseover="jQuery(this).css('cursor', 'pointer');"
 										rendered="#{settingsBean.s.properties[obj].password &amp;&amp; (settingsBean.s.properties[obj].scope == 'USER' or settingsBean.s.properties[obj].scope == 'ANY') &amp;&amp; settingsBean.s.properties[obj].existUserProperty &amp;&amp; settingsBean.template != 'Y' }" />
 			     						

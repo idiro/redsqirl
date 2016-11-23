@@ -1,0 +1,945 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<title>Guide for Analysing Twitter Data in Hadoop</title>
+</head>
+<body>
+
+	<h1>Guide for Analysing Twitter Data in Hadoop</h1>
+	
+	<div style="padding:10px 20px;">
+	
+	<p>If a social network is a &#39;network of social interactions and
+		personal relationships&#39;, then it&#39;s easy to understand how an
+		online social network can be looked at simply as a vast source of
+		data.
+		<br><br>
+		If every interaction on a social network, no matter how small,
+		is considered a data point, then the amount of data available to be
+		analysed is enormous. The possibilities this data can provide to
+		organisations is limitless, but one of the main challenges lies in
+		making the data available to analysts. Also, with the data being
+		renewed constantly, it&#39;s vital that the right systems are put into
+		place in order to give analysts access to up-to-date data. If slow,
+		cumbersome processes are being used, then the data is already out of
+		date by the time it is being analysed.
+		<br><br>
+		To demonstrate some of the capabilities of Red Sqirl, we&#39;ve
+		put together this guide to show how to access vast amounts of data
+		from a social network in real-time and perform an analysis on it.
+		<br><br>
+		We will be pulling data from Twitter and performing an ongoing
+		sentiment analysis on it. The goal being to have Red Sqirl produce a
+		report every hour summing up the sentiment of enormous amounts of
+		up-to-date twitter activity.
+		<br><br>
+		This document is a guide and not a step by step tutorial, the
+		point of which is to show the capabilities of Red Sqirl. If you plan
+		on recreating our technique please make sure you understand everything
+		you run, including the scripts.
+		<br><br>
+		For our analysis, we will track eight basic emotions (anger,
+		fear, anticipation, trust, surprise, sadness, joy, and disgust) and
+		two sentiments (negative and positive). We will take tweets organised
+		by a given topic and track words from 41 different languages.
+		<br><br>
+		The steps involved for this process are as follows:
+	</p>
+	
+	<p>
+	Step 1. Twitter streaming<br>
+	Step 2. Load the data<br>
+	Step 3. Calculate the sentiment per tweet<br>
+	Step 4. Create your output<br>
+	Step 5. Schedule the hourly job<br>
+	Step 6. Create a daily job<br>
+	Step 7. Schedule a daily job<br>
+	Step 8. Save and run
+	</p>
+	
+	
+	
+	<h3>Prerequisite</h3>
+	<p>We&rsquo;ll assume the following is available to you:</p>
+	<ul>
+		<li>A Hadoop Cluster</li>
+		<li>Red Sqirl</li>
+		<li>Direct access to an edge node (HDFS access from command line)</li>
+		<li>Your Edge node should have twitter access,
+			eventually&nbsp;through a proxy.
+		</li>
+	</ul>
+	<p>We assume you have a working knowledge of:</p>
+	<ul>
+		<li>Bash (ssh, ls, cd&hellip;)</li>
+		<li>Hadoop, (HDFS and Hive)</li>
+	</ul>
+	<p>We will now start by setting up the environment.</p>
+	<ul>
+		<li>Streaming Data with Twitter</li>
+		<li>Include a lexicon in Hive</li>
+		<li>Add JSON functionalities in Hive</li>
+	</ul>
+	<h4>Step 1 Twitter Streaming</h4>
+	<p>
+		We will use the Twitter streaming API for pulling the tweets and
+		Apache flume for transferring them to HDFS orderly. We will download
+		the data in the <a href="https://en.wikipedia.org/wiki/JSON">JSON</a>&nbsp;form,
+		please see here for an <a href="https://gist.github.com/hrp/900964">example
+			of twitter JSON</a>.
+	</p>
+	<h5>API Limitations</h5>
+	<p>Twitter offers a maximum bandwidth of 1% to their tweets in
+		streaming mode. You can either filter the tweets, to get all the
+		tweets related to a set of keywords or a 1% random sample.</p>
+	<h5>Create your OAUTH credentials</h5>
+	<p>For using the streaming API, you will have to generate your
+		credentials.</p>
+	<ol>
+		<li>Go to <a href="https://apps.twitter.com">twitter apps</a>&nbsp;and
+			register your application.
+		</li>
+		<li>Go to permissions and select Read Only.</li>
+	</ol>
+	<p>Keep your browser window with your credentials open for a
+		minute, we&rsquo;ll use them in the next step.</p>
+	<h5>Setup the streaming</h5>
+	<ol>
+		<li>Download Apache Flume <a
+			href="https://flume.apache.org/download.html">latest version</a>&nbsp;binary
+			tar.
+		</li>
+		<li>Copy flume tar file into your edge node</li>
+		<li>Untar it, we will assume you have the directory /opt/apache-flume-1.6.0-bin next steps.	</li>
+	</ol>
+
+	<code style="white-space:normal;word-wrap: break-word;" >
+		tar -xzf apache-flume-1.6.0-bin.tar.gz
+	</code>
+	
+	<ol>
+		<li>Download the <a
+			href="https://s3-eu-west-1.amazonaws.com/redsqirl/misc/streaming-0.0.1.tar.gz">idiro
+				twitter streaming project</a>, you can find the <a
+			href="https://github.com/idiro/streaming">code on github</a>&nbsp;if
+			you&rsquo;re interested
+		</li>
+		<li>Copy the twitter streaming tar file into your edge node</li>
+		<li>Untar it, we will assume you have the directory
+			/opt/streaming-0.0.1 next steps.</li>
+	</ol>
+	
+	<code style="white-space:normal;word-wrap: break-word;" >
+		tar -xzf streaming-0.0.1.tar.gz
+	</code>
+
+	<ol>
+		<li>Configure the file example.properties</li>
+		<li>Configure the file flume-hdfs-copy.conf</li>
+		<li>Go in the executable and change the top section</li>
+	</ol>
+	
+	<code style="white-space:normal;word-wrap: break-word;" >	
+	
+		###############################################################<br>
+		#Change me<br><br>
+		#Twitter Streaming vars<br>
+		#PROXY_PORT=3000<br>
+		#PROXY_HOST=myproxy.local.net<br>
+		PROPERTY_FILE=example.properties<br><br>
+		#FLUME VARS<br>
+		FLUME_HOME=~/apache-flume-1.6.0-bin<br>
+		FLUME_EXEC_CONF=flume-hdfs-copy.conf<br>
+		###############################################################
+					
+	</code>
+	
+	<ol>
+		<li>We will assume in the next steps that flume will write into
+			the folder &lsquo;/share/twitter_json/%y%M%d/%H&rsquo;</li>
+		<li>Execute kickoff-streaming.sh</li>
+	</ol>
+	
+
+	<code style="white-space:normal;word-wrap: break-word;" >
+
+		$cd /opt/streaming-0.0.1<br>
+		$./kickoff-streaming.sh
+	
+	</code>
+	
+	
+	<ol>
+		<li>Wait a minute or so and check if the configured flume folder
+			has been created in HDFS.</li>
+	</ol>
+	
+	<table style="border:1px solid;">
+		<tbody>
+			<tr>
+				<td colspan="1" rowspan="1"><p>Notes:</p>
+					<ol>
+						<li>Apache Flume has a twitter-source action by default. It
+							is doing exclusively sampling. But more importantly, problems can
+							arise when trying to read the data generated in Hive 
+							(see <a href="http://stackoverflow.com/questions/36053306/cloudera-5-4-2-avro-block-size-is-invalid-or-too-large-when-using-flume-and-twi">here</a>).
+						</li>
+						<li>CDH also provides twitter sampling plugins, but there
+							are library conflicts with the official flume version 1.6.0
+						</li>
+					</ol>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<h4>The NRC Dictionary</h4>
+	<p>
+		When running a sentiment analysis you rely on a dictionary, the more
+		accurate your dictionary, the better the result. In this sentiment
+		analysis, we will use the NRC Emotion Lexicon. Please refer to the <a
+			href="http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm">NRC
+			website</a>&nbsp;for their terms &amp; conditions. The NRC Emotion
+		Lexicon is a list of English words and their associations with eight
+		basic emotions (anger, fear, anticipation, trust, surprise, sadness,
+		joy, and disgust) and two sentiments (negative and positive). The NRC
+		also provides translations for languages other than English. So
+		we&#39;ll add those words to our dictionary as well. We&#39;re unsure
+		of the quality of those dictionaries and if the method of extracting
+		words from tweets and comparing them with the dictionary is relevant
+		or not for that language. If one of those languages is important for
+		your analysis you should check this yourself.
+	</p>
+	<p>We&rsquo;ve created a file to load those dictionaries easily
+		into a Hive Database.</p>
+	<ol>
+		<li>Download the tar file <a
+			href="https://s3-eu-west-1.amazonaws.com/redsqirl/misc/nrc_lexicon.tar.gz">provided</a>.
+		</li>
+		<li>Copy the tar file to your edge node and untar it</li>
+		<li>Check the script &ldquo;load_into_hive.sql&rdquo;</li>
+		<li>Execute the script load_into_hive.sql</li>
+		<li>Check if the nrc_lexicon table is populated</li>
+	</ol>
+	<h4>The JSON Library</h4>
+	<p>Hive cannot read JSON files by default and our streaming writes
+		in the JSON format. Therefore you will need to download a JAR library.</p>
+	<ol>
+		<li>Download the library from <a
+			href="https://github.com/rcongiu/Hive-JSON-Serde">rcongiu github</a>,
+			binary (jar file) are provided for standard distribution so you
+			don&rsquo;t have to compile.
+		</li>
+		<li>Copy this library into HDFS and keep his path handy, we will
+			assume in the next steps to be
+			/share/lib/hive/json-serde-1.3.7-jar-with-dependencies.jar</li>
+		<li>Check if everything is OK in a terminal window (don&rsquo;t
+			forget to change the twitter data path)</li>
+	</ol>
+
+
+	<code style="white-space:normal;word-wrap: break-word;" >
+				
+				<p>
+					ADD JAR	/share/lib/hive/json-serde-1.3.7-jar-with-dependencies.jar;
+					<br><br>
+						
+					CREATE EXTERNAL TABLE tweets_tmp (<br> 
+					&nbsp;id BIGINT,<br> 
+					&nbsp;created_at STRING,<br> 
+					&nbsp;source STRING,<br> 
+					&nbsp;favorited BOOLEAN,<br>
+					&nbsp;retweeted_status STRUCT&lt;<br>
+					&nbsp;&nbsp;text:STRING,<br>
+					&nbsp;&nbsp;user:STRUCT&lt;screen_name:STRING,name:STRING&gt;, <br>
+					&nbsp;&nbsp;retweet_count:INT&gt;,<br>
+					&nbsp;entities STRUCT&lt;<br>
+					&nbsp;&nbsp;urls:ARRAY&lt;STRUCT&lt;expanded_url:STRING&gt;&gt;,<br>
+					&nbsp;&nbsp;user_mentions:ARRAY&lt;STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,<br>
+					&nbsp;&nbsp;hashtags:ARRAY&lt;STRUCT&lt;text:STRING&gt;&gt;&gt;,<br>
+					&nbsp;text STRING,<br>
+					&nbsp;user STRUCT&lt;<br>
+					&nbsp;&nbsp;screen_name:STRING,<br>
+					&nbsp;&nbsp;name:STRING,<br>
+					&nbsp;&nbsp;friends_count:INT,<br>
+					&nbsp;&nbsp;followers_count:INT,<br>
+					&nbsp;&nbsp;statuses_count:INT,<br>
+					&nbsp;&nbsp;verified:BOOLEAN,<br>
+					&nbsp;&nbsp;utc_offset:INT,<br>
+					&nbsp;&nbsp;time_zone:STRING&gt;,<br>
+					&nbsp;in_reply_to_screen_name STRING<br>
+					) <br>
+					ROW FORMAT SERDE &#39;org.openx.data.jsonserde.JsonSerDe&#39;<br>
+					LOCATION &#39;/share/twitter_json/${DATE}/${HOUR}&rsquo;;
+					<br><br>
+					
+					SELECT id,text FROM tweets LIMIT 10;
+					<br><br>
+					
+					DROP TABLE tweets_tmp;
+				</p>
+
+	</code>
+	
+
+	<h3>The Analysis</h3>
+	<p>
+		Now using Red Sqirl we will build a sentiment analysis. Red Sqirl will
+		then produce an hourly and daily summary. These two tables can then be
+		queried or integrated with third-party tools. You can find the output
+		rs file <a
+			href="https://s3-eu-west-1.amazonaws.com/redsqirl/misc/twitter_emotions.rs">here</a>.
+	</p>
+	<p>At each step of the process, we&#39;ll show a screenshot to
+		demonstrate the workflow. This first screenshot is a view of what the
+		final workflow in Red Sqirl will look like.</p>
+	<p>
+		<img src="../helpimages/image00.png"
+			style="width: 601.70px; height: 301.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	
+	<h4>Step 2 Load the Data</h4>
+	
+	<h5>Create the Twitter Source</h5>
+	
+	<p>In this case our source is the data generated by flume and the
+		format is JSON. We&rsquo;ll load it every hour as a text file into Red
+		Sqirl.</p>
+	<ol>
+		<li>Drag &amp; Drop a Synchronous Source</li>
+		<li>Double Click on it</li>
+		<li>Name it twitter</li>
+		<li>Click OK</li>
+		<li>Select Hadoop Distributed File System</li>
+		<li>Click Next</li>
+		<li>Select your path /share/twitter_json/20161015/00</li>
+		<li>Give delimiter #1 to get one field</li>
+		<li>Click Apply to check</li>
+		<li>Click Next</li>
+		<li>The template path should look like this:
+			/share/twitter_json/${YEAR}${MONTH}${DAY}/${HOUR}</li>
+		<li>Click Next</li>
+		<li>The defaults are fine, except the offset to set at -1</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image08.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Create a temporary external table</h5>
+	<p>This hourly file can be parsed into a script node. From which
+		we will load it as an external table. In this analysis we will only
+		need the following fields:</p>
+	<ol>
+		<li>id</li>
+		<li>username</li>
+		<li>location</li>
+		<li>Text</li>
+	</ol>
+	<ol>
+		<li>Drag &amp; Drop a Script Node</li>
+		<li>Link &ldquo;twitter&rdquo; to it (choose the unnamed output)</li>
+		<li>Double Click</li>
+		<li>Name it twitter_extract</li>
+		<li>Choose &ldquo;template-hive2&rdquo;</li>
+		<li>Click Next</li>
+		<li>Choose HCatalog</li>
+		<li>Click Next</li>
+		<li>In the header write &ldquo;id LONG, username STRING, area
+			STRING, content STRING&rdquo;</li>
+		<li>Click Next</li>
+		<li>Choose HCatalog</li>
+		<li>Click Next</li>
+		<li>Write &ldquo;id LONG,word STRING&rdquo; in the header field</li>
+		<li>Click Next</li>
+		<li>We&rsquo;re copying how the node looks for us. From the
+			original value, check</li>
+	</ol>
+	<ol>
+		<li>The job-xml field</li>
+		<li>The jdbc-url field</li>
+		<li>Remove the prepare field</li>
+		<li>You can add namenode parameters, and change the INPUT_PATH
+			parameter</li>
+	</ol>
+	
+	
+	
+	<code style="white-space:normal;word-wrap: break-word;" >
+		
+		<p>
+			&lt;hive2 xmlns=&quot;uri:oozie:hive2-action:0.1&quot;&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job-tracker&gt;${jobtracker}&lt;/job-tracker&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name-node&gt;${namenode}&lt;/name-node&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job-xml&gt;/user/etienne/.redsqirl/conf/hive-site.xml&lt;/job-xml&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;configuration&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;mapred.job.queue.name&lt;/name&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;value&gt;${default_action_queue}&lt;/value&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/property&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;oozie.launcher.mapred.job.queue.name&lt;/name&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;value&gt;${default_launcher_queue}&lt;/value&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/property&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/configuration&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;jdbc-url&gt;jdbc:hive2://hdp2.local.net:10000/default&lt;/jdbc-url&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script&gt;!{SCRIPT}&lt;/script&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;param&gt;namenode=${namenode}&lt;/param&gt;<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;param&gt;INPUT_PATH=${twitter}&lt;/param&gt;<br>
+			&lt;/hive2&gt;<br>
+			
+		</p>
+					
+	</code>
+	
+					
+	<ol>
+		<li>Set the script extension to &lsquo;.sql&rsquo;</li>
+		<li>Click on ignore warnings</li>
+		<li>Click Next</li>
+		<li>Copy the following script</li>
+	</ol>
+	
+	<code style="white-space:normal;word-wrap: break-word;" >
+	
+	<p>
+		ADD JAR ${namenode}/share/lib/hive/json-serde-1.3.7-jar-with-dependencies.jar;
+		<br><br>
+		
+		--Drop temporary objects<br>
+		DROP TABLE IF EXISTS tweets_tmp;<br>
+		DROP VIEW IF EXISTS tweet_sentences_tmp;<br>
+		DROP TABLE IF EXISTS !{OUTPUT_DATABASE_tweets}.!{OUTPUT_TABLE_tweets};<br>
+		DROP TABLE IF EXISTS !{OUTPUT_DATABASE_words}.!{OUTPUT_TABLE_words};
+		<br><br>
+			
+		--Orignal data<br>
+		CREATE EXTERNAL TABLE tweets_tmp (<br>
+		&nbsp; id BIGINT,<br>
+		&nbsp; text STRING,<br>
+		&nbsp; `user` STRING<br>
+		)<br>
+		ROW FORMAT SERDE &#39;org.openx.data.jsonserde.JsonSerDe&#39;<br>
+		LOCATION &#39;${INPUT_PATH}&#39;;
+		<br><br>
+		
+		--Get the four fields we will use<br>
+		CREATE TABLE !{OUTPUT_DATABASE_tweets}.!{OUTPUT_TABLE_tweets} AS<br>
+		SELECT distinct id AS id,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get_json_object(`user`,&#39;$.name&rsquo;) AS username,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get_json_object(`user`,&#39;$.location&rsquo;) AS area,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text AS content<br>
+		FROM tweets_tmp;
+		<br><br>
+		
+		DROP TABLE tweets_tmp;
+		<br><br>
+		
+		--Create a table with a word per row<br>
+		create view tweet_sentences_tmp as select id, words<br>
+		FROM !{OUTPUT_DATABASE_tweets}.!{OUTPUT_TABLE_tweets}<br>
+		lateral view explode(sentences(lower(content))) dummy as words;
+		<br><br>
+		
+		create table !{OUTPUT_DATABASE_words}.!{OUTPUT_TABLE_words} as select id, word<br>
+		FROM tweet_sentences_tmp<br>
+		lateral view explode( words ) dummy as word;
+		<br><br>
+		
+		DROP VIEW tweet_sentences_tmp;
+		<br>
+	</p>
+						
+	</code>
+				
+	<ol>
+		<li>Click OK</li>
+	</ol>
+	
+	
+	<table style="border:1px solid;">
+		<tbody>
+			<tr>
+				<td colspan="1" rowspan="1">
+					<p>Note:</p>
+					<ul>
+						<li>In tweets_tmp table, the location field in the user JSON
+							field is sometimes missing. Therefore, the user column type
+							can&rsquo;t be STRUCT.
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		<img src="../helpimages/image02.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Create the Dictionary Source</h5>
+	<p>As we are using a multi-lingual environment, we will need to
+		load the dictionary and remove the eventual duplicate.</p>
+	<ol>
+		<li>Drag &amp; Drop an HCatalog Source</li>
+		<li>Double Click on it</li>
+		<li>Name it lexicon</li>
+		<li>Click OK</li>
+		<li>Choose the lexicon table for me it is /utils/nrc_lexicon</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image01.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Ensure Unicity of Emotions per word</h5>
+	<p>We are assuming here that a word used in different languages
+		have only one meaning. We will remove duplicates.</p>
+	<ol>
+		<li>Drag &amp; Drop a JDBC Aggregator</li>
+		<li>Link lexicon with it</li>
+		<li>Double click on it</li>
+		<li>Name it words</li>
+		<li>Click OK</li>
+		<li>Select word</li>
+		<li>Click Next</li>
+		<li>Choose copy in the menu and click Generate</li>
+		<li>Choose max in the menu and click Generate</li>
+		<li>Click on the growing glass icon</li>
+		<li>Replace all &ldquo;_max&rdquo; by nothing</li>
+		<li>Click Close on the replace modal</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image10.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	
+	<h4>Step 3Calculate the sentiment per tweet</h4>
+	
+	<h5>Merge tweets with sentiment</h5>
+	<p>For every tweet, we will look into the meaning of each word. A
+		word can be in several category, and can be repeated.</p>
+	<ol>
+		<li>Drag &amp; Drop a Jdbc Join</li>
+		<li>Link twitter_extract to it, words output</li>
+		<li>Link words to it</li>
+		<li>Double click on it</li>
+		<li>Call it &ldquo;word_emotions&rdquo;</li>
+		<li>Click Next</li>
+		<li>Select copy and OK</li>
+		<li>Remove the row &ldquo;twitter_extract_words.word&rdquo; and
+			&ldquo;words.word&rdquo;</li>
+		<li>Go in the replace modal and replace
+			&ldquo;twitter_extract_words_&rdquo; to nothing</li>
+		<li>Go in the replace modal and replace &ldquo;words_&rdquo; to
+			nothing</li>
+		<li>Click on the Close button</li>
+		<li>Click Next</li>
+		<li>On the twitter_extract_words line, add
+			&ldquo;twitter_extract_words.word&rdquo; and on the words line
+			&ldquo;words.word&rdquo;</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image14.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Aggregate the Data per tweet</h5>
+	<p>Now we can calculate the sentiment communicated in a tweet.</p>
+	<ol>
+		<li>Drag &amp; Drop an aggregator icon</li>
+		<li>Link &ldquo;twitter_emotions&rdquo; to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &ldquo;tweet_emotions&rdquo;</li>
+		<li>Select id</li>
+		<li>Select Copy and OK</li>
+		<li>Select SUM and OK</li>
+		<li>Go in the grossing glass&nbsp;icon and replace
+			&ldquo;_sum&rdquo; by nothing</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	
+	<h4>Create your Output</h4>
+	
+	<h5>Low Level Output</h5>
+	
+	<p>We will add the data retrieved into our input data.</p>
+	<ol>
+		<li>Drag &amp; Drop a Jdbc Join</li>
+		<li>Link &ldquo;twitter_extract&rdquo; to it, tweet outputs</li>
+		<li>Link &ldquo;tweet_emotions&rdquo; to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &ldquo;twitter_emotion&rdquo;</li>
+		<li>Click Next</li>
+		<li>Select Copy and Click OK</li>
+		<li>Drop line &ldquo;tweet_emotions.id&rdquo;</li>
+		<li>Click on the grossing glass</li>
+		<li>Replace &ldquo;twitter_extract_tweets_&rdquo; by nothing</li>
+		<li>Replace &ldquo;tweet_emotions_&rdquo; by nothing</li>
+		<li>Click on Close</li>
+		<li>Click next</li>
+		<li>Select &ldquo;Left Outer Join&rdquo;</li>
+		<li>Add &ldquo;twitter_extract_tweets.id&rdquo; to the
+			twitter_extract line</li>
+		<li>Add &ldquo;tweet_emotions.id&rdquo; to the tweet_emotions
+			line</li>
+		<li>Make sure that the twitter_extract line is first</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image09.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Record tweet level output</h5>
+	<p>Let&rsquo;s record twitter_emotion</p>
+	<ol>
+		<li>Drag &amp; Drop a Synchronous Sink</li>
+		<li>Link &ldquo;twitter_emotion&rdquo; to it</li>
+		<li>Double click on it</li>
+		<li>Name it &ldquo;hourly_tweets&rdquo;</li>
+		<li>In template, write the output table name and database to
+			write the result, for us we will write it into
+			&lsquo;/twitter/tweets/dt=${YEAR}${MONTH}${DAY};hr=${HOUR}&rsquo;</li>
+		<li>Click Apply</li>
+		<li>Click OK on the error message</li>
+		<li>You will see a green question mark, hover it and you will
+			see an sql statement. Copy the entire statement</li>
+		<li>On the bottom right of your screen, in the HCatalog View,
+			click on the Query Executor.</li>
+		<li>Paste your query</li>
+		<li>You can add a data format such as &ldquo;STORED AS
+			ORC&rdquo; if you wish</li>
+		<li>At the end your query would look like</li>
+	</ol>
+
+
+	<code style="white-space:normal;word-wrap: break-word;" >
+
+		<p>
+			CREATE TABLE twitter.tweets (id BIGINT,username STRING,area STRING,content STRING,positive <br>
+			INT,negative INT,anger INT,anticipation INT,disgust INT,fear INT,joy INT,sadness INT,surprise INT,trust INT ) <br>
+			PARTITIONED BY (dt STRING, hr STRING ) STORED AS ORC
+			<br>
+		</p>
+	
+	</code>
+	
+	<ol>
+		<li>&nbsp;Click the execute button</li>
+		<li>In HCatalog View, go into the twitter database</li>
+		<li>Click on the refresh button, so that you can see the new
+			table</li>
+		<li>Click Ok in the Synchronous Sink window.</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image07.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Summary Output</h5>
+	
+	<p>We will now summarize our output. For every area and a given
+		keywords, we will calculate the number of tweets and the emotions.</p>
+	<p>
+		<br>Firstly let&rsquo;s calculate an overall view for every area.
+	</p>
+	<ol>
+		<li>Drag &amp; Drop a Jdbc Aggregator</li>
+		<li>Link Twitter Emotions to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &ldquo;twitter_sum&rdquo;</li>
+		<li>Click OK</li>
+		<li>Select area</li>
+		<li>Click Next</li>
+		<li>Add a line, with the following fields:
+			&#39;&#39;,content,CATEGORY</li>
+		<li>Select Copy and Click OK</li>
+		<li>Click on the Configure Button</li>
+		<li>Click on count</li>
+		<li>Select total_cnt</li>
+		<li>Click Add</li>
+		<li>Click Generate</li>
+		<li>Select SUM and click OK</li>
+		<li>Remove id_sum row</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image04.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<p>We will now add one node for every expression we want to report
+		on.</p>
+	<ol>
+		<li>Copy &amp; Paste twitter_sum</li>
+		<li>Link the &ldquo;twitter_emotion&rdquo; to the new icon</li>
+		<li>Go in options, rename Object. We can name it for example
+			&ldquo;twitter_bd_sum&rdquo;.</li>
+		<li>Confirm the rename</li>
+		<li>Double Click on the object</li>
+		<li>Click next</li>
+		<li>Change the content operation to be &lsquo;big data&#39;</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>In the Condition write: LOWER(content) LIKE &#39;%big
+			data%&#39;</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image17.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<p>We need to bring all our reports together in one dataset.</p>
+	<ol>
+		<li>Drag &amp; Drop a Jdbc Union</li>
+		<li>Link it with all your summaries</li>
+		<li>Name it &ldquo;twitter_report&rdquo;</li>
+		<li>Click OK</li>
+		<li>Click Next</li>
+		<li>Select Copy and click OK</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image03.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h5>Record area level output</h5>
+	
+	<p>Let&rsquo;s record our hourly report now.</p>
+	<ol>
+		<li>Drag &amp; Drop a Synchronous Sink</li>
+		<li>Link &ldquo;twitter_report&rdquo; to it</li>
+		<li>Double click on it</li>
+		<li>Name it &ldquo;hourly_report&rdquo;</li>
+		<li>In template, write the output table name and database to
+			write the result, for me I will write it into
+			&lsquo;/twitter/twitter_report_hr/dt=${YEAR}-${MONTH}-${DAY};hr=${HOUR}&rsquo;</li>
+		<li>Click Apply</li>
+		<li>Click OK on the error message</li>
+		<li>You will see a green question mark, hover it and you will
+			see an sql statement. Copy the entire statement</li>
+		<li>On the bottom right of your screen, in the HCatalog View,
+			click on the Query Executor.</li>
+		<li>Paste your query</li>
+		<li>You can add a data format such as &ldquo;STORED AS
+			ORC&rdquo; if you wish</li>
+		<li>At the end your query will look like</li>
+	</ol>
+
+
+	<code style="white-space:normal;word-wrap: break-word;" >
+		<p>
+			CREATE TABLE twitter.twitter_report_hr (content STRING,area STRING,total_cnt <br>
+			INT,positive_sum INT,negative_sum INT,anger_sum	INT,anticipation_sum INT,disgust_sum INT,fear_sum INT,joy_sum <br>
+			INT,sadness_sum INT,surprise_sum INT,trust_sum INT ) PARTITIONED BY (dt STRING, hr STRING ) STORED AS ORC
+			<br>
+		</p>
+				
+	</code>
+				
+	<ol>
+		<li>&nbsp;Click the execute button</li>
+		<li>In HCatalog View, go into the twitter database</li>
+		<li>Click on the refresh button, so that you can see the new
+			table</li>
+		<li>Click Ok in the Synchronous Sink window.</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image16.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	
+	<h4>Step 5 Schedule The Hourly Job</h4>
+	
+	<p>We will now configure the computation time of our job.</p>
+	<ol>
+		<li>Double Click on the coordinator label, on the top left of
+			the canvas</li>
+		<li>Change the name to &ldquo;twitter_hourly&rdquo;</li>
+		<li>Click on Execute</li>
+		<li>In the execution time, choose today at 12:00, and repeat the
+			job every hour. In here, it means the job will execute at the start
+			of each hour.</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image06.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<h4>Step 6 Create a daily Job</h4>
+	<p>Let&rsquo;s create a daily summary. We will take 24 reports and
+		produce one every day.</p>
+	<p>Our first step is to set up the input data of our first job.</p>
+	<ol>
+		<li>Drag &amp; Drop a Synchronous Sink Filter</li>
+		<li>Link &lsquo;hourly_report&rsquo; to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &lsquo;all_day_reports&rsquo;</li>
+		<li>Click OK</li>
+		<li>Set the number of instances to 24</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image13.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<p>We will now summarize the report.</p>
+	<ol>
+		<li>Drag &amp; Drop a Jdbc Aggregator</li>
+		<li>Link &lsquo;all_day_reports&rsquo; to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &lsquo;report_d_sum&rsquo;</li>
+		<li>Click OK</li>
+		<li>Select area and content</li>
+		<li>Click Next</li>
+		<li>Select copy and click OK</li>
+		<li>Select sum and click OK</li>
+		<li>Click on the grossing glass icon and replace all
+			&ldquo;_sum_sum&rdquo; by &ldquo;_sum&rdquo;</li>
+		<li>Rename &ldquo;total_cnt_sum&rdquo; to
+			&ldquo;total_cnt&rdquo;</li>
+		<li>Click Next</li>
+		<li>Click Next</li>
+		<li>Click OK</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image11.png"
+			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<p>Let&rsquo;s record our summary.</p>
+	<ol>
+		<li>Drag &amp; Drop a Synchronous Sink</li>
+		<li>Link &lsquo;all_day_reports&rsquo; to it</li>
+		<li>Double Click on it</li>
+		<li>Name it &lsquo;daily_report&rsquo;</li>
+		<li>Click OK</li>
+		<li>Set the template path to
+			&lsquo;/twitter/twitter_report_daily/dt=${YEAR}-${MONTH}-${DAY}&rsquo;</li>
+		<li>Apply</li>
+		<li>Copy the create statement to the execution window</li>
+		<li>You can add your favourite storage method. The script to
+			execute should look like:</li>
+	</ol>
+	
+	<code style="white-space:normal;word-wrap: break-word;" >
+	
+		<p>
+			CREATE TABLE twitter.twitter_report_daily (content STRING,area STRING,total_cnt <br>
+			INT,positive_sum INT,negative_sum INT,anger_sum INT,anticipation_sum INT,disgust_sum INT,fear_sum INT,joy_sum <br>
+			INT,sadness_sum INT,surprise_sum INT,trust_sum INT ) PARTITIONED BY (dt STRING ) STORED AS ORC
+			<br>
+		</p>
+	</code>
+	
+	<ol>
+		<li>Click Execute</li>
+		<li>Refresh the tables in the twitter database</li>
+		<li>Click OK in the Sink configuration window</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image18.png"
+			style="width: 601.70px; height: 420.00px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	
+	<h4>Step 7 Schedule the daily job</h4>
+	<p>We will now configure the computation time of our daily job.</p>
+	<ol>
+		<li>Double click on the coordinator label, corresponding to the
+			new coloured area</li>
+		<li>Change the name to &ldquo;twitter_daily&rdquo;</li>
+		<li>Click on Execute</li>
+		<li>In the execution time, choose today at 00:00, and repeat the
+			job every day.</li>
+	</ol>
+	<p>
+		<img src="../helpimages/image05.png"
+			style="width: 601.70px; height: 301.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	
+	<h5>Step 8 Save &amp; Run</h4>
+	
+	<ol>
+		<li>Go in the File menu, click Save</li>
+		<li>Name the new workflow twitter_emotions</li>
+		<li>Go to Project, click &ldquo;Save &amp; Run&rdquo;</li>
+		<li>Give it a date far in the future to run it in data pipeline
+			mode, or with an end date in the past to run it in batch mode. When
+			running in batch, you may be limited by Oozie &ldquo;Workflow
+			definition length&rdquo; property default value.
+		</li>
+	</ol>
+	
+	<h3>Conclusion</h3>
+	
+	<p>In this use case we have shown how to:</p>
+	<ul>
+		<li>Start a flume job for pulling twitter data</li>
+		<li>Integrate a real time stream with Red Sqirl</li>
+		<li>Integrate a non standard Hadoop utility inside Red Sqirl</li>
+		<li>Produce a regular report in a HCatalog table in Red Sqirl</li>
+	</ul>
+	<p>You can now create a dashboard using your favourite
+		visualisation tool.</p>
+	<p>
+		<img src="../helpimages/image15.png"
+			style="width: 601.70px; height: 573.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
+			title="">
+	</p>
+	<p>Simple Tableau Dashboard showing daily usage</p>
+	<h3>Sources</h3>
+	<p>
+		<a href="http://www.tutorialspoint.com/apache_flume/fetching_twitter_data.htm">Apache Flume - Fetching Twitter Data</a>
+	</p>
+	<p>
+		<a href="http://brnrd.me/twitter-apis-vs-twitter-firehose/">Twitter	API vs Firehose</a>
+	</p>
+	<p>
+		<a href="https://github.com/cloudera/cdh-twitter-example">Twitter Example from CDH</a>
+	</p>
+	<p>
+		<a href="https://raw.githubusercontent.com/hortonworks/tutorials/hdp-2.3/assets/nifi-sentiment-analytics/assets/dictionary.tsv">Dictionary</a>
+	</p>
+	<p>
+		<a href="http://hortonworks.com/hadoop-tutorial/how-to-refine-and-visualize-sentiment-data/">Sentiment Analys is SOLR</a>
+	</p>
+	<p>
+		Twitter return <a href="https://dev.twitter.com/overview/api/tweets">https://dev.twitter.com/overview/api/tweets</a>
+	</p>
+	<p>
+		jSON: <a href="http://thornydev.blogspot.ie/2013/07/querying-json-records-via-hive.html">http://thornydev.blogspot.ie/2013/07/querying-json-records-via-hive.html</a>
+	</p>
+	<p>
+		JSON Git Hub: <a href="https://github.com/rcongiu/Hive-JSON-Serde">https://github.com/rcongiu/Hive-JSON-Serde</a>
+	</p>
+	
+	</div>
+	
+	
+</body>
+</html>
