@@ -48,6 +48,14 @@ mkdir -p $DIRECTORY_NAME
 pushd ${SCRIPT_PATH}/../../../
 pwd
 
+#Compile idiro hadoop
+pushd ../idiro-hadoop
+mvn clean install -Dhadoop.artifactId=hadoop-core -Dhadoop.version=1.0.3-mapr-4.1.0 -DskipTests
+mvn clean install -Dhadoop.version=2.4.0 -DskipTests
+mvn clean install -Dhadoop.version=2.6.0 -DskipTests
+mvn clean install -Dhadoop.version=2.7.0 -DskipTests
+popd
+
 mvn clean install  -Dhadoop.version=1.0.3-mapr-4.1.0 -DskipTests
 mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
 
