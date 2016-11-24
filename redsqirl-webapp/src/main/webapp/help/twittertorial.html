@@ -7,7 +7,7 @@
 
 	<h1>Guide for Analysing Twitter Data in Hadoop</h1>
 	
-	<div style="padding:10px 20px;">
+	<div style="padding:10px 10% 0;">
 	
 	<p>If a social network is a &#39;network of social interactions and
 		personal relationships&#39;, then it&#39;s easy to understand how an
@@ -81,12 +81,13 @@
 		<li>Add JSON functionalities in Hive</li>
 	</ul>
 	<h4>Step 1 Twitter Streaming</h4>
+	
+	<div style="padding:10px 3% 0;">
 	<p>
 		We will use the Twitter streaming API for pulling the tweets and
 		Apache flume for transferring them to HDFS orderly. We will download
-		the data in the <a href="https://en.wikipedia.org/wiki/JSON">JSON</a>&nbsp;form,
-		please see here for an <a href="https://gist.github.com/hrp/900964">example
-			of twitter JSON</a>.
+		the data in the <a href="https://en.wikipedia.org/wiki/JSON" target="_blank" >JSON</a>&nbsp;form,
+		please see here for an <a href="https://gist.github.com/hrp/900964" target="_blank" >example of twitter JSON</a>.
 	</p>
 	<h5>API Limitations</h5>
 	<p>Twitter offers a maximum bandwidth of 1% to their tweets in
@@ -96,7 +97,7 @@
 	<p>For using the streaming API, you will have to generate your
 		credentials.</p>
 	<ol>
-		<li>Go to <a href="https://apps.twitter.com">twitter apps</a>&nbsp;and
+		<li>Go to <a href="https://apps.twitter.com" target="_blank" >twitter apps</a>&nbsp;and
 			register your application.
 		</li>
 		<li>Go to permissions and select Read Only.</li>
@@ -182,7 +183,7 @@
 						<li>Apache Flume has a twitter-source action by default. It
 							is doing exclusively sampling. But more importantly, problems can
 							arise when trying to read the data generated in Hive 
-							(see <a href="http://stackoverflow.com/questions/36053306/cloudera-5-4-2-avro-block-size-is-invalid-or-too-large-when-using-flume-and-twi">here</a>).
+							(see <a href="http://stackoverflow.com/questions/36053306/cloudera-5-4-2-avro-block-size-is-invalid-or-too-large-when-using-flume-and-twi" target="_blank">here</a>).
 						</li>
 						<li>CDH also provides twitter sampling plugins, but there
 							are library conflicts with the official flume version 1.6.0
@@ -294,12 +295,20 @@
 		demonstrate the workflow. This first screenshot is a view of what the
 		final workflow in Red Sqirl will look like.</p>
 	<p>
+		<a href="../helpimages/image00.png" target="_blank">
 		<img src="../helpimages/image00.png"
 			style="width: 601.70px; height: 301.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	
+	</div>
+	
+	<br><br>
+	
 	<h4>Step 2 Load the Data</h4>
+	
+	<div style="padding:10px 3% 0;">
 	
 	<h5>Create the Twitter Source</h5>
 	
@@ -324,9 +333,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image08.png" target="_blank">
 		<img src="../helpimages/image08.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Create a temporary external table</h5>
 	<p>This hourly file can be parsed into a script node. From which
@@ -475,9 +486,11 @@
 		</tbody>
 	</table>
 	<p>
+		<a href="../helpimages/image02.png" target="_blank">
 		<img src="../helpimages/image02.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Create the Dictionary Source</h5>
 	<p>As we are using a multi-lingual environment, we will need to
@@ -491,9 +504,12 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+	
+		<a href="../helpimages/image01.png" target="_blank">
 		<img src="../helpimages/image01.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Ensure Unicity of Emotions per word</h5>
 	<p>We are assuming here that a word used in different languages
@@ -516,12 +532,18 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image10.png" target="_blank">
 		<img src="../helpimages/image10.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	
-	<h4>Step 3Calculate the sentiment per tweet</h4>
+	</div>
+	
+	<h4>Step 3 Calculate the sentiment per tweet</h4>
+	
+	<div style="padding:10px 3% 0;">
 	
 	<h5>Merge tweets with sentiment</h5>
 	<p>For every tweet, we will look into the meaning of each word. A
@@ -550,9 +572,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image14.png" target="_blank">
 		<img src="../helpimages/image14.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Aggregate the Data per tweet</h5>
 	<p>Now we can calculate the sentiment communicated in a tweet.</p>
@@ -571,7 +595,11 @@
 		<li>Click OK</li>
 	</ol>
 	
-	<h4>Create your Output</h4>
+	</div>
+	
+	<h4>Step 4 Create your Output</h4>
+	
+	<div style="padding:10px 3% 0;">
 	
 	<h5>Low Level Output</h5>
 	
@@ -601,9 +629,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image09.png" target="_blank">
 		<img src="../helpimages/image09.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Record tweet level output</h5>
 	<p>Let&rsquo;s record twitter_emotion</p>
@@ -647,9 +677,11 @@
 		<li>Click Ok in the Synchronous Sink window.</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image07.png" target="_blank">
 		<img src="../helpimages/image07.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Summary Output</h5>
 	
@@ -681,9 +713,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image04.png" target="_blank">
 		<img src="../helpimages/image04.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<p>We will now add one node for every expression we want to report
 		on.</p>
@@ -703,9 +737,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image17.png" target="_blank">
 		<img src="../helpimages/image17.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<p>We need to bring all our reports together in one dataset.</p>
 	<ol>
@@ -720,9 +756,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image03.png" target="_blank">
 		<img src="../helpimages/image03.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<h5>Record area level output</h5>
 	
@@ -766,12 +804,18 @@
 		<li>Click Ok in the Synchronous Sink window.</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image16.png" target="_blank">
 		<img src="../helpimages/image16.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	
+	</div>
+	
 	<h4>Step 5 Schedule The Hourly Job</h4>
+	
+	<div style="padding:10px 3% 0;">
 	
 	<p>We will now configure the computation time of our job.</p>
 	<ol>
@@ -784,11 +828,19 @@
 			of each hour.</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image06.png" target="_blank">
 		<img src="../helpimages/image06.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
+	
+	</div>
+	
 	<h4>Step 6 Create a daily Job</h4>
+	
+	<div style="padding:10px 3% 0;">
+	
 	<p>Let&rsquo;s create a daily summary. We will take 24 reports and
 		produce one every day.</p>
 	<p>Our first step is to set up the input data of our first job.</p>
@@ -802,9 +854,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image13.png" target="_blank">
 		<img src="../helpimages/image13.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<p>We will now summarize the report.</p>
 	<ol>
@@ -826,9 +880,11 @@
 		<li>Click OK</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image11.png" target="_blank">
 		<img src="../helpimages/image11.png"
 			style="width: 601.70px; height: 425.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<p>Let&rsquo;s record our summary.</p>
 	<ol>
@@ -861,12 +917,19 @@
 		<li>Click OK in the Sink configuration window</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image18.png" target="_blank">
 		<img src="../helpimages/image18.png"
 			style="width: 601.70px; height: 420.00px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	
+	</div>
+	
 	<h4>Step 7 Schedule the daily job</h4>
+	
+	<div style="padding:10px 3% 0;">
+	
 	<p>We will now configure the computation time of our daily job.</p>
 	<ol>
 		<li>Double click on the coordinator label, corresponding to the
@@ -877,12 +940,18 @@
 			job every day.</li>
 	</ol>
 	<p>
+		<a href="../helpimages/image05.png" target="_blank">
 		<img src="../helpimages/image05.png"
 			style="width: 601.70px; height: 301.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	
+	</div>
+	
 	<h5>Step 8 Save &amp; Run</h4>
+	
+	<div style="padding:10px 3% 0;">
 	
 	<ol>
 		<li>Go in the File menu, click Save</li>
@@ -894,6 +963,8 @@
 			definition length&rdquo; property default value.
 		</li>
 	</ol>
+	
+	</div>
 	
 	<h3>Conclusion</h3>
 	
@@ -907,39 +978,50 @@
 	<p>You can now create a dashboard using your favourite
 		visualisation tool.</p>
 	<p>
+		<a href="../helpimages/image15.png" target="_blank">
 		<img src="../helpimages/image15.png"
 			style="width: 601.70px; height: 573.33px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);"
 			title="">
+		</a>
 	</p>
 	<p>Simple Tableau Dashboard showing daily usage</p>
-	<h3>Sources</h3>
-	<p>
-		<a href="http://www.tutorialspoint.com/apache_flume/fetching_twitter_data.htm">Apache Flume - Fetching Twitter Data</a>
-	</p>
-	<p>
-		<a href="http://brnrd.me/twitter-apis-vs-twitter-firehose/">Twitter	API vs Firehose</a>
-	</p>
-	<p>
-		<a href="https://github.com/cloudera/cdh-twitter-example">Twitter Example from CDH</a>
-	</p>
-	<p>
-		<a href="https://raw.githubusercontent.com/hortonworks/tutorials/hdp-2.3/assets/nifi-sentiment-analytics/assets/dictionary.tsv">Dictionary</a>
-	</p>
-	<p>
-		<a href="http://hortonworks.com/hadoop-tutorial/how-to-refine-and-visualize-sentiment-data/">Sentiment Analys is SOLR</a>
-	</p>
-	<p>
-		Twitter return <a href="https://dev.twitter.com/overview/api/tweets">https://dev.twitter.com/overview/api/tweets</a>
-	</p>
-	<p>
-		jSON: <a href="http://thornydev.blogspot.ie/2013/07/querying-json-records-via-hive.html">http://thornydev.blogspot.ie/2013/07/querying-json-records-via-hive.html</a>
-	</p>
-	<p>
-		JSON Git Hub: <a href="https://github.com/rcongiu/Hive-JSON-Serde">https://github.com/rcongiu/Hive-JSON-Serde</a>
-	</p>
+	
+	<h3>Other Related Sources</h3>
+	
+	<ul>
+		<li>
+			<a href="http://thornydev.blogspot.ie/2013/07/querying-json-records-via-hive.html" target="_blank" >Short Tutorial for Querying JSON records via Hive</a>
+		</li>
+		<li>
+			<a href="https://github.com/rcongiu/Hive-JSON-Serde" target="_blank" >JSON SerDe Library (to read JSON in Hive)</a>
+		</li>
+		<li>
+			<a href="http://brnrd.me/twitter-apis-vs-twitter-firehose/" target="_blank" >Twitter API short Introduction</a>
+		</li>
+		<li>
+			<a href="https://dev.twitter.com/overview/api/tweets" target="_blank" >Twitter Developer Documentation</a>
+		</li>
+		<li>
+			<a href="https://raw.githubusercontent.com/hortonworks/tutorials/hdp-2.3/assets/nifi-sentiment-analytics/assets/dictionary.tsv" target="_blank" >Another English Dictionary</a>
+		</li>
+	</ul>
+	
+	<p>Twitter related Tutorials</p>
+	
+	<ul>
+		<li>
+			<a href="https://github.com/cloudera/cdh-twitter-example" target="_blank" >Twitter Example from CDH</a>
+		</li>
+		<li>
+			<a href="http://hortonworks.com/hadoop-tutorial/how-to-refine-and-visualize-sentiment-data/" target="_blank" >Sentiment Analysis using SOLR</a>
+		</li>
+		<li>
+			<a href="http://www.tutorialspoint.com/apache_flume/fetching_twitter_data.htm" target="_blank" >Apache flume tutorial for fetching Twitter data</a>
+		</li>
+	</ul>
+	
 	
 	</div>
-	
 	
 </body>
 </html>
