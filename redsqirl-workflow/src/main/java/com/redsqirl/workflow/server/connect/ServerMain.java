@@ -86,12 +86,9 @@ public class ServerMain {
 		WorkflowPrefManager runner = WorkflowPrefManager.getInstance();
 		
 		if(runner.isInit()){
-			//Setup the user home if not setup yet
-			WorkflowPrefManager.setupHome();
-			WorkflowPrefManager.createUserFooter();
-
 			// Loads in the log settings.
 			BasicConfigurator.configure();
+			
 			try{
 				
 				if(WorkflowPrefManager.getSysProperty("core.workflow_lib_path") != null){
@@ -108,6 +105,12 @@ public class ServerMain {
 				logger.error("Fail to write log in temporary folder");
 			}
 			logger = Logger.getLogger(ServerMain.class);
+			
+
+			//Setup the user home if not setup yet
+			WorkflowPrefManager.setupHome();
+			WorkflowPrefManager.createUserFooter();
+			
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));
 			NameNodeVar.setJobTracker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_jobtracker));
 			logger.debug("sys_namenode Path: " + NameNodeVar.get());

@@ -562,14 +562,19 @@ public class WorkflowPrefManager extends BlockManager {
 	 * Setup a the redsqirl home directory from the back-end.
 	 */
 	public static void setupHome() {
+		logger.info("setup home");
 		File userProp = new File(pathUserCfgPref);
-		if (!userProp.exists()) {
+		Properties prop = getUserProperties();
+		logger.info("properties: "+prop.toString());
+		if (prop.isEmpty()) {
+			logger.info("Setup old property");
 			String old_home = getSysProperty(old_rs_home);
+			logger.info("Old home: "+old_home);
 			File oldSettingFile = null;
 			if(old_home != null && !old_home.isEmpty()){
-				oldSettingFile = new File(old_rs_home+"/users/"+System.getProperty("user.name")+"/redsqirl_user.properties");
+				oldSettingFile = new File(old_home+"/users/"+System.getProperty("user.name")+"/redsqirl_user.properties");
+				logger.info("Old setting: "+oldSettingFile.getAbsolutePath());
 			}
-			Properties prop = new Properties();
 			try{
 				if(oldSettingFile != null && oldSettingFile.exists()){
 					prop.load(new FileInputStream(oldSettingFile));
