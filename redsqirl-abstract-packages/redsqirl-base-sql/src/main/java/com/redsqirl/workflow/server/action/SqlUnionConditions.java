@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -37,7 +39,7 @@ import com.redsqirl.workflow.utils.SqlLanguageManager;
  * @author marcos
  * 
  */
-public abstract class SqlUnionConditions extends TableInteraction {
+public abstract class SqlUnionConditions extends SqlOperationTableInter {
 	/**
 	 * Union where the interaction is held
 	 */
@@ -80,17 +82,22 @@ public abstract class SqlUnionConditions extends TableInteraction {
 
 		List<Map<String, String>> lRow = getValues();
 		Iterator<Map<String, String>> rows = lRow.iterator();
+		FieldList inFields = hu.getInFields();
 		int rowNb = 0;
 		while (rows.hasNext() && msg == null) {
 			++rowNb;
 			Map<String, String> row = rows.next();
 			try {
-
+				String expression = row.get(table_op_title);
+				String typeRetuned = dictionaryCach.get(expression);
+				if(typeRetuned == null){
+					typeRetuned = getDictionary()
+							.getReturnType(expression,inFields);
+					dictionaryCach.put(expression,typeRetuned);
+				}
 				if (!getDictionary().check(
-						"boolean",
-						getDictionary().getReturnType(
-								row.get(table_op_title),
-								hu.getInFields(row.get(table_relation_title))))) {
+						"boolean",typeRetuned)
+						) {
 					msg = SqlLanguageManager.getText(
 							"sql.union_cond_interaction.checkreturntype",
 							new String[] { row.get(table_relation_title) });
@@ -103,6 +110,36 @@ public abstract class SqlUnionConditions extends TableInteraction {
 
 		return msg;
 	}
+	
+	/**
+	 * Check an expression for errors
+	 * @param expression
+	 * @param modifier
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
+	public String checkExpression(String expression, String modifier)
+			throws RemoteException {
+		String error = null;
+		try {
+			String returnType = dictionaryCach.get(expression);
+			if(returnType == null){
+				returnType = getDictionary().getReturnType(expression,
+						hu.getInFields());
+				if (returnType == null) {
+					error = SqlLanguageManager.getText(
+							"sql.expressionnull");
+				}else{
+					dictionaryCach.put(expression,returnType);
+				}
+			}
+		} catch (Exception e) {
+			error = SqlLanguageManager.getText("sql.expressionexception",new Object[]{e.getMessage()});
+			logger.error(error, e);
+		}
+		return error;
+	}
+	
 	/**
 	 * Get the Conditions that exist 
 	 * @return Map of Conditions
@@ -132,8 +169,7 @@ public abstract class SqlUnionConditions extends TableInteraction {
 	 */
 	public void update(List<DFEOutput> in) throws RemoteException {
 
-		updateColumnConstraint(table_relation_title, null, 1, hu.getAliases()
-				.keySet());
+		updateColumnConstraint(table_relation_title, null, 1, getAliases());
 
 		updateEditor(table_op_title, getDictionary().generateEditor(
 				getDictionary().createConditionHelpMenu(),
@@ -148,6 +184,10 @@ public abstract class SqlUnionConditions extends TableInteraction {
 		addColumn(table_relation_title, null, null, null);
 
 		addColumn(table_op_title, null, null, null);
+	}
+
+	protected Set<String> getAliases() throws RemoteException{
+		return hu.getAliases().keySet();
 	}
 	
 	protected abstract SqlDictionary getDictionary() throws RemoteException;
