@@ -1027,7 +1027,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		if (!path.contains(".")) {
+		if (!path.endsWith(".rs") || !path.endsWith(".srs")) {
 			if (workflowType != null && workflowType.equals("S")) {
 				path += ".srs";
 			} else {
