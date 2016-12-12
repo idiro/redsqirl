@@ -1704,10 +1704,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(df != null){
 			if(df.isrunning() && df.isSchedule()){
 				boolean sel = true;
+				boolean status = true;
 				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
 					if(value[0] == "true"){
-						if(value[3].equals("WAITING")){
-							sel = false;
+						sel = false;
+						if(value[3].equals("WAITING") || value[3].equals("RUNNING")){
+							status = false;
 							try{
 								logger.info(getSelectedScheduling().getJobId() + " - "  + "action" + " - "  + value[1]);
 								getOozie().kill(getSelectedScheduling().getJobId(), "action", value[1]);
@@ -1716,6 +1718,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 							}
 						}
 					}
+				}
+				if(status){
+					error = "You can kill actions just in waiting or running status";
 				}
 				if(sel){
 					error = "No actions selected";
