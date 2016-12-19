@@ -58,7 +58,7 @@
 		<a4j:jsFunction name="aggregate"
 			data="#{canvasBean.aggregationDetails}"
 			reRender="errorTable, msnError"
-			oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction();} jQuery.unblockUI();">
+			oncomplete="console.log('aggregate'); tmpCommandObj.nameModel = data[0]; tmpCommandObj.nameSA = data[1];if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{getArrayPosSelectedCanvas().commandHistory.removeLastAction();} jQuery.unblockUI();">
 			<a4j:actionparam name="subWf" />
 			<a4j:actionparam name="inputSubWf" />
 			<a4j:actionparam name="outputSubWf" />

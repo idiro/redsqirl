@@ -1,5 +1,6 @@
 function Canvas(name){
     this.name=name;
+    this.realName = null;
     this.commandHistory = new CommandHistory();
     this.rectSelect = null;
     this.arrow = null;
@@ -93,11 +94,17 @@ window.onload = function() {
 
 function configureCanvas(canvasName, reset, workflowType){
     
-	//console.log("configureCanvas");
+	console.log("configureCanvas");
+	
+	var nameReal = canvasName;
+	if(canvasName.includes(".")){
+		canvasName = canvasName.replace(/\./g, "");
+	}
 	
     if(reset){
         canvasArray[canvasName] = new Canvas(canvasName);
     }
+    canvasArray[canvasName].realName = nameReal;
     
     canvasArray[canvasName].workflowType = workflowType;
     
@@ -105,6 +112,9 @@ function configureCanvas(canvasName, reset, workflowType){
     var legendCanvasContainer = "container-legend-"+canvasName;
     canvasArray[canvasName].canvasContainer = canvasContainer;
     canvasArray[canvasName].legendCanvasContainer = legendCanvasContainer;
+    
+    
+    console.log("configureCanvas A " + canvasContainer);
     
     // main stage
     var stage = new Kinetic.Stage({
@@ -122,6 +132,8 @@ function configureCanvas(canvasName, reset, workflowType){
     });
     canvasArray[canvasName].legendStage = legendStage;
 
+    console.log("configureCanvas B");
+    
     // layer to the arrows
     var layer = new Kinetic.Layer();
     canvasArray[canvasName].layer = layer;
@@ -141,6 +153,9 @@ function configureCanvas(canvasName, reset, workflowType){
     // layer to legend
     var legendLayer = new Kinetic.Layer();
     canvasArray[canvasName].legendLayer = legendLayer;
+    
+    console.log("configureCanvas C");
+    
     
     // set width of the canvas
     //jQuery("#"+canvasContainer).css("width", jQuery("#"+getCanvasId(canvasName)).width() + 'px');
@@ -248,7 +263,7 @@ function configureCanvas(canvasName, reset, workflowType){
         function(e) {
 
             // remove the arrows that are outside the standard
-            deleteArrowOutsideStandard(canvasName);
+            deleteArrowOutsideStandard(canvasArray[canvasName]);
 
             if (!e.ctrlKey) {
 
@@ -280,7 +295,7 @@ function configureCanvas(canvasName, reset, workflowType){
 
             canvasArray[canvasName].down = false;
             canvasArray[canvasName].moving = false;
-            canvasArray[canvasName].select = rectSelectAllObj(canvasName, e);
+            canvasArray[canvasName].select = rectSelectAllObj(canvasArray[canvasName], e);
             canvasArray[canvasName].rectSelect.destroy();
 
             layer.draw();
@@ -288,7 +303,10 @@ function configureCanvas(canvasName, reset, workflowType){
         }
     );
     
-    createLegend(canvasName);
+    console.log("configureCanvas D");
+    
+    
+    createLegend(canvasArray[canvasName]);
     
     stage.add(voronoiLayer);
     stage.add(layer);
@@ -296,20 +314,22 @@ function configureCanvas(canvasName, reset, workflowType){
     stage.add(voronoiButtonLayer);
     
     legendStage.add(legendLayer);
+    
+    console.log("configure END");
 }
 
-function createLegend(canvasName) {
+function createLegend(cArray) {
 	
 	//console.log("createLegend");
-    
+	
     var posX = 0;
     var posY = 10;
-    var width = canvasArray[canvasName].legendWidth;
+    var width = cArray.legendWidth;
 
-    var legendLayer = canvasArray[canvasName].legendLayer;
-    var legendStage = canvasArray[canvasName].legendStage;
+    var legendLayer = cArray.legendLayer;
+    var legendStage = cArray.legendStage;
 
-    var linkTypeColours = canvasArray[canvasName].outputTypeColours;
+    var linkTypeColours = cArray.outputTypeColours;
 
     var outputTypeColours = [['RECORDED',getColorOutputType('RECORDED')],
                              ['BUFFERED',getColorOutputType('BUFFERED')],
@@ -335,12 +355,12 @@ function createLegend(canvasName) {
         draggable : false,
         id : "legend",
         dragBoundFunc : function(pos) {
-            return rulesDragAndDropObj(canvasName, pos, 80, 80);
+            return rulesDragAndDropObj(cArray, pos, 80, 80);
         }
     });
         
     groupLegend.on('dragstart dragmove', function(e) {
-        canvasArray[canvasName].rectSelect.destroy();
+    	cArray.rectSelect.destroy();
     });
         
     
@@ -530,13 +550,13 @@ function createLegend(canvasName) {
     legendStage.setHeight((arcColoursArrayLength * 20) + 40);
     
     // set width of the canvas
-    var legendCanvasContainer = canvasArray[canvasName].legendCanvasContainer;
+    var legendCanvasContainer = cArray.legendCanvasContainer;
     jQuery("#"+legendCanvasContainer).css("width", legendStage.getWidth()+ 20 + 'px');
     jQuery("#"+legendCanvasContainer).css("height", legendStage.getHeight()+ 30 + 'px');
     
-    jQuery("#header-legend-"+canvasName).css("width", legendStage.getWidth()+ 20 + 'px');
+    jQuery("#header-legend-"+cArray.name).css("width", legendStage.getWidth()+ 20 + 'px');
     
-    canvasArray[canvasName].legend = groupLegend;
+    cArray.legend = groupLegend;
     legendLayer.add(groupLegend);
     legendLayer.draw();
 }
@@ -559,27 +579,26 @@ function collidesObj(a, b, bx, by) {
 
 }
 
-function rectSelectAllObj(canvasName, e) {
-	
+function rectSelectAllObj(cArray, e) {
 	//console.log("rectSelectAllObj");
-    
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
+	
+    var polygonLayer = cArray.polygonLayer;
 
-    canvasArray[canvasName].select = false;
+    cArray.select = false;
 
     jQuery.each(polygonLayer.get('.group1'),
             function(index, value) {
-                if (collidesObj(canvasArray[canvasName].rectSelect, value, value.getX() + 40, value.getY() + 50)) {
+                if (collidesObj(cArray.rectSelect, value, value.getX() + 40, value.getY() + 50)) {
                     value.getChildren()[0].setFill("#FFDB99");
                     value.getChildren()[1].setFill("#FFDB99");
                     value.getChildren()[2].selected = true;
                     //polygonLayer.draw();
-                    canvasArray[canvasName].select = true;
+                    cArray.select = true;
                 } else {
-                    if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup
-                    		&& canvasArray[canvasName].rectSelect){
-                    	if(canvasArray[canvasName].rectSelect.getWidth() > 10 
-                    			&& canvasArray[canvasName].rectSelect.getHeight() > 10) {
+                    if (!e.ctrlKey && !cArray.dragDropGroup
+                    		&& cArray.rectSelect){
+                    	if(cArray.rectSelect.getWidth() > 10 
+                    			&& cArray.rectSelect.getHeight() > 10) {
                     		value.getChildren()[2].selected = false;
                     		value.getChildren()[0].setFill("white");
                     		value.getChildren()[1].setFill("white");
@@ -590,17 +609,17 @@ function rectSelectAllObj(canvasName, e) {
             });
     polygonLayer.draw();
 
-    return canvasArray[canvasName].select;
+    return cArray.select;
 }
 
-function toggleSelectOnClick(canvasName, obj, e) {
+function toggleSelectOnClick(cArray, obj, e) {
     // <![CDATA[
     
 	//console.log("toggleSelectOnClick");
 	
-    var layer = canvasArray[canvasName].layer;
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var stage = canvasArray[canvasName].stage;
+    var layer = cArray.layer;
+    var polygonLayer = cArray.polygonLayer;
+    var stage = cArray.stage;
 
     if (!e.ctrlKey) {
     	
@@ -638,14 +657,13 @@ function toggleSelectOnClick(canvasName, obj, e) {
     // ]]>
 }
 
-function dragAndDropGroup(canvasName, obj, e) {
-	
+function dragAndDropGroup(cArray, obj, e) {
 	//console.log("dragAndDropGroup");
-    
-	var layer = canvasArray[canvasName].layer;
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var stage = canvasArray[canvasName].stage;
-    var background = canvasArray[canvasName].background;
+	
+	var layer = cArray.layer;
+    var polygonLayer = cArray.polygonLayer;
+    var stage = cArray.stage;
+    var background = cArray.background;
 
     var xCanvas = stage.getWidth();
     var yCanvas = stage.getHeight();
@@ -654,8 +672,8 @@ function dragAndDropGroup(canvasName, obj, e) {
     var newY = 0;
     var differenceX = 0;
     var differenceY = 0;
-    var positionX = canvasArray[canvasName].positionX;
-    var positionY = canvasArray[canvasName].positionY;
+    var positionX = cArray.positionX;
+    var positionY = cArray.positionY;
     var mousePos = stage.getMousePosition();
     if (mousePos !== undefined) {
         differenceX = mousePos.x - positionX;
@@ -703,30 +721,31 @@ function dragAndDropGroup(canvasName, obj, e) {
         		}
 
         		value.setPosition(newX, newY);
-        		changePositionArrow(canvasName, value);
+        		changePositionArrow(cArray, value);
         	}
         });
     }
 
     if (group.getX() != positionX) {
-        canvasArray[canvasName].positionX = positionX + differenceX;
+    	cArray.positionX = positionX + differenceX;
     }
 
     if (group.getY() != positionY) {
-        canvasArray[canvasName].positionY = positionY + differenceY;
+    	cArray.positionY = positionY + differenceY;
     }
     
-    changePositionArrow(canvasName, group);
+    changePositionArrow(cArray, group);
 
     layer.draw();
     polygonLayer.draw();
 }
 
 function getPositionGivenIcons(icons, group){
-	
 	//console.log("getPositionGivenIcons");
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var polygonLayer = cArray.polygonLayer;
     var ans = new Array();
     var i = -1;
 
@@ -752,10 +771,11 @@ function getPositionGivenIcons(icons, group){
 }
 
 function getSelectedIcons(){
-	
 	//console.log("getSelectedIcons");
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var polygonLayer = cArray.polygonLayer;
     var ans = new Array();
     var i = -1;
     
@@ -770,13 +790,11 @@ function getSelectedIcons(){
     return ans;
 }
 
-
-function selectAll(canvasName) {
-	
+function selectAll(cArray) {
 	//console.log("selectAll");
-    
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var layer = canvasArray[canvasName].layer;
+	
+    var polygonLayer = cArray.polygonLayer;
+    var layer = cArray.layer;
     
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         //value.setStroke("red");
@@ -794,15 +812,13 @@ function selectAll(canvasName) {
     
     polygonLayer.draw();
     layer.draw();
-
 }
 
-function deselectAll(canvasName) {
-	
+function deselectAll(cArray) {
 	//console.log("deselectAll");
-    
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var layer = canvasArray[canvasName].layer;
+	
+    var polygonLayer = cArray.polygonLayer;
+    var layer = cArray.layer;
 
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         //value.setStroke('white');
@@ -818,7 +834,6 @@ function deselectAll(canvasName) {
     });
     polygonLayer.draw();
     layer.draw();
-
 }
 
 function checkIfExistID(nameId, listIds) {
@@ -832,14 +847,15 @@ function checkIfExistID(nameId, listIds) {
 }
 
 function deleteElementsJS(listIds, listArrowsIds) {
-	
 	console.log("deleteElementsJS");
 	
 	console.log(listIds);
 	//alert(listArrowsIds);
 	
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	var layer = canvasArray[selectedCanvas].layer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+	var polygonLayer = cArray.polygonLayer;
+	var layer = cArray.layer;
     
     if(listIds){
         var toDelete = []; 
@@ -848,7 +864,7 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	    	var group = this;
 	    	console.log("a " + group.getId());
 		    if(checkIfExistID(group.getId(),listIds)){
-			     deleteLayerChildren(selectedCanvas, group.getId());
+			     deleteLayerChildren(cArray, group.getId());
 			     toDelete[++iter] = group;
 		    }
 	    });
@@ -886,34 +902,32 @@ function deleteElementsJS(listIds, listArrowsIds) {
 
 //erase all objects from the canvas
 function refreshCanvas() {
-	
-	//console.log("refreshCanvas");
+	console.log("refreshCanvas");
 	
     //var layer = canvasArray[selectedCanvas].layer;
     //var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-    
     //layer.destroyChildren();
     //polygonLayer.destroyChildren();
     
     deleteAllElements();
-    
 	rebuildJS();
 }
 
 function deleteAllElements() {
+	console.log("deleteAllElements");
 	
-	//console.log("deleteAllElements");
+	var cArray = getArrayPos(selectedCanvas);
 	
-	selectAll(selectedCanvas);
+	selectAll(cArray);
 	
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	var layer = canvasArray[selectedCanvas].layer;
+	var polygonLayer = cArray.polygonLayer;
+	var layer = cArray.layer;
     
 	var toDelete = [];
 	var iter=-1;
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		var group = this;
-		deleteLayerChildren(selectedCanvas, group.getId());
+		deleteLayerChildren(cArray, group.getId());
 		toDelete[++iter] = group;
 	});
 	for(iter = 0; iter <  toDelete.length;++iter){
@@ -934,15 +948,17 @@ function deleteAllElements() {
 	
 	//layer.draw();
 	//polygonLayer.draw();
+	
+	console.log("deleteAllElements END");
 }
 
 // remove the arrows that are outside the standard
-function deleteArrowOutsideStandard(canvasName) {
-	
+function deleteArrowOutsideStandard(cArray) {
 	//console.log("deleteArrowOutsideStandard");
+	
 	var toDelete = [];
 	var iter=-1;
-    var layer = canvasArray[canvasName].layer;
+    var layer = cArray.layer;
         jQuery.each(layer.getChildren(), function(index, value) {
             if (value) {
                 if (value.isArrow && (!value.idOutput||!value.idInput)) {
@@ -975,12 +991,11 @@ function getCircleLineIntersectionPoint(pointAx, pointAy, pointBx, pointBy,
     return [ px, py ];
 }
 
-function deleteLayerChildren(canvasName, idGroup) {
-    
+function deleteLayerChildren(cArray, idGroup) {
     var toDelete = []; 
     var iter=-1;
 	//console.log("deleteLayerChildren");
-        jQuery.each(canvasArray[canvasName].layer.getChildren(),
+        jQuery.each(cArray.layer.getChildren(),
             function(index, value) {
                 if (value && value.isArrow == true) {
                     //console.log(value.idOutput+","+value.idInput);
@@ -997,11 +1012,11 @@ function deleteLayerChildren(canvasName, idGroup) {
     }
 }
 
-function changePositionArrow(canvasName, obj) {
-    
+function changePositionArrow(cArray, obj) {
 	//console.log("changePositionArrow");
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var layer = canvasArray[canvasName].layer;
+	
+    var polygonLayer = cArray.polygonLayer;
+    var layer = cArray.layer;
     var group = obj;
     var idGroup = obj.getId();
     
@@ -1037,26 +1052,27 @@ function changePositionArrow(canvasName, obj) {
     });
 }
 
-function addLinks(canvasName, positions) {
-	
+function addLinks(cArray, positions) {
 	//console.log("addLinks");
 	
     var linkArrays = JSON.parse(positions);
 
     for ( var i = 0; i < linkArrays.length; i++) {
-        addLink(canvasName, linkArrays[i][0], linkArrays[i][2],false);
+        addLink(cArray.realName, linkArrays[i][0], linkArrays[i][2],false);
         updateLink("arrow" + linkArrays[i][0] + "-" + linkArrays[i][2],linkArrays[i][1] , linkArrays[i][3]);
     }
 }
 
 function addLink(canvasName, outId, inId,updateLayer) {
-	
 	//console.log("addLink");
+	
+	var cArray = getArrayPos(canvasName);
+	
 	updateLayer = typeof updateLayer !== 'undefined' ? updateLayer : true;
     // out
-    var layer = canvasArray[canvasName].layer;
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var arrow = canvasArray[canvasName].arrow;
+    var layer = cArray.layer;
+    var polygonLayer = cArray.polygonLayer;
+    var arrow = cArray.arrow;
     
     var polygonGroupOut = getElement(polygonLayer, outId);
     arrow.setPoints([ polygonGroupOut.getX() + 40, polygonGroupOut.getY() + 50,
@@ -1085,9 +1101,7 @@ function addLink(canvasName, outId, inId,updateLayer) {
        polygonLayer.draw();
     }
     
-    
     console.log("arrow " + outId + " - " + inId);
-    
     
     return arrowClone;
 }
@@ -1117,7 +1131,6 @@ function getArrowPositions2(g, group, position, offsetX){
 }
 
 function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angle){
-    
 	//console.log("updatePositionArrow");
 	
     sin_angle = Math.sin(angle);
@@ -1152,12 +1165,11 @@ function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angl
     }
 }
 
-function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
-    
+function rulesDragAndDropObj(cArray, pos, valueX, valueY) {
 	//console.log("rulesDragAndDropObj");
 	
-    var stage = canvasArray[canvasName].stage;
-    var background = canvasArray[canvasName].background;
+    var stage = cArray.stage;
+    var background = cArray.background;
 
     var xCanvas = stage.getWidth();
     var yCanvas = stage.getHeight();
@@ -1188,7 +1200,6 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
         x : newX,
         y : newY
     };
-
 }
 
 function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
@@ -1196,9 +1207,11 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
     
 	//console.log("rulesDragAndDropGroupObj");
 	
-    var stage = canvasArray[canvasName].stage;
-    var background = canvasArray[canvasName].background;
-    var canvasContainer = canvasArray[canvasName].canvasContainer;
+	var cArray = getArrayPos(canvasName);
+	
+    var stage = cArray.stage;
+    var background = cArray.background;
+    var canvasContainer = cArray.canvasContainer;
 
     var xCanvas = stage.getWidth();
     var yCanvas = stage.getHeight();
@@ -1233,18 +1246,15 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
     // ]]>
 }
 
-
-
-function addElements(canvasName, positions, selecteds, isStartVoronoi) {
-	
-	//console.log("addElements");
+function addElements(cArray, positions, selecteds, isStartVoronoi) {
+	console.log("addElements");
 	
     var positionsArrays = JSON.parse(positions);
     var numSides = 4;
     
 	//try{
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var polygonLayer = cArray.polygonLayer;
     
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
@@ -1262,7 +1272,7 @@ function addElements(canvasName, positions, selecteds, isStartVoronoi) {
 			*/
 			
 			var group = addElement(
-					canvasName, 
+					cArray.realName, 
 					positionsArrays[i][1],
 					positionsArrays[i][2],
 					positionsArrays[i][3],
@@ -1276,7 +1286,7 @@ function addElements(canvasName, positions, selecteds, isStartVoronoi) {
 					isStartVoronoi
 					);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
-			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
+			updateTypeObj(cArray.realName, positionsArrays[i][0], positionsArrays[i][0]);
 			updateLabelObj(positionsArrays[i][0], positionsArrays[i][5],false);
 			group.hasChangedId = true;
 		}
@@ -1298,8 +1308,9 @@ function checkImg(src){
 }
 
 function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, elementTypeName, voranoiPolygonTitle, isStartVoronoi) {
-    
 	console.log("addElement");
+    
+	var cArray = getArrayPos(canvasName);
 	
 //	console.log("canvasName " + canvasName);
 //	console.log("elementType " + elementType);
@@ -1321,21 +1332,21 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	//console.log("Size X canvas: " + canvasArray[canvasName].stage.getWidth());
 	//console.log("Size Y canvas: " + canvasArray[canvasName].stage.getHeight());
 	
-    if(canvasArray[canvasName].stage.getWidth()  < posx +  500){
-       console.log("Make X bigger: " + posx +", "+ canvasArray[canvasName].stage.getWidth());
-       canvasArray[canvasName].stage.setWidth(posx + 500);
-       canvasArray[canvasName].background.setWidth(posx + 500);
+    if(cArray.stage.getWidth()  < posx +  500){
+       console.log("Make X bigger: " + posx +", "+ cArray.stage.getWidth());
+       cArray.stage.setWidth(posx + 500);
+       cArray.background.setWidth(posx + 500);
     }
-    if(canvasArray[canvasName].stage.getHeight() < posy+ 500 ){
-       console.log("Make Y bigger: " + posy +", "+ canvasArray[canvasName].stage.getHeight());
-       canvasArray[canvasName].stage.setHeight(posy + 500);
-       canvasArray[canvasName].background.setHeight(posy + 500);
+    if(cArray.stage.getHeight() < posy+ 500 ){
+       console.log("Make Y bigger: " + posy +", "+ cArray.stage.getHeight());
+       cArray.stage.setHeight(posy + 500);
+       cArray.background.setHeight(posy + 500);
     }
     
     
     //alert(idElement+": "+privilege);
     
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
+    var polygonLayer = cArray.polygonLayer;
 
     var img = new Image();
     img.src = elementImg;
@@ -1353,7 +1364,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
         //stroke : 'white',
         //strokeWidth : 5
     });
-    configureCircle(canvasName, circle0);
+    configureCircle(cArray, circle0);
 
     var circle1 = new Kinetic.Circle({
         x : 40,
@@ -1365,7 +1376,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
         //stroke : 'white',
         //strokeWidth : 5
     });
-    configureCircle(canvasName, circle1);
+    configureCircle(cArray, circle1);
     
     
     var arc1 = new Kinetic.Shape({
@@ -1425,10 +1436,11 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
         draggable:false
     });
     
-    var stage = canvasArray[selectedCanvas].stage;
+    var cArraySelected = getArrayPos(selectedCanvas);
+    var stage = cArraySelected.stage;
     
     arc1.on('mouseover', function(e) {
-    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    	if(!cArray.dragDropGroup &&!cArray.moving){
     		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputType(this.getStroke()) +'</div>');
     		help.css("top",(e.pageY)+"px" );
     		help.css("left",(e.pageX)+"px" );
@@ -1443,7 +1455,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     });
     
     arc2.on('mouseover', function(e) {
-    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    	if(!cArray.dragDropGroup &&!cArray.moving){
     		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelRunning(this.getStroke()) +'</div>');
     		help.css("top",(e.pageY)+"px" );
     		if(this.getStroke() == '#008000'){
@@ -1462,7 +1474,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     });
     
     arc3.on('mouseover', function(e) {
-    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+    	if(!cArray.dragDropGroup &&!cArray.moving){
     		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputExistence(this.getStroke()) +'</div>');
     		help.css("top",(e.pageY)+"px" );
     		help.css("left",(e.pageX)+"px" );
@@ -1491,18 +1503,16 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     	helpId = helpId.substring(1).replace(">","_");
     }
 
-    var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, helpId, idElement, arc1,arc2,arc3);
+    var group = createGroup(cArray, circle0, circle1, polygon, srcImageText, typeText, helpId, idElement, arc1,arc2,arc3);
     
     polygonLayer.add(group);
-
     
     //check if need start voronoi
     if(isStartVoronoi){
     	//add point to voronoi list
-        canvasArray[canvasName].pointsList.push([posx+40,posy+50]);
+    	cArray.pointsList.push([posx+40,posy+50]);
         startVoronoi(canvasName, idElement, voranoiPolygonTitle);
     }
-    
     
     var selectedObj = false
     if(selecteds != null){
@@ -1514,7 +1524,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
         }
     }
 
-    configureGroup(canvasName, group, posx, posy, polygon, selectedObj);
+    configureGroup(cArray, group, posx, posy, polygon, selectedObj);
     
     group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
     
@@ -1530,19 +1540,20 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 }
 
 function ready(canvasName) {
-    
 	//console.log("ready");
+
+	var cArray = getArrayPos(canvasName);
 	
-    var layer = canvasArray[canvasName].layer;
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
-    var stage = canvasArray[canvasName].stage;
-    var background = canvasArray[canvasName].background;
+    var layer = cArray.layer;
+    var polygonLayer = cArray.polygonLayer;
+    var stage = cArray.stage;
+    var background = cArray.background;
 
     // variable to control image of the object
     var imgTab1 = new Image();
 
     // control of the rectangle to select objects on the screen
-    canvasArray[canvasName].moving = false;
+    cArray.moving = false;
 
     stage.destroy();
 
@@ -1552,7 +1563,7 @@ function ready(canvasName) {
         width : 800,
         height : 600
     });
-    canvasArray[canvasName].stage = stage;
+    cArray.stage = stage;
 
     stage.setWidth(layer.getChildren()[1].getWidth());
     stage.setHeight(layer.getChildren()[1].getHeight());
@@ -1564,7 +1575,7 @@ function ready(canvasName) {
     background.moveToBottom();
 
     // set width of the canvas
-    jQuery("#"+canvasArray[canvasName].canvasContainer).css("width", jQuery(canvasName).width() + 'px');
+    jQuery("#"+cArray.canvasContainer).css("width", jQuery(canvasName).width() + 'px');
 
     stage.add(layer);
     stage.add(polygonLayer);
@@ -1583,11 +1594,11 @@ function ready(canvasName) {
         polygon1.setFillPatternImage(imgTab1);
 
         group.setDragBoundFunc(function(pos) {
-            return rulesDragAndDropObj(canvasName, pos, 80, 80);
+            return rulesDragAndDropObj(cArray, pos, 80, 80);
         });
 
         try{
-        	configureCircle(canvasName, circle1);
+        	configureCircle(cArray, circle1);
         }catch(exception){
             console.log(exception);
         }
@@ -1595,12 +1606,11 @@ function ready(canvasName) {
         //configureGroupListeners(canvasName, group);
 
         polygon1.on('mousedown', function(e) {
-            toggleSelectOnClick(canvasName, this, e);
+            toggleSelectOnClick(cArray, this, e);
         });
 
     });
     polygonLayer.draw();
-
 }
 
 /**
@@ -1611,8 +1621,10 @@ function ready(canvasName) {
  * 
  */
 function mountObj(canvasName) {
+	console.log("mountObj");
 
-	//console.log("mountObj");
+	var cArray = getArrayPos(canvasName);
+	//var cArraySelected = getArrayPos(selectedCanvas);
 	
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
@@ -1734,7 +1746,7 @@ function mountObj(canvasName) {
                 });
                 
                 polygonTabFake.on('mouseover',function(e) {
-                	if(canvasArray[canvasName] != undefined && !canvasArray[canvasName].dragDropGroup && !canvasArray[canvasName].moving){
+                	if(cArray != undefined && !cArray.dragDropGroup && !cArray.moving){
                 		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
                 		help.css("top",(e.pageY)+"px" );
                 		help.css("left",(e.pageX)+"px" );
@@ -1750,14 +1762,25 @@ function mountObj(canvasName) {
                 
                 polygonTabFake.on('dragend',function() {
                     
-                    var stage = canvasArray[selectedCanvas].stage;
+                	console.log("polygonTabFake dragend");
+                	
+                    //var stage = cArray.stage;
+                	var stage = canvasArray[removeDot(selectedCanvas)].stage;
+                    
+                    console.log("polygonTabFake stage " + stage);
 
                     var mousePosStage = stage.getMousePosition();
+                    
+                    console.log("polygonTabFake mousePosStage " + stage.getMousePosition());
+                    
+                    
                     if (mousePosStage !== undefined){
                     
-                    	var idx = "group" + (+canvasArray[selectedCanvas].countObj++);
+                    	console.log("polygonTabFake mousePosStage");
                     	
-                        canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddObj(selectedCanvas,
+                    	var idx = "group" + (+cArray.countObj++);
+                    	
+                    	cArray.commandHistory.push_command(new CommandAddObj(selectedCanvas,
                                 nameObj,
                                 srcImageText,
                                 mousePosStage.x - 30,
@@ -1789,7 +1812,7 @@ function mountObj(canvasName) {
                     this.destroy();
                     
                     layerTab.draw();
-                    canvasArray[selectedCanvas].polygonLayer.draw();
+                    cArray.polygonLayer.draw();
                 });
 
                 polygonTabFake.on('mouseup',function() {
@@ -1843,6 +1866,9 @@ function mountObj(canvasName) {
 }
 
 function addElementFirstTime(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds,privilege){
+	console.log("addElementFirstTime");
+	
+	var cArray = getArrayPos(canvasName);
 	
 	addElement(canvasName,
 			elementType,
@@ -1857,15 +1883,14 @@ function addElementFirstTime(canvasName, elementType, elementImg, posx, posy, nu
     
     addElementBt(elementType,groupId,'');
     updateTypeObj(canvasName, groupId, groupId);
-	canvasArray[canvasName].stage.draw();
+    cArray.stage.draw();
 	
 	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(canvasName, tmpCommandObj.elementId, groupId); }, 1000);
 	
-	canvasArray[canvasName].polygonLayer.draw();
+	cArray.polygonLayer.draw();
 }
 
 function changeFooter(canvasName) {
-	
 	//console.log("changeFooter");
 	
 	var type = getWorkflowType(canvasName);
@@ -1930,12 +1955,13 @@ function removeEmpytyCanvas() {
 }
 
 function clearCanvas() {
-	
 	//console.log("clearCanvas");
 	
-    canvasArray[selectedCanvas].polygonLayer.destroyChildren();
-    canvasArray[selectedCanvas].layer.destroyChildren();
-    canvasArray[selectedCanvas].stage.draw();
+	var cArray = getArrayPos(selectedCanvas);
+	
+	cArray.polygonLayer.destroyChildren();
+	cArray.layer.destroyChildren();
+	cArray.stage.draw();
 }
 
 function getElement(polygonLayer, id) {
@@ -1953,10 +1979,11 @@ function getElement(polygonLayer, id) {
  * 
  */
 function updateTypeObj(canvasName, groupID, elementId) {
-    
 	//console.log("updateTypeObj");
 	
-    var polygonLayer = canvasArray[canvasName].polygonLayer;
+	var cArray = getArrayPos(canvasName);
+	
+    var polygonLayer = cArray.polygonLayer;
 
     var text = polygonLayer.get('#' + groupID)[0].getChildren()[4];
     text.setText(elementId);
@@ -1964,12 +1991,13 @@ function updateTypeObj(canvasName, groupID, elementId) {
 }
 
 function updateLink(linkName, nameOutput, nameInput) {
-    
 	//console.log("updateLink");
 	
     //alert("updateLink "+ linkName + " " + nameOutput + " " + nameInput);
     
-    var layer = canvasArray[selectedCanvas].layer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var layer = cArray.layer;
 
     jQuery.each(layer.getChildren(), function(index, value) {
         if (value.getName() == linkName) {
@@ -1981,10 +2009,11 @@ function updateLink(linkName, nameOutput, nameInput) {
 }
 
 function getSelectedIconsCommaDelimited(){
-    
 	//console.log("getSelectedIconsCommaDelimited");
 	
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+	var polygonLayer = cArray.polygonLayer;
     var ans = "";
 
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
@@ -1999,10 +2028,11 @@ function getSelectedIconsCommaDelimited(){
 }
 
 function getSelectedSAIconsCommaDelimited(){
-	
 	//console.log("getSelectedSAIconsCommaDelimited");
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var polygonLayer = cArray.polygonLayer;
     var ans = "";
 
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
@@ -2019,10 +2049,11 @@ function getSelectedSAIconsCommaDelimited(){
 }
 
 function getSelectedArrowsCommaDelimited(){
-	
 	//console.log("getSelectedArrowsCommaDelimited");
+	
+	var cArray = getArrayPos(selectedCanvas);
     
-    var layer = canvasArray[selectedCanvas].layer;
+    var layer = cArray.layer;
     var listSize = layer.getChildren().size();
     var ans = "";
     
@@ -2039,12 +2070,12 @@ function getSelectedArrowsCommaDelimited(){
     return ans;
 }
 
-
 function getCanvasStatus(){
-	
 	console.log("getCanvasStatus");
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var polygonLayer = cArray.polygonLayer;
     var canvas={}
     var canvasNameStar = jQuery('#canvasNameStar-'+selectedCanvas).text();
     canvas["modified"]= canvasNameStar[canvasNameStar.length-1] == "*"?"true":"false";
@@ -2060,7 +2091,6 @@ function getCanvasStatus(){
 }
 
 function getAllCanvasesStatus(){
-	
 	console.log("getAllCanvasesStatus");
 	
     var canvasPos = {};
@@ -2080,6 +2110,7 @@ function getAllCanvasesStatus(){
             }
         }
         canvas["positions"] = positions;
+        canvas["name"] = value.realName;
         canvasPos[index] = canvas;
         console.log(JSON.stringify(canvas));
     });
@@ -2088,8 +2119,7 @@ function getAllCanvasesStatus(){
 }
 
 function save(path) {
-	
-	//console.log("save");
+	console.log("save " + path);
 	
     setSaved(selectedCanvas, true);
     setPathFile(selectedCanvas, path);
@@ -2098,11 +2128,10 @@ function save(path) {
     curToolTip = null;
 }
 
-function configureCircle(canvasName, circle1) {
-	
+function configureCircle(cArray, circle1) {
 	console.log("configureCircle");
     
-	canvasArray[canvasName].down = false;
+	cArray.down = false;
 	
     circle1.on('mouseover', function() {
         document.body.style.cursor = 'pointer';
@@ -2129,34 +2158,34 @@ function configureCircle(canvasName, circle1) {
     return circle1;
 }
 
-
 function createLink(circleGp){
+	//console.log("createLink");
 
-		//console.log("createLink");
+		var cArray = getArrayPos(selectedCanvas);
         
-        var arrow = canvasArray[selectedCanvas].arrow;
+        var arrow = cArray.arrow;
         
         //console.log(arrow);
 
-        if (canvasArray[selectedCanvas].down) {
-            canvasArray[selectedCanvas].down = false;
+        if (cArray.down) {
+        	cArray.down = false;
             
-            deleteArrowOutsideStandard(selectedCanvas);
+            deleteArrowOutsideStandard(cArray);
             
             var output = arrow.output.getChildren()[4].getText();
             var input = circleGp.getParent().getChildren()[4].getText();
             var arrowClone = addLink(selectedCanvas, output, input);
-            canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
+            cArray.commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
             console.log("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
             console.log("END");
 
         } else {
-            var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-            var layer = canvasArray[selectedCanvas].layer;
+            var polygonLayer = cArray.polygonLayer;
+            var layer = cArray.layer;
             
-            canvasArray[selectedCanvas].down = true;
+            cArray.down = true;
 
             var polygonGroup = getElement(polygonLayer, circleGp.getParent().getId());
             arrow.setPoints([ polygonGroup.getX() + 40,
@@ -2178,16 +2207,17 @@ function createLink(circleGp){
 }
 
 function configureStage(canvasName) {
-	
 	//console.log("configureStage");
+
+	var cArray = getArrayPos(canvasName);
     
-    var layer = canvasArray[canvasName].layer;
-    var stage = canvasArray[canvasName].stage;
-    var rectSelect = canvasArray[canvasName].rectSelect;
+    var layer = cArray.layer;
+    var stage = cArray.stage;
+    var rectSelect = cArray.rectSelect;
     
     stage.on("mousedown", function(e) {
-        if (canvasArray[canvasName].moving) {
-            canvasArray[canvasName].moving = false;
+        if (cArray.moving) {
+        	cArray.moving = false;
             layer.draw();
         } else {
             var mousePos = stage.getMousePosition();
@@ -2196,7 +2226,7 @@ function configureStage(canvasName) {
             rectSelect.setY(mousePos.y);
             rectSelect.setWidth(0);
             rectSelect.setHeight(0);
-            canvasArray[canvasName].moving = true;
+            cArray.moving = true;
             layer.drawScene();
         }
     });
@@ -2204,30 +2234,29 @@ function configureStage(canvasName) {
     stage.on("mousemove", function() {
         var mousePos = stage.getMousePosition();
         //click for arrow
-        if (canvasArray[canvasName].down) {
-            canvasArray[canvasName].arrow.getPoints()[1].x = mousePos.x;
-            canvasArray[canvasName].arrow.getPoints()[1].y = mousePos.y;
-            canvasArray[canvasName].down = true;
+        if (cArray.down) {
+        	cArray.arrow.getPoints()[1].x = mousePos.x;
+        	cArray.arrow.getPoints()[1].y = mousePos.y;
+        	cArray.down = true;
             layer.draw();
         }
         //click for rectangle
-        if (canvasArray[canvasName].moving) {
+        if (cArray.moving) {
             rectSelect.setWidth(mousePos.x - rectSelect.getX());
             rectSelect.setHeight(mousePos.y - rectSelect.getY());
-            canvasArray[canvasName].moving = true;
+            cArray.moving = true;
             layer.draw();
         }
     });
 
     stage.on("mouseup", function(e) {
-        canvasArray[canvasName].moving = false;
-        canvasArray[canvasName].select = rectSelectAllObj(canvasName, e);
+    	cArray.moving = false;
+    	cArray.select = rectSelectAllObj(cArray, e);
         rectSelect.destroy();
     });
 }
 
-function configureGroupListeners(canvasName, group) {
-	
+function configureGroupListeners(cArray, group) {
 	//console.log("configureGroupListeners");
 	
 	group.on('click', function(e) {
@@ -2241,7 +2270,7 @@ function configureGroupListeners(canvasName, group) {
         	//console.log("group on click A ");
         	
           group.getChildren()[2].on('click', function(e) {
-            polygonOnClick(this, e, canvasName);
+            polygonOnClick(this, e, cArray);
           });
           
         }else{
@@ -2254,8 +2283,8 @@ function configureGroupListeners(canvasName, group) {
     });
 	
     group.on('mouseenter', function(e) {
-        canvasArray[canvasName].positionX = this.getX() + 40;
-        canvasArray[canvasName].positionY = this.getY() + 50;
+    	cArray.positionX = this.getX() + 40;
+    	cArray.positionY = this.getY() + 50;
     });
     
     group.on('dragmove', function(e) {
@@ -2268,15 +2297,15 @@ function configureGroupListeners(canvasName, group) {
         this.getChildren()[1].setFill("#FFDB99");
         
         //Init positions
-        if(!canvasArray[canvasName].savePositions){
-            canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
+        if(!cArray.savePositions){
+        	cArray.savePositions = getPositionGivenIcons(getSelectedIcons(),this);
         }
         //Remove annoying stuff for moving objects and prevent their apparition
-        canvasArray[canvasName].dragDropGroup = true;
-        canvasArray[canvasName].rectSelect.destroy();
+        cArray.dragDropGroup = true;
+        cArray.rectSelect.destroy();
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
-        dragAndDropGroup(canvasName, this, e);
+        dragAndDropGroup(cArray, this, e);
         //group.getChildren()[2].off('click');
     });
 
@@ -2285,28 +2314,30 @@ function configureGroupListeners(canvasName, group) {
     	//console.log("configureGroupListeners dragend");
     	
         group.setDragBoundFunc(function(pos) {
-            return rulesDragAndDropObj(canvasName, pos, 80, 80);
+            return rulesDragAndDropObj(cArray, pos, 80, 80);
         });
         
-        canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
+        cArray.commandHistory.push_command(new CommandMove(cArray.savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
-        canvasArray[canvasName].savePositions = null;
-        canvasArray[canvasName].dragDropGroup = false;
+        cArray.savePositions = null;
+        cArray.dragDropGroup = false;
         
-        updateVoronoi(canvasName, group.getId());        
+        updateVoronoi(cArray.name, group.getId());        
         
     });
 
 }
 
 function showContextMenu(group, e){
-	
 	//console.log("showContextMenu");
 	
 	//alert(group.externalLink);
 	
     canvasName = selectedCanvas;
+    
+    var cArray = getArrayPos(canvasName);
+    
     rightClickGroup = group;
     //Build the context menu in temp variable and then display it.
     var temp = [];
@@ -2314,7 +2345,7 @@ function showContextMenu(group, e){
         var key = Object.keys(contextMenuCanvasAction[i])[0];
         var item = contextMenuCanvasAction[i];
         
-        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) != 0 && key.indexOf(menu_clean) != 0 && key.indexOf(menu_oozieLog) != 0)){
+        if(cArray.workflowType == 'W' || (key.indexOf(menu_dataoutput) != 0 && key.indexOf(menu_clean) != 0 && key.indexOf(menu_oozieLog) != 0)){
             if(group.elementType.indexOf('>')==0){
                     temp[temp.length] = item;
             }else{
@@ -2353,18 +2384,17 @@ function showContextMenu(group, e){
     //e.cancelBubble = true;
 }
 
-function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, helpId, groupId, arc1,arc2,arc3) {
-    
+function createGroup(cArray, circle0, circle1, polygon, srcImageText, typeText, helpId, groupId, arc1,arc2,arc3) {
 	//console.log("createGroup");
-	
-    var countObj = canvasArray[canvasName].countObj;
+
+    var countObj = cArray.countObj;
 
     var group1 = new Kinetic.Group({
         draggable : true,
         id : groupId,
         name : 'group1',
         dragBoundFunc : function(pos) {
-            return rulesDragAndDropObj(canvasName, pos, 80, 80);
+            return rulesDragAndDropObj(cArray, pos, 80, 80);
         }
     });
     
@@ -2408,7 +2438,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     group1.add(srcImageText.clone());
     group1.add(typeText.clone());
     
-    if(getWorkflowType(canvasName) == "W"){
+    if(getWorkflowType(cArray.name) == "W"){
     	group1.add(arc1);
     	group1.add(arc2);
     	group1.add(arc3);
@@ -2417,10 +2447,9 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     return group1;
 }
 
-function configureGroup(canvasName, group, mousePosX, mousePosY, polygon, selectedObj) {
-
+function configureGroup(cArray, group, mousePosX, mousePosY, polygon, selectedObj) {
 	//console.log("configureGroup");
-	
+
     document.body.style.cursor = 'default';
 
     //deselectAll(canvasName);
@@ -2436,35 +2465,37 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon, select
     group.setPosition(mousePosX, mousePosY);
     group.hasChangedId = false;
 
-    jQuery("#countObj").val(canvasArray[canvasName].countObj);
+    jQuery("#countObj").val(cArray.countObj);
 
-    configureGroupListeners(canvasName, group);
+    configureGroupListeners(cArray, group);
 
 }
 
 function setPageNb(groupId, pageNb){
-	
 	//console.log("setPageNb");
+	
+	var cArray = getArrayPos(selectedCanvas);
 	
 	console.log(groupId, pageNb);
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var polygonLayer = cArray.polygonLayer;
     var group = getElement(polygonLayer, groupId);
     group.pageNb = pageNb;
 }
 
 function openCanvasModalJS(group, selectedTab){
-	
 	//console.log("openCanvasModalJS");
 	//console.log(group.getId(), group.pageNb);
 
+	var cArray = getArrayPos(selectedCanvas);
+	
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
     
     group.getChildren()[2].selected = false;
-    canvasArray[selectedCanvas].down = false;
+    cArray.down = false;
 
-    canvasArray[selectedCanvas].polygonLayer.draw();
+    cArray.polygonLayer.draw();
     
     var objImg = group.getChildren()[2].clone();
     var imagePath = objImg.toDataURL({
@@ -2485,7 +2516,6 @@ function openCanvasModalJS(group, selectedTab){
 }
 
 function cleanElementJS(group){
-	
 	//console.log("cleanElementJS");
 	
 	if(group){
@@ -2500,7 +2530,6 @@ function cleanElementJS(group){
 }
 
 function refreshSubWorkflowJS(group){
-	
 	//console.log("refreshSubWorkflowJS");
 	
 	if(group){
@@ -2509,17 +2538,18 @@ function refreshSubWorkflowJS(group){
 }
 
 function openChangeIdModalJS(group){
-	
 	//console.log("openChangeIdModalJS");
 
+	var cArray = getArrayPos(selectedCanvas);
+	
     // group.getChildren()[2].setStroke('white');
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
     
     group.getChildren()[2].selected = false;
-    canvasArray[selectedCanvas].down = false;
+    cArray.down = false;
 
-    canvasArray[selectedCanvas].polygonLayer.draw();
+    cArray.polygonLayer.draw();
     
     var objImg = group.getChildren()[2].clone();
     var imagePath = objImg.toDataURL({
@@ -2534,7 +2564,6 @@ function openChangeIdModalJS(group){
 
 
 function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
-    
 	console.log("createPolygon");
 	
 	/*console.log("imgTab " + imgTab);
@@ -2604,19 +2633,21 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
 
     polygon.on('click', function(e) {
-        polygonOnClick(this, e, canvasName);
+        polygonOnClick(this, e, cArray);
     });
 
+    var cArray = getArrayPos(canvasName);
+    
     polygon.on('mousedown', function(e) {
-        toggleSelectOnClick(selectedCanvas, this, e);
+        toggleSelectOnClick(cArray, this, e);
     });
     
-    var stage = canvasArray[canvasName].stage;
+    var stage = cArray.stage;
     
     polygon.on('mouseenter', function(e) {
     	
     	//Not if objects are dragged
-        if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
+        if(!cArray.dragDropGroup &&!cArray.moving){
         	mouseIn = true;
         	if(this.getParent().getId() != curToolTip){
         		jQuery(".tooltipCanvas").remove();
@@ -2686,7 +2717,6 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 }
 
 function buttonFuction(groupId, top, left){
-	
 	//console.log("buttonFuction");
 	
 	var evt = document.createEvent('MouseEvents');
@@ -2698,10 +2728,11 @@ function buttonFuction(groupId, top, left){
 }
 
 function findGroup(groupId){
-	
 	//console.log("findGroup");
 	
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var polygonLayer = cArray.polygonLayer;
     var ans;
     jQuery.each(polygonLayer.get('.group1'),
             function(index, value) {
@@ -2713,32 +2744,31 @@ function findGroup(groupId){
     return ans;
 }
 
-function polygonOnClick(obj,e, canvasName){
-	
+function polygonOnClick(obj,e, cArray){
 	//console.log("polygonOnClick");
 	
-	var arrow = canvasArray[canvasName].arrow;
+	var arrow = cArray.arrow;
 
 	if (!e.ctrlKey) {
-		if (canvasArray[canvasName].down) {
+		if (cArray.down) {
 			
 			//console.log("polygonOnClick arrow");
 			
-			canvasArray[canvasName].down = false;
+			cArray.down = false;
 			
-			if(canvasArray[canvasName].oldIdSelected != obj.getParent().getId()){
+			if(cArray.oldIdSelected != obj.getParent().getId()){
 				
 				//console.log("polygonOnClick oldId");
 				
-				deleteArrowOutsideStandard(canvasName);
+				deleteArrowOutsideStandard(cArray);
 				
 				var output = arrow.output.getChildren()[4].getText();
 				var input = obj.getParent().getChildren()[4].getText();
-				var arrowClone = addLink(canvasName, output, input);
+				var arrowClone = addLink(cArray.name, output, input);
 				
 				//console.log("polygonOnClick A");
 				
-				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
+				cArray.commandHistory.push_command(new CommandAddArrow(cArray.name, output, input, arrowClone.getName()));
 				
 				//console.log("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				
@@ -2757,12 +2787,13 @@ function polygonOnClick(obj,e, canvasName){
 }
 
 function updateLabelObj(groupId, newGroupId,drawCanvas) {
-	
 	//console.log("updateLabelObj");
     
+	var cArray = getArrayPos(selectedCanvas);
+	
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var polygonLayer = cArray.polygonLayer;
     
     //alert(groupId);
     //alert(newGroupId);
@@ -2800,7 +2831,6 @@ function updateLabelObj(groupId, newGroupId,drawCanvas) {
 }
 
 function getLabelOutputType(color){
-    
 	//console.log("getLabelOutputType");
 	
     var text = "Output Type: ";
@@ -2820,7 +2850,6 @@ function getLabelOutputType(color){
 }
 
 function getColorOutputType(status){
-	
 	//console.log("getColorOutputType");
 	
     if (status == "TEMPORARY"){
@@ -2838,7 +2867,6 @@ function getColorOutputType(status){
 }
 
 function getLabelOutputExistence(color){
-	
 	//console.log("getLabelOutputExistence");
     
     var text = "Output Dataset: ";
@@ -2853,7 +2881,6 @@ function getLabelOutputExistence(color){
 }
 
 function getColorOutputExistence(fileExists){
-	
 	//console.log("getColorOutputExistence");
     
     if (fileExists == "true"){
@@ -2866,7 +2893,6 @@ function getColorOutputExistence(fileExists){
 }
 
 function getLabelRunning(color){
-	
 	//console.log("getLabelRunning");
 
     var text = "Running Status: ";
@@ -2886,7 +2912,6 @@ function getLabelRunning(color){
 }
 
 function getColorRunning(status){
-	
 	//console.log("getColorRunning");
 	
 	if (status == "OK"){
@@ -2904,13 +2929,14 @@ function getColorRunning(status){
 }
 
 function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink) {
-    
 	//console.log("updateActionOutputStatus");
+	
+	var cArray = getArrayPos(selectedCanvas);
 	
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
-    var layer = canvasArray[selectedCanvas].layer;
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var layer = cArray.layer;
+    var polygonLayer = cArray.polygonLayer;
     
     var group = getElement(polygonLayer, groupId);
     
@@ -2966,12 +2992,13 @@ function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExis
 }
 
 function updateActionRunningStatus(groupId, status, fileExists,drawCanvas) {
-	
 	//console.log("updateActionRunningStatus");
 
+	var cArray = getArrayPos(selectedCanvas);
+	
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var polygonLayer = cArray.polygonLayer;
     
     var group = getElement(polygonLayer, groupId);
     
@@ -2984,12 +3011,13 @@ function updateActionRunningStatus(groupId, status, fileExists,drawCanvas) {
 }
 
 function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
-	
 	//console.log("updateArrowType");
+	
+	var cArray = getArrayPos(selectedCanvas);
     
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
-    var layer = canvasArray[selectedCanvas].layer;
+    var layer = cArray.layer;
 
     jQuery.each(layer.getChildren(),
         function(index, value) {
@@ -3006,7 +3034,7 @@ function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
         }
     );
     
-    var coloursArray = canvasArray[selectedCanvas].outputTypeColours;
+    var coloursArray = cArray.outputTypeColours;
     var existLegend = false;
     for (var i=0; i < coloursArray.length; ++i){
         if (coloursArray[i][0] == type){
@@ -3018,13 +3046,13 @@ function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
     if (!existLegend){
         coloursArray[coloursArray.length] = [type, color];
         
-        canvasArray[selectedCanvas].legend.destroy();
+        cArray.legend.destroy();
         var width = type.length * 8;
-        if (width > canvasArray[selectedCanvas].legendWidth){
-            canvasArray[selectedCanvas].legendWidth = width;
+        if (width > cArray.legendWidth){
+        	cArray.legendWidth = width;
         }
         
-        createLegend(selectedCanvas);
+        createLegend(cArray);
     }
     
     if(drawCanvas){
@@ -3033,13 +3061,13 @@ function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
 
 }
 
-
 function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
-    
 	//console.log("updateArrowLabel");
 	
+	var cArray = getArrayPos(selectedCanvas);
+	
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
-    var layer = canvasArray[selectedCanvas].layer;
+    var layer = cArray.layer;
     
     var posx;
     var posy;
@@ -3092,11 +3120,12 @@ function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
 }
 
 function updateAllArrowColours(canvasName, data){
-	
 	//console.log("updateAllArrowColours");
 	
+	var cArray = getArrayPos(canvasName);
+	
     //alert("Update All arrow colours");
-    var layer = canvasArray[canvasName].layer;
+    var layer = cArray.layer;
     for (var i = 0; i < data.length; i++) {
         //alert(data[i][0]+" "+ data[i][1]+" "+ data[i][2]+" "+ data[i][3]+" "+ data[i][4]+" "+data[i][5]);
         updateArrowType(data[i][0], data[i][1], data[i][2], data[i][3], data[i][4],false);
@@ -3107,7 +3136,6 @@ function updateAllArrowColours(canvasName, data){
 }
 
 function saveAll(){
-	
 	//console.log("saveAll");
 	
     isSaveAll = true;
@@ -3125,7 +3153,6 @@ function saveAll(){
 }
     
 function onHideModalSaveWorkflow(saved){
-	
 	//console.log("onHideModalSaveWorkflow");
 	
     //<![CDATA[
@@ -3151,10 +3178,11 @@ function onHideModalSaveWorkflow(saved){
 }
 
 function removeLink(name) {
-	
 	//console.log("removeLink");
 	
-    var layer = canvasArray[selectedCanvas].layer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+    var layer = cArray.layer;
     
     for ( var i = 0; i < layer.getChildren().length; i++) {
         var arrow = layer.getChildren()[i];
@@ -3181,10 +3209,12 @@ function ucFirstAllWords( str ){
 
 function getPolygonTextPosition(list){
 	
+	var cArray = getArrayPos(selectedCanvas);
+	
 	var i = 0;
 	var ans;
-	var x = canvasArray[selectedCanvas].stage.getWidth()-30;
-	var y = canvasArray[selectedCanvas].stage.getHeight()-30;
+	var x = cArray.stage.getWidth()-30;
+	var y = cArray.stage.getHeight()-30;
 	
 	for (;list[i];) {
 		
@@ -3207,10 +3237,13 @@ function getPolygonTextPosition(list){
 }
 
 function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) {
+	console.log("createPolygonVoronoi");
 	
-	var polygonLayer = canvasArray[canvasName].polygonLayer;
-	var voronoiLayer = canvasArray[canvasName].voronoiLayer;
-	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
+	var cArray = getArrayPos(canvasName);
+	
+	var polygonLayer = cArray.polygonLayer;
+	var voronoiLayer = cArray.voronoiLayer;
+	var voronoiButtonLayer = cArray.voronoiButtonLayer;
 	
 	voronoiLayer.removeChildren();
 	voronoiButtonLayer.removeChildren();
@@ -3322,19 +3355,21 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 	
 	voronoiLayer.draw();
 	voronoiButtonLayer.draw();
-	
 }
 
 function updateVoronoi(canvasName, idElement){
+	console.log("updateVoronoi");
 	
-	var polygonLayer = canvasArray[canvasName].polygonLayer;
-	var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
+	var cArray = getArrayPos(canvasName);
 	
-	canvasArray[canvasName].pointsList = [];
+	var polygonLayer = cArray.polygonLayer;
+	//var voronoiButtonLayer = cArray.voronoiButtonLayer;
+	
+	cArray.pointsList = [];
 	
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined && value.getParent().getId() !== undefined){
-            canvasArray[canvasName].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
+        	cArray.pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
         }
     });
 	
@@ -3354,8 +3389,11 @@ function updateVoronoi(canvasName, idElement){
  * @param coordinatorTitle
  */
 function getIdsFromVoronoi(coordinatorTitle){
+	
+	var cArray = getArrayPos(selectedCanvas);
+	
 	var ans = "";
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var polygonLayer = cArray.polygonLayer;
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined && value.getParent().getId() !== undefined && coordinatorTitle == value.voronoiTitle){
         	ans += ","+value.getParent().getChildren()[4].getText();
@@ -3365,7 +3403,10 @@ function getIdsFromVoronoi(coordinatorTitle){
 }
 
 function getGroupInsideVoronoiPolygon(polygon){
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	
+	var cArray = getArrayPos(selectedCanvas);
+	
+	var polygonLayer = cArray.polygonLayer;
 	var g;
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined){
@@ -3388,19 +3429,20 @@ function getGroupInsideVoronoiPolygon(polygon){
 }
 
 function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
-	
 	//console.log("START Voronoi");
 	
-	if(canvasArray[canvasName].isSchedule == true){
+	var cArray = getArrayPos(canvasName);
+	
+	if(cArray.isSchedule == true){
 		console.log("START Voronoi true");
-	    var x = canvasArray[canvasName].stage.getWidth();
-	    var y = canvasArray[canvasName].stage.getHeight();
+	    var x = cArray.stage.getWidth();
+	    var y = cArray.stage.getHeight();
 	    var voronoi = v.voronoi().extent([[0, 0], [x, y]]);
-	    canvasArray[canvasName].voronoi = voronoi(canvasArray[canvasName].pointsList);
-	    createPolygonVoronoi(canvasName, idElement, canvasArray[canvasName].voronoi.polygons(), voranoiPolygonTitle);
+	    cArray.voronoi = voronoi(cArray.pointsList);
+	    createPolygonVoronoi(canvasName, idElement, cArray.voronoi.polygons(), voranoiPolygonTitle);
 	}else{
 		console.log("START Voronoi false");
-		if(canvasArray[selectedCanvas].defaultVoronoi == false){
+		if(cArray.defaultVoronoi == false){
 			createDefaultVoronoi();
 		}
 	}
@@ -3409,7 +3451,6 @@ function startVoronoi(canvasName, idElement, voranoiPolygonTitle){
 }
 
 function retrieveVoranoiPolygonTitleJS(canvasName, idElement, groupId) {
-	
 	//console.log("retrieveVoranoiPolygonTitleJS");
 	retrieveVoranoiPolygonTitle(canvasName, idElement, groupId);
 }
@@ -3417,14 +3458,19 @@ function retrieveVoranoiPolygonTitleJS(canvasName, idElement, groupId) {
 function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
 	console.log("updateVoranoiPolygonTitle");
 	
-	jQuery.each(canvasArray[canvasName].polygonLayer.getChildren(), function(index, value) {
+	var cArray = getArrayPos(canvasName);
+	
+	jQuery.each(cArray.polygonLayer.getChildren(), function(index, value) {
         if (value.getId() == idElement || value.getId() == groupId) {
         	value.voronoiTitle = name;
         }
     });
 	
-	//if(canvasArray[canvasName].isSchedule == true){
-		var voronoiButtonLayer = canvasArray[canvasName].voronoiButtonLayer;
+	//if(cArray.isSchedule == true){
+		var voronoiButtonLayer = cArray.voronoiButtonLayer;
+		
+		console.log("cArray " + voronoiButtonLayer.getChildren() + ":");
+		
 		jQuery.each(voronoiButtonLayer.getChildren(), function(index, value) {
 	        if (value.getChildren()[0].getName() == idElement || value.getChildren()[0].getName() == groupId) {
 	        	value.getChildren()[0].setText(name);
@@ -3436,10 +3482,11 @@ function updateVoranoiPolygonTitle(canvasName, idElement, groupId, name) {
 }
 
 function updateVoranoiAllPolygonTitle(listNames) {
-	
 	console.log("updateVoranoiAllPolygonTitle");
 	
-	if(canvasArray[selectedCanvas].isSchedule == true){
+	var cArray = getArrayPos(selectedCanvas);
+	
+	if(cArray.isSchedule == true){
 		
 		var listNamesArrays = JSON.parse(listNames);
 		
@@ -3448,7 +3495,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 			console.log("update1 " + listNamesArrays[i][0]);
 			console.log("update2 " + listNamesArrays[i][1]);
 			
-			jQuery.each(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren(), function(index, value){
+			jQuery.each(cArray.voronoiButtonLayer.getChildren(), function(index, value){
 				
 				console.log("update3 " + value.getChildren()[0].getName());
 				
@@ -3464,7 +3511,7 @@ function updateVoranoiAllPolygonTitle(listNames) {
 		        }
 		    });
 			
-			jQuery.each(canvasArray[selectedCanvas].voronoiLayer.getChildren(), function(idx, v) {
+			jQuery.each(cArray.voronoiLayer.getChildren(), function(idx, v) {
         		
         		console.log("update4 " + v.getName());
         		
@@ -3476,14 +3523,14 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	
 		}
 		
-		canvasArray[selectedCanvas].voronoiLayer = removeVoronoiDuplicateColour(canvasArray[selectedCanvas].voronoiLayer);
-		canvasArray[selectedCanvas].voronoiButtonLayer = removeVoronoiButtonDuplicate(canvasArray[selectedCanvas].voronoiButtonLayer);
+		cArray.voronoiLayer = removeVoronoiDuplicateColour(cArray.voronoiLayer);
+		cArray.voronoiButtonLayer = removeVoronoiButtonDuplicate(cArray.voronoiButtonLayer);
 		
-		canvasArray[selectedCanvas].voronoiButtonLayer.draw();
-		canvasArray[selectedCanvas].voronoiLayer.draw();
+		cArray.voronoiButtonLayer.draw();
+		cArray.voronoiLayer.draw();
 		
 		for ( var i = 0; i < listNamesArrays.length; i++) {
-			jQuery.each(canvasArray[selectedCanvas].polygonLayer.getChildren(), function(index, value) {
+			jQuery.each(cArray.polygonLayer.getChildren(), function(index, value) {
 				
 				console.log("updatePoly " + value.getId() );
 				
@@ -3497,17 +3544,17 @@ function updateVoranoiAllPolygonTitle(listNames) {
 	}else{
 		console.log("updateVoranoiAllPolygonTitle false ");
 		
-		canvasArray[selectedCanvas].voronoiLayer.removeChildren();
-		canvasArray[selectedCanvas].voronoiButtonLayer.removeChildren();
+		cArray.voronoiLayer.removeChildren();
+		cArray.voronoiButtonLayer.removeChildren();
 		createDefaultVoronoi();
 		
 		var listNamesArrays = JSON.parse(listNames);
 		console.log("update default1 " + listNamesArrays[0][0]);
 		console.log("update default2 " + listNamesArrays[0][1]);
-		console.log(canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName());
-		if (canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0]) {
-			canvasArray[selectedCanvas].voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
-			canvasArray[selectedCanvas].voronoiButtonLayer.draw();
+		console.log(cArray.voronoiButtonLayer.getChildren()[0].getChildren()[0].getName());
+		if (cArray.voronoiButtonLayer.getChildren()[0].getChildren()[0].getName() == listNamesArrays[0][0]) {
+			cArray.voronoiButtonLayer.getChildren()[0].getChildren()[0].setText(listNamesArrays[0][1]);
+			cArray.voronoiButtonLayer.draw();
 		}
 		
 	}
@@ -3515,6 +3562,8 @@ function updateVoranoiAllPolygonTitle(listNames) {
 }
 
 function removeVoronoiButtonDuplicate(voronoiButtonLayer){
+	console.log("removeVoronoiButtonDuplicate");
+	
 	var newTitle = [];
 	jQuery.each(voronoiButtonLayer.getChildren(), function(index, value){
 		if(newTitle.indexOf(value.getChildren()[0].getText()) != -1){
@@ -3559,11 +3608,14 @@ function undoRedoVoronoi(){
 }
 
 function reBuildListVoronoi(){
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	canvasArray[selectedCanvas].pointsList = [];
+	
+	var cArray = getArrayPos(selectedCanvas);
+	
+	var polygonLayer = cArray.polygonLayer;
+	cArray.pointsList = [];
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value !== undefined && value.getParent().getId() !== undefined){
-            canvasArray[selectedCanvas].pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
+        	cArray.pointsList.push([ value.getParent().getX()+40,value.getParent().getY()+50]);
         }
     });
 	startVoronoi(selectedCanvas, "", "");
@@ -3572,69 +3624,85 @@ function reBuildListVoronoi(){
 function createDefaultVoronoi(){
 	console.log("createDefaultVoronoi");
 	
-	var voronoiButtonLayer = canvasArray[selectedCanvas].voronoiButtonLayer;
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var cArray = getArrayPos(selectedCanvas);
+	
+	var voronoiButtonLayer = cArray.voronoiButtonLayer;
+	var polygonLayer = cArray.polygonLayer;
 	voronoiButtonLayer.removeChildren();
 	
-	var polygonButtonText = new Kinetic.Text({
-		name : polygonLayer.getChildren()[0].getId(),
-        text : 'schedule',
-        fontSize : 14,
-        fill : 'black',
-        fontStyle : 'bold',
-        x : 15,
-        y : 30
-    });
+	if(polygonLayer.getChildren().length > 0){
 	
-	var groupBt = new Kinetic.Group({
-        id : 'bt',
-        name : 'default'
-    });
+		var polygonButtonText = new Kinetic.Text({
+			name : polygonLayer.getChildren()[0].getId(),
+	        text : 'schedule',
+	        fontSize : 14,
+	        fill : 'black',
+	        fontStyle : 'bold',
+	        x : 15,
+	        y : 30
+	    });
+		
+		var groupBt = new Kinetic.Group({
+	        id : 'bt',
+	        name : 'default'
+	    });
+		
+		groupBt.on('mouseover', function(e) {
+			document.body.style.cursor = 'pointer';
+		});
+		groupBt.on('mouseout', function() {
+	        document.body.style.cursor = 'default';
+	    });
+		groupBt.on('dblclick', function() {
+			openVoronoiModal("", selectedCanvas);
+	    });
+		
+		groupBt.add(polygonButtonText);
 	
-	groupBt.on('mouseover', function(e) {
-		document.body.style.cursor = 'pointer';
-	});
-	groupBt.on('mouseout', function() {
-        document.body.style.cursor = 'default';
-    });
-	groupBt.on('dblclick', function() {
-		openVoronoiModal("", selectedCanvas);
-    });
+		voronoiButtonLayer.add(groupBt);
+		
+		cArray.defaultVoronoi = true;
 	
-	groupBt.add(polygonButtonText);
-
-	voronoiButtonLayer.add(groupBt);
-	
-	canvasArray[selectedCanvas].defaultVoronoi = true;
+	}else{
+		cArray.defaultVoronoi = false;
+	}
 	
 	voronoiButtonLayer.draw();
 }
 
 function checkIfSchedule(value){
 	console.log("isSchedule " + value);
-	canvasArray[selectedCanvas].isSchedule = parseBool(value);
+	
+	var cArray = getArrayPos(selectedCanvas);
+	
+	cArray.isSchedule = parseBool(value);
 	reRenderMenuMergeSplit();
 	undoRedoVoronoi();
 }
 
 function checkIfScheduleArc(value){
 	console.log("checkIfScheduleArc " + value);
-	canvasArray[selectedCanvas].isSchedule = parseBool(value);
+	
+	var cArray = getArrayPos(selectedCanvas);
+	
+	cArray.isSchedule = parseBool(value);
 	reRenderMenuMergeSplit();
 	reBuildListVoronoi();
 	undoRedoVoronoiJSArc();
 }
 
 function setIfISchedule(canvasName, value){
-	
 	console.log("setIfISchedule " + value);
 	
-    canvasArray[canvasName].isSchedule = parseBool(value);
+	var cArray = getArrayPos(canvasName);
+	
+	cArray.isSchedule = parseBool(value);
     reRenderMenuMergeSplit();
 }
 
 function isIfISchedule(canvasName){
-    return canvasArray[canvasName].isSchedule;
+	var cArray = getArrayPos(canvasName);
+    return cArray.isSchedule;
 }
 
 function parseBool(val){
@@ -3671,15 +3739,17 @@ function capitaliseFirstLetter(string){
 }
 
 function undo(){
-    canvasArray[getSelectedByName()].commandHistory.undo();
+	var cArray = getArrayPos(getSelectedByName());
+	cArray.commandHistory.undo();
 }
 
 function redo(){
-    canvasArray[getSelectedByName()].commandHistory.redo();
+	var cArray = getArrayPos(getSelectedByName());
+	cArray.commandHistory.redo();
 }
 
 function getCanvasId(canvasName){
-    return "flowchart-"+canvasName;
+    return "flowchart-"+removeDot(canvasName);
 }
 
 function getCanvasNameFromId(canvasId){
@@ -3688,55 +3758,66 @@ function getCanvasNameFromId(canvasId){
 
 function setSelectedByName(selected){
     selectedCanvas = selected;
+    var cArray = getArrayPos(selectedCanvas);
     try{
-        canvasArray[selectedCanvas].commandHistory.update_buttonname();
+    	cArray.commandHistory.update_buttonname();
     }catch(e){}
 }
 
 function getSelectedByName(){
-    return selectedCanvas;
+	var cArray = getArrayPos(selectedCanvas);
+	var name = typeof cArray !== 'undefined' ? cArray.realName : selectedCanvas;
+    return name;
 }
 
 function setSelectedById(selected){
     selectedCanvas = selected.substring(10);
+    var cArray = getArrayPos(selectedCanvas);
     try{
-        canvasArray[selectedCanvas].commandHistory.update_buttonname();
+    	cArray.commandHistory.update_buttonname();
     }catch(e){}
 }
 
 function getSelectedById(){
-    return "flowchart-"+selectedCanvas;
+    return "flowchart-"+removeDot(selectedCanvas);
 }
 
 function setRunning(canvasName, value){
-    canvasArray[canvasName].running = value;
+	var cArray = getArrayPos(canvasName);
+	cArray.running = value;
 }
 
 function isRunning(canvasName){
-    return canvasArray[canvasName].running;
+	var cArray = getArrayPos(canvasName);
+    return cArray.running;
 }
 
 function setSaved(canvasName, value){
-    canvasArray[canvasName].saved = value;
+	var cArray = getArrayPos(canvasName);
+	cArray.saved = value;
     if(value){
-    	canvasArray[canvasName].commandHistory.addSaveHistoric();
+    	cArray.commandHistory.addSaveHistoric();
     }
 }
 
 function isSaved(canvasName){
-    return canvasArray[canvasName].saved;
+	var cArray = getArrayPos(canvasName);
+    return cArray.saved;
 }
 
 function setPathFile(canvasName, value){
-    canvasArray[canvasName].pathFile = value;
+	var cArray = getArrayPos(canvasName);
+	cArray.pathFile = value;
 }
 
 function getPathFile(canvasName){
-    return canvasArray[canvasName].pathFile;
+	var cArray = getArrayPos(canvasName);
+    return cArray.pathFile;
 }
 
 function getWorkflowType(canvasName){
-    return canvasArray[canvasName].workflowType;
+	var cArray = getArrayPos(canvasName);
+    return cArray.workflowType;
 }
 
 function getSelectedWorkflowType(){
@@ -3744,9 +3825,40 @@ function getSelectedWorkflowType(){
 }
 
 function getScheduleNoPastDate(canvasName){
-    return canvasArray[canvasName].scheduleNoPastDate;
+	var cArray = getArrayPos(canvasName);
+    return cArray.scheduleNoPastDate;
 }
 
 function setScheduleNoPastDate(canvasName, value){
-    canvasArray[canvasName].scheduleNoPastDate = value;
+	var cArray = getArrayPos(canvasName);
+	cArray.scheduleNoPastDate = value;
+}
+
+function getArrayPos(canvasName){
+	//console.log("getArrayPos " + canvasName);
+	
+	if(canvasName.includes(".")){
+		name = canvasName.replace(/\./g, "");
+		
+		//console.log(name);
+		//console.log(canvasArray);
+		//console.log(canvasArray[name]);
+		
+		return canvasArray[name];
+	}else{
+		//console.log("canvasName return ");
+		return canvasArray[canvasName];
+	}
+}
+
+function removeDot(canvasName){
+	return canvasName.replace(/\./g, "");
+}
+
+function getNameHtml(){
+	return removeDot(selectedCanvas);
+}
+
+function getArrayPosSelectedCanvas(){
+	return getArrayPos(selectedCanvas);
 }

@@ -895,13 +895,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 				Iterator itWorkflow = canvasStatus.keys();
 				while (itWorkflow.hasNext()) {
 					String workflowId = (String) itWorkflow.next();
-					JSONObject canvas = new JSONObject(
-							canvasStatus.get(workflowId).toString());
+					JSONObject canvas = new JSONObject(canvasStatus.get(workflowId).toString());
+					workflowId = canvas.get("name").toString();
 					if(canvas.get("modified").toString().equalsIgnoreCase("true")){
 						getWorkflowMap().get(workflowId).setChanged();
 					}
-					JSONObject positionsArray = new JSONObject(
-							canvas.get("positions").toString());
+					JSONObject positionsArray = new JSONObject(canvas.get("positions").toString());
 
 					Iterator it = positionsArray.keys();
 					while (it.hasNext()) {
@@ -1027,13 +1026,25 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		if (!path.endsWith(".rs") || !path.endsWith(".srs")) {
+		/*if (!path.endsWith(".rs") || !path.endsWith(".srs")) {
 			if (workflowType != null && workflowType.equals("S")) {
 				path += ".srs";
 			} else {
 				path += ".rs";
 			}
+		}*/
+		
+		if (workflowType != null && workflowType.equals("S")) {
+			if (!path.endsWith(".srs")) {
+				path += ".srs";
+			}
+		}else{
+			if (!path.endsWith(".rs")) {
+				path += ".rs";
+			}
 		}
+		
+		
 
 		// Update the object positions
 		updateCanvasStatus();
