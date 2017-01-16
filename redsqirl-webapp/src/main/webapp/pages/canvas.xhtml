@@ -584,9 +584,12 @@
 		      
 		      if(typeof canvasName !== 'undefined'){
 	    	  	//alert(canvasName);
-	    	  	canvasArray[canvasName].stage.destroy();
-	    	  	canvasArray[canvasName].legendStage.destroy();
-	    	  	delete canvasArray[canvasName];
+	    	  	
+	    	  	var cArray = getArrayPos(canvasName);
+	    	  	
+	    	  	cArray.stage.destroy();
+	    	  	cArray.legendStage.destroy();
+	    	  	delete cArray;
 	    	  }
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
@@ -597,7 +600,8 @@
 	    	  console.log("menuCloseTab");
 		      
 	    	  var tabName = getSelectedByName();
-	    	  var ul = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
+	    	  var tabNameHtml = getNameHtml();
+	    	  var ul = jQuery("#canvas-tabs ul:first li #"+tabNameHtml+"-icon-close");
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
@@ -614,14 +618,16 @@
 	    	  console.log("reset " + path);
 	    	  console.log("workflowType " + workflowType);
 	    	  console.log("forceRefresh " + forceRefresh);
-	    	  console.log("setWf " + setWf); 
+	    	  console.log("setWf " + setWf);
 	    	  */
 	    	  
+	    	  var cArray = getArrayPos(canvasName);
+	    	  
 	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
-	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
+	    	  canvasExist = typeof cArray !== 'undefined' ? true : false;
 	    	  setWf = typeof setWf !== 'undefined' ? setWf : true;
 		      
-		 	  //alert(positions);
+		 	  console.log("canvasExist " + canvasExist);
 		 	  
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null || !canvasExist) {
@@ -629,15 +635,18 @@
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  forceRefresh = true;
 	          }
+	          
+	          cArray = getArrayPos(canvasName);
+	          
 	          if(forceRefresh) {
-	    	      addElements(canvasName, positions, selecteds);
-	    	      addLinks(canvasName, links);
+	    	      addElements(cArray, positions, selecteds);
+	    	      addLinks(cArray, links);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
                   if(setWf){
 		    	     setWorkflow(canvasName);
 		    	     resizeCanvas(30,30);
-                     canvasArray[canvasName].stage.draw();
+		    	     cArray.stage.draw();
 		    	  }
 	          }
 	          
@@ -649,11 +658,13 @@
 	    	  
 	    	  isStartVoronoi = typeof isStartVoronoi !== 'undefined' ? isStartVoronoi : true;
 		      
-	   	      addElements(canvasName, positions, selecteds, isStartVoronoi);
-	   	      addLinks(canvasName, links);
-	   	      canvasArray[canvasName].layer.draw();
-              canvasArray[canvasName].polygonLayer.draw();
-              canvasArray[canvasName].stage.draw();
+	    	  var cArray = getArrayPos(canvasName);
+	    	  
+	   	      addElements(cArray, positions, selecteds, isStartVoronoi);
+	   	      addLinks(cArray, links);
+	   	      cArray.layer.draw();
+	   	      cArray.polygonLayer.draw();
+	   	      cArray.stage.draw();
     
 	      }
 	      
@@ -661,7 +672,7 @@
 
 	    	  console.log("updateCanvasRunningStatus");
 		      
-		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+		      var polygonLayer = getArrayPos(selectedCanvas).polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  updateActionRunningStatus(status[i][0], status[i][1], status[i][2],false);
@@ -691,7 +702,7 @@
 		    	  }
 	    	  }
 	    	  
-		      canvasArray[selectedCanvas].stage.draw();
+	    	  getArrayPos(selectedCanvas).stage.draw();
 		      
 		      console.log("updateArcStatus END");
 		      
@@ -703,7 +714,9 @@
 	      
 	      function addWorkflowTab(tabName,type, path){
 
-	    	  console.log("addWorkflowTab");
+	    	  console.log("addWorkflowTab " + tabName);
+	    	  
+	    	  var tabNameHtml = removeDot(tabName);
 		      
 	    	//<![CDATA[
 	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif";
@@ -715,25 +728,25 @@
             	  path = 'Not Saved';
               }
               
-              jQuery( "<li class='locked canvasTabsInactive' title='"+ path +"' ><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');return false;\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
-            		  tabName +"</span></a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"'); return false;\"></span> </li>" ).appendTo( ul );
+              jQuery( "<li class='locked canvasTabsInactive' title='"+ path +"' ><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');return false;\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabNameHtml+"'>"+ 
+            		  tabName +"</span></a> <span id='"+tabNameHtml+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"'); return false;\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
-				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
-				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();jQuery('#container-comment-"+tabName+"').hide();return false;\"  style='position: fixed; z-index:101; width:60px'>"+
+				"<div id='container-"+tabNameHtml+"' class='container-"+tabNameHtml+"'>"+
+				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabNameHtml+"').toggle();jQuery('#container-comment-"+tabNameHtml+"').hide();return false;\"  style='position: fixed; z-index:101; width:60px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
-				"<div class='rich-panel' id='panelLegend-"+tabName+"' style='position: fixed; z-index:100; display: none; width:190px; '>"+
+				"<div class='rich-panel' id='panelLegend-"+tabNameHtml+"' style='position: fixed; z-index:100; display: none; width:190px; '>"+
 					"<div class='rich-panel-body' style='overflow:auto;'>"+
-						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
+						"<div id='container-legend-"+tabNameHtml+"' class='container-legend-"+tabNameHtml+"' style='overflow:hidden; position: relative; top:20px;'/>"+
 					"</div>"+
 	        	"</div>"+
 	        	"<div class='rich-panel headerComment' "+
-	        	      "onclick=\"jQuery('#container-comment-"+tabName+"').toggle();jQuery('#panelLegend-"+tabName+"').hide();return false;\""+
+	        	      "onclick=\"jQuery('#container-comment-"+tabNameHtml+"').toggle();jQuery('#panelLegend-"+tabNameHtml+"').hide();return false;\""+
                       " style='left:82px;position: fixed; z-index: 101; width: 60px'>"+
                       " <div class='rich-panel-header'>Comment</div>"+
                 " </div>"+
-                " <div id='container-comment-"+tabName+"' class='rich-panel container-comment-"+tabName+"'"+
+                " <div id='container-comment-"+tabNameHtml+"' class='rich-panel container-comment-"+tabNameHtml+"'"+
                     " style='overflow: auto;position: fixed; z-index: 100; display: none; width: 330px; height:400px;resize:both;'>"+
                 " </div>"+
               	"</div>"+
@@ -756,7 +769,8 @@
             console.log("closeCurrentTabWithoutCallingBackend");
             
               var tabName = getSelectedByName();
-              var tab = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
+              var tabNameHtml = getNameHtml();
+              var tab = jQuery("#canvas-tabs ul:first li #"+tabNameHtml+"-icon-close");
               
               closeTab(tab,tabName);
               
@@ -780,7 +794,9 @@
 	    	
 	    	console.log("closeWorkflowTab");
 	    	
-	    	var canvasNameStar = jQuery('#canvasNameStar-'+tabName).text();
+	    	var nameHtml = removeDot(tabName);
+	    	
+	    	var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
 				if(!confirm('Are you sure you want to close the selected canvas?')){
 			    	return false;
@@ -889,10 +905,10 @@
 			console.log("scheduleNoPastDate " + getScheduleNoPastDate(selectedCanvas));
 			
 	     	if((isIfISchedule(selectedCanvas) == 'true' || isIfISchedule(selectedCanvas) == true) && (getScheduleNoPastDate(selectedCanvas) == 'true' || getScheduleNoPastDate(selectedCanvas) == true)){
-	     		console.log("blockRunningWorkflowJS A");
+	     		//console.log("blockRunningWorkflowJS A");
 	     		blockRunningSchedulingWorkflowJS();
 	     	}else{
-	     		console.log("blockRunningWorkflowJS B");
+	     		//console.log("blockRunningWorkflowJS B");
 	     		runningWorkflowJS();
 	     	}
             
@@ -1121,28 +1137,22 @@
 	   }
 	   	
 	   	function menuSave(){
-
 	   		console.log("menuSave");
-
 	   		var name = getSelectedByName();
 			if (isSaved(name)){
 				if(!isRunning(name)){
-					
-					console.log("menuSave path " + getPathFile(name));
-					console.log("menuSave name " + name);
-					
-					save(getPathFile(name));
+					var path = getPathFile(name);
+					//console.log("menuSave path " + path);
+					//console.log("menuSave name " + name);
+					save(path);
 			   	}
 	   		} else{
 	   			openModalFileHdfs('T');
 	   		}
-	   		
 	   	}
 
 	   	function importSubWorkflow(){
-
 	   		console.log("importSubWorkflow");
-		   	
 			openModalImportSubworkflow();
 		}
 	   	
@@ -1153,17 +1163,13 @@
 
 
 	   	function configureFooter(){
-
 	   		console.log("configureFooter");
    		 	var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
-	    	  
 	    	configureFooterCss();
 	    	validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
-	    	  
    		}
 
 	    function updateObjsNameReplace(status){
-
 	    	console.log("updateObjsNameReplace");
 		    
 		    //<![CDATA[
@@ -1175,7 +1181,6 @@
 		}
 
 	    function checkOpenModalAggregate(){
-
 	    	console.log("checkOpenModalAggregate");
 		    
 	    	if(getSelectedIconsCommaDelimited() != ""){
@@ -1200,14 +1205,11 @@
 	    }
 
 	    function refreshRelativeHelp(){
-
 	    	console.log("refreshRelativeHelp");
-		    
-	    	 jQuery('[id$="refreshRelativeHelp"]').click();
+			jQuery('[id$="refreshRelativeHelp"]').click();
 	    }
 
 	    function checkPageError(){
-
 	    	console.log("checkPageError");
 		    
 		   	if(jQuery("#msnErrorPageContainer")){
@@ -1235,9 +1237,7 @@
 	    	     	reOpenCanvas();
 	    	   	}
     		   	notifyUser();
-	    	   	
 			}
-	    	
 			reRenderFooter();
 	    	//]]>
 		}
@@ -1259,9 +1259,7 @@
 	    	//]]>
 	   	}
 
-
 	   	function setShowInstallPackageModelValue(value){
-
 	   		console.log("setShowInstallPackageModelValue");
 		   	
 	        if(value == 'P'){
@@ -1273,21 +1271,23 @@
 	        }
 	    }
 	   	
-	   	
 	   	function checkPathRestoreToRun(canvasName){
+	   		console.log("checkPathRestoreToRun");
+	   		
+	   		var nameHtml = removeDot(canvasName);
+	   		
 	   		if (!isSaved(canvasName)) {
 	   			alert("Please, don't forget to save "+canvasName+"!");
 	   		}else{
 	   		  //remove star if necessary
 	   		  setSaved(canvasName, true);
-		      var canvasNameStar = jQuery('#canvasNameStar-'+canvasName).text();
+		      var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 		      if(canvasNameStar[canvasNameStar.length-1] == "*" ){
 		 		jQuery('#canvasNameStar-'+canvasName).text(canvasName);
 		 		updateCanvasNameStar();
 		 	  }
 	   		}
 	   	}
-	   	
 	   	
 	   	function checkOpenModalMerge(){
 	   		//<![CDATA[
@@ -1669,7 +1669,7 @@
 			</h:form>
 		</div>
 	
-		<rich:modalPanel id="modalSchedulingRunning" width="600" height="450" style="overflow:hidden;" resizeable="false">
+		<rich:modalPanel id="modalSchedulingRunning" width="600" height="500" style="overflow:hidden;" resizeable="false">
 	
 	        <f:facet name="header">Running</f:facet>
 	        <f:facet name="controls">
@@ -1755,7 +1755,7 @@
 				
 				<br/>
 				
-				<div style="height:200px;overflow:auto;border:1px solid;">
+				<div style="height:230px;overflow:auto;border:1px solid;">
 				<rich:dataTable id="listJobsScheduling" value="#{canvasBean.selectedScheduling.listJobsScheduling}"
                    var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
                    enableContextMenu="false" selectionMode="none" rowKeyVar="index"
@@ -1991,7 +1991,7 @@
 			
 				<a4j:jsFunction name="updateWfDisplayComment"
 					data="#{canvasBean.savedWfComment}"
-					oncomplete="console.log('updateWfDisplayComment'); jQuery('.container-comment-'+getSelectedByName()).html(data);"
+					oncomplete="console.log('updateWfDisplayComment'); jQuery('.container-comment-'+getNameHtml()).html(data);"
 					reRender="errorTable, msnError">
 				</a4j:jsFunction>
 			</a4j:region>
@@ -2252,7 +2252,7 @@
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
-                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;"
+                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);getArrayPos(selectedCanvas).saved=false;"
                     reRender="tabFlowchart,errorTable,msnError" />
                     
                 <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
@@ -2278,7 +2278,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 			
 				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" reRender="msnError" data="#{canvasBean.positions}"
-					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;}" >
+					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){addElementJS(data[0],data[1],data[2],data[3],data[4], true, data[5]);getArrayPos(selectedCanvas).saved=false;}" >
 					<a4j:actionparam name="nameSubWorkflow" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -2819,12 +2819,12 @@
 									</f:facet>
 									<rich:menuItem id="selectAllMenuItem" submitMode="none"
 										value="#{messages.label_menu_selectall}"
-										onclick="selectAll(getSelectedByName());">
+										onclick="selectAll(getArrayPosSelectedCanvas());">
 										<h:outputText value="Ctrl+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="deselectAllMenuItem" submitMode="none"
 										value="#{messages.label_menu_deselectall}"
-										onclick="deselectAll(getSelectedByName());">
+										onclick="deselectAll(getArrayPosSelectedCanvas());">
 										<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />

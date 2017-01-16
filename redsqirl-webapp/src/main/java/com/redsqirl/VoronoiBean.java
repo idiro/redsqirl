@@ -298,6 +298,10 @@ public class VoronoiBean extends VoronoiBeanAbs {
 			String canvasName = context.getExternalContext().getRequestParameterMap().get("canvasName");
 			String idElement = context.getExternalContext().getRequestParameterMap().get("idElement");
 			String groupID = context.getExternalContext().getRequestParameterMap().get("groupID");
+			
+			logger.info("canvasName " + canvasName);
+			logger.info("idElement " + idElement);
+			logger.info("groupID " + groupID);
 
 			String voranoiPolygonTitle;
 			CanvasBean canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);

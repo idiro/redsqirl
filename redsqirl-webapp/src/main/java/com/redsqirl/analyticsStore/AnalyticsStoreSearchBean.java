@@ -160,7 +160,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			
 			String softwareVersion = ProjectID.getInstance().getVersion();
 			String[] aux = softwareVersion.split("-");
-			softwareVersion = aux[1];
+			softwareVersion = aux[aux.length-1];
 			object.put("softwareVersion", softwareVersion);
 
 			if (type != null && !type.isEmpty() && !type.equals("undefined")){

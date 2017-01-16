@@ -18,6 +18,7 @@
 	<script src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js' type="text/javascript"></script>
 	<script src='#{facesContext.externalContext.requestContextPath}/js/redsqirl-pck-manager.js' type="text/javascript"></script>
 	<script	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js"	type="text/javascript" ></script>
+	<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
 	
 	<title><h:outputText value="#{messages.label_sistem}" /></title>
 		
@@ -148,6 +149,14 @@ function searchJS(){
 
 		<h:form>
 		
+			<div id="domMessageInstall" style="display:none;">
+				<img src="../image/icons/waiting.gif" />
+			</div>
+		
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageInstall') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
+		
 			<h:panelGrid>
 				<h:outputText value="#{messages.label_default_installation_info}" class="formLabel" />
 				
@@ -167,24 +176,7 @@ function searchJS(){
 			
 		</h:form>
 		
-		<h:form>
 		
-			<rich:modalPanel id="msnSuccess"
-				showWhenRendered="#{requestScope['msnSuccess'] != null}">
-				<div style="width: 100%; height: 100%; overflow: auto;">
-					<rich:messages id="msgS" globalOnly="false" layout="list"
-						styleClass="message" infoClass="messageok" errorClass="messageerro"
-						warnClass="messagealert" showDetail="true" showSummary="false"
-						ajaxRendered="false" />
-					<a4j:commandButton styleClass="greenButton"	value="#{messages.label_install_new_package}"
-						onclick="#{rich:component('msnSuccess')}.hide(); searchJS();"
-						style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
-					<a4j:commandButton action="#{analyticsStoreLoginBean.setting}" styleClass="greenButton" value="#{messages.label_setting_modal}" 
-						onclick="#{rich:component('msnSuccess')}.hide();" style="bottom:14%;position:relative;" />
-				</div>
-			</rich:modalPanel>
-		
-		</h:form>
 		
 		
 	</rich:modalPanel>

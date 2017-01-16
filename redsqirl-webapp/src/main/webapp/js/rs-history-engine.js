@@ -50,16 +50,18 @@ CommandHistory.prototype.undo = function() {
 		--this.cur_index;
 		this.update_buttonname();
 		
+		var nameHtml = getNameHtml();
+		
 		if(this.saveIndex == this.cur_index){
-			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+				jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName());
 				jQuery('#updateCanvasNameStar').click();
 			}
 		}else if(this.saveIndex == this.cur_index+1){
-			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 			if(canvasNameStar[canvasNameStar.length-1] != "*" ){
-				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+				jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName()+"*");
 				jQuery('#updateCanvasNameStar').click();
 			}
 		}
@@ -74,16 +76,18 @@ CommandHistory.prototype.redo = function() {
 		this.hist_stack[this.cur_index].redo();
 		this.update_buttonname();
 		
+		var nameHtml = getNameHtml();
+		
 		if(this.saveIndex == this.cur_index){
-			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+				jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName());
 				jQuery('#updateCanvasNameStar').click();
 			}
 		}else if(this.saveIndex == this.cur_index-1){
-			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 			if(canvasNameStar[canvasNameStar.length-1] != "*" ){
-				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+				jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName()+"*");
 				jQuery('#updateCanvasNameStar').click();
 			}
 		}
@@ -121,16 +125,18 @@ CommandHistory.prototype.push_command = function(command) {
 	this.clean();
 	this.update_buttonname();
 	
+	var nameHtml = getNameHtml();
+	
 	if(this.saveIndex == this.cur_index){
-		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 		if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+			jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName());
 			jQuery('#updateCanvasNameStar').click();
 		}
 	}else if(this.saveIndex == this.cur_index-1){
-		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 		if(canvasNameStar[canvasNameStar.length-1] != "*" ){
-			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+			jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName()+"*");
 			jQuery('#updateCanvasNameStar').click();
 		}
 	}
@@ -146,10 +152,13 @@ CommandHistory.prototype.removeLastAction = function() {
 	this.hist_stack.pop();
 	--this.cur_index;
 	this.update_buttonname();
+	
+	var nameHtml = getNameHtml();
+	
 	if(this.saveIndex == this.cur_index){
-		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		var canvasNameStar = jQuery('#canvasNameStar-'+nameHtml).text();
 		if(canvasNameStar[canvasNameStar.length-1] == "*" ){
-			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+			jQuery('#canvasNameStar-'+nameHtml).text(getSelectedByName());
 			jQuery('#updateCanvasNameStar').click();
 		}
 	}
@@ -201,13 +210,16 @@ CommandDelete.prototype.clean = function(){
 };
 
 function deleteSelected(canvasName){
+	
+	var cArray = getArrayPos(canvasName);
+	
     if(getSelectedIconsCommaDelimited() || getSelectedArrowsCommaDelimited()){
-	   canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
+    	cArray.commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
 	}
 }
 
 function deleteArrow(canvasName,arrowName){
-     canvasArray[canvasName].commandHistory.execute(new CommandDelete("",arrowName));
+	cArray.commandHistory.execute(new CommandDelete("",arrowName));
 }
 
 /********************************************************************/
@@ -261,11 +273,14 @@ CommandAddObj.prototype.redo = function(){
     
     addElementBt(this.elementType,this.groupId,this.elementId, true);
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
-	canvasArray[this.canvasName].stage.draw();
+	
+    var cArray = getArrayPos(canvasName);
+    
+    cArray.stage.draw();
 	
 	setTimeout(function(){ retrieveVoranoiPolygonTitleJS(cn, tmpCommandObj.elementId, gi); }, 1000);
 	
-	canvasArray[this.canvasName].polygonLayer.draw();
+	cArray.polygonLayer.draw();
 	console.timeStamp("CommandAddObj.redo end");
 };
 
@@ -365,7 +380,8 @@ CommandPaste.prototype.clean = function(){
 };
 
 function paste(canvasName,selecteds){
-	canvasArray[canvasName].commandHistory.execute(new CommandPaste(selecteds));
+	 var cArray = getArrayPos(canvasName);
+	 cArray.commandHistory.execute(new CommandPaste(selecteds));
 }
 
 /********************************************************************/
@@ -407,7 +423,8 @@ CommandReplaceAll.prototype.clean = function(){
 };
 
 function replaceAll(canvasName,selecteds, oldStr, newStr, changeLabel, regex){
-	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(selecteds, oldStr, newStr, changeLabel, regex));
+	var cArray = getArrayPos(canvasName);
+	cArray.commandHistory.execute(new CommandReplaceAll(selecteds, oldStr, newStr, changeLabel, regex));
 }
 
 /********************************************************************/
@@ -424,45 +441,51 @@ CommandMove.prototype.constructor = CommandMove;
 
 CommandMove.prototype.undo = function(){
     console.timeStamp("CommandMove.prototype.undo begin");
+    
+    var cArray = getArrayPos(selectedCanvas);
+    
     jQuery.each(this.oldValues, function(index, value) {
         if(value.elementId !== undefined ){
-            var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
+            var group = cArray.polygonLayer.get('#' + value.elementId)[0];
             if(group !== undefined ){
             	group.setPosition(value.X,value.Y);
-            	changePositionArrow(selectedCanvas, group);
+            	changePositionArrow(cArray, group);
             }else{
             	
             	var group;
-            	jQuery.each(canvasArray[selectedCanvas].polygonLayer.get('.group1'), function() {
+            	jQuery.each(cArray.polygonLayer.get('.group1'), function() {
                     var g = this;
                     if(g.getId() == value.elementId){
                     	group = g;
                     }
             	});
                 group.setPosition(value.X,value.Y);
-            	changePositionArrow(selectedCanvas, group);
+            	changePositionArrow(cArray, group);
             	
             }
         }
     });
-    canvasArray[selectedCanvas].polygonLayer.draw();
-    canvasArray[selectedCanvas].layer.draw();
+    cArray.polygonLayer.draw();
+    cArray.layer.draw();
     console.timeStamp("CommandMove.prototype.undo end");
 };
 
 CommandMove.prototype.redo = function(){
     console.timeStamp("CommandMove.prototype.redo begin");
+    
+    var cArray = getArrayPos(selectedCanvas);
+    
     jQuery.each(this.newValues, function(index, value) {
         if(value.elementId !== undefined ){
-            var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
+            var group = cArray.polygonLayer.get('#' + value.elementId)[0];
             if(group !== undefined ){
             	group.setPosition(value.X,value.Y);
-            	changePositionArrow(selectedCanvas, group);
+            	changePositionArrow(cArray, group);
             }
         }
     });
-    canvasArray[selectedCanvas].polygonLayer.draw();
-    canvasArray[selectedCanvas].layer.draw();
+    cArray.polygonLayer.draw();
+    cArray.layer.draw();
     console.timeStamp("CommandMove.prototype.redo end");
 };
 
@@ -520,7 +543,10 @@ function execChangeIdElementCommand(loadMainWindow , groupId, oldId, newId, oldC
 				}
 			}
 		}
-        canvasArray[selectedCanvas].commandHistory.execute(
+		
+		var cArray = getArrayPos(selectedCanvas);
+		
+		cArray.commandHistory.execute(
         new CommandChangeId(groupId, oldId,newId, oldComment, newComment));
     }else{
         jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
@@ -572,7 +598,8 @@ CommandUpdateElement.prototype.clean = function(){
 };
 
 function stackUpdateElement(groupId, beforeCloneId,afterCloneId){
-    canvasArray[selectedCanvas].commandHistory.push_command(new CommandUpdateElement(groupId, beforeCloneId,afterCloneId));
+	var cArray = getArrayPos(selectedCanvas);
+	cArray.commandHistory.push_command(new CommandUpdateElement(groupId, beforeCloneId,afterCloneId));
 }
 
 /********************************************************************/
@@ -607,9 +634,9 @@ CommandChangeCommentWf.prototype.getName = function(){
 
 function execChangeCommentWfCommand(oldComment, newComment){
     console.timeStamp("execChangeCommentWfCommand begin");
-    console.log('hahaho');
     if(oldComment != newComment){
-        canvasArray[selectedCanvas].commandHistory.execute(
+    	var cArray = getArrayPos(selectedCanvas);
+    	cArray.commandHistory.execute(
         new CommandChangeCommentWf(oldComment, newComment));
     }
     console.timeStamp("execChangeCommentWfCommand end");
@@ -654,7 +681,8 @@ CommandAggregate.prototype.clean = function(){
 };
 
 function undoRedoAggregate(){
-	canvasArray[selectedCanvas].commandHistory.execute(new CommandAggregate());
+	var cArray = getArrayPos(selectedCanvas);
+	cArray.commandHistory.execute(new CommandAggregate());
 }
 
 
@@ -695,7 +723,8 @@ CommandExpand.prototype.clean = function(){
 };
 
 function undoRedoExpand(selectedSAIcons){
-	canvasArray[selectedCanvas].commandHistory.execute(new CommandExpand(selectedSAIcons));
+	var cArray = getArrayPos(selectedCanvas);
+	cArray.commandHistory.execute(new CommandExpand(selectedSAIcons));
 }
 
 /********************************************************************/
@@ -743,7 +772,8 @@ CommandCoordinator.prototype.clean = function(){
 function undoRedoCoordinator(obj){
 	console.log(obj);
 	if(obj[0] == 'true'){
-		canvasArray[selectedCanvas].commandHistory.push_command(new CommandCoordinator(obj));
+		var cArray = getArrayPos(selectedCanvas);
+		cArray.commandHistory.push_command(new CommandCoordinator(obj));
 	}
 }
 
@@ -780,9 +810,8 @@ MergeCoordinator.prototype.clean = function(){
 };
 
 function undoRedoMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB){
-	console.log("A " + coordinatorsSelectedA);
-	console.log("B " + coordinatorsSelectedA);
-	canvasArray[selectedCanvas].commandHistory.push_command(new MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB));
+	var cArray = getArrayPos(selectedCanvas);
+	cArray.commandHistory.push_command(new MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB));
 	cloneVoronoi(getAllCanvasesStatus());
 	
 	setTimeout(function(){ applyMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB); }, 1000);
@@ -821,7 +850,8 @@ SplitCoordinator.prototype.clean = function(){
 
 function undoRedoSplitCoordinator(selectedIconsCommaDelimited){
 	console.log("undoRedoSplitCoordinator " + selectedIconsCommaDelimited);
-	canvasArray[selectedCanvas].commandHistory.push_command(new SplitCoordinator(selectedIconsCommaDelimited));
+	var cArray = getArrayPos(selectedCanvas);
+	cArray.commandHistory.push_command(new SplitCoordinator(selectedIconsCommaDelimited));
 	cloneVoronoi(getAllCanvasesStatus());
 	
 	setTimeout(function(){ splitCoordinator(selectedIconsCommaDelimited); }, 1000);
