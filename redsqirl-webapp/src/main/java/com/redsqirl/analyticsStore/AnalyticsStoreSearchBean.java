@@ -105,7 +105,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					"Spark ETL Package <br/>"+
 					"Spark ML Package <br/>");
 			
-			modulesToInstall.put("redsqirl-pig", "0.11");
+			modulesToInstall.put("redsqirl-pig", "0.12");
 			modulesToInstall.put("redsqirl-jdbc", "0.8");
 			modulesToInstall.put("redsqirl-spark-etl", "0.8");
 			modulesToInstall.put("redsqirl-spark-ml", "0.8");

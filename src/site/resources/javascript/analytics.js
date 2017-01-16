@@ -620,7 +620,7 @@ function changePassword() {
 
 function DownloadProject(val) {
 	var a = document.createElement("a");
-	a.href = "https://s3-eu-west-1.amazonaws.com/redsqirl/v1.2/"+val;
+	a.href = "https://s3-eu-west-1.amazonaws.com/redsqirl/v1.3/"+val;
 	document.body.appendChild(a);
 	a.click();
 }
