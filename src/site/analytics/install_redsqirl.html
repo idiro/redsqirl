@@ -164,7 +164,7 @@ There are two ways to use Red Sqirl on your Hadoop cluster, Online and Offline.
 
 <span style="font-size:1.4em" >
 <br/>
-To use Red Sqirl Online there are a few things you'll need to have first <br/><br/>
+To use Red Sqirl online there are a few things you'll need to have first <br/><br/>
 <ul style="font-size: inherit;">
 <li>A Linux web server </li><br/>
 <li>An Apache Hadoop cluster with Apache Oozie installed </li><br/>
@@ -208,20 +208,20 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker <a 
 
 <span style="font-size:1.4em" >
 <br/>
-Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
+Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create passwordless principals for your users and copy them to the Red Sqirl server:
 <br/><br/>
 The principal should follow the format 
 <code style="white-space:normal;word-wrap: break-word;" >
 _USER/_HOST@_REALM
 </code>
  for example, 
-<code style="white-space:normal;word-wrap: break-word;" > myuser/myhost.example.com@EXAMPLE.COM </code>
+<code style="white-space:normal;word-wrap: break-word;" > myuser/myhost.example.com@EXAMPLE.COM </code>.
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
 By default, Red Sqirl is expecting the keytab files at 
-<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
+<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>.
 <br/><br/>
-In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
+In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder.
 </span>
 
 </div>
@@ -358,7 +358,7 @@ Step 8: You can then click to sign out from the admin page and click to sign int
 <div id="part1off" class="collapse">
 <span style="font-size:1.4em" >
 <br/>
-To use Red Sqirl Online there are a few things you'll need to have first<br/>
+To use Red Sqirl offline there are a few things you'll need to have first<br/>
 <br/>
 
 <ul style="font-size: inherit;">
@@ -394,20 +394,23 @@ If you don't have access to a Hadoop cluster you can try Red Sqirl on Docker
 </a>
 <br/>
 <div id="Kerberizedoff" class="collapse">
+
 <span style="font-size:1.4em" >
 <br/>
-Red Sqirl now supports Hadoop secure mode. If your cluster is kerberized, you'll need to create a passwordless principal and copy them to the Red Sqirl server
+Red Sqirl now supports Hadoop secure mode. If your cluster is Kerberized, you'll need to create passwordless principals for your users and copy them to the Red Sqirl server:
 <br/><br/>
 The principal should follow the format 
-<code style="white-space:normal;word-wrap: break-word;" >_USER/_HOST@_REALM</code>
+<code style="white-space:normal;word-wrap: break-word;" >
+_USER/_HOST@_REALM
+</code>
  for example, 
-<code style="white-space:normal;word-wrap: break-word;" >myuser/myhost.example.com@EXAMPLE.COM</code>
+<code style="white-space:normal;word-wrap: break-word;" > myuser/myhost.example.com@EXAMPLE.COM </code>.
 <br/><br/>
 All keytabs should be exclusively accessible to the user that it has been created for (permission 400). 
 By default, Red Sqirl is expecting the keytab files at 
-<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>
+<code style="white-space:normal;word-wrap: break-word;" >/etc/security/keytabs/redsqirl/user-_USER.keytab</code>.
 <br/><br/>
-In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder
+In a Kerberized environment, Red Sqirl has to sit on a server on which Hadoop is installed. The Hadoop conf folder is required to be in the Hadoop home folder.
 </span>
 
 </div>
