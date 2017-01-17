@@ -249,6 +249,13 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 				String versionPck = rs.getPackageProperty(RedSqirlPackage.property_version);
 				if (versionPck.equals(version)){
 					return false;
+				}else{
+					//if exist one version installed the button is disable
+					float v1 = Float.parseFloat(versionPck);
+					float v2 = Float.parseFloat(version);
+					if(v1 <= v2){
+						return false;
+					}
 				}
 			}
 		} catch (RemoteException e) {
