@@ -313,7 +313,18 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		functionsMap
 		.put(dateMethods,
 				new String[][] {
-
+			new String[] {
+					"CURRENT_DATE",
+					"",
+					"DATETIME",
+					"@function:CURRENT_DATE@short:Get the running time"
+			},
+			new String[] {
+					"CURRENT_TIMESTAMP",
+					"",
+					"TIMESTAMP",
+					"@function:CURRENT_TIMESTAMP@short:Get the running timestamp"
+					}
 		});
 
 		functionsMap

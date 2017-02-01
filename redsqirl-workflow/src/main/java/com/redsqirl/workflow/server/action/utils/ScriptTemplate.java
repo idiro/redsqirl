@@ -198,7 +198,11 @@ public class ScriptTemplate implements Serializable{
 	}
 	
 	public List<String> getOutputNames(){
-		return Arrays.asList(scriptProp.getProperty(output_names).split(","));
+		String propOutName = scriptProp.getProperty(output_names);
+		if(propOutName == null){
+			return null;
+		}
+		return Arrays.asList(propOutName.split(","));
 	}
 	
 	public FieldList getOutputFieldList(String outputName) throws Exception{

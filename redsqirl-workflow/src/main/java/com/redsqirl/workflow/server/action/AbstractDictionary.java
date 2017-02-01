@@ -84,6 +84,7 @@ public abstract class AbstractDictionary {
 	 * Description Key
 	 */
 	public static String description = "description";
+	
 	/**
 	 * Functions Key
 	 */

@@ -34,6 +34,7 @@ import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileWithHeaderType;
+import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.oozie.ShellAction;
@@ -131,16 +132,21 @@ public class FileTextSource extends AbstractSource {
 		DFEOutput out = getDFEOutput().get(out_name);
 		
 		if (out != null && getDataSubtype().getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
-			if(output.get(no_header_out_name) == null){
-				output.put(no_header_out_name, new MapRedTextFileType());
-				output.get(no_header_out_name).generatePath(this.componentId, no_header_out_name);
+			DFEOutput noHeaderOut = output.get(no_header_out_name);
+			if(noHeaderOut == null){
+				noHeaderOut = new MapRedTextFileType();
+				output.put(no_header_out_name, noHeaderOut);
+				noHeaderOut.generatePath(this.componentId, no_header_out_name);
+				noHeaderOut.setSavingState(SavingState.BUFFERED);
 			}
-			output.get(no_header_out_name).setFields(out.getFields());
-			output.get(no_header_out_name).addProperty(MapRedTextFileType.key_delimiter, 
+			noHeaderOut.setFields(out.getFields());
+			noHeaderOut.addProperty(MapRedTextFileType.key_delimiter, 
 					out.getProperty(MapRedTextFileWithHeaderType.key_delimiter));
+			if(SavingState.TEMPORARY.equals(noHeaderOut.getSavingState())){
+				noHeaderOut.setSavingState(SavingState.BUFFERED);
+			}
 			
-		}
-		else if (output.get(no_header_out_name) != null){
+		}else if (output.get(no_header_out_name) != null){
 			output.remove(no_header_out_name);
 		}
 		

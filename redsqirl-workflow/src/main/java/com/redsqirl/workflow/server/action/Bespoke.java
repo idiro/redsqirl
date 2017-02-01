@@ -110,7 +110,10 @@ public class Bespoke extends DataflowAction{
 		
 		if(error == null){
 			List<String> outputNames = scriptTemplate.getOutputNames();
-			if(outputNames == null || outputNames.isEmpty()){
+			if(outputNames == null){
+				logger.info("No output declared in "+getComponentId());
+			}
+			if(outputNames.isEmpty()){
 				updateOutput("");
 			}else{
 				Iterator<String> it = outputNames.iterator();

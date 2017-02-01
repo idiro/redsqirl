@@ -1,0 +1,25 @@
+<java>
+    <job-tracker>${jobtracker}</job-tracker>
+    <name-node>${namenode}</name-node>
+    <prepare>
+        <delete path="[PATH]"/>
+        <mkdir path="[PATH]"/>
+    </prepare>
+    <job-xml>[JOB-XML]</job-xml>
+    <configuration>
+        <property>
+            <name>mapred.job.queue.name</name>
+            <value>${default_action_queue}</value>
+        </property>
+        <property>
+            <name>oozie.launcher.mapred.job.queue.name</name>
+            <value>${default_launcher_queue}</value>
+        </property>
+    </configuration>
+    <main-class>[MAIN-CLASS]</main-class>
+    <java-opts>[JAVA-STARTUP-OPTS]</java-opts>
+    <arg>ARGUMENT</arg>
+    <file>[FILE-PATH]</file>
+    <archive>[FILE-PATH]</archive>
+    <capture-output />
+</java>

@@ -213,7 +213,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			}
 		}
 		if(type == null){
-			if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+			if (expr.equalsIgnoreCase("null")){
+				type = "ANY";
+			}else if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
 				logger.debug("expression is boolean: " + expr);
 				type = "BOOLEAN";
 			} else if(!variableDisable && expr.startsWith("${") && expr.endsWith("}") ){
@@ -742,7 +744,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	protected String runMethod(String expr, FieldList fields, boolean isAggregMethod,List<String[]> methodsFound) throws Exception {
 		String type = null;
 		if (!methodsFound.isEmpty()) {
-			String arg = expr.substring(expr.indexOf("(") + 1, expr.lastIndexOf(")"));
+			String arg = null;
+			if(expr.indexOf("(") > -1){
+				arg = expr.substring(expr.indexOf("(") + 1, expr.lastIndexOf(")"));
+			}
 			logger.debug("argument " + arg);
 			String[] argSplit = null;
 			int sizeSearched = -1;
@@ -753,36 +758,42 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				method = it.next();
 				logger.debug("method " + method[0] + " " + method[1] + " " + method[2]);
 
-				String delimiter = method[0].substring(method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
-				logger.debug("delimiter " + delimiter);
-				if (delimiter.isEmpty()) {
-					delimiter = ",";
-				}
-				argSplit = getArguments(arg,delimiter);
-				sizeSearched = argSplit.length;
-				logger.debug("argsplit last: " + argSplit[sizeSearched - 1]);
-				logger.debug("argsplit size : " + sizeSearched);
-				logger.debug("test " + expr.trim().equalsIgnoreCase(method[0].trim()));
-				if(method[1] == null){
-					type = method[2];
-				}else{
-					logger.debug("test " + method[1].trim().isEmpty());
-					if (method[1].trim().isEmpty() && expr.trim().equalsIgnoreCase(method[0].trim())) {
-						// Hard-copy method
+				String delimiter = null;
+				if(method[0].indexOf("(") == -1 && (method[1] == null || method[1].isEmpty())){
+					if(arg == null){
 						type = method[2];
-					} else {
-						int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					}
+				}else{
+					delimiter = method[0].substring(method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
+					logger.debug("delimiter " + delimiter);
+					if (delimiter.isEmpty()) {
+						delimiter = ",";
+					}
+					argSplit = getArguments(arg,delimiter);
+					sizeSearched = argSplit.length;
+					logger.debug("argsplit last: " + argSplit[sizeSearched - 1]);
+					logger.debug("argsplit size : " + sizeSearched);
+					logger.debug("test " + expr.trim().equalsIgnoreCase(method[0].trim()));
+					if(method[1] == null){
+						type = method[2];
+					}else{
+						logger.debug("test " + method[1].trim().isEmpty());
+						if (method[1].trim().isEmpty() && expr.trim().equalsIgnoreCase(method[0].trim())) {
+							// Hard-copy method
+							type = method[2];
+						} else {
+							int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
 
-						if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched+1 >= methodArgs)) {
-							method = null;
+							if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched+1 >= methodArgs)) {
+								method = null;
+							}
+						}
+
+						if (type == null && method != null && check(method, argSplit, fields)) {
+							type = method[2];
 						}
 					}
-
-					if (type == null && method != null && check(method, argSplit, fields)) {
-						type = method[2];
-					}
 				}
-
 			}
 			if (type == null) {
 				String error = "No method " + methodsFound.get(0)[0] + " with " + sizeSearched + " arguments, expr:"
