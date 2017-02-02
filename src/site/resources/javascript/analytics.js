@@ -108,6 +108,55 @@ function register() {
 
 }
 
+function deletekey(value){
+	if(confirm("Are you sure that you want to delete this Software key?")){
+		jQuery.ajax({
+			method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			url: getPropreties.url+"deletekey",
+			data: JSON.stringify({ id: value }),
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+			},
+			complete: function(xhr, textStatus) {
+				jQuery("#myGrid").jqGrid('setGridParam',{datatype:'json'}).trigger('reloadGrid');
+			},
+			error: function (request, status, error) {
+				if (request.status == 401) {
+					alert("Sorry, your session has expired. Please login again to continue");
+				}
+			}
+		}).then(function(data) {
+
+		});
+	}
+}
+
+function renameSoftwareKey(){
+	var name = $("#newSoftwarekeyName").val().trim();
+	jQuery.ajax({
+		method: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		url: getPropreties.url+"renamesoftwarekey",
+		data: JSON.stringify({ id: $("#idSoftwarekeySelected").val() , name: name }),
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('Authorization', "Basic"+getsessionToken());
+		},
+		complete: function(xhr, textStatus) {
+			jQuery("#myGrid").jqGrid('setGridParam',{datatype:'json'}).trigger('reloadGrid');
+		},
+		error: function (request, status, error) {
+			if (request.status == 401) {
+				alert("Sorry, your session has expired. Please login again to continue");
+			}
+		}
+	}).then(function(data) {
+
+	});
+}
+
 function downloadModule(value){
 	download(getPropreties.url+'download/downloadModel', JSON.stringify({ id: value }));
 }
