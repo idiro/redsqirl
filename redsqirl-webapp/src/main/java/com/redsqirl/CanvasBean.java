@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -1507,6 +1509,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 										String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
 										listJobsScheduling.add(aux);
 									}
+									
+									Collections.sort(listJobsScheduling, new Comparator<String[]>(){
+										@Override
+										public int compare(String[] s1, String[] s2) {
+											int indexToCompare = 2;
+											return s2[indexToCompare].compareTo(s1[indexToCompare]);
+										}
+									});
+									
 									scheduling.setListJobsScheduling(listJobsScheduling);
 
 									scheduling.setSkippedScheduling(obj.getString("skipped"));
@@ -1540,6 +1551,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 									String[] aux = new String[]{"false", jObj.get("action-number").toString(), jObj.get("nominal-time").toString(), jObj.get("status").toString(), jObj.get("w-id").toString() };
 									listJobsScheduling.add(aux);
 								}
+								
+								Collections.sort(listJobsScheduling, new Comparator<String[]>(){
+									@Override
+									public int compare(String[] s1, String[] s2) {
+										int indexToCompare = 2;
+										return s2[indexToCompare].compareTo(s1[indexToCompare]);
+									}
+								});
+								
 								scheduling.setListJobsScheduling(listJobsScheduling);
 
 								scheduling.setSkippedScheduling(obj.getString("skipped"));

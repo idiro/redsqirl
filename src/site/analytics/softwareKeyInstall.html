@@ -55,7 +55,7 @@ function softwareKey() {
 	    postData: JSON.stringify({userEmail: getsessionEmail(), softwareName: "Redsqirl"}),
 	    datatype: "json",
 	    mtype: 'POST',
-	    colNames: ['Date', 'Name', 'Owner', 'Version'],
+	    colNames: ['Date', 'Name', 'Owner', 'Version',' ',' '],
 	    colModel: [
 		{ name: 'date', index: 'date', width: 40, align: 'left' },
 		{ name: 'installationName', index: 'installationName', width: 150, align: 'left', formatter: function (cellvalue, options, rowObject) {
@@ -63,7 +63,15 @@ function softwareKey() {
 		    }
 		},
 		{ name: 'ownerName', index: 'ownerName', width: 150, align: 'left' },
-		{ name: 'softwareVersionName', index: 'softwareVersionName', width: 40, align: 'left' }
+		{ name: 'softwareVersionName', index: 'softwareVersionName', width: 40, align: 'left' },
+		{ name: 'id', index: 'id', width: 50, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='#' style='text-decoration: none;' onclick='deletekey("+rowObject.id+");' ><input type='submit' class='contentButtonSubPages' value='Delete key' title='Delete key' ></a>";
+		    }
+		},
+		{ name: 'id', index: 'id', width: 50, align: 'left', formatter: function (cellvalue, options, rowObject) {
+		        return "<a href='#' style='text-decoration: none;' onclick='renameSoftwareKeyPopUp("+rowObject.id+");' ><input type='submit' class='contentButtonSubPages' value='Rename key' title='Rename key' ></a>";
+		    }
+		}
 	    ],
 	    rowNum: 10,
 	    rowList: [10, 20, 30],
@@ -114,6 +122,21 @@ function softwareKey() {
 	});
 	jQuery("#myGrid").jqGrid('navGrid','#myGridDiv',{edit:false,add:false,del:false,search:false,refresh:false});
 
+}
+
+function renameSoftwareKeyPopUp(id) {
+	jQuery("#popUpRenameSoftwareKey").click();
+	jQuery("#idSoftwarekeySelected").val(id);
+	jQuery('#newSoftwarekeyName').val('');
+}
+
+function renameSoftwareKeyValidate(){
+	var name = jQuery("#newSoftwarekeyName").val().trim();
+	if(name == ""){
+		alert("Installation name is mandatory.");
+	}else{
+		jQuery("#btOkRenameSoftwareKey").click();
+	}
 }
 
 </script>
@@ -175,6 +198,45 @@ For creating and downloading a new installation, you need to request a key first
 
 <a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
 
+</div>
+
+
+<input type="submit" style="display:none;" id="popUpRenameSoftwareKey" value="" data-dismiss="modal" data-toggle="modal" class="btn btn-default" data-target="#modalChangeNameKey" onclick="event.preventDefault();" >
+
+<!-- Modal -->
+<div class="modal fade" id="modalChangeNameKey" role="dialog" style="height:300px;overflow:hidden;">
+  <div class="modal-dialog" style="width:610px">
+
+	<form>
+
+		<input type="hidden" id="idSoftwarekeySelected" />
+    
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Change Software key name</h4>
+	      </div>
+	      <div class="modal-body">
+		<p>
+		
+		<label style="padding-right: 53px;" >Name:</label>
+		<input type="text" id="newSoftwarekeyName" placeholder="Enter the new name" style="width:70%;" maxlength="44" >
+
+		</p>
+	      </div>
+	      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+		<button type="button" class="btn btn-default" onclick="event.preventDefault();renameSoftwareKeyValidate();" >OK</button>
+
+		<button type="button" id="btOkRenameSoftwareKey" style="display:none;" data-dismiss="modal" onclick="event.preventDefault();renameSoftwareKey();" ></button>
+
+	      </div>
+	    </div>
+
+	</form>
+
+  </div>
 </div>
 
 
