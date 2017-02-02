@@ -210,21 +210,20 @@ CommandDelete.prototype.clean = function(){
 };
 
 function deleteSelected(canvasName){
-	
 	var cArray = getArrayPos(canvasName);
-	
     if(getSelectedIconsCommaDelimited() || getSelectedArrowsCommaDelimited()){
     	cArray.commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
 	}
 }
 
 function deleteArrow(canvasName,arrowName){
+	var cArray = getArrayPos(canvasName);
 	cArray.commandHistory.execute(new CommandDelete("",arrowName));
 }
 
 /********************************************************************/
 /********************************************************************/
-/********************* CommandAddObj ***************************/
+/************************** CommandAddObj ***************************/
 function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds,privilege) {
 
 	Command.call(this);
@@ -307,13 +306,11 @@ CommandAddArrow.prototype.constructor = CommandAddArrow;
 
 CommandAddArrow.prototype.undo = function(){
     console.timeStamp("CommandAddArrow.undo begin");
-	//deleteElementsJS("", this.name);
-	
     
     console.log("undo a " + this.cloneId);
     
-	deleteAllElements();
-	replaceWFByCloneVoronoi("",this.cloneId, false);
+    deleteElementsJS("", this.name);
+	//replaceWFByCloneVoronoi("",this.cloneId, false);
 	
 	console.timeStamp("CommandAddArrow.undo end");
 };
@@ -321,11 +318,11 @@ CommandAddArrow.prototype.undo = function(){
 CommandAddArrow.prototype.redo = function(){
     //console.timeStamp("CommandAddArrow.redo begin");
     
-    console.log("redo clone A ");
+    //console.log("redo clone A ");
     
     tmpCommandObj = this;
     
-    console.log("redo clone B ");
+    //console.log("redo clone B ");
     
     //!ADD A LINK ON BACK-END
     addLinkBt();
@@ -688,7 +685,7 @@ function undoRedoAggregate(){
 
 /********************************************************************/
 /********************************************************************/
-/********************* CommandExpand *****************************/
+/************************ CommandExpand *****************************/
 function CommandExpand(selectedSAIcons) {
     Command.call(this);
     this.selectedSAIcons = selectedSAIcons;
@@ -779,7 +776,7 @@ function undoRedoCoordinator(obj){
 
 /********************************************************************/
 /********************************************************************/
-/********************* MergeCoordinator ***************************/
+/*********************** MergeCoordinator ***************************/
 function MergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB) {
     Command.call(this);
     this.coordinatorsSelectedA = coordinatorsSelectedA;
@@ -819,7 +816,7 @@ function undoRedoMergeCoordinator(coordinatorsSelectedA,coordinatorsSelectedB){
 
 /********************************************************************/
 /********************************************************************/
-/********************* SplitCoordinator ***************************/
+/*********************** SplitCoordinator ***************************/
 function SplitCoordinator(selectedIconsCommaDelimited) {
     Command.call(this);
     this.selectedIconsCommaDelimited = selectedIconsCommaDelimited;

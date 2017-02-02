@@ -2261,13 +2261,13 @@ function configureGroupListeners(cArray, group) {
 	
 	group.on('click', function(e) {
     	
-    	//console.log("group on click " + e.button);
+    	console.log("group on click " + e.button);
         
         jQuery(".tooltipCanvas").remove();
         curToolTip = null;
         if(e.button != 2){
         
-        	//console.log("group on click A ");
+        	console.log("group on click A ");
         	
           group.getChildren()[2].on('click', function(e) {
             polygonOnClick(this, e, cArray);
@@ -2275,10 +2275,17 @@ function configureGroupListeners(cArray, group) {
           
         }else{
         	
-        	//console.log("group on click B ");
+        	console.log("group on click B ");
         	
-            showContextMenu(this, e);
-            return false;
+        	var isWindows = navigator.platform.toUpperCase().indexOf('WIN')!==-1;
+        	var isChrome = window.chrome;
+   		 	if(isChrome && isWindows){
+   		 		
+   		 	}else{
+   		 		showContextMenu(this, e);
+   		 		return false;
+   		 	}
+        	
         }
     });
 	
@@ -2289,7 +2296,7 @@ function configureGroupListeners(cArray, group) {
     
     group.on('dragmove', function(e) {
     	
-    	//console.log("configureGroupListeners dragmove");
+    	console.log("configureGroupListeners dragmove");
     	
     	//Always have the element dragged selected....
     	this.getChildren()[2].selected = true;
@@ -2311,7 +2318,7 @@ function configureGroupListeners(cArray, group) {
 
     group.on('dragend', function(e) {
     	
-    	//console.log("configureGroupListeners dragend");
+    	console.log("configureGroupListeners dragend");
     	
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(cArray, pos, 80, 80);
