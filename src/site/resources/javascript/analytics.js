@@ -710,7 +710,8 @@ function installationPopUp(moduleID, moduleVersionID) {
 				}				
 				$("#divMsgnoSoftwareKey").after( "<span class='validForm' >&nbsp;&nbsp;To request a module key you need at least one <a href='requestApplicationKey.html'>software key</a></span>" );
 			}
-
+			
+			jQuery("#selectInstallation").html("");
 			jQuery.each(data, function(i,v) {
 				jQuery("#selectInstallation").append("<option value='"+ v.softwareKeyID +"'>"+ v.installationName +"</option>");
 			});
