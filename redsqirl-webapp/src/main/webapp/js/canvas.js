@@ -2421,7 +2421,7 @@ function createGroup(cArray, circle0, circle1, polygon, srcImageText, typeText, 
         jQuery("#help_"+helpId).click();
         
         //Open Canvas if needed
-        if(Date.now() - timestampLastElementClicked < 300 && this.getId() == lastElementClicked){
+        if(Date.now() - timestampLastElementClicked < 500 && this.getId() == lastElementClicked){
             openCanvasModalJS(this);
         }else{
         	timestampLastElementClicked = Date.now();
