@@ -1080,7 +1080,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 			String errorNodeName = errorFinalNodeName;
 			String okEndNodeName = okFinalNodeName;
-			if(!email.isEmpty()){
+			if(email != null && !email.isEmpty()){
 				errorNodeName = errorEmailNodeName;
 				okEndNodeName = okEmailNodeName;
 			}

@@ -84,6 +84,9 @@ public class JdbcStoreConnection extends JdbcConnection{
 				}
 			}catch(Exception e){
 				logger.debug(e,e);
+				if(selectables.isEmpty()){
+					selectables = null;
+				}
 			}
 			updateSelectables = System.currentTimeMillis();
 			listing = false;
@@ -111,6 +114,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			cleanOldStatement(rs);
 		}catch(Exception e){
 			logger.error(e,e);
+			return null;
 		}
 		
 		return results;
@@ -122,7 +126,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 		try{
 			String query = getBs().showAllViews();
 			ResultSet rs = null;
-			if(query !=  null){
+			if(query !=  null && !query.isEmpty()){
 				rs = executeQuery(query);
 				while (rs.next()) {
 					results.add(rs.getString(1).trim().toUpperCase());

@@ -966,7 +966,15 @@ public class JdbcStore extends Storage {
 			if(connectionAndTable.length > 1){
 				return null;
 			}
-			listSelectables = getConnection(connectionAndTable[0]).listSelectables(); 
+			listSelectables = getConnection(connectionAndTable[0]).listSelectables();
+			if(listSelectables == null){
+				if(getConnection(connectionAndTable[0]) != null){
+					logger.debug("init error");
+					connectionFailure.put(connectionAndTable[0], System.currentTimeMillis());
+					connections.remove(connectionAndTable[0]);
+				}
+				return ans;
+			}
 			it = listSelectables.keySet().iterator();
 		}
 		while (it.hasNext()) {

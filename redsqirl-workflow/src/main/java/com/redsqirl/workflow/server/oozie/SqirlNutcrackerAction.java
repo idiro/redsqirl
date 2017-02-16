@@ -149,34 +149,5 @@ public class SqirlNutcrackerAction extends OozieUniqueActionAbs {
 	public String[] getFileExtensions() {
 		return new String[] { ".xml" };
 	}
-	/**
-	 * Get a set of paths to remove
-	 * @return Set of paths
-	 */
-	public Set<String> getPathToRemove() {
-		return pathToRemove;
-	}
-	/**
-	 * Set the list of paths to remove 
-	 * @param pathToRemove
-	 */
-	public void setPathToRemove(Set<String> pathToRemove) {
-		this.pathToRemove = pathToRemove;
-	}
-	/**
-	 * Add a path to remove 
-	 * @param e
-	 * @return <code>true</code> if path remove was successful 
-	 */
-	public boolean addRemovePath(String e) {
-
-		return pathToRemove.add(e);
-	}
-	/**
-	 * Clear the path to remove
-	 */
-	public void clearPathToRemove() {
-		pathToRemove.clear();
-	}
 
 }

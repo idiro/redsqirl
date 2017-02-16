@@ -274,7 +274,7 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_allow_user_install = core_settings+".allow_user_install",
 
 			/** Sqirl nutcracker path */
-			sys_nutcracker_path = "nutcracker_path",
+			sys_nutcracker_path = "core.utils.nutcracker_path",
 
 			/** Parallel clause for pig */
 			sys_pig_parallel = "pig_parallel",
@@ -304,7 +304,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/** Parallel clause for pig */
 	user_pig_parallel = "pig_parallel",
 	/** Address to be used on SendEmail action */
-	user_email = "core.email.user_email_address",
+	user_email = "core.utils.user_email_address",
 	old_rs_home="core.old_rs_home";
 
 

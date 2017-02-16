@@ -107,8 +107,15 @@ public class HiveAction extends OozieUniqueActionAbs{
 		HivePropertiesDetails hpd = new HivePropertiesDetails("hive");
 		Element urlEl = oozieXmlDoc.createElement("jdbc-url");
 		String urlStr = hpd.getDburl();
-		if(urlStr.contains(";")){
-			urlStr = urlStr.substring(0, urlStr.indexOf(';'));
+		if(WorkflowPrefManager.isSecEnable() && urlStr.contains(";")){
+			String[] options = urlStr.substring(urlStr.indexOf(';')+1).split(";");
+			String newOptions = "";
+			for(int i = 0; i < options.length;++i){
+				if(!options[i].startsWith("kerberos") && !options[i].startsWith("kerberosAuthType")){
+					newOptions += ";"+options[i];
+				}
+			}
+			urlStr = urlStr.substring(0, urlStr.indexOf(';'))+newOptions;
 		}
 		urlEl.appendChild(oozieXmlDoc.createTextNode(urlStr));
 		hive.appendChild(urlEl);

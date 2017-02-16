@@ -272,7 +272,7 @@ public abstract class AbstractMultipleSources extends DataflowAction {
 				try {
 					wa = (DataOutput) Class.forName(className).newInstance();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(e,e);
 				}
 				logger.debug("class : " + wa.getClass().getCanonicalName());
 				logger.debug("wa type : " + wa.getTypeName());

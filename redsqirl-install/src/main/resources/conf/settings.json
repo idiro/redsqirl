@@ -313,7 +313,7 @@
             ]
         },
         {
-            "name": "email",
+            "name": "utils",
             "settings": [
                 {
                     "default": "",
@@ -322,6 +322,14 @@
                     "scope": "user",
                     "type": "STRING",
                     "validator": "com.redsqirl.workflow.settings.checkers.EmailRegexChecker"
+                },
+                {
+                    "default": "/share/lib/sqirl-nutcracker",
+                    "optional": "true",
+                    "property": "nutcracker_path",
+                    "scope": "any",
+                    "type": "STRING",
+                    "validator": "com.redsqirl.workflow.settings.checkers.DirectoryRegexChecker"
                 }
             ]
         },
