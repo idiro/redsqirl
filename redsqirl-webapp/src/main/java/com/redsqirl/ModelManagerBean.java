@@ -616,12 +616,12 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 				List<SubDataFlow> subDF = new ArrayList<SubDataFlow>(subWFNames.size());
 				error = "";
 				for (String subWFName: subWFNames) {
-					subWFNames.add(subWFName);;
+					subWFNames.add(subWFName);
 					SubDataFlow sdCur = dfi.getNewSubWorkflow();
 					sdCur.setName(rsModel.getFullName(subWFName));
 					sdCur.readFromLocal(new File(rsModel.getFile(),subWFName));
 					logger.info(subWFName+": "+new File(rsModel.getFile(),subWFName)+" "+sdCur.getName());
-					Boolean privilegeCur = sdCur.getPrivilege(); 
+					Boolean privilegeCur = sdCur.getPrivilege();
 					if(privilegeCur != null){
 						if(privilegeCur){
 							error += getMessageResourcesWithParameter("msg_err_subwf_copy_licensed",new String[]{sdCur.getName()});
@@ -928,6 +928,9 @@ public class ModelManagerBean extends BaseBean implements Serializable {
 					admin = admin || cur.equals(user);
 					logger.debug("admin user: " + cur);
 				}
+			}else{
+				logger.info("if the list is empty, every user can be admin");
+				admin = true;
 			}
 		} catch (Exception e) {
 			logger.warn("Exception in isAdmin: " + e.getMessage());

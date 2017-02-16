@@ -278,8 +278,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 			/** Parallel clause for pig */
 			sys_pig_parallel = "pig_parallel",
-			/** Max number of workers for Giraph */
-			sys_max_workers = "max_workers",
+			
 			/** Enable Kerberos security */
 			sys_enable_security = core_settings_security+".enable",
 			/** Keytab path */

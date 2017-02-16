@@ -53,6 +53,10 @@ public class SqirlNutcrackerAction extends OozieUniqueActionAbs {
 	
 	private static Logger logger = Logger.getLogger(SqirlNutcrackerAction.class);
 	
+	
+	/** Sqirl nutcracker path */
+	public final String sys_nutcracker_path = "redsqirl-sna.nutcracker_path";
+	
 	/**
 	 * Set of paths to remove
 	 */
@@ -79,7 +83,7 @@ public class SqirlNutcrackerAction extends OozieUniqueActionAbs {
 		Element java = oozieXmlDoc.createElement("java");
 
 		defaultParam(oozieXmlDoc, java);
-		String path = WorkflowPrefManager.getProperty(WorkflowPrefManager.sys_nutcracker_path);
+		String path = WorkflowPrefManager.getProperty(sys_nutcracker_path);
 		
 		logger.debug("createOozieElement path " + path);
 		
