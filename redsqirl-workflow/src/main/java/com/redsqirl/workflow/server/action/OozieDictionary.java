@@ -38,6 +38,8 @@ public class OozieDictionary extends AbstractDictionary{
 	private static final String wfMethods = "workflowMethods";
 	/** Key for a data methods */
 	private static final String dataMethods = "dataMethods";
+	/** Key for a data methods */
+	private static final String coordMethods = "coordinatorMethods";
 	/** Instance */
 	private static OozieDictionary instance;
 
@@ -233,15 +235,100 @@ public class OozieDictionary extends AbstractDictionary{
 					"LONG",
 					"@function:blockSize()@short:It returns the block size in bytes of specified file. If the path is not a file, or if it does not exist it returns -1." },
 			new String[] {
-					"fs:",
-					"",
-					"STRING",
-					"@function:@short:" },
-			new String[] {
 					"hcat:exists()",
 					"STRING",
 					"BOOLEAN",
 					"@function:exists()@short:It returns true or false based on if the partitions in the table exists or not." },
+		});
+		
+		functionsMap
+		.put(coordMethods,
+				new String[][] {
+			new String[] {
+					"coord:dataIn()",
+					"STRING",
+					"STRING",
+					"@function:dataIn()@short:EL function resolves to all the URIs for the dataset instances specified in an input event dataset section." },
+			new String[] {
+					"coord:dataOut()",
+					"STRING",
+					"STRING",
+					"@function:dataOut()@short:EL function resolves to all the URIs for the dataset instance specified in an output event dataset section." },
+			new String[] {
+					"coord:nominalTime()",
+					"",
+					"STRING",
+					"@function:nominalTime()@short:EL function resolves to the coordinator action creation (materialization) datetime." },
+			new String[] {
+					"coord:actualTime()",
+					"",
+					"STRING",
+					"@function:actualTime()@short:EL function resolves to the coordinator action actual creation datetime." },
+			new String[] {
+					"coord:user()",
+					"",
+					"STRING",
+					"@function:user()@short:returns the user that started the coordinator job." },
+			new String[] {
+					"coord:databaseIn()",
+					"STRING",
+					"STRING",
+					"@function:databaseIn()@short:Database name of HCat dataset input instance" },
+			new String[] {
+					"coord:databaseOut()",
+					"STRING",
+					"STRING",
+					"@function:databaseOut()@short:Database name of HCat dataset output instance" },
+			new String[] {
+					"coord:tableIn()",
+					"STRING",
+					"STRING",
+					"@function:tableIn()@short:Table name of HCat dataset input instance" },
+			new String[] {
+					"coord:tableOut()",
+					"STRING",
+					"STRING",
+					"@function:tableOut()@short:Table name of HCat dataset output instance" },
+			new String[] {
+					"coord:dataInPartitionFilter()",
+					"STRING,STRING",
+					"STRING",
+					"@function:dataInPartitionFilter()@short: EL function resolves to a filter clause to filter all the partitions corresponding to the dataset instances specified in an input event dataset section. @description:This EL function takes two arguments - the name of the input dataset, and the type of the workflow action which will be consuming this filter. There are 3 types - 'pig', 'hive' and 'java'. " },
+			new String[] {
+					"coord:dataOutPartitionFilter()",
+					"STRING",
+					"STRING",
+					"@function:dataOutPartitionFilter()@short:EL function resolves to a comma-separated list of partition key-value pairs for the output-event dataset."},
+			new String[] {
+					"coord:dataInPartitionMin()",
+					"STRING,STRING",
+					"STRING",
+					"@function:dataInPartitionMin()@short:EL function resolves to the minimum value of the specified partition for all the dataset instances specified in an input event dataset section." },
+			new String[] {
+					"coord:dataInPartitionMax()",
+					"STRING,STRING",
+					"STRING",
+					"@function:dataInPartitionMax()@short:EL function resolves to the maximum value of the specified partition for all the dataset instances specified in an input event dataset section." },
+			new String[] {
+					"coord:dataOutPartitionValue()",
+					"STRING,STRING",
+					"STRING",
+					"@function:dataOutPartitionValue()@short:EL function resolves to value of the specified partition for the output-event dataset; that will be consumed by a workflow job, e.g Pig job triggered by a coordinator action." },
+			new String[] {
+					"coord:dateOffset()",
+					"STRING,INT,STRING",
+					"STRING",
+					"@function:dateOffset()@short:EL function calculates the date based on the following equation : newDate = baseDate + (instance * timeUnit) In other words, it offsets the baseDate by the amount specified by instance and timeUnit ." },
+			new String[] {
+					"coord:dateTzOffset()",
+					"STRING,STRING",
+					"STRING",
+					"@function:dateTzOffset()@short:EL function calculates the date based on the following equation : newDate = baseDate + (Oozie procesing timezone - timezone) In other words, it offsets the baseDate by the difference from Oozie processing timezone to the given timezone " },
+			new String[] {
+					"coord:formatTime()",
+					"STRING,STRING",
+					"STRING",
+					"@function:formatTime()@short:Allows transformation of the standard ISO8601 timestamp strings into other desired formats." },
 		});
 		
 	}
