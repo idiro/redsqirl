@@ -2122,10 +2122,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("change workflow to " + getNameWorkflow());
 		setDf(getWorkflowMap().get(getNameWorkflow()));
-
 		setWorkflowType(getMapWorkflowType().get(getNameWorkflow()));
 		logger.info("workflow type " + getWorkflowType());
-
+		getCheckIfSchedule();
 	}
 
 	public void addWorkflow() throws RemoteException {
@@ -4026,6 +4025,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public boolean isSchedule() {
 		return schedule;
+	}
+	
+	public String getScheduleStr() {
+		logger.info("Schedule: "+schedule);
+		return schedule ?"Y":"N";
+	}
+	
+	public void setScheduleStr(String ignore) {
 	}
 
 	public void setSchedule(boolean schedule) {

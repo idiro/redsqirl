@@ -153,6 +153,10 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 		return extraParameters;
 	}
 	
+	public void setExtraJobParameters(DataFlowCoordinatorVariables extraParameters) throws RemoteException{
+		this.extraParameters = extraParameters;
+	}
+	
 	/**
 	 * Get the varName surrounded byu "${}"
 	 * @param varName

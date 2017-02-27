@@ -638,29 +638,33 @@ public class JdbcStore extends Storage {
 				logger.info("path : " + path + " , " + fields.getFieldNames());
 				String desc = getDescription(connectionAndTable[0],connectionAndTable[1]).get(
 						key_describe);
-
-				String[] fieldSs = desc.split(";");
-				for (int i = 0; i < fieldSs.length; ++i) {
-					Iterator<String> itS = fields.getFieldNames()
-							.iterator();
-					boolean found = false;
-					String cur = null;
-					while (itS.hasNext() && !found) {
-						cur = fieldSs[i].split(",")[0].trim();
-						found = itS
-								.next()
-								.trim()
-								.equalsIgnoreCase(
-										cur);
-					}
-					if (!found) {
-						error = LanguageManagerWF.getText(
-								"jdbcstore.featsnotin",
-								new Object[] {
-										fieldSs[i].split(",")[0],
-										fields.getFieldNames()
-										.toString(),
-										cur});
+				
+				if(desc == null){
+					error = "Error fetching table metadata, please refresh the table list.";
+				}else{
+					String[] fieldSs = desc.split(";");
+					for (int i = 0; i < fieldSs.length; ++i) {
+						Iterator<String> itS = fields.getFieldNames()
+								.iterator();
+						boolean found = false;
+						String cur = null;
+						while (itS.hasNext() && !found) {
+							cur = fieldSs[i].split(",")[0].trim();
+							found = itS
+									.next()
+									.trim()
+									.equalsIgnoreCase(
+											cur);
+						}
+						if (!found) {
+							error = LanguageManagerWF.getText(
+									"jdbcstore.featsnotin",
+									new Object[] {
+											fieldSs[i].split(",")[0],
+											fields.getFieldNames()
+											.toString(),
+											cur});
+						}
 					}
 				}
 			}
@@ -899,7 +903,7 @@ public class JdbcStore extends Storage {
 			try {
 				ans = getConnection(connectionAndTable[0]).displaySelect(getConnection(connectionAndTable[0]).executeQuery(statement),maxToRead);
 			} catch (Exception e) {
-				logger.error("Fail to select the table " + connectionAndTable[0]);
+				logger.error("Fail to select the connection " + connectionAndTable[0]);
 				logger.error(e.getMessage(),e);
 			}
 

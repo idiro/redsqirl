@@ -48,6 +48,7 @@ public class JdbcAction extends OozieUniqueActionAbs {
 	public void createOozieElement(Document oozieXmlDoc, Element action, String[] fileNames) throws RemoteException {
 		logger.debug("Add variables to the sql action: "+getVariables());
 		this.action.addAllVariables(getVariables());
+		this.action.setExtraJobParameters(extraParameters);
 		this.action.createOozieElement(oozieXmlDoc, action, fileNames);
 	}
 	

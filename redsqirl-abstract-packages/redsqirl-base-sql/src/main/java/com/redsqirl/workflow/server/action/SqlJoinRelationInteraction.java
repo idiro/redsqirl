@@ -21,9 +21,9 @@ package com.redsqirl.workflow.server.action;
 
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +35,8 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.EditorInteraction;
-import com.redsqirl.workflow.server.TableInteraction;
-import com.redsqirl.workflow.server.action.utils.SqlDictionary;
+import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.SqlLanguageManager;
 
 /**
@@ -163,7 +163,8 @@ public abstract class SqlJoinRelationInteraction extends SqlOperationTableInter 
 	 */
 	public void update() throws RemoteException {
 
-		Set<String> tablesIn = hj.getJoinAliases().keySet();
+		Map<String,DFEOutput> joinAliases = hj.getJoinAliases();
+		Set<String> tablesIn = joinAliases.keySet();
 
 		// Remove constraint on first column
 		updateColumnConstraint(table_table_title, null, 1, tablesIn);
@@ -180,6 +181,11 @@ public abstract class SqlJoinRelationInteraction extends SqlOperationTableInter 
 		}
 		if(gen){
 			dictionaryCach.clear();
+			removeGenerators();
+
+			// Set the Generator
+			logger.debug("Set the generator...");
+			addGenerators(joinAliases);
 		}else{
 			try{
 				if(getTree()
@@ -188,18 +194,49 @@ public abstract class SqlJoinRelationInteraction extends SqlOperationTableInter 
 				}
 			}catch(Exception e){}
 		}
-		if (getValues().isEmpty()) {
-			List<Map<String, String>> lrows = new LinkedList<Map<String, String>>();
-			Iterator<String> tableIn = tablesIn.iterator();
-			while (tableIn.hasNext()) {
+	}
+	
+	protected void addGenerators(Map<String,DFEOutput> out)
+					throws RemoteException {
+		
+		
+		Iterator<String> aliasIt = out.keySet().iterator();
+		Collection<String> fields = null;
+		{
+			List<Map<String, String>> rows = new LinkedList<Map<String, String>>();
+			while(aliasIt.hasNext()){
+				String curAlias = aliasIt.next();
+				if(fields == null){
+					fields = out.get(curAlias).getFields().getFieldNames();
+				}else{
+					fields.retainAll(out.get(curAlias).getFields().getFieldNames());
+				}
 				Map<String, String> curMap = new LinkedHashMap<String, String>();
-				curMap.put(table_table_title, tableIn.next());
-				curMap.put(table_feat_title, "");
+				curMap.put(table_table_title, curAlias);
+				curMap.put(table_feat_title, "1");
 				logger.debug("row : " + curMap);
-				lrows.add(curMap);
+				rows.add(curMap);
 			}
-			setValues(lrows);
+			updateGenerator("Cartesian join", rows);
 		}
+		
+		Iterator<String> fieldIt = fields.iterator();
+		while(fieldIt.hasNext()){
+			String curField = fieldIt.next();
+			List<Map<String, String>> rows = new LinkedList<Map<String, String>>();
+			aliasIt = out.keySet().iterator();
+			while(aliasIt.hasNext()){
+				String curAlias = aliasIt.next();
+				Map<String, String> curMap = new LinkedHashMap<String, String>();
+				curMap.put(table_table_title, curAlias);
+				curMap.put(table_feat_title, curAlias+"."+curField);
+				logger.debug("row : " + curMap);
+				rows.add(curMap);
+			}
+			updateGenerator("Join on "+curField, rows);
+		}
+		
+
 	}
 
 	/**

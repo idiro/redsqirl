@@ -145,7 +145,7 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	 * @return
 	 */
 	Map<String, String[][]> getVarFunctions() throws RemoteException;
-	
+
 	/**
 	 * Check an expression
 	 * @param expression
@@ -155,10 +155,19 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	String checkVar(String expression) throws RemoteException;
 	
 	/**
+	 * Check an expression
+	 * @param expression
+	 * @param isScheduled
+	 * @return
+	 * @throws RemoteException
+	 */
+	String checkVar(String expression,boolean isScheduled) throws RemoteException;
+	
+	/**
 	 * Check all variables
 	 * @return
 	 * @throws RemoteException
 	 */
-	String checkAllVariables() throws RemoteException;
+	String checkAllVariables(boolean isScheduled) throws RemoteException;
 	
 }

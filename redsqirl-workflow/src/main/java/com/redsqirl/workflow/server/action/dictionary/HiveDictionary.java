@@ -83,7 +83,11 @@ public class HiveDictionary extends JdbcDictionary{
 					new String[] { "CAST( AS DOUBLE)", "ANY", "DOUBLE",
 					"@function:CAST@short:returns a double value.@example: CAST('3.1' AS DOUBLE) returns 3.1" },
 					new String[] { "CAST( AS STRING)", "ANY", "STRING",
-							"@function:CAST@short:returns a string value.@example: CAST(3 AS STRING) returns '3'"},
+					"@function:CAST@short:returns a string value.@example: CAST(3 AS STRING) returns '3'"},
+					new String[] { "CAST( AS DATE)", "ANY", "DATETIME",
+					"@function:CAST@short:returns a date value.@example: CAST('2017-02-31' AS DATE) returns 2017-02-31"},
+					new String[] { "CAST( AS TIMESTAMP)", "DATETIME", "TIMESTAMP",
+					"@function:CAST@short:returns a string value.@example: CAST(MYDATE AS TIMESTAMP)"},
 				});
 		
 		String[][] hiveStringMethods = new String[][] {
@@ -104,11 +108,11 @@ public class HiveDictionary extends JdbcDictionary{
 		addToFunctionsMap(stringMethods,hiveStringMethods);
 		
 		String[][] hiveDateMethods = new String[][] {
-			new String[] { "CURRENT_DATE()", "", "DATETIME",
-			"@function:CURRENT_DATE@short:returns the current date in the time zone of your database.",
+			new String[] { "FROM_UNIXTIME()", "LONG", "STRING",
+			"@function:UNIX_TIMESTAMP@short:Converts a long to a string timestamp format.@description:Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a string representing the timestamp",
 			},
-			new String[] { "CURRENT_TIMESTAMP()", "", "TIMESTAMP",
-			"@function:CURRENT_DATE@short:returns the current date in the time zone of the current SQL session.",
+			new String[] { "FROM_UNIXTIME()", "LONG,STRING", "STRING",
+			"@function:UNIX_TIMESTAMP@short:Converts a long to a string timestamp format.@description:Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a string representing the timestamp",
 			},
 			new String[] { "UNIX_TIMESTAMP()", "", "LONG",
 			"@function:UNIX_TIMESTAMP@short:returns the current date in a unix format.",
@@ -116,47 +120,89 @@ public class HiveDictionary extends JdbcDictionary{
 			new String[] { "UNIX_TIMESTAMP()", "STRING", "LONG",
 			"@function:UNIX_TIMESTAMP@short:returns the date in a unix format.@description:Converts time string in format yyyy-MM-dd HH:mm:ss to Unix timestamp (in seconds), using the default timezone and the default locale, 0 if it fails.@example:unix_timestamp('2009-03-20 11:30:01') = 1237573801",
 			},
+			new String[] { "UNIX_TIMESTAMP()", "TIMESTAMP", "LONG",
+			"@function:UNIX_TIMESTAMP@short:returns the date in a unix format.@description:Converts time string in format yyyy-MM-dd HH:mm:ss to Unix timestamp (in seconds), using the default timezone and the default locale, 0 if it fails.@example:unix_timestamp('2009-03-20 11:30:01') = 1237573801",
+			},
 			new String[] { "UNIX_TIMESTAMP()", "STRING,STRING", "LONG",
 			"@function:UNIX_TIMESTAMP@short:returns the date in a unix format.@description:Converts time string in given format to Unix timestamp (in seconds), using the default timezone and the default locale, 0 if it fails.@example:unix_timestamp('2009-03-20', 'yyyy-MM-dd') = 1237532400",
+			},
+			new String[] { "TO_DATE()", "STRING", "DATETIME",
+			"@function:TO_DATE@short:Returns the date part of a timestamp string.@example:to_date('1970-01-01 00:00:00') = '1970-01-01'",
+			},
+			new String[] { "YEAR()", "STRING", "INT",
+			"@function:YEAR@short:returns the year of a date."
 			},
 			new String[] { "YEAR()", "TIMESTAMP", "INT",
 			"@function:YEAR@short:returns the year of a date."
 			},
+			new String[] { "QUARTER()", "STRING", "INT",
+			"@function:YEAR@short:returns the quarter of the year for a date, timestamp, or string in the range 1 to 4."
+			},
+			new String[] { "QUARTER()", "TIMESTAMP", "INT",
+			"@function:YEAR@short:returns the quarter of the year for a date, timestamp, or string in the range 1 to 4."
+			},
+			new String[] { "MONTH()", "STRING", "INT",
+			"@function:MONTH@short:returns the month of a date."
+			},
 			new String[] { "MONTH()", "TIMESTAMP", "INT",
-			"@function:MONTH@short:returns the year of a date."
+			"@function:MONTH@short:returns the month of a date."
+			},
+			new String[] { "DAY()", "STRING", "INT",
+			"@function:DAY@short:returns the day of the month of a date."
 			},
 			new String[] { "DAY()", "TIMESTAMP", "INT",
 			"@function:DAY@short:returns the day of the month of a date."
 			},
+			new String[] { "HOUR()", "STRING", "INT",
+			"@function:DAY@short:returns the hour of the day of a timestamp."
+			},
 			new String[] { "HOUR()", "TIMESTAMP", "INT",
 			"@function:DAY@short:returns the hour of the day of a timestamp."
+			},
+			new String[] { "MINUTE()", "STRING", "INT",
+			"@function:DAY@short:returns the minute of the hour of a timestamp."
 			},
 			new String[] { "MINUTE()", "TIMESTAMP", "INT",
 			"@function:DAY@short:returns the minute of the hour of a timestamp."
 			},
+			new String[] { "SECOND()", "STRING", "INT",
+			"@function:DAY@short:returns the second of the minute of a timestamp."
+			},
 			new String[] { "SECOND()", "TIMESTAMP", "INT",
 			"@function:DAY@short:returns the second of the minute of a timestamp."
+			},
+			new String[] { "WEEKOFYEAR()", "STRING", "INT",
+			"@function:MONTH@short:returns the week of the year of a date."
 			},
 			new String[] { "WEEKOFYEAR()", "TIMESTAMP", "INT",
 			"@function:MONTH@short:returns the week of the year of a date."
 			},
-			new String[] { "DATEDIFF()", "TIMESTAMP,TIMESTAMP", "INT",
+			new String[] { "DATEDIFF()", "STRING,STRING", "INT",
 			"@function:DATEDIFF@short:Returns the number of days from startdate to enddate.@example:datediff('2009-03-01', '2009-02-27') = 2."
 			},
-			new String[] { "DATE_ADD()", "TIMESTAMP,INT", "TIMESTAMP",
+			new String[] { "DATE_ADD()", "STRING,INT", "DATETIME",
 			"@function:DATE_ADD@short:Adds a number of days to startdate.@example: date_add('2008-12-31', 1) = '2009-01-01'."
 			},
-			new String[] { "DATE_SUB()", "TIMESTAMP,INT", "TIMESTAMP",
+			new String[] { "DATE_ADD()", "TIMESTAMP,INT", "DATETIME",
+			"@function:DATE_ADD@short:Adds a number of days to startdate.@example: date_add('2008-12-31', 1) = '2009-01-01'."
+			},
+			new String[] { "DATE_SUB()", "STRING,INT", "DATETIME",
 			"@function:DATE_SUB@short:Subtracts a number of days to startdate.@example: date_sub('2008-12-31', 1) = '2008-12-30'."
 			},
-			new String[] { "TRUNC()", "DATETIME,STRING", "DATETIME",
+			new String[] { "DATE_SUB()", "TIMESTAMP,INT", "DATETIME",
+			"@function:DATE_SUB@short:Subtracts a number of days to startdate.@example: date_sub('2008-12-31', 1) = '2008-12-30'."
+			},
+			new String[] { "TRUNC()", "STRING,STRING", "DATETIME",
 			"@function:TRUNC@short:returns a date truncated to a specific unit of measure.@description: The unit can be 'YEAR','MONTH','DAY', 'HH' or 'MI'. "
 			},
-			new String[] { "DATEDIFF()", "TIMESTAMP,TIMESTAMP", "INT",
-			"@function:DATEDIFF@short:Returns the number of days from startdate to enddate.@example:datediff('2009-03-01', '2009-02-27') = 2."
+			new String[] { "TRUNC()", "TIMESTAMP,STRING", "DATETIME",
+			"@function:TRUNC@short:returns a date truncated to a specific unit of measure.@description: The unit can be 'YEAR','MONTH','DAY', 'HH' or 'MI'. "
 			},
 			new String[] { "DATE_FORMAT()", "TIMESTAMP,STRING", "STRING",
-			"@function:DATEDIFF@short:Converts a date/timestamp/string to a value of string in the format specified by the date format fmt."
+			"@functionDATE_FORMAT@short:Converts a date/timestamp/string to a value of string in the format specified by the date format fmt."
+			},
+			new String[] { "DATE_FORMAT()", "STRING,STRING", "STRING",
+			"@function:DATE_FORMAT@short:Converts a date/timestamp/string to a value of string in the format specified by the date format fmt."
 			},
 			
 		};

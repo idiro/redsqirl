@@ -1009,6 +1009,8 @@
 			if( !jQuery(".rich-mp-container").is(":visible") ){
 				if (event.keyCode == 46) { // Delete
 	                deleteSelected(selectedCanvas);
+	            }else if(event.ctrlKey) {
+	                showHelp(event);
 	            }
 			}
 				
@@ -1187,6 +1189,7 @@
 	    		openModalAggregate(getSelectedIconsCommaDelimited());
 		    }else{
 		    	alert("You need select at least one object.");
+		    	jQuery('#canvas-tabs').unblock();
 			}
 	    }
 	    
@@ -1404,13 +1407,13 @@
 	   	
 		shortcut.add("Ctrl+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runSelectedMenuItem").click();
+				jQuery("#formMenu\\:runMenuItem").click();
 			}
 	   	});
 		
 		shortcut.add("Ctrl+Alt+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runMenuItem").click();
+				jQuery("#formMenu\\:runSelectedMenuItem").click();
 			}
 	   	});
 		
@@ -2046,7 +2049,7 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
 				<a4j:jsFunction name="setWorkflow"
-					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem"
+					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem,runMenuItem,runSelectedMenuItem"
 					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),data);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },2000); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
@@ -2403,11 +2406,11 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="checkIfScheduleJS" data="#{canvasBean.checkIfSchedule}"
-					oncomplete="checkIfSchedule(data);" reRender="msnError">
+					oncomplete="checkIfSchedule(data);" reRender="msnError,runSelectedMenuItem">
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="setIfIScheduleJS" data="#{canvasBean.checkIfSchedule}"
-					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError">
+					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError,runSelectedMenuItem">
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="setcheckJobId" data="#{canvasBean.checkJobId}"
@@ -2916,15 +2919,15 @@
 
 									<rich:menuSeparator />
 
-									<rich:menuItem id="runMenuItem" submitMode="ajax"
+									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runitems}"
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){ jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') }); runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu"
-										disabled="#{canvasBean.workflowType == 'S'}">
+										disabled="#{canvasBean.workflowType == 'S' || canvasBean.scheduleStr == 'Y'}">
 										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
 									</rich:menuItem>
 
-									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
+									<rich:menuItem id="runMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
 										onclick="jQuery('#mainPanelDiv').block({ message: jQuery('#domMessageAllCanvas') }); runWorkflowBtnFct(getCanvasStatus(),getPathFile(getSelectedByName()));"
 										reRender="formMenu"

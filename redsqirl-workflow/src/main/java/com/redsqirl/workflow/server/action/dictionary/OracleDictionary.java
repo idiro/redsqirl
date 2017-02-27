@@ -150,7 +150,7 @@ public class OracleDictionary extends JdbcDictionary{
 			"@function:CURRENT_DATE@short:returns the current date in the time zone of your database.",
 			},
 			new String[] { "CURRENT_TIMESTAMP()", "", "TIMESTAMP",
-			"@function:CURRENT_DATE@short:returns the current date in the time zone of the current SQL session.",
+			"@function:CURRENT_TIMESTAMP@short:returns the current timestamp in the time zone of the current SQL session.",
 			},
 			new String[] { "ROUND()", "DATETIME", "DATETIME",
 			"@function:ROUND@short:returns a date rounded to the day."

@@ -175,7 +175,12 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 	}
 
 	@Override
-	public String checkVar(String expression) throws RemoteException {
+	public String checkVar(String expression) throws RemoteException{
+		return checkVar(expression,true);
+	}
+	
+	@Override
+	public String checkVar(String expression,boolean isScheduled) throws RemoteException {
 		String error = "";
 		try{
 			Pattern p = Pattern.compile("\\$\\{(.*?)\\}");
@@ -184,7 +189,7 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 				String curExpr = m.group(1);
 				String errorLoc = null;
 				try{
-					errorLoc = oozieDict.getReturnType(curExpr) == null ? "Expression unrecognized":null;
+					errorLoc = oozieDict.getReturnType(curExpr,isScheduled) == null ? "Expression unrecognized":null;
 				}catch(Exception e){
 					logger.warn(e,e);
 					errorLoc = "Unexpected error: "+e.getMessage();
@@ -205,12 +210,12 @@ public class WfCoordVariables extends UnicastRemoteObject implements DataFlowCoo
 	}
 
 	@Override
-	public String checkAllVariables() throws RemoteException {
+	public String checkAllVariables(boolean isScheduled) throws RemoteException {
 		String error = "";
 		Iterator<Entry<String, DataFlowCoordinatorVariable>> it = variableList.entrySet().iterator();
 		while(it.hasNext()){
 			Entry<String, DataFlowCoordinatorVariable> cur = it.next();
-			String errorLoc = checkVar(cur.getValue().getValue());
+			String errorLoc = checkVar(cur.getValue().getValue(),isScheduled);
 			if(errorLoc != null){
 				error += errorLoc+"\n";
 			}
