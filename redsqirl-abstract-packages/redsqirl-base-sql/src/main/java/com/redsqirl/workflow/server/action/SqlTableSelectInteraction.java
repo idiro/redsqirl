@@ -63,6 +63,9 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 			/** type title key */
 			table_type_title = SqlLanguageManager
 			.getTextWithoutSpace("sql.select_fields_interaction.type_column");
+	
+	public Set<String> cashFeatList;
+	
 	/**
 	 * Constructor
 	 * 
@@ -205,7 +208,15 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 		}else if(changeKeyWords(table_op_title, fl)){
 			gen = true;
 		}
-
+		
+		if(getCashFeatList() != null){
+			if(!getFeatGrouped().containsAll(getCashFeatList()) || getFeatGrouped().size() != getCashFeatList().size()){
+				gen = true;
+			}
+		}else{
+			gen = true;
+		}
+		setCashFeatList(getFeatGrouped());
 
 		if(gen){
 			dictionaryCach.clear();
@@ -363,6 +374,14 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 	
 	public Set<String> getFieldGrouped() throws RemoteException {
 		return hs.getGroupByFields();
+	}
+
+	public Set<String> getCashFeatList() {
+		return cashFeatList;
+	}
+
+	public void setCashFeatList(Set<String> cashFeatList) {
+		this.cashFeatList = cashFeatList;
 	}
 	
 }

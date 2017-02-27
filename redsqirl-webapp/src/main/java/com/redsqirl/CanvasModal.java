@@ -720,7 +720,6 @@ public class CanvasModal extends VoronoiBeanAbs {
 		}
 		
 		displayErrorMessage(error, "MOUNTINTERACTIONFORM");
-
 	}
 
 	/**

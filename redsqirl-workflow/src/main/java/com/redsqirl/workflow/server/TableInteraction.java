@@ -259,7 +259,7 @@ public class TableInteraction extends UserInteraction {
 	 * @return Tree of the generator
 	 * @throws RemoteException
 	 */
-	protected Tree<String> findGenerator(String genName) throws RemoteException{
+	public Tree<String> findGenerator(String genName) throws RemoteException{
 		Tree<String> gen = tree.getFirstChild("table").getFirstChild("generator");
 		Tree<String> found = null;
 		if(gen != null){

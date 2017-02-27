@@ -1448,7 +1448,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	}
 	
 	private void endWorkflow(Document doc, String email, Element rootElement){
-		if(!email.isEmpty()){
+		if(email != null && !email.isEmpty()){
 			{
 				Element errorEmailAction = doc.createElement("action");
 				Attr attrErrorEmailName = doc.createAttribute("name");
