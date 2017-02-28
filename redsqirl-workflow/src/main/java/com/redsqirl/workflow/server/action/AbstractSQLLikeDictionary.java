@@ -265,12 +265,35 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				}
 				if (type == null) {
 					try {
+						if(expr.endsWith("L")){
+							Long.valueOf(expr.substring(0, expr.length()-1));
+							type = "LONG";
+						}
+					} catch (Exception e) {
+					}
+				}
+				if (type == null) {
+					try {
+						if(expr.endsWith("f") || expr.endsWith("F")){
+							Float.valueOf(expr.substring(0, expr.length()-1));
+							type = "FLOAT";
+						}
+					} catch (Exception e) {
+					}
+					try {
 						Float.valueOf(expr);
 						type = "FLOAT";
 					} catch (Exception e) {
 					}
 				}
 				if (type == null) {
+					try {
+						if(expr.endsWith("d") || expr.endsWith("D")){
+							Double.valueOf(expr.substring(0, expr.length()-1));
+							type = "DOUBLE";
+						}
+					} catch (Exception e) {
+					}
 					try {
 						Double.valueOf(expr);
 						type = "DOUBLE";

@@ -19,10 +19,13 @@
 
 package com.redsqirl.workflow.server.action;
 
+import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +46,8 @@ public class OozieDictionary extends AbstractDictionary{
 	/** Instance */
 	private static OozieDictionary instance;
 
+	private static Map<String, String[][]> workflowFunctions = new HashMap<String, String[][]>();;
+	private static Map<String, String[][]> coordinatorFunctions = new HashMap<String, String[][]>();;
 	/**
 	 * Get an instance of the dictionary
 	 * 
@@ -52,7 +57,35 @@ public class OozieDictionary extends AbstractDictionary{
 		if (instance == null) {
 			instance = new OozieDictionary();
 		}
+		if(workflowFunctions.isEmpty() || coordinatorFunctions.isEmpty()){
+			
+			try{
+				Map<String, String[][]> allFcts = instance.getFunctionsMap();
+				workflowFunctions.put(utilsMethods, allFcts.get(utilsMethods).clone());
+				workflowFunctions.put(dataMethods, allFcts.get(dataMethods).clone());
+				workflowFunctions.put(wfMethods, allFcts.get(wfMethods).clone());
+				logger.debug("Workflow functions: "+workflowFunctions);
+				coordinatorFunctions.put(utilsMethods, allFcts.get(utilsMethods).clone());
+				coordinatorFunctions.put(dataMethods, allFcts.get(dataMethods).clone());
+				coordinatorFunctions.put(coordMethods, allFcts.get(coordMethods).clone());
+				logger.debug("Coordinator functions: "+coordinatorFunctions);
+				convertHelpFunctions(workflowFunctions);
+				convertHelpFunctions(coordinatorFunctions);
+			}catch(Exception e){
+				logger.error(e,e);
+			}
+		}
 		return instance;
+	}
+	
+	public static void convertHelpFunctions(Map<String, String[][]> fct){
+		for (String value : fct.keySet()) {
+			String[][] aux = fct.get(value);
+			for (String[] v : aux) {
+				v[3] = AbstractDictionary.convertStringtoHelp(v[3]);
+				logger.debug("Help "+v[0]+": "+v[3]);
+			}
+		}
 	}
 
 	/**
@@ -484,13 +517,21 @@ public class OozieDictionary extends AbstractDictionary{
 		return ans;
 	}
 	
+	public Map<String, String[][]> getFunctionsMap(boolean isSchedule) throws RemoteException {
+		if(isSchedule){
+			return coordinatorFunctions;
+		}
+		return workflowFunctions;
+	}
+	
 	public List<String> getFunctionMenus(boolean isScheduled){
 		List<String> ans = new LinkedList<String>();
 		ans.add(utilsMethods);
-		ans.add(wfMethods);
 		ans.add(dataMethods);
 		if(isScheduled){
 			ans.add(coordMethods);
+		}else{
+			ans.add(wfMethods);
 		}
 		return ans;
 	}

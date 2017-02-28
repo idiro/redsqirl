@@ -144,7 +144,7 @@ public interface DataFlowCoordinatorVariables extends Remote{
 	 * Get functions available for the variables classified into menus
 	 * @return
 	 */
-	Map<String, String[][]> getVarFunctions() throws RemoteException;
+	Map<String, String[][]> getVarFunctions(boolean isSchedule) throws RemoteException;
 
 	/**
 	 * Check an expression
