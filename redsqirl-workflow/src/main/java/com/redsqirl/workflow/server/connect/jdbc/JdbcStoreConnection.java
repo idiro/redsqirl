@@ -109,7 +109,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 				rs = executeQuery(query);
 			}
 			while (rs.next()) {
-				results.add(rs.getString(1).trim().toUpperCase());
+				results.add(rs.getString(1).trim());
 			}
 			cleanOldStatement(rs);
 		}catch(Exception e){
@@ -129,7 +129,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 			if(query !=  null && !query.isEmpty()){
 				rs = executeQuery(query);
 				while (rs.next()) {
-					results.add(rs.getString(1).trim().toUpperCase());
+					results.add(rs.getString(1).trim());
 				}
 				cleanOldStatement(rs);
 			}

@@ -269,7 +269,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	 * @return Error Message
 	 */
 	public String readValuesXml(Node n) {
-		String error = null;
+		String error = super.readValuesXml(n);
 
 		NodeList nl = n.getChildNodes();
 		for (int i = 0; i < nl.getLength(); ++i) {
@@ -325,7 +325,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	 */
 	public String writeValuesXml(Document doc, Node parent)
 			throws RemoteException {
-		String error = null;
+		String error = super.writeValuesXml(doc, parent);
 		try {
 			Iterator<Entry<LinkedList<String>,DFEOutput> > it = tmpOutput.entrySet().iterator();
 			while(it.hasNext()){

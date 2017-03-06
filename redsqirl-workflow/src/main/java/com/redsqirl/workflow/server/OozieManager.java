@@ -663,8 +663,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	public String getCoordinatorJobInfo(String jobId) throws RemoteException{
 		String ans = "{";
 		try{
-			SimpleDateFormat format = new SimpleDateFormat();
-			CoordinatorJob cur = oc.getCoordJobInfo(jobId);
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
+			CoordinatorJob cur = oc.getCoordJobInfo(jobId,null,-1,-1,"desc");
 			ans+= "\"job-id\":\""+jobId+"\",";
 			ans+= "\"status\":\""+cur.getStatus()+"\",";
 			ans+= "\"last-action\":\""+format.format(cur.getLastActionTime())+"\",";
@@ -714,6 +714,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			logger.error(e,e);
 			ans="{}";
 		}
+		logger.debug(ans);
 		return ans;
 	}
 

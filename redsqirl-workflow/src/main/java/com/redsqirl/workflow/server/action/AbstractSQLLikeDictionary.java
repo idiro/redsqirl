@@ -38,6 +38,34 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
 	private static Logger logger = Logger.getLogger(AbstractSQLLikeDictionary.class);
 
+	public static final String whitespace_chars =  ""       /* dummy empty string for homogeneity */
+            + "\\u0009" // CHARACTER TABULATION
+            + "\\u000A" // LINE FEED (LF)
+            + "\\u000B" // LINE TABULATION
+            + "\\u000C" // FORM FEED (FF)
+            + "\\u000D" // CARRIAGE RETURN (CR)
+            + "\\u0020" // SPACE
+            + "\\u0085" // NEXT LINE (NEL) 
+            + "\\u00A0" // NO-BREAK SPACE
+            + "\\u1680" // OGHAM SPACE MARK
+            + "\\u180E" // MONGOLIAN VOWEL SEPARATOR
+            + "\\u2000" // EN QUAD 
+            + "\\u2001" // EM QUAD 
+            + "\\u2002" // EN SPACE
+            + "\\u2003" // EM SPACE
+            + "\\u2004" // THREE-PER-EM SPACE
+            + "\\u2005" // FOUR-PER-EM SPACE
+            + "\\u2006" // SIX-PER-EM SPACE
+            + "\\u2007" // FIGURE SPACE
+            + "\\u2008" // PUNCTUATION SPACE
+            + "\\u2009" // THIN SPACE
+            + "\\u200A" // HAIR SPACE
+            + "\\u2028" // LINE SEPARATOR
+            + "\\u2029" // PARAGRAPH SEPARATOR
+            + "\\u202F" // NARROW NO-BREAK SPACE
+            + "\\u205F" // MEDIUM MATHEMATICAL SPACE
+            + "\\u3000" // IDEOGRAPHIC SPACE
+            ;  
 	/**
 	 * Key for logical operators
 	 */
@@ -226,7 +254,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				String pattern = "[a-zA-Z][a-zA-Z0-9_\\-]+";
 				if(varName.matches(pattern)){
 					type = "ANY";
-				}else if(OozieDictionary.getInstance().getReturnType(varName) != null){
+				}else if(OozieDictionary.getInstance().getReturnType(varName,false) != null){
 					type = "ANY";
 				}
 			} else {
@@ -237,12 +265,35 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				}
 				if (type == null) {
 					try {
+						if(expr.endsWith("L")){
+							Long.valueOf(expr.substring(0, expr.length()-1));
+							type = "LONG";
+						}
+					} catch (Exception e) {
+					}
+				}
+				if (type == null) {
+					try {
+						if(expr.endsWith("f") || expr.endsWith("F")){
+							Float.valueOf(expr.substring(0, expr.length()-1));
+							type = "FLOAT";
+						}
+					} catch (Exception e) {
+					}
+					try {
 						Float.valueOf(expr);
 						type = "FLOAT";
 					} catch (Exception e) {
 					}
 				}
 				if (type == null) {
+					try {
+						if(expr.endsWith("d") || expr.endsWith("D")){
+							Double.valueOf(expr.substring(0, expr.length()-1));
+							type = "DOUBLE";
+						}
+					} catch (Exception e) {
+					}
 					try {
 						Double.valueOf(expr);
 						type = "DOUBLE";
@@ -406,6 +457,18 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		}
 		return type;
 	}
+	
+	public static boolean matchWord(String expression, String word, int index){
+		return expression.matches("^.{"+index+"}["+whitespace_chars+"]"+word+"["+whitespace_chars+"].*");
+	}
+	
+	public static boolean matchSpaceAfterWord(String expression, String word, int index){
+		return expression.matches("^.{"+index+"}"+word+"["+whitespace_chars+"].*");
+	}
+	
+	public static boolean matchSpaceBeforeWord(String expression, String word, int index){
+		return expression.matches("^.{"+index+"}["+whitespace_chars+"]"+word+".*");
+	}
 
 	public static String[] getCaseArguments(String arguments) {
 		int count = 0;
@@ -414,12 +477,12 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		List<String> ansL = new LinkedList<String>();
 		String[] ans = null;
 		boolean last = false;
-		if(!arguments.trim().startsWith("WHEN ")){
+		if(!matchSpaceAfterWord(arguments, "WHEN", 0)){
 			return null;
 		}
 		arguments = arguments.substring(5);
 		while (index < arguments.length()) {
-			if(arguments.startsWith(" WHEN ",index)){
+			if(matchWord(arguments,"WHEN",index)){
 				if(count == 0){
 					if(last){
 						ansL = null;
@@ -433,7 +496,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					cleanUp+=" WHEN";
 					index+=5;
 				}
-			}else if(arguments.startsWith(" ELSE ",index)){
+			}else if(matchWord(arguments,"ELSE",index)){
 				if(count == 0){
 					last = true;
 					ansL.add(cleanUp);
@@ -444,18 +507,18 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					cleanUp+=" ELSE";
 					index+=5;
 				}
-			}else if (arguments.startsWith("CASE ",index)) {
+			}else if (matchSpaceAfterWord(arguments,"CASE",index)) {
 				++count;
 				index+=4;
 				cleanUp+="CASE";
-			}else if (arguments.startsWith(" END",index)) {
+			}else if (matchSpaceBeforeWord(arguments,"END",index)) {
 				--count;
 				if(count < 0){
 					ansL = null;
 					break;
 				}
 				index+=3;
-				cleanUp+=" EN";
+				cleanUp+=" END";
 			}
 			cleanUp += arguments.charAt(index);
 			++index;

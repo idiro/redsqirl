@@ -19,10 +19,13 @@
 
 package com.redsqirl.workflow.server.action;
 
+import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -33,16 +36,18 @@ public class OozieDictionary extends AbstractDictionary{
 	protected Character[] sqlStringQuotes = new Character[]{'\'','"'};
 	
 	/** Key for utils methods */
-	private static final String utilsMethods = "utilsMethods";
+	private static final String utilsMethods = "utils";
 	/** Key for wf methods */
-	private static final String wfMethods = "workflowMethods";
+	private static final String wfMethods = "workflow";
 	/** Key for a data methods */
-	private static final String dataMethods = "dataMethods";
+	private static final String dataMethods = "data";
 	/** Key for a data methods */
-	private static final String coordMethods = "coordinatorMethods";
+	private static final String coordMethods = "coordinator";
 	/** Instance */
 	private static OozieDictionary instance;
 
+	private static Map<String, String[][]> workflowFunctions = new HashMap<String, String[][]>();;
+	private static Map<String, String[][]> coordinatorFunctions = new HashMap<String, String[][]>();;
 	/**
 	 * Get an instance of the dictionary
 	 * 
@@ -52,7 +57,35 @@ public class OozieDictionary extends AbstractDictionary{
 		if (instance == null) {
 			instance = new OozieDictionary();
 		}
+		if(workflowFunctions.isEmpty() || coordinatorFunctions.isEmpty()){
+			
+			try{
+				Map<String, String[][]> allFcts = instance.getFunctionsMap();
+				workflowFunctions.put(utilsMethods, allFcts.get(utilsMethods).clone());
+				workflowFunctions.put(dataMethods, allFcts.get(dataMethods).clone());
+				workflowFunctions.put(wfMethods, allFcts.get(wfMethods).clone());
+				logger.debug("Workflow functions: "+workflowFunctions);
+				coordinatorFunctions.put(utilsMethods, allFcts.get(utilsMethods).clone());
+				coordinatorFunctions.put(dataMethods, allFcts.get(dataMethods).clone());
+				coordinatorFunctions.put(coordMethods, allFcts.get(coordMethods).clone());
+				logger.debug("Coordinator functions: "+coordinatorFunctions);
+				convertHelpFunctions(workflowFunctions);
+				convertHelpFunctions(coordinatorFunctions);
+			}catch(Exception e){
+				logger.error(e,e);
+			}
+		}
 		return instance;
+	}
+	
+	public static void convertHelpFunctions(Map<String, String[][]> fct){
+		for (String value : fct.keySet()) {
+			String[][] aux = fct.get(value);
+			for (String[] v : aux) {
+				v[3] = AbstractDictionary.convertStringtoHelp(v[3]);
+				logger.debug("Help "+v[0]+": "+v[3]);
+			}
+		}
 	}
 
 	/**
@@ -346,7 +379,7 @@ public class OozieDictionary extends AbstractDictionary{
 	 * @return type of the expression
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr)
+	public String getReturnType(String expr,boolean isScheduled)
 			throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
@@ -407,8 +440,8 @@ public class OozieDictionary extends AbstractDictionary{
 		logger.debug("if expression is an operator or function if type null : " + type + " " + expr);
 		if (type == null) {
 			logger.debug("checking all types of functions");
-			if(isFunction(expr)){
-				type = runFunction(expr);
+			if(isFunction(expr,isScheduled)){
+				type = runFunction(expr,isScheduled);
 			}else{
 				throw new Exception("Expression '"+expr+"' unrecognized.");
 			}
@@ -475,20 +508,31 @@ public class OozieDictionary extends AbstractDictionary{
 	 * @return <code>true</code> if it is non aggregative method else
 	 *         <code>false</code>
 	 */
-	public boolean isFunction(String expr) {
+	public boolean isFunction(String expr,boolean isScheduled) {
 		boolean ans = false;
-		Iterator<String> it = getFunctionMenus().iterator();
+		Iterator<String> it = getFunctionMenus(isScheduled).iterator();
 		while (it.hasNext() && !ans) {
 			ans = isInList(functionsMap.get(it.next()), expr);
 		}
 		return ans;
 	}
 	
-	public List<String> getFunctionMenus(){
+	public Map<String, String[][]> getFunctionsMap(boolean isSchedule) throws RemoteException {
+		if(isSchedule){
+			return coordinatorFunctions;
+		}
+		return workflowFunctions;
+	}
+	
+	public List<String> getFunctionMenus(boolean isScheduled){
 		List<String> ans = new LinkedList<String>();
 		ans.add(utilsMethods);
-		ans.add(wfMethods);
 		ans.add(dataMethods);
+		if(isScheduled){
+			ans.add(coordMethods);
+		}else{
+			ans.add(wfMethods);
+		}
 		return ans;
 	}
 	
@@ -499,9 +543,9 @@ public class OozieDictionary extends AbstractDictionary{
 	 * @param aggregMethod
 	 * @return List of methods
 	 */
-	protected List<String[]> findAllMethod(String expr) {
+	protected List<String[]> findAllMethod(String expr,boolean isScheduled) {
 		List<String[]> ans = null;
-		Iterator<String> it = getFunctionMenus().iterator();
+		Iterator<String> it = getFunctionMenus(isScheduled).iterator();
 		while (it.hasNext()) {
 			if (ans == null) {
 				ans = findAll(functionsMap.get(it.next()), expr);
@@ -522,12 +566,12 @@ public class OozieDictionary extends AbstractDictionary{
 	 * @return <cod>true</code> if method runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
-	protected String runFunction(String expr) throws Exception {
-		List<String[]> methodsFound = findAllMethod(expr);
-		return runFunction(expr, methodsFound);
+	protected String runFunction(String expr,boolean isScheduled) throws Exception {
+		List<String[]> methodsFound = findAllMethod(expr,isScheduled);
+		return runFunction(expr, methodsFound,isScheduled);
 	}
 
-	protected String runFunction(String expr, List<String[]> methodsFound) throws Exception {
+	protected String runFunction(String expr, List<String[]> methodsFound,boolean isScheduled) throws Exception {
 		String type = null;
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1, expr.lastIndexOf(")"));
@@ -566,7 +610,7 @@ public class OozieDictionary extends AbstractDictionary{
 						}
 					}
 
-					if (type == null && method != null && check(method, argSplit)) {
+					if (type == null && method != null && check(method, argSplit,isScheduled)) {
 						type = method[2];
 					}
 				}
@@ -597,7 +641,7 @@ public class OozieDictionary extends AbstractDictionary{
 	 * @throws Exception
 	 */
 
-	protected boolean check(String[] method, String[] args) throws Exception {
+	protected boolean check(String[] method, String[] args,boolean isScheduled) throws Exception {
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
 		logger.debug("check");
@@ -606,7 +650,7 @@ public class OozieDictionary extends AbstractDictionary{
 			logger.debug("left operator");
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
-				ok &= check(argsTypeExpected[i], getReturnType(args[i - 1]));
+				ok &= check(argsTypeExpected[i], getReturnType(args[i - 1],isScheduled));
 			}
 		} else
 			if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty() && argsTypeExpected.length - 1 == args.length) {
@@ -614,7 +658,7 @@ public class OozieDictionary extends AbstractDictionary{
 			ok = true;
 			logger.debug("right operator");
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
-				ok &= check(argsTypeExpected[i], getReturnType(args[i]));
+				ok &= check(argsTypeExpected[i], getReturnType(args[i],isScheduled));
 			}
 		} else if (argsTypeExpected.length == args.length || (args.length+1 >= argsTypeExpected.length
 				&& argsTypeExpected[argsTypeExpected.length - 1].endsWith("..."))) {
@@ -622,14 +666,14 @@ public class OozieDictionary extends AbstractDictionary{
 			for (int i = 0; i < args.length; ++i) {
 				logger.debug("Arg number: "+(i+1)+" / " + argsTypeExpected.length);
 				logger.debug("arg " + args[i]);
-				logger.debug("return type : " + getReturnType(args[i]));
+				logger.debug("return type : " + getReturnType(args[i],isScheduled));
 				if (i >= argsTypeExpected.length - 1 && argsTypeExpected[argsTypeExpected.length - 1].endsWith("...")) {
 					ok &= check(
 							argsTypeExpected[argsTypeExpected.length - 1].substring(0,
 									argsTypeExpected[argsTypeExpected.length - 1].length() - 3),
-							getReturnType(args[i]));
+							getReturnType(args[i],isScheduled));
 				} else {
-					ok &= check(argsTypeExpected[i], getReturnType(args[i]));
+					ok &= check(argsTypeExpected[i], getReturnType(args[i],isScheduled));
 				}
 			}
 		}

@@ -49,6 +49,7 @@ public class VoronoiBeanAbs extends BaseBean implements Serializable {
 	protected String textAreaEditor;
 	protected List<String[]> listFunctionsTable;
 	protected String selectedRowNumber;
+	protected boolean schedule = false;
 	
 	
 	public void deleteLine(){
@@ -69,12 +70,17 @@ public class VoronoiBeanAbs extends BaseBean implements Serializable {
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		String rowKey = context.getExternalContext().getRequestParameterMap().get("rowKey");
+		schedule = false;
+		try{
+			schedule = Boolean.valueOf(context.getExternalContext().getRequestParameterMap().get("schedule"));
+		}catch(Exception e){};
+		
 		if(rowKey != null && !rowKey.isEmpty() && tableList.size() >= Integer.parseInt(rowKey)){
 			textAreaEditor = tableList.get(Integer.parseInt(rowKey)).getValue();
 			setSelectedRowNumber(rowKey);
 		}
 
-		Map<String, String[][]> m = dataFlowCoordinatorVariables.getVarFunctions();
+		Map<String, String[][]> m = dataFlowCoordinatorVariables.getVarFunctions(schedule);
 		
 		varFunctionsList = new ArrayList<SelectItem>();
 		varFunctionsListString = new ArrayList<String>();
@@ -103,10 +109,12 @@ public class VoronoiBeanAbs extends BaseBean implements Serializable {
 	public void updateTableEditor(String selected) throws RemoteException {
 		logger.info("updateTableEditor");
 		listFunctionsTable = new ArrayList<String[]>();
-		Map<String, String[][]> m = dataFlowCoordinatorVariables.getVarFunctions();
+		Map<String, String[][]> m = dataFlowCoordinatorVariables.getVarFunctions(schedule);
 		String[][] ans = m.get(selected.trim());
-		for (String[] value : ans) {
-			listFunctionsTable.add(value);
+		if(ans != null){
+			for (String[] value : ans) {
+				listFunctionsTable.add(value);
+			}
 		}
 	}
 

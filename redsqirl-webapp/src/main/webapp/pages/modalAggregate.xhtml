@@ -8,6 +8,7 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 <script>
+    var aggregateSelectedValues = "";
 	function getAggregateValues(){
 		var aggValues = {};
 		aggValues["swName"] = jQuery("[id$='aggNameSW']").val();
@@ -43,14 +44,14 @@
 		<a4j:jsFunction name="openModalAggregate"
 			action="#{canvasBean.openAggregate}"
 			reRender="errorTable, msnError, contentModalAggregate"
-			oncomplete="console.log('openModalAggregate'); jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();jQuery('#helpmain_aggregate').click();}">
+			oncomplete="console.log('openModalAggregate');aggregateSelectedValues=getSelectedIconsCommaDelimited();jQuery('#canvas-tabs').unblock(); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();jQuery('#helpmain_aggregate').click();}">
 			<a4j:actionparam name="selectedIcons" />
 		</a4j:jsFunction>
 	</a4j:region>
 	<a4j:region>
 		<a4j:jsFunction name="cloneBeforeAggregate"
 			action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-			oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate(getAggregateValues(),getAggregateInputs(),getAggregateOutputs(),getSelectedIconsCommaDelimited());">
+			oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate(getAggregateValues(),getAggregateInputs(),getAggregateOutputs(),aggregateSelectedValues);">
 			<a4j:actionparam name="allpositions" />
 		</a4j:jsFunction>
 	<a4j:region>

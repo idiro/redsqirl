@@ -54,6 +54,9 @@ mvn clean install -Dhadoop.artifactId=hadoop-core -Dhadoop.version=1.0.3-mapr-4.
 mvn clean install -Dhadoop.version=2.4.0 -DskipTests
 mvn clean install -Dhadoop.version=2.6.0 -DskipTests
 mvn clean install -Dhadoop.version=2.7.0 -DskipTests
+mvn clean install -Dhadoop.version=2.7.1 -DskipTests
+mvn clean install -Dhadoop.version=2.7.3 -DskipTests
+#mvn clean install -Dhadoop.version=2.7.1.2.4.4.1-5 -DskipTests
 popd
 
 mvn clean install  -Dhadoop.version=1.0.3-mapr-4.1.0 -DskipTests
@@ -67,6 +70,15 @@ mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME
 
 mvn clean install  -Dhadoop.version=2.7.0 -DskipTests
 mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
+
+mvn clean install  -Dhadoop.version=2.7.1 -DskipTests
+mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
+
+mvn clean install  -Dhadoop.version=2.7.3 -DskipTests
+mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
+
+#mvn clean install  -Dhadoop.version=2.7.1.2.4.4.1-5 -DskipTests
+#mv redsqirl-install/target/redsqirl-*-tomcat.tar.gz $DIRECTORY_NAME 
 
 popd
 

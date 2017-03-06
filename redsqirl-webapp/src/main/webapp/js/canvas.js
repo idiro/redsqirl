@@ -51,12 +51,12 @@ var canvasArray = {};
 var allPositionIcons;
 var rightClickGroup;
 var curToolTip;
+var curElementHovered;
 var isSaveAll = false;
 var indexSaving;
 var contSaving;
 var tmpCommandObj;
 var stageArrayTab = [];
-var mouseIn = false;
 var canvasModalParam;
 var timestampLastElementClicked;
 var lastElementClicked
@@ -219,44 +219,6 @@ function configureCanvas(canvasName, reset, workflowType){
         this.selected = true;
         canvasArray[canvasName].clickArrow = true;
         stage.draw();
-    });
-    
-    canvasArray[canvasName].arrow.on('mouseout', function(e) {
-    	mouseIn = false;
-    });
-    
-    canvasArray[canvasName].arrow.on('mouseenter', function(e) {
-    	if(!canvasArray[canvasName].dragDropGroup &&!canvasArray[canvasName].moving){
-    		mouseIn = true;
-
-    		var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
-    		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
-    		help.css("top",(e.pageY-10)+"px" );
-    		help.css("left",(e.pageX-10)+"px" );
-
-    		setTimeout(function(){
-    			if(mouseIn){
-    				jQuery("body").append(help);
-    				help.fadeIn("slow");
-
-    				var previewPosition = help.position().top + help.height();
-    				var windowHeight = jQuery(window).height();
-    				if (previewPosition > windowHeight) {
-    					help.css("overflow", "auto");
-    					help.css("height", windowHeight-help.position().top-20);
-    				}
-
-    			}
-    		},200);
-
-    		help.mouseleave(function() {
-    			jQuery(this).remove();
-    		});
-
-    		help.click(function() {
-    			jQuery(this).remove();
-    		});
-    	}
     });
 
     jQuery("#"+canvasContainer).click(
@@ -2652,75 +2614,93 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     var stage = cArray.stage;
     
     polygon.on('mouseenter', function(e) {
-    	
-    	//Not if objects are dragged
-        if(!cArray.dragDropGroup &&!cArray.moving){
-        	mouseIn = true;
-        	if(this.getParent().getId() != curToolTip){
-        		jQuery(".tooltipCanvas").remove();
-        		var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
-        		var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
-        		var top = this.getParent().getPosition().y-scrollTop+160;
-        		var left = this.getParent().getPosition().x-scrollLeft+80;
-        		var optionButton = '<button style="float:left" onclick="buttonFuction(\''+this.getParent().getId()+'\',\''+top+'\',\''+left+'\' );" >Options</button>';
-        		curToolTip = this.getParent().getId();
-        		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+this.getParent().tooltipObj+'</div>');
-        		help.css("top",top+"px" );
-        		help.css("left",left+"px" );
-
-        		setTimeout(function(){
-        			if(mouseIn){
-        				jQuery("body").append(help);
-        				help.fadeIn("slow");
-
-        				var previewPosition = help.position().top + help.height();
-        				var windowHeight = jQuery(window).height();
-        				if (previewPosition > windowHeight) {
-        					help.css("overflow", "auto");
-        					help.css("height", windowHeight-help.position().top-20);
-        				}
-
-        			}
-        		},400);
-
-        		help.mouseleave(function() {
-        			jQuery(this).remove();
-        			curToolTip = null;
-        		});
-
-        		help.click(function() {
-        			jQuery(this).remove();
-        			curToolTip = null;
-        		});
-        	}
-        }
+    	curElementHovered = this;
     });
     
     polygon.on('mouseout', function(e) {
-    	//console.log("mouseout");
-    	mouseIn = false;
-
-        if(this && this.getParent()){
-        	//console.log("Position mouse: ("+e.pageX+","+e.pageY+")");
-        	var toolTipOffset = jQuery(".tooltipCanvas").first().offset();
-        	//if tooltip exists
-        	if(undefined != toolTipOffset && "left" in toolTipOffset){
-            	var curCanvas = jQuery("#flowchart-"+canvasName);
-        		//console.log("Position tooltip: ("+toolTipOffset.left+", "+toolTipOffset.top+")");
-        		//if not in tooltip remove it.
-        		if(toolTipOffset.left - curCanvas.scrollLeft() > e.pageX ||
-        				toolTipOffset.top - curCanvas.scrollTop() > e.pageY){
-        			jQuery(".tooltipCanvas").remove();
-                    curToolTip = null;
-        		}
-        	}else{
-        		//console.log("no tooltip");
-        	}
-        }
-        
+    	curElementHovered = null;
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
+}
+
+function tooltipShortCut(e){
+	console.log("Enter tooltipShortCut");
+	if(e.keyCode > 48 && e.keyCode < 65){
+		console.log("Get button...");
+		jQuery(".tooltipCanvas").children("button")[0].click();
+		console.log("Check item inner...");
+		setTimeout(function(){
+			jQuery.each(jQuery("table:visible").find(".context-menu").find(".context-menu-item"), function(index, value) {
+				console.log("search for "+index+"..."+jQuery(this).find(".context-menu-item-inner").text());
+				if(index == e.keyCode - 49){
+					value.click();
+				}
+			});
+		},100);
+	}
+}
+
+function showHelp(e) {
+	var cArray = getArrayPos(selectedCanvas);
+	var polygonLayer = cArray.polygonLayer;
+    var ans = null;
+    if(!cArray.dragDropGroup && !cArray.moving){
+    	if(curElementHovered != null){
+    		ans = curElementHovered;
+    	}else{
+    		var nbSelected = 0;
+    		jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+    			if(value.selected){
+    				ans  = value;
+    				++nbSelected;
+    			}
+    		});
+    		console.log(nbSelected);
+    		if(nbSelected > 1){
+    			ans = null;
+    		}
+    	}
+    }
+	
+	//Not if objects are dragged
+    if(ans != null){
+    	jQuery(".tooltipCanvas").remove();
+    	var scrollLeft = jQuery("#flowchart-"+selectedCanvas).scrollLeft();
+    	var scrollTop = jQuery("#flowchart-"+selectedCanvas).scrollTop();
+    	var top = ans.getParent().getPosition().y-scrollTop+160;
+    	var left = ans.getParent().getPosition().x-scrollLeft+80;
+    	var optionButton = '<button style="float:left" onclick="buttonFuction(\''+ans.getParent().getId()+'\',\''+top+'\',\''+left+'\' );" >Options</button>';
+    	curToolTip = ans.getParent().getId();
+    	var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+ans.getParent().tooltipObj+'</div>');
+    	help.css("top",top+"px" );
+    	help.css("left",left+"px" );
+
+
+    	if(e.ctrlKey){
+    		jQuery("body").append(help);
+    		help.fadeIn("slow");
+
+    		var previewPosition = help.position().top + help.height();
+    		var windowHeight = jQuery(window).height();
+    		if (previewPosition > windowHeight) {
+    			help.css("overflow", "auto");
+    			help.css("height", windowHeight-help.position().top-20);
+    		}
+
+    	}
+
+    	help.mouseleave(function() {
+    		jQuery(this).remove();
+    		curToolTip = null;
+    	});
+
+    	help.click(function() {
+    		jQuery(this).remove();
+    		curToolTip = null;
+    	});
+        tooltipShortCut(e);
+    }
 }
 
 function buttonFuction(groupId, top, left){
