@@ -42,9 +42,8 @@ public class GenericConfFileTests {
 		JdbcConnection conn = null;
 		try{
 			String oracleDriver = WorkflowPrefManager.getProperty(JdbcStore.property_oracle_driver);
-			conn = new JdbcConnection(new URL("jar:file:"+oracleDriver+"!/"),
-					"oracle.jdbc.OracleDriver",
-					new JdbcDetails() {
+			
+			conn = new JdbcConnection(new URL("jar:file:"+oracleDriver+"!/"), "oracle.jdbc.OracleDriver", new JdbcDetails() {
 				
 				@Override
 				public void setUsername(String username) {
@@ -82,8 +81,6 @@ public class GenericConfFileTests {
 				}
 			}, new RedSqirlBasicStatement());
 			
-			
-			
 			GenericConfFile gen = new GenericConfFile("oracle_gen", conn.getConnection());
 			//logger.info("DB type:\n"+gen.getDbTypeFileContent());
 			//logger.info("RS type:\n"+gen.getRsTypeFileContent());
@@ -98,6 +95,7 @@ public class GenericConfFileTests {
 					logger.info("function: "+fcts[i][0]);
 				}
 			}*/
+			
 		}catch(Exception e){
 			logger.error(e,e);
 		}finally{

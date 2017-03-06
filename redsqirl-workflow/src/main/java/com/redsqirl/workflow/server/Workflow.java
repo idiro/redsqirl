@@ -2517,12 +2517,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String addLink(String outName, String componentIdOut, String inName,
 			String componentIdIn, boolean force) throws RemoteException {
 
+		logger.info("outName " + outName);
+		logger.info("componentIdOut " + componentIdOut);
+		logger.info("inName " + inName);
+		logger.info("componentIdIn " + componentIdIn);
+		
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
+		
+		logger.info("DataFlowElement out " + out.getName());
+		logger.info("DataFlowElement in " + in.getName());
+		
 		if (out == null || in == null) {
-			error = LanguageManagerWF
-					.getText("workflow.addLink_elementnoexist");
+			error = LanguageManagerWF.getText("workflow.addLink_elementnoexist");
 		} else if (in.getInput().get(inName) == null) {
 			error = LanguageManagerWF.getText("workflow.addLink_inputNotexist",
 					new Object[] { inName });

@@ -28,6 +28,8 @@ import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.junit.Test;
 
+import parquet.Log;
+
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -46,24 +48,22 @@ import com.redsqirl.workflow.utils.ModelManager;
 public class SuperActionTests {
 
 	static Logger logger = Logger.getLogger(SuperActionTests.class);
-	
-	
+
 	public static SuperAction addSuperAction(Workflow w,String superActionName,String input, Source src) throws Exception{
 		String idSA = w.addElement(superActionName);
 		logger.debug("SA: "+idSA);
 		SuperAction sa = (SuperAction) w.getElement(idSA);
+		
+		logger.info("Input of SA name: " + sa.getName());
+		logger.info("Input of SA: "+sa.getInput().toString());
 		logger.info("Input of SA: "+sa.getInput().keySet().toString());
 		logger.info("Output of SA: "+sa.getDFEOutput().keySet().toString());
-		
-		String error = w.addLink(
-				new Source().getOut_name(), src.getComponentId(), 
-				input, idSA);
+
+		String error = w.addLink(new Source().getOut_name(), src.getComponentId(), input, idSA);
 		assertTrue("Fail to link source with superaction: "+error, error == null);
 
-		sa.getDFEOutput().get("convertion").generatePath(
-				sa.getComponentId(), 
-				"convertion");
-		
+		sa.getDFEOutput().get("convertion").generatePath(sa.getComponentId(), "convertion");
+
 		return sa;
 	}
 	
@@ -79,11 +79,9 @@ public class SuperActionTests {
 			assertTrue("jobId cannot be null", false);
 		}
 		logger.info(jobId);
-		
+
 		// wait until the workflow job finishes printing the status every 10 seconds
-	    while(
-	    		wc.getJobInfo(jobId).getStatus() == 
-	    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+	    while(wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
 	    	System.out.println("Workflow job running ...");
 	    	logger.info("Workflow job running ...");
 	        Thread.sleep(10 * 1000);
@@ -93,7 +91,7 @@ public class SuperActionTests {
 	    error = wc.getJobInfo(jobId).toString();
 	    assertTrue(error, error.contains("SUCCEEDED"));
 	}
-	
+
 	/**
 	 * 1. Install a SubWorkflow
 	 * 2. Create a workflow that includes the SuperAction
@@ -106,28 +104,28 @@ public class SuperActionTests {
 		TestUtils.logTestTitle("SubWorkflowTests#basicTest");
 		String sName = "sa_unittest";
 
-		String new_path1 =TestUtils.getPath(1);
+		String new_path1 = TestUtils.getPath(1);
 		String userName = System.getProperty("user.name");
 		String error = null;
 		HDFSInterface hdfsInt = null;
 		try{
 			
 			//Create
-			logger.debug("CReate a sub workflow");
+			logger.debug("Create a sub workflow");
 			SubWorkflow sw = SubWorkflowTests.createBasicSubWorkflowHdfs(sName);
 			assertTrue("Fail to create subworkflow.", sw != null);
-			
 			
 			//Install
 			logger.debug("Install the sub workflow");
 			ModelManager saMan = new ModelManager();
-			saMan.uninstallSA(saMan.getUserModel(userName, "default"), sName);
+			error = saMan.uninstallSA(saMan.getUserModel(userName, "default"), sName);
+			assertTrue("error unistall " + error , error == null);
+			
 			error = saMan.installSA(saMan.getUserModel(userName, "default"), sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
 			
-			
 			//Main workflow
-			logger.debug("Create a workflow");
+			logger.info("Create a workflow");
 			Workflow w = new Workflow();
 			w.setName("unittest_superaction");
 			hdfsInt = new HDFSInterface();
@@ -135,7 +133,6 @@ public class SuperActionTests {
 			
 			SuperAction sa = addSuperAction(w, sName,"act_in", (Source)src);
 			runWorkflow(w);
-		    
 		    
 		    w.cleanProject();
 		    SuperAction sa2 = addSuperAction(w, sName,"act_in", (Source)src);
@@ -149,6 +146,5 @@ public class SuperActionTests {
 			assertTrue(e.toString(), false);
 		}
 	}
-	
 
 }

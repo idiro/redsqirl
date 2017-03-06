@@ -291,8 +291,11 @@ public abstract class MapRedHdfs extends DataOutput{
 
 		if (lines != null) {
 			int nbField = 0;
-			logger.trace("key_delimiter: " + Pattern.quote(delimiter));
+			logger.info("key_delimiter: " + Pattern.quote(delimiter));
 			for (String line : lines) {
+				
+				logger.info("######## line ######### " + line);
+				
 				boolean full = true;
 				if (!line.trim().isEmpty()) {
 					String[] fields = line.split(Pattern
@@ -330,6 +333,11 @@ public abstract class MapRedHdfs extends DataOutput{
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
 								nbValueMap.put(nameColumn, 0);
+								
+								logger.info("map add containsKey " + nameColumn);
+								
+							}else{
+								logger.info("map containsKey");
 							}
 
 							if(valueMap.get(nameColumn).size() < 101){
