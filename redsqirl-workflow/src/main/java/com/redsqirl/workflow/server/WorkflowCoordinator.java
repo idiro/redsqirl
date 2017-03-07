@@ -675,7 +675,23 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			}
 			
 		}
-		return new WfDefaultConstraint(minCT,offset);
+		CoordinatorTimeConstraint ansTimeCondition = null;
+		if(getTimeCondition() != null){
+			ansTimeCondition = new WfCoordTimeConstraint();
+			ansTimeCondition.setFrequency(getTimeCondition().getFrequency());
+			ansTimeCondition.setUnit(getTimeCondition().getUnit());
+			ansTimeCondition.setInitialInstance(minCT.getInitialInstance());
+			if(minCT.getInitialInstance() != null){
+				ansTimeCondition.setInitialInstance(ansTimeCondition.getTimeAfterReference(
+					minCT.getInitialInstance(),
+					getExecutionTime()== null? new Date():getExecutionTime(),
+							0));
+			}
+			
+		}else{
+			ansTimeCondition = minCT;
+		}
+		return new WfDefaultConstraint(ansTimeCondition,offset);
 	}
 
 	@Override

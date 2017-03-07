@@ -69,7 +69,7 @@ public class JdbcStoreConnection extends JdbcConnection{
 	}
 
 	public final Map<String,JdbcStore.SelectableType> listSelectables() throws SQLException, RemoteException {
-		if (selectables == null || updateSelectables == 0) {
+		if (!isCached()) {
 			selectables = new LinkedHashMap<String,JdbcStore.SelectableType>();
 			listing = true;
 			logger.debug("Refresh table list");
@@ -337,6 +337,17 @@ public class JdbcStoreConnection extends JdbcConnection{
 			}
 		}
 		return reset;
+	}
+	
+	public final boolean isCached(){
+		return selectables != null && updateSelectables != 0;
+	}
+
+	/**
+	 * @return the selectables
+	 */
+	public final Map<String, JdbcStore.SelectableType> getSelectables() {
+		return selectables;
 	}
 
 }

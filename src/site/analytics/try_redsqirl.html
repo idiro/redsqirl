@@ -145,7 +145,7 @@ To do this, by default, docker installs 'VirtualBox' and uses the VM called "def
 Step 1: When you have Docker installed, simply open up your terminal and type in this Docker command: 
 <br/><br/>
 <code style="white-space:normal;word-wrap: break-word;" >
-docker pull redsqirl/cloudera:2.6.0-0.13
+docker pull redsqirl/cloudera
 </code>
 <br/><br/>
 (We're recommending 
@@ -158,7 +158,7 @@ Step 2: Next, in the terminal, you'll now create the Docker image by typing in t
 <br/><br/>
 <code style="white-space:normal;word-wrap: break-word;" >
 docker run --hostname=quickstart.cloudera --privileged=true <br/> 
--t -i -p 8842:8842 redsqirl/cloudera:2.6.0-0.13 <br/> /usr/bin/docker-quickstart
+-t -i -p 8842:8842 redsqirl/cloudera <br/> /usr/bin/docker-quickstart
 
 </code>
 <br/><br/>

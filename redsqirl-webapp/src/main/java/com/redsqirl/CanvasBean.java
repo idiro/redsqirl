@@ -1739,7 +1739,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				for (String[] value : getSelectedScheduling().getListJobsScheduling()) {
 					if(value[0] == "true"){
 						sel = false;
-						if(value[3].equals("WAITING") || value[3].equals("RUNNING")){
+						if(value[3].equals("WAITING") || value[3].equals("RUNNING") || value[3].equals("READY")){
 							status = false;
 							try{
 								logger.info(getSelectedScheduling().getJobId() + " - "  + "action" + " - "  + value[1]);
@@ -1751,7 +1751,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 				if(status){
-					error = "You can kill actions just in waiting or running status";
+					error = "You can kill actions just in waiting, ready or running status";
 				}
 				if(sel){
 					error = "No actions selected";

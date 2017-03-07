@@ -450,31 +450,29 @@ public class JdbcStore extends Storage {
 	public List<String> select(String path, String delimOut, int maxToRead)
 			throws RemoteException {
 		List<String> ans = null;
-		if (exists(path)) {
-			String[] connectionAndTable = getConnectionAndTable(path);
-			
-			try {
-				
-				String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],maxToRead);
+		String[] connectionAndTable = getConnectionAndTable(path);
 
-				ResultSet rs = getConnection(connectionAndTable[0]).executeQuery(statement,maxToRead);
-				if(rs != null){
-					int colNb = rs.getMetaData().getColumnCount();
-					ans = new ArrayList<String>(maxToRead);
-					while (rs.next()) {
-						String line = rs.getString(1);
-						for (int i = 2; i <= colNb; ++i) {
-							line += delimOut + rs.getString(i);
-						}
-						ans.add(line);
+		try {
+
+			String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],maxToRead);
+
+			ResultSet rs = getConnection(connectionAndTable[0]).executeQuery(statement,maxToRead);
+			if(rs != null){
+				int colNb = rs.getMetaData().getColumnCount();
+				ans = new ArrayList<String>(maxToRead);
+				while (rs.next()) {
+					String line = rs.getString(1);
+					for (int i = 2; i <= colNb; ++i) {
+						line += delimOut + rs.getString(i);
 					}
-					rs.close();
+					ans.add(line);
 				}
-			} catch (Exception e) {
-				logger.error("Fail to select the table " + connectionAndTable[0]);
-				logger.error(e.getMessage(),e);
+				rs.close();
 			}
-
+		} catch (Exception e) {
+			ans = null;
+			logger.error("Fail to select the table " + connectionAndTable[0]);
+			logger.error(e.getMessage(),e);
 		}
 
 		return ans;
@@ -599,7 +597,18 @@ public class JdbcStore extends Storage {
 			} else if (connectionAndTable.length == 1 ||connectionAndTable.length == 2) {
 				ok = listConnections().contains(connectionAndTable[0]);
 				if (connectionAndTable.length == 2 && ok){
-					ok = getConnection(connectionAndTable[0]).listSelectables().keySet().contains(connectionAndTable[1]);
+					if(getConnection(connectionAndTable[0]).isCached()){
+						ok = getConnection(connectionAndTable[0]).listSelectables().keySet().contains(connectionAndTable[1]);
+					}else{
+						try {
+							String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],1);
+							ResultSet rs = getConnection(connectionAndTable[0]).executeQuery(statement,1);
+							rs.close();
+							ok = true;
+						}catch(Exception e){
+							logger.debug(e,e);
+						}
+					}
 				}
 			} else{
 				logger.warn("Irregular path: "+path);
@@ -897,7 +906,7 @@ public class JdbcStore extends Storage {
 		}
 		
 		String[] connectionAndTable = getConnectionAndTable(path);
-		if (exists(path) && connectionAndTable.length == 2) {
+		if (connectionAndTable.length == 2) {
 
 			String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],maxToRead);
 			try {

@@ -2626,7 +2626,7 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 
 function tooltipShortCut(e){
 	console.log("Enter tooltipShortCut");
-	if(e.keyCode > 48 && e.keyCode < 65){
+	if(e.keyCode > 48 && e.keyCode < 58){
 		console.log("Get button...");
 		jQuery(".tooltipCanvas").children("button")[0].click();
 		console.log("Check item inner...");

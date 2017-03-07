@@ -69,8 +69,6 @@ public class HiveDictionary extends JdbcDictionary{
 	
 	protected void loadDefaultFunctions() {
 		super.loadDefaultFunctions();
-		removeFromFunctionsMap(relationalOperators, "IS NOT NULL");
-		removeFromFunctionsMap(relationalOperators, "IS NULL");
 		functionsMap
 				.put(castMethods,
 						new String[][] { 

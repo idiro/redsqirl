@@ -1001,17 +1001,36 @@
 	    	 tabs.tabs("option", "active", tabIndex);
 	    	 setWorkflow(nameTabs[tabIndex]);
 	     }
-		    
+	     
+	    var ctrlEventControler = true;
+        jQuery(document).bind('keyup', function (event) {
+	         ctrlEventControler = true;
+        });
+        
         jQuery(document).bind('keydown', function (event) {
-
+			 //<![CDATA[
         	console.log("jquery bind keydown");
         	
-			if( !jQuery(".rich-mp-container").is(":visible") ){
+			if( !jQuery(".rich-mp-container").is(":visible") &&
+				jQuery("#"+getSelectedById()).find(".blockUI").filter(":visible").size() == 0 ){
 				if (event.keyCode == 46) { // Delete
 	                deleteSelected(selectedCanvas);
-	            }else if(event.ctrlKey) {
-	                showHelp(event);
 	            }
+	        }
+	        if( jQuery("#"+getSelectedById()).find(".blockUI").filter(":visible").size() == 0 ){
+	            if(event.ctrlKey) {
+        			console.log("set false");
+	                if(ctrlEventControler || (event.keyCode > 48 && event.keyCode < 58)){
+	            		showHelp(event);
+	            		ctrlEventControler = false;
+	            		if(jQuery(".rich-mp-container").is(":visible")){
+	            			jQuery(".tooltipCanvas").find("button").attr("disabled", "disabled");
+	            		}
+	            	}else if(event.keyCode <= 48 || event.keyCode >= 58){
+    					jQuery(".tooltipCanvas").remove();
+    					curToolTip = null;
+	            	}
+	        	}
 			}
 				
 			if (event.keyCode === 8) { //backspace
@@ -1024,103 +1043,78 @@
 					event.preventDefault();
 				}
 			}
-
-			 //<![CDATA[
 			 
 			 //chrome
-			 
-			if (event.keyCode === 37 && event.altKey) {
-				event.preventDefault();
-			}
-			if (event.keyCode === 39 && event.altKey) {
-				event.preventDefault();
-			}
-			if (event.keyCode === 69 && event.altKey) {
-				event.preventDefault();
-			}
-			if (event.keyCode === 70 && event.altKey) { //Alt+F 
-				event.preventDefault();
-			}
-			if (event.keyCode === 69 && event.altKey) { //Alt+e
-				event.preventDefault();
-			}
-			if (event.keyCode === 66 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+B
-				event.preventDefault();
-			}
-			if (event.keyCode === 73 && event.ctrlKey) { //Ctrl+H
-				event.preventDefault();
-			}
-			if (event.keyCode === 74 && event.ctrlKey) { //Ctrl+J
-				event.preventDefault();
-			}
-			if (event.keyCode === 74 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+J
-				event.preventDefault();
-			}
-			if (event.keyCode === 46 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+Delete
-				event.preventDefault();
-			}
-			if (event.keyCode === 112) { //f1
-				event.preventDefault();
-			}
-			if (event.keyCode === 77 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+M
-				event.preventDefault();
-			}
-			if (event.keyCode === 84 && event.altKey && event.shiftKey) { //Shift+Alt+T
-				event.preventDefault();
-			}
-			if (event.keyCode === 117) { //f6
-				event.preventDefault();
-			}
-			if (event.keyCode === 117 && event.shiftKey) { //Shift+F6
-				event.preventDefault();
-			}
-			if (event.keyCode === 80 && event.ctrlKey) { //Ctrl+P 
-				event.preventDefault();
-			}
-			if (event.keyCode === 83 && event.ctrlKey) { //Ctrl+S
-				event.preventDefault();
-			}
-			if (event.keyCode === 82 && event.ctrlKey) { //Ctrl+R
-				event.preventDefault();
-			}
-			if (event.keyCode === 116 && event.ctrlKey) { //f5
-				event.preventDefault();
-			}
-			if (event.keyCode === 70 && event.ctrlKey) { //Ctrl+F
-				event.preventDefault();
-			}
-			if (event.keyCode === 71 && event.ctrlKey) { //Ctrl+G
-				event.preventDefault();
-			}
-			if (event.keyCode === 113 && event.ctrlKey) { //f3
-				event.preventDefault();
-			}
-			if (event.keyCode === 71 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+G   
-				event.preventDefault();
-			}
-			if (event.keyCode === 116 && event.ctrlKey) { //Ctrl+F5
-				event.preventDefault();
-			}
-			if (event.keyCode === 116 && event.shiftKey) { //Shift+F5
-				event.preventDefault();
-			}
-			if (event.keyCode === 80 && event.ctrlKey) { //Ctrl+U
-				event.preventDefault();
-			}
-			if (event.keyCode === 85 && event.ctrlKey) { //Ctrl+D
-				event.preventDefault();
-			}
-			if (event.keyCode === 68 && event.ctrlKey && event.shiftKey) { //Ctrl+Shift+D
-				event.preventDefault();
-			}
-			if (event.keyCode === 122 && event.ctrlKey) { //f11
-				event.preventDefault();
-			}
-			if (event.keyCode === 48 && event.ctrlKey) { //Ctrl+0
-				event.preventDefault();
-			}
-
-			
+			 if(event.altKey){
+				if (event.keyCode === 37) {
+					event.preventDefault();
+				}else if (event.keyCode === 39) {
+					event.preventDefault();
+				}else if (event.keyCode === 69) {
+					event.preventDefault();
+				}else if (event.keyCode === 70) { //Alt+F 
+					event.preventDefault();
+				}else if (event.keyCode === 69) { //Alt+e
+					event.preventDefault();
+				}else if (event.keyCode === 84 && event.shiftKey) { //Shift+Alt+T
+					event.preventDefault();
+				}
+			 }else if(event.ctrlKey){
+			 	if(event.keyCode > 48 && event.keyCode < 58){//Ctr+1/2...9
+					event.preventDefault();
+				}else if (event.keyCode === 66 && event.shiftKey) { //Ctrl+Shift+B
+					event.preventDefault();
+				}else if (event.keyCode === 73) { //Ctrl+H
+					event.preventDefault();
+				}else if (event.keyCode === 74) { //Ctrl+J
+					event.preventDefault();
+				}else if (event.keyCode === 74 && event.shiftKey) { //Ctrl+Shift+J
+					event.preventDefault();
+				}else if (event.keyCode === 46 && event.shiftKey) { //Ctrl+Shift+Delete
+					event.preventDefault();
+				}else if (event.keyCode === 77 && event.shiftKey) { //Ctrl+Shift+M
+					event.preventDefault();
+				}else if (event.keyCode === 80) { //Ctrl+P 
+					event.preventDefault();
+				}else if (event.keyCode === 83) { //Ctrl+S
+					event.preventDefault();
+				}else if (event.keyCode === 82) { //Ctrl+R
+					event.preventDefault();
+				}else if (event.keyCode === 116) { //f5
+					event.preventDefault();
+				}else if (event.keyCode === 70) { //Ctrl+F
+					event.preventDefault();
+				}else if (event.keyCode === 71) { //Ctrl+G
+					event.preventDefault();
+				}else if (event.keyCode === 113) { //f3
+					event.preventDefault();
+				}else if (event.keyCode === 71 && event.shiftKey) { //Ctrl+Shift+G   
+					event.preventDefault();
+				}else if (event.keyCode === 116) { //Ctrl+F5
+					event.preventDefault();
+				}else if (event.keyCode === 80) { //Ctrl+U
+					event.preventDefault();
+				}else if (event.keyCode === 85) { //Ctrl+D
+					event.preventDefault();
+				}else if (event.keyCode === 68 && event.shiftKey) { //Ctrl+Shift+D
+					event.preventDefault();
+				}else if (event.keyCode === 122) { //f11
+					event.preventDefault();
+				}else if (event.keyCode === 48) { //Ctrl+0
+					event.preventDefault();
+				}
+			 }else{
+			 	if (event.keyCode === 112) { //f1
+					event.preventDefault();
+				}else if (event.keyCode === 117) { //f6
+					event.preventDefault();
+				}else if (event.keyCode === 117 && event.shiftKey) { //Shift+F6
+					event.preventDefault();
+				}else if (event.keyCode === 116 && event.shiftKey) { //Shift+F5
+					event.preventDefault();
+				}
+			 }
+			event.stopImmediatePropagation();
 			//]]>
 			
             
