@@ -272,7 +272,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						elToCheck.add(cur);
 					}
 				}
-
 			}
 		}
 
@@ -292,10 +291,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				listToNotCheck.add(wa);
 			} else {
 				String locError = wa.checkEntry(this.name);
+				
+				logger.info("locError " + locError);
+				
 				if (locError != null) {
-					error += LanguageManagerWF.getText("workflow.check",
-							new Object[] { wa.getComponentId(), locError })
-							+ "\n";
+					error += LanguageManagerWF.getText("workflow.check", new Object[] { wa.getComponentId(), locError }) + "\n";
 					listToNotCheck.add(wa);
 				} else {
 					wa.addMaterializedVariables();
