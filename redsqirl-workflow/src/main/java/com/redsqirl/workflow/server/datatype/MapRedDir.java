@@ -184,6 +184,8 @@ public abstract class MapRedDir extends MapRedHdfs{
 	}
 	
 	public List<String> selectLine(int maxToRead) throws RemoteException {
+		logger.info("selectLine");
+		
 		List<String> ans = null;
 		if(isPathExist()){
 			try {
@@ -219,7 +221,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 					while(fileIt.hasNext() && ans.size() < maxToRead && k < NB_FILE_TO_READ_MAX){
 						Map.Entry<FileStatus,Long> cur = fileIt.next();
 						FileStatus file = cur.getKey();
-						logger.debug("Number of line already read: "+ans.size());
+						logger.info("Number of line already read: " + ans.size());
 						ans.addAll(hdfsInt.select(file.getPath().toString(),
 								",",
 								maxToRead - ans.size()

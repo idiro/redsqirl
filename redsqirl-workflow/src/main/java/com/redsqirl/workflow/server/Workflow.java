@@ -272,7 +272,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						elToCheck.add(cur);
 					}
 				}
-
 			}
 		}
 
@@ -292,10 +291,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				listToNotCheck.add(wa);
 			} else {
 				String locError = wa.checkEntry(this.name);
+				
+				logger.info("locError " + locError);
+				
 				if (locError != null) {
-					error += LanguageManagerWF.getText("workflow.check",
-							new Object[] { wa.getComponentId(), locError })
-							+ "\n";
+					error += LanguageManagerWF.getText("workflow.check", new Object[] { wa.getComponentId(), locError }) + "\n";
 					listToNotCheck.add(wa);
 				} else {
 					wa.addMaterializedVariables();
@@ -2517,12 +2517,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String addLink(String outName, String componentIdOut, String inName,
 			String componentIdIn, boolean force) throws RemoteException {
 
+		logger.info("outName " + outName);
+		logger.info("componentIdOut " + componentIdOut);
+		logger.info("inName " + inName);
+		logger.info("componentIdIn " + componentIdIn);
+		
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
+		
+		logger.info("DataFlowElement out " + out.getName());
+		logger.info("DataFlowElement in " + in.getName());
+		
 		if (out == null || in == null) {
-			error = LanguageManagerWF
-					.getText("workflow.addLink_elementnoexist");
+			error = LanguageManagerWF.getText("workflow.addLink_elementnoexist");
 		} else if (in.getInput().get(inName) == null) {
 			error = LanguageManagerWF.getText("workflow.addLink_inputNotexist",
 					new Object[] { inName });

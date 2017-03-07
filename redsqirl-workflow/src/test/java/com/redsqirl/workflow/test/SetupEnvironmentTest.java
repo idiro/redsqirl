@@ -49,41 +49,48 @@ import com.redsqirl.workflow.server.action.ActionTests;
 import com.redsqirl.workflow.server.action.SendEmailTests;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflowTests;
+import com.redsqirl.workflow.server.action.superaction.SuperActionTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
 import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
 import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceTests;
 import com.redsqirl.workflow.server.connect.interfaces.WorkflowInterfaceTests;
+import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
 import com.redsqirl.workflow.utils.AbstractDictionaryTests;
+import com.redsqirl.workflow.utils.PackageManagerTests;
 
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ActionTests.class,
-	SourceTests.class,
-	WorkflowTests.class,
-	HDFSInterfaceTests.class,
-	//FIXME SSHInterfaceTests does not work
-	SSHInterfaceTests.class,
-	SSHInterfaceArrayTests.class,
-	WorkflowProcessesManagerTests.class,
-	OozieManagerTests.class,
-	OozieDagTests.class,
-	OrderedFieldListTests.class,
-	TreeTests.class,
-	InputInteractionTests.class,
-	AppendListInteractionTests.class,
-	ListInteractionTests.class,
-	EditorInteractionTests.class,
-	TableInteractionTests.class,
-	//FIXME Test only done for keith user... HDFSTypeTests.class,
-	//FIXME To update PackageManagerTests.class,
-	AbstractDictionaryTests.class,
-	SendEmailTests.class,
-	WorkflowInterfaceTests.class,
+//	ActionTests.class,
+//	SourceTests.class,
+//	WorkflowTests.class,
+//	HDFSInterfaceTests.class,
+//	SSHInterfaceTests.class,
+//	SSHInterfaceArrayTests.class,
+//	WorkflowProcessesManagerTests.class,
+//	OozieManagerTests.class,
+//	OozieDagTests.class,
+//	OrderedFieldListTests.class,
+//	TreeTests.class,
+//	InputInteractionTests.class,
+//	AppendListInteractionTests.class,
+//	ListInteractionTests.class,
+//	EditorInteractionTests.class,
+//	TableInteractionTests.class,
+//	AbstractDictionaryTests.class,
+//	SendEmailTests.class,
+//	WorkflowInterfaceTests.class,
 	SubWorkflowTests.class,
-	//FIXME SuperActionTests.class
-	//FIXME Hard-coded properties GenericConfFileTests.class
+	
+//	//FIXME To update PackageManagerTests.class,
+//	//FIXME SuperActionTests.class,
+//	//FIXME Hard-coded properties GenericConfFileTests.class,
+	
+	//HDFSTypeTests.class,
+	//SuperActionTests.class
+	//PackageManagerTests.class
+	
 })
 public class SetupEnvironmentTest {
 
@@ -124,11 +131,11 @@ public class SetupEnvironmentTest {
 			}
 		}catch (Exception e) {
 			logger.error("something went wrong : " + e.getMessage());
-
 		}
 
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
 		logger.info(WorkflowPrefManager.pathSysHome);
 	}
+	
 }

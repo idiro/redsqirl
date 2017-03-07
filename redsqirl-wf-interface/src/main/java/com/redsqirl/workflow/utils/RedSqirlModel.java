@@ -473,6 +473,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 	}
 	
 	public String install(SubDataFlow toInstall, Boolean privilege) throws RemoteException{
+		logger.info("install");
 		String[] modelWSA = getModelAndSW(toInstall.getName());
 		
 		File tmpMainFile = new File(WorkflowPrefManager.getPathTmpFolder(getUser()),modelWSA[1]);
@@ -487,6 +488,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 		
 		logger.info("Check installation file");
 		error = toInstall.check();
+		logger.info("Check installation error " + error);
 
 		if (error == null) {
 			logger.info("Save main file into: " + mainFile.getPath());
@@ -499,6 +501,7 @@ public class RedSqirlModel extends UnicastRemoteObject implements ModelInt{
 				logger.info(error);
 			} else {
 				error = installHelp(toInstall);
+				logger.info("installHelp into: " + error);
 
 				if (error != null) {
 					logger.info(error);

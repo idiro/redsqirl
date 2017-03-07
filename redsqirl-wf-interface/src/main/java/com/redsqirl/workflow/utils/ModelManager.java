@@ -183,6 +183,8 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 	}
 
 	public String uninstallSA(ModelInt model, String saName) throws RemoteException {
+		logger.info("uninstallSA");
+		
 		if(saName.contains(">")){
 			saName = RedSqirlModel.getModelAndSW(saName)[1];
 		}
@@ -261,6 +263,7 @@ public class ModelManager extends UnicastRemoteObject implements ModelManagerInt
 		logger.info("Install "+saName);
 		error = model.install(toInstall, privilege);
 
+		logger.info("Install error msg '" + error + "'");
 		return error;
 	}
 	

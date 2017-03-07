@@ -51,76 +51,73 @@ import com.redsqirl.workflow.server.connect.SSHInterface;
 import com.redsqirl.workflow.test.TestUtils;
 
 /**
- * To Run these test, we suppose that a RSA key
- * is set up with localhost
+ * To Run these test, we suppose that a RSA key is set up with localhost
  * @author etienne
- *
  */
 public class SSHInterfaceTests {
-	Logger logger = Logger.getLogger(getClass());
 
+	Logger logger = Logger.getLogger(getClass());
 
 	@Test
 	public void basic(){
 		TestUtils.logTestTitle("HDFSInterfaceTests#basic");
 		try{
 			SSHInterface hInt = new SSHInterface("dev3.local.net",22);
-			
+
 			logger.debug("We are in: "+hInt.getPath());
-			
+
 			String new_path0 = hInt.getPath()+"/"+TestUtils.getName(0);
 			assertTrue("create "+new_path0,
 					hInt.create(new_path0, new HashMap<String,String>()) == null
 					);
-			
+
 			String new_path1 = hInt.getPath()+"/"+TestUtils.getName(1); 
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, new HashMap<String,String>()) == null
 					);
-			
+
 			String new_path2 = hInt.getPath()+"/"+TestUtils.getName(2);
 			assertTrue("move to "+new_path2,
 					hInt.move(new_path1, new_path2) == null);
-			
+
 			String new_path3 = new_path2+"/"+TestUtils.getName(3);
 			assertTrue("create "+new_path3,
 					hInt.create(new_path3, new HashMap<String,String>()) == null
 					);
-			
+
 			assertTrue("Fail to go to "+new_path2, hInt.goTo(new_path0));
 			assertTrue("getPath: "+hInt.getPath(),
 					hInt.getPath().equals(new_path0));
-			
+
 			assertTrue("Fail to go to "+new_path2, hInt.goTo(new_path2));
-			
+
 			assertTrue("getPath: "+hInt.getPath(),
 					hInt.getPath().equals(new_path2));
-			
+
 			Set<String> child = hInt.getChildrenProperties(true).keySet();
 			assertTrue("number of children should be one instead of "+child.toString(),child.size()==1);
 			assertTrue("Child is "+new_path3+" instead of "+child.toString(),child.contains(new_path3));
-			
+
 			hInt.goPrevious();
 			assertTrue("getPath: "+hInt.getPath(),
 					hInt.getPath().equals(new_path0));
-			
+
 			hInt.goNext();
 			assertTrue("getPath: "+hInt.getPath(),
 					hInt.getPath().equals(new_path2));
-			
+
 			assertTrue("delete "+new_path0,
 					hInt.delete(new_path0) == null);
 			assertTrue("delete "+new_path2,
 					hInt.delete(new_path2) == null);
-			
+
 			hInt.close();
 		}catch(Exception e){
 			logger.error(e,e);
 			assertTrue("error : "+e.getMessage(),false);
 		}
 	}
-	
-	
+
 	@Test
 	public void check_save(){
 		TestUtils.logTestTitle("HDFSInterfaceTests#save");
@@ -148,7 +145,7 @@ public class SSHInterfaceTests {
 			logger.info("11");
 			assertTrue("List should not contain dev3.local.net anymore", !SSHInterface.getKnownHost().contains("dev3.local.net"));
 			logger.info("12");
-			
+
 			Set<String> l = SSHInterface.getKnownHost();
 			logger.info("13");
 			assertTrue(l.size() == 1);
@@ -162,7 +159,6 @@ public class SSHInterfaceTests {
 			logger.error(e,e);
 			assertTrue("error : "+e.getMessage(),false);
 		}
-		
 	}
-	
+
 }

@@ -292,24 +292,27 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String checkEntry(String wfName) throws RemoteException {
-		waLogger.debug("Check "+getComponentId());
+		waLogger.info("Check "+getComponentId());
 		String ans = checkIn();
 		if (ans == null) {
 			ans = "";
 		}
+		waLogger.info("Check 1 " + ans);
 		
 		if (ans.isEmpty()) {
-			waLogger.debug("Check interactions...");
+			waLogger.info("Check interactions...");
 			ans = checkIntegrationUserVariables();
 			if (ans != null && ans.isEmpty()) {
 				ans = null;
 			}
 		}
+		waLogger.info("Check 2 " + ans);
 		
 		if(ans == null){
-			waLogger.debug("Check variables...");
+			waLogger.info("Check variables...");
 			ans = checkVariables(wfName);
 		}
+		waLogger.info("Check 3 " + ans);
 
 		return ans;
 	}
@@ -372,15 +375,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				DFEPage page = it.next();
 				// waLogger.info("page title : "+page.getTitle());
 				error = page.checkPage();
+				
+				waLogger.info("checkIntegrationUserVariables " + error);
+				
 			} catch (Exception e) {
 				waLogger.error(e,e);
 				error = e.getMessage();
 			}
 		}
 		if (error != null) {
-			error = LanguageManagerWF.getText(
-					"dataflowaction.checkuservariables",
-					new Object[] { String.valueOf(pageNb), error });
+			error = LanguageManagerWF.getText("dataflowaction.checkuservariables", new Object[] { String.valueOf(pageNb), error });
 		}
 		return error;
 	}
