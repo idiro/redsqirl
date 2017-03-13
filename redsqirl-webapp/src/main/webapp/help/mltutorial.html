@@ -7,7 +7,7 @@
 
 <body>
   <h1>Machine Learning Tutorial</h1>
-  
+
   <div style="padding:10px 10% 0;">
 
   <p>This workflow will demonstrate how to run a Logistic Regression in Red
@@ -48,21 +48,21 @@
       style="background: HotPink;">Pig</span> ones. Choose one or the other
   depending of the package you use.</p>
 
-  <p>The following will load or training and prediction data sets.</p>
+  <p>The following will load training and prediction data sets.</p>
   <ol>
       <li>Create a new canvas by clicking the
       plus symbol on the canvas tabs bar</li>
       <li>Drag a Pig Text Source, double click on it, name it
   &ldquo;iris_train&rdquo;</li>
   <li>Select &ldquo;ml_tutorial_training_data.mrtxt&rdquo; path.</li>
-    <li> Copy and paste the header  
+    <li> Copy and paste the header
   &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
   PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo;</li>
 
   <li>Drag a Pig Text Source, double click on it, name it
   &ldquo;iris_predict&rdquo;</li>
   <li>Select &ldquo;ml_tutorial_prediction_data.mrtxt&rdquo; path.</li>
-    <li> Copy and paste the header  
+    <li> Copy and paste the header
   &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
   PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo;</li>
   </ol>
@@ -88,7 +88,7 @@
 
     <li>The first page with list three interactions : ID, Target and Target Value.</li>
 
-    <li>In the Id interaction select &ldquo;ID&rdquo;.</li> 
+    <li>In the Id interaction select &ldquo;ID&rdquo;.</li>
 
     <li>In the Target select &ldquo;SPECIES&rdquo;.</li>
 
@@ -102,8 +102,6 @@
     <li>For the purposes of the tutorial we
     will leave these interactions alone and just click next.</li>
 
-    <li>If you are using Spark, change the partition to be 1.</li>
-
     <li>Click OK.</li>
 
     <li>In the File top menu, save the workflow as &ldquo;ml_tutorial&rdquo;.</li>
@@ -112,9 +110,9 @@
 
   </ol>
 
-  
+
   <h2>Build an Evaluation Method</h2>
-  
+
   <p>First we need to join the score we obtain with the predictive data.</p>
   <ol>
       <li>Drag a Spark or Pig Join.</li>
@@ -188,8 +186,6 @@
 	  </tr>
       </table>
       </li>
-      <li>Click next.</li>
-      <li>Click next.</li>
       <li>Click OK.</li>
   </ol>
 
@@ -235,7 +231,7 @@
 		  collapse;">FLOAT</td>
 	  </tr>
 	  <tr style="border: 1px solid black;border-collapse:
-	      collapse;background:orange;">
+	      collapse;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">SUM(value)</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -243,20 +239,9 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	      </tr>
-	      <tr style="border: 1px solid black;border-collapse:
-		  collapse;background:HotPink;">
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">SUM(score_vs_value.value)</td>
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">TOTAL_PREDICT</td>
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">FLOAT</td>
-	  </tr>
 
       </table>
       </li>
-      <li>Click next.</li>
-      <li>Click next.</li>
       <li>Click OK.</li>
   </ol>
 
@@ -289,7 +274,7 @@
 		  collapse;">FLOAT</td>
 	  </tr>
 	  <tr style="border: 1px solid black;border-collapse:
-	      collapse;background:orange">
+	      collapse;">
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">SUM(value)</td>
 	      <td style="border: 1px solid black;border-collapse:
@@ -297,20 +282,9 @@
 	      <td style="border: 1px solid black;border-collapse:
 		  collapse;">FLOAT</td>
 	      </tr>
-	      <tr style="border: 1px solid black;border-collapse:
-		  collapse;background:HotPink">
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">SUM(bin_score.value)</td>
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">PREDICT</td>
-	      <td style="border: 1px solid black;border-collapse:
-		  collapse;">FLOAT</td>
-	  </tr>
 
       </table>
       </li>
-      <li>Click next.</li>
-      <li>Click next.</li>
       <li>Click OK.</li>
   </ol>
 
@@ -326,7 +300,7 @@
       <li>Open it and name it &ldquo;evaluation&rdquo;.</li>
       <li>Click next on the first page.</li>
       <li>On the second page create the following eight field, you can use the
-      copy generator to help you. 
+      copy generator to help you.
       <table style="border: 1px solid black;border-collapse: collapse;">
 	  <tr style="border: 1px solid black;border-collapse: collapse;background:LightGrey;">
 	      <td style="border: 1px solid black;border-collapse:
@@ -404,10 +378,6 @@
       </table></li>
       <li>Click next.</li>
       <li>Join on all the lines, by filling out 1 in the join field column.</li>
-      <li>Click next.</li>
-      <li>On the Sorting page, select &ldquo;BIN&rdquo; and
-      &ldquo;DESCENDING&rdquo;. Click next.</li>
-      <li>If you use Spark, select a partition of 1.</li>
       <li>Click OK.</li>
   </ol>
   <p>You can now run the workflow and see the result. The model should appear
@@ -430,7 +400,7 @@
 	  <li>In the list of outputs: &ldquo;eval_10&rdquo;</li>
 	  <li>In the description: &ldquo;Score Evaluation split in 10 bins. The
 	  input should be a dataset with a score (value between 0 and 1) and a value
-	  (0 or 1).&rdquo;</li> 
+	  (0 or 1).&rdquo;</li>
       </ul>
       </li>
       <li>Click OK.</li>
@@ -462,6 +432,6 @@
   </ul>
 
 </div>
- 
+
 </body>
 </html>

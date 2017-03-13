@@ -255,7 +255,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 					"SUBSTR()",
 					"STRING,INT",
 					"STRING",
-			"@function:SUBSTRING( MYSTRING , INDEX )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring.The index of a string begins with zero (0)@description:Use the SUBSTRING function to return a substring from a given string.Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1). Note that 1 is the index of B (the first character of the substring)@example:SUBSTR(\"help\",1) returns \"elp\"; @example:SUBSTR(\"example\",6) returns  \"le\"" },
+			"@function:SUBSTRING( MYSTRING , INDEX )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring.The index of a string begins with zero (0)@description:Use the SUBSTRING function to return a substring from a given string.Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,2). Note that 1 is the index of A@example:SUBSTR(\"help\",2) returns \"elp\"; @example:SUBSTR(\"example\",6) returns  \"le\"" },
 			new String[] {
 					"SUBSTR()",
 					"STRING,INT,INT",
@@ -264,11 +264,11 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 							+"@short:Returns a substring from a given string"
 							+"@param:MYSTRING The string from which a substring will be extracted"
 							+"@param: INDEX The index (type integer) of the first character of the substring."
-							+ "The index of a string begins with zero (0)"
+							+ "The index of a string starts at one (1)"
 							+"@param:LENGTH The index (type integer) of the character following the last character of the substring"
 							+"@description:Use the SUBSTRING function to return a substring from a given string."
 							+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)"
-							+"@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
+							+"@example:SUBSTR(\"help\",1,4) returns \"help\"; @example:SUBSTR(\"example\",6,2) returns  \"le\"" },
 			new String[] {
 					"UPPER()",
 					"STRING",

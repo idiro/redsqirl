@@ -31,7 +31,7 @@
   <h2>Pig Workflow</h2>
 
   <h3>Copying file from a Remote to HDFS</h3>
-  
+
   <p>
   The purpose
   of this task is to demonstrate the &ldquo;Remote File
@@ -40,7 +40,7 @@
   <p>It will show how to connect to remote servers
   and copying files from the remote server to the Hadoop file
   system.</p>
-  
+
 
   <ol>
     <li>Click on Remote File System.</li>
@@ -98,7 +98,7 @@
 
   <p>You should see a new footer tab called &ldquo;extraPig&rdquo; with
   &ldquo;Pig Audit&rdquo; inside. To remove this new menu, you need to do the
-  following. 
+  following.
   </p>
   <ol>
       <li>Click the green information symbol.</li>
@@ -109,7 +109,7 @@
 
   <h3>Create a Workflow</h3>
 
-  <!-- 
+  <!--
   <p>On the last page of every pig action there are options for the output of
   the action such as the delimiter to use, or the output type either Text or
   Compressed.  The delimiter can be any non alpha numeric value or an ASCII
@@ -117,7 +117,7 @@
   -->
 
   <h4>Setup a Source Action</h4>
-  
+
   <p>This Task will show how the source
   &ldquo;action&rdquo; can be configured to select flat files and
   change the properties such as the delimiter of the file and also
@@ -167,9 +167,9 @@
 
   </ol>
 
-  
+
   <h4>Setup a Pig Aggregator Action</h4>
-  
+
   <p> Pig Aggregator is an action in which aggregation methods are allowed to be
   used when selecting columns as you would in an sql statement.  These
   aggregation methods are AVG , MAX , SUM etc. This action will group by either
@@ -178,7 +178,7 @@
   <ol>
     <li>Drag a pig aggregator action to the
     canvas.</li>
-    
+
     <li>Create a link between the source that was just configured and the new
     pig aggregator action by clicking between the image and the arc of the
     source action and then clicking on the pig aggregator image.</li>
@@ -200,29 +200,22 @@
 
     <li>Click on the pen in Operation field of the new
     row and click the &ldquo;SUM()&rdquo; function and add the
-    parameters &ldquo;communication.offpeak_voice&rdquo; and
-    &ldquo;communication.peak_voice&rdquo;. In the between the parameters add a
+    parameters &ldquo;offpeak_voice&rdquo; and
+    &ldquo;peak_voice&rdquo;. In the between the parameters add a
     &ldquo;+&rdquo; symbol so that the operation would read
-    &ldquo;SUM(communication.offpeak_voice +
-    communication.peak_voice)&rdquo;</li>
+    &ldquo;SUM(offpeak_voice + peak_voice)&rdquo;</li>
     <li>click OK.</li>
 
     <li>In the Field Name, type
     &ldquo;total_voice&rdquo; for the new column and change
     the type to DOUBLE.</li>
-    <li>Click next.</li>
-
-    <li>The next page sort the data, we won't sort by clicking next.</li>
-    
-    <li>The following page is about filter and format, click OK to leave the
-    default parameters.</li> 
+    <li>Click OK.</li>
 
     <li>In &ldquo;Project&rdquo; menu on the top, click &ldquo;Save and Run&rdquo; to run the workflow.</li>
 
-    <li>To see the results, leave your mouse on the action &ldquo;nl_sum&rdquo;, &gt; Options &gt; Data
+    <li>To see the results, leave your mouse on the action &ldquo;nl_sum&rdquo; and hit ctrl, &gt; Options &gt; Data
     Output.</li>
-    <li>You can close it by hitting &ldquo;Cancel&rdquo; or
-    &ldquo;OK&rdquo;</li>
+    <li>You can close it by hitting &ldquo;Cancel&rdquo; or &ldquo;OK&rdquo;</li>
   </ol>
 
 
@@ -239,26 +232,24 @@
 
     <li>Create a new row (+ button).</li>
 
-    <li>In this new row copy and paste &ldquo;AVG(communication.offpeak_voice +
-    communication.peak_voice)&rdquo;.</li>
+    <li>In this new row copy and paste &ldquo;AVG(offpeak_voice +
+    peak_voice)&rdquo;.</li>
 
     <li>Call the field &ldquo;total_voice_avg&rdquo; and select the DOUBLE type.</li>
 
-    <li>Click next.</li>
-    <li>Click next on the sorting page.</li>
-    <li>Click OK on the final page.</li>
+    <li>Click OK.</li>
   </ol>
 
-  <h4>Perform a Pig Join Action</h4>  
+  <h4>Perform a Pig Join Action</h4>
 
   <p> To make each dataset interactable with each other it is necessary to
   perform a join on them.</p>
 
-  
+
 
   <ol>
     <li>Drop a pig join onto the canvas.</li>
-    
+
     <li>Create a link from &ldquo;comm_groupbyall&rdquo; to the new
     pig join action.</li>
 
@@ -266,7 +257,7 @@
     pig join action.</li>
 
     <li>Double click the pig join and call it &ldquo;nl_vs_total&rdquo;.</li>
-	
+
     <li>The first page list the table aliases, click next.</li>
 
     <li>On the following page, make sure that &ldquo;copy&rdquo; is selected as
@@ -282,13 +273,11 @@
     <li>In &ldquo;Join Field&rdquo; column, type &ldquo;1&rdquo; in the two rows. This condition will join
     the two tables together.</li>
 
-    <li>Click next.</li>
-    <li>Click next on the sorting page.</li>
-    <li>Click OK on the final page.</li>
+    <li>Click OK.</li>
   </ol>
 
-  
-  <h4>Filter a Data set</h4>  
+
+  <h4>Filter a Data set</h4>
 
   <p> Now we want to make a condition to see what subscribers have a higher
   total voice calls than the average of the entire dataset. The easiest would be
@@ -297,19 +286,12 @@
 
 
   <ol>
-    <li>Drop a new pig select action onto the canvas.</li>
-    
+    <li>Drop a new pig filter action onto the canvas.</li>
+
     <li>Create a link from the pig join action
     to the new pig select action</li>
 
     <li>Open it and change the element id to be &ldquo;high_voice&rdquo;.</li>
-
-    <li>In the generation drop-down menu, select copy and click OK.</li>
-    <li>Click next.</li>
-
-    <li>In the Sorting page, select &ldquo;nl_sum_total_voice&rdquo; and
-    &ldquo;DESCENDING&rdquo; order.</li>
-    <li>Click Next.</li>
 
     <li>Click on the Pen in the Condition section and write &ldquo;nl_sum_total_voice
     &gt; comm_groupbyall_total_voice_av&rdquo;.</li>
@@ -323,17 +305,14 @@
   before running the workflow.</p>
 
   <ol>
-      <li>Leave your mouse on &ldquo;nl_vs_total&rdquo;. Click Options button
-      and select &ldquo;Data Output&rdquo; from the drop-down menu.</li>
-      <li>Select &ldquo;BUFFERED&rdquo; instead of &ldquo;TEMPORARY&rdquo;.</li>
-      <li>Click OK.</li>
+      <li>Select &ldquo;nl_vs_total&rdquo; and go into the top menu Edit > Output State > Buffered</li>
   </ol>
 
   <p>You can now &ldquo;Save and Run&rdquo;, and see your result in the Data
-  Output of &ldquo;nl_vs_total&rdquo; and &ldquo;high_voice&rdquo;</p> 
+  Output of &ldquo;nl_vs_total&rdquo; and &ldquo;high_voice&rdquo;</p>
 
     <li>To see the results, leave your mouse on the action
-    &ldquo;nl_vs_total&rdquo; or &ldquo;high_voice&rdquo;, &gt; Options &gt; Data
+    &ldquo;nl_vs_total&rdquo; or &ldquo;high_voice&rdquo;, hit Ctrl &gt; Options &gt; Data
     Output.</li>
     <li>You can close it by hitting &ldquo;Cancel&rdquo; or
     &ldquo;OK&rdquo;</li>
@@ -343,8 +322,6 @@
   Actions&rdquo; in the &ldquo;Edit&rdquo; top menu.</p>
 
   <h4>Summary of workflow</h4>
-
-  
 
   <p>In this workflow we have</p>
 
@@ -361,7 +338,7 @@
 
     <li>filtered a table with a condition</li>
   </ol>
-  
+
   </div>
 
 </body>

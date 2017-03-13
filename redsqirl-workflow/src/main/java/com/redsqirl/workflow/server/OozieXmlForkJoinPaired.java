@@ -904,8 +904,11 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 							dataIn.appendChild(endInstance);
 						}
 						try{
-							if(coordinatorTimeConstraint.getFreqInMinutes() == out.getFrequency().getFreqInMinutes()){
-								outputDataOffset = Math.max(outputDataOffset, out.getOffsetPath());
+							if(coordinatorTimeConstraint.getUnit().equals(out.getFrequency().getUnit()) &&
+									coordinatorTimeConstraint.getFrequency() >= out.getFrequency().getFrequency() &&
+									coordinatorTimeConstraint.getFrequency() % out.getFrequency().getFrequency() == 0){
+								outputDataOffset = Math.max(outputDataOffset, 
+										out.getOffsetPath()*out.getFrequency().getFrequency()/coordinatorTimeConstraint.getFrequency());
 							}
 						}catch(Exception e){}
 						inputEvent.appendChild(dataIn);
