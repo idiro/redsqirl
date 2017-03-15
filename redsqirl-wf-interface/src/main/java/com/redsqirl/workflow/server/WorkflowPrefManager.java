@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.idiro.BlockManager;
 //import java.util.prefs.Preferences;
+import com.redsqirl.workflow.settings.SettingMenuInt;
 
 /**
  * Software preference manager.
@@ -1078,6 +1079,14 @@ public class WorkflowPrefManager extends BlockManager {
 
 	public static String getProperty(String key) throws RemoteException {
 		return props.getProperty(key);
+	}
+	
+	public static void setDefaultSettingMenu(SettingMenuInt menu) throws RemoteException {
+		props.setDefaultsettingMenu(menu);
+	}
+	
+	public static void setSettingMenu(SettingMenuInt menu) throws RemoteException {
+		props.setDefaultsettingMenu(menu);
 	}
 
 	/**
