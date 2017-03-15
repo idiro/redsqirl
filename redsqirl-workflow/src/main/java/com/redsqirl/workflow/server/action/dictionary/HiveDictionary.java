@@ -232,7 +232,7 @@ public class HiveDictionary extends JdbcDictionary{
 		
 		String[][] hiveAnalyticMethods = new String[][] {
 			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT", "INT",
-			"@function:NTILE@short:returns the first non-null expression in the list.",
+			"@function:NTILE@short:separate the data into 10 subsets ordered by a criteria.",
 			},
 			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",
@@ -244,7 +244,7 @@ public class HiveDictionary extends JdbcDictionary{
 			"@function:NTILE@short:returns the row number.",
 			},
 			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
-			"@function:NTILE@short:returns the first non-null expression in the list.",
+			"@function:NTILE@short:separate the data into 10 subsets ordered by a criteria.",
 			},
 			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:NTILE@short:returns the first non-null expression in the list.",

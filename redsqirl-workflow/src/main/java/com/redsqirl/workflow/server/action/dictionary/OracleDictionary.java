@@ -184,7 +184,7 @@ public class OracleDictionary extends JdbcDictionary{
 		
 		String[][] oracleAnalyticMethods = new String[][] {
 			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT", "INT",
-			"@function:NTILE@short:returns the first non-null expression in the list.",
+			"@function:NTILE@short:separate the data into 10 subsets ordered by a criteria.",
 			},
 			new String[] { "RANK() OVER (ORDER BY EXPR ASC)", "", "INT",
 			"@function:RANK@short:calculates the rank of a value in a group of values. The return type is NUMBER.",
@@ -208,7 +208,7 @@ public class OracleDictionary extends JdbcDictionary{
 			"@function:LAST_VALUE(EXPR)@short:Picks the last record from the partition after doing the ORDER BY.",
 			},
 			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
-			"@function:NTILE@short:returns the first non-null expression in the list.",
+			"@function:NTILE@short:separate the data into 10 subsets ordered by a criteria.",
 			},
 			new String[] { "RANK() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "", "INT",
 			"@function:RANK@short:calculates the rank of a value in a group of values. The return type is NUMBER.",
