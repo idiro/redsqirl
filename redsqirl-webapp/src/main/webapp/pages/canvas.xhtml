@@ -831,6 +831,11 @@
 	    	nameTabs = names;
 	    	selectTab(numTabs-1);
 	      
+	    	if(numTabs == 0){
+	    		if(runningIntervalID){
+					clearInterval(runningIntervalID);
+				}
+	    	}
 	      
 		  //]]>
 	      }
@@ -867,11 +872,17 @@
               //setWorkflow("canvas-1");
 
               //resizeCanvas(30,45);
+              
+              if(runningIntervalID){
+              	clearInterval(runningIntervalID);
+              }
+              
           //]]>
 	      }
 
 		var runningIntervalID;
 		var copyRunningMsgIdx = 0;
+		var copyRunningMsgIdxScheduling = 0;
 	      
 	     function unblockRunningWorkflowJS(){
 	     	//<![CDATA[
@@ -958,19 +969,27 @@
 		        lastBlockedRunningSchedulingWorkflow = getSelectedById();
 	             
 		    	console.log("blockRunningSchedulingWorkflowJS" , lastBlockedRunningSchedulingWorkflow);
-
-				try{
-		            
-		            jQuery('#'+lastBlockedRunningSchedulingWorkflow).block({ message: jQuery('#domMessageSchedulingRunning') });
-		            
+		     	
+		     	try{
+			    	var origDiv = document.getElementById('domMessageSchedulingRunning');
+			    	var newDiv = document.createElement("div");
+			    	newDiv.id = 'domMessageSchedulingRunning'+ (++copyRunningMsgIdxScheduling);
+			    	newDiv.style.display = "none";
+			    	if(copyRunningMsgIdxScheduling == 1){
+			    		origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
+			    	}
+			    	newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
+		            jQuery('#'+lastBlockedRunningSchedulingWorkflow).block({ message: newDiv });
 		     	}catch(exception){
-			    	console.log("error " + lastBlockedRunningSchedulingWorkflow + " " + exception);
+		     		console.log("error " + lastBlockedRunningSchedulingWorkflow + " " + exception);
 			    }
+		     	
+		     	console.log("blockRunningSchedulingWorkflowJS end ");
 	             
 	            resizeBlockUICanvas();
 
-	            runningIntervalID = setInterval(function(){ updateSchedulingStatus(); },5000);
-	            setTimeout(function(){ updateSchedulingStatus(); }, 100);
+	            runningIntervalID = setInterval(function(){ DMRDIV_updateSchedulingStatus(); },5000);
+	            setTimeout(function(){ DMRDIV_updateSchedulingStatus(); }, 100);
 	             
 	            //]]>
 	         }
@@ -982,6 +1001,7 @@
 		        	 console.log("unblockRunningSchedulingWorkflowJS ", lastBlockedRunningSchedulingWorkflow);
 		             
 		        	 jQuery('#'+lastBlockedRunningSchedulingWorkflow).unblock();
+		             try{jQuery('#domMessageSchedulingRunning'+ copyRunningMsgIdxScheduling).remove();}catch(exception){}
 		             
 		         }else{
 			    	 console.log("unblockRunningSchedulingWorkflowJS");
@@ -1543,11 +1563,11 @@
 		<div id="domMessageSchedulingRunning" style="display:none;">
 			<h:form>
 			
-				<a4j:jsFunction name="updateSchedulingStatus" 
-					reRender="tableListScheduling, nameScheduling, statusScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling, panelGroupSchedulingBT" 
-					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false'  &amp;&amp; data[1] == getSelectedByName()){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
+				<a4j:jsFunction name="DMRDIV_updateSchedulingStatus" 
+					reRender="DMRDIV_tableListScheduling, nameScheduling, statusScheduling, actionsScheduling, skippedScheduling, errorsScheduling, runningScheduling, DMRDIV_panelGroupSchedulingBT" 
+					data="#{canvasBean.runningAndUpdateScheduling}" oncomplete="if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningSchedulingWorkflowJS(); setRunning(getSelectedByName(), false); updateAllArcsStatus();}" />
 			
-				<a4j:jsFunction name="openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
+				<a4j:jsFunction name="DMRDIV_openModalSchedulingRunning" action="#{canvasBean.setSelectedScheduling}"
 					reRender="modalSchedulingRunning"
 					oncomplete="#{rich:component('modalSchedulingRunning')}.show();">
 					<a4j:actionparam name="selectedScheduling" />
@@ -1574,7 +1594,7 @@
 				
 				
 				<div style="height:100px;overflow:auto;border:1px solid;" >
-				<rich:dataTable value="#{canvasBean.listScheduling}" id="tableListScheduling"
+				<rich:dataTable value="#{canvasBean.listScheduling}" id="DMRDIV_tableListScheduling"
                    var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
                    enableContextMenu="false" selectionMode="none" rowKeyVar="index"
                    onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -1590,7 +1610,7 @@
 						<f:facet name="header">
                         	<h:outputText value="#{messages.label_voronoi_nameScheduling}" title="#{messages.title_voronoi_nameScheduling_desc}" />
 						</f:facet>
-						<a4j:commandLink onclick="openModalSchedulingRunning('#{item.nameScheduling}');" >
+						<a4j:commandLink onclick="DMRDIV_openModalSchedulingRunning('#{item.nameScheduling}');" >
 							<h:outputText value="#{item.nameScheduling}" id="nameScheduling"/>
 						</a4j:commandLink>
 					</rich:column>
@@ -1631,7 +1651,7 @@
                        </f:facet>
 						<a4j:commandLink action="#{canvasBean.killCoordWfScheduling}"
 							rendered="#{item.runningScheduling == 'true'}"
-							reRender="tableListScheduling" >
+							reRender="DMRDIV_tableListScheduling" >
 							<h:graphicImage value="../image/icons/button-killJob.gif" title='#{messages.oozie_killjob}' style="padding-right:2px;width:16px;" />
 							<f:param name="selectedScheduling" value="#{item.nameScheduling}" />
 						</a4j:commandLink>
@@ -1645,7 +1665,7 @@
 				<br/>
 				
 				<rich:panel columns="2" style="border:none; float:left;">
-				<h:panelGroup layout="block" id="panelGroupSchedulingBT">
+				<h:panelGroup layout="block" id="DMRDIV_panelGroupSchedulingBT">
 					<a4j:commandButton styleClass="greenButton" value="#{messages.oozie_resume}" 
 						rendered="#{canvasBean.showResumeScheduling}" action="#{canvasBean.resumeScheduling}" />
 					<a4j:commandButton styleClass="greenButton" value="#{messages.oozie_suspend}" 
@@ -2043,7 +2063,7 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
 				<a4j:jsFunction name="setWorkflow"
-					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem,runMenuItem,runSelectedMenuItem"
+					reRender="menuSoftware,installSubWorkflow,menuEdit, mergeMenuItem,splitMenuItem,runMenuItem,runSelectedMenuItem,menuProject"
 					action="#{canvasBean.changeWorkflow}" data="#{canvasBean.checkIfSchedule}"
 					oncomplete="setcheckJobId(); selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running}, selectedCanvas);setIfISchedule(getSelectedByName(),data);updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true); setTimeout(function(){ blockRunningWorkflowJS(); },2000); }else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());" >
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
@@ -2400,11 +2420,11 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="checkIfScheduleJS" data="#{canvasBean.checkIfSchedule}"
-					oncomplete="checkIfSchedule(data);" reRender="msnError,runSelectedMenuItem">
+					oncomplete="checkIfSchedule(data);" reRender="msnError,runSelectedMenuItem,menuProject">
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="setIfIScheduleJS" data="#{canvasBean.checkIfSchedule}"
-					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError,runSelectedMenuItem">
+					oncomplete="setIfISchedule(getSelectedByName(),data);" reRender="msnError,runSelectedMenuItem,menuProject">
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="setcheckJobId" data="#{canvasBean.checkJobId}"
@@ -2898,7 +2918,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu itemClass="canvasMenu">
+								<rich:dropDownMenu itemClass="canvasMenu" id="menuProject">
 
 									<f:facet name="label">
 										<h:panelGroup>

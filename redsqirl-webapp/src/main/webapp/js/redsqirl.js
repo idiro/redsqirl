@@ -996,12 +996,145 @@ function findReplaceAllTable(){
 		return false;
 	}
 
-	jQuery('#divTableInteraction input:text').each(function(){
+	var check = false;
+	var found = false;
+	
+	jQuery('#divTableInteraction input:text').each(function(idx){
+		
+		jQuery('#divTableInteraction input:text').each(function(idx){
 
-		console.log(jQuery(this).val());
-		jQuery(this).val((jQuery(this).val().replace(jQuery('[id$="stringToReplace"]').val(), jQuery('[id$="replaceValue"]').val())));
+				if(inputIndex != undefined && inputIndex > idx){
+					return true;
+				}
 
+				if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
+					console.log(jQuery(this).val());
+
+					if(jQuery(inputFocus).val() != undefined){
+
+						if(jQuery(this).attr('id') === jQuery(inputFocus).attr('id')){
+
+							if(jQuery(this).val().match(jQuery(inputFocus).val())){
+								
+								if(inputFocus.selectionStart == inputFocus.selectionEnd){
+									alert('Please select something after');
+									found = true;
+									return false;
+								}
+								
+								var value = jQuery(inputFocus).val();
+								var size = value.length;
+								jQuery(this).val( jQuery(inputFocus).val().substr(0, inputFocus.selectionStart) + jQuery('[id$="replaceValue"]').val() + jQuery(inputFocus).val().substr(inputFocus.selectionEnd, size) );
+								
+
+								if(jQuery(inputFocus).val().match(jQuery('[id$="stringToReplace"]').val())){
+
+									var s = jQuery(inputFocus).val().substr(inputLastPosition);
+
+									if(s.length >= 1){
+
+										var search_text = jQuery('[id$="stringToReplace"]').val();
+
+										if(s.match(search_text)){
+
+											found = true;
+											var n = search_text.length;
+											var input = inputFocus;
+											var input_text = s;
+											var x = input_text.indexOf(search_text);
+											var y = x+n;
+
+											var dif = jQuery(inputFocus).val().length - s.length;
+											x = x + dif;
+											y = y + dif;
+
+											input.focus();
+											input.setSelectionRange(x, y);
+											inputLastPosition = inputFocus.selectionEnd;
+
+											inputIndex = idx;
+											
+											return false;
+										}
+
+									}else{
+										check = true;
+										return true;
+									}
+
+								}
+
+								check = true;
+								return true;
+							}
+
+						}else{
+							check = true;
+						}
+
+						if(check){
+							found = true;
+							var search_text = jQuery('[id$="stringToReplace"]').val();
+							var n = search_text.length;
+							var input = this;
+							var input_text = jQuery(this).val();
+							var x = input_text.indexOf(search_text);
+							var y = x+n;
+							input.focus();
+							input.setSelectionRange(x, y);
+							inputFocus = input;
+							inputLastPosition = inputFocus.selectionEnd;
+							
+							inputIndex = idx;
+							
+							return false;
+						}
+
+					}else{
+
+						found = true;
+						var search_text = jQuery('[id$="stringToReplace"]').val();
+						var n = search_text.length;
+						var input = this;
+						var input_text = jQuery(this).val();
+						var x = input_text.indexOf(search_text);
+						var y = x+n;
+						input.focus();
+						input.setSelectionRange(x, y);
+						inputFocus = input;
+						inputLastPosition = inputFocus.selectionEnd;
+						
+						inputIndex = idx;
+						
+						return false;
+
+					}
+
+				}
+
+		});
+		
 	});
+	
+	if(!found){
+		inputFocus = "";
+		inputLastPosition = "";
+		inputIndex = "";
+		
+		var exist = false;
+		jQuery('#divTableInteraction input:text').each(function(idx){
+			if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
+				exist = true;
+				return false;
+			}
+		});
+		if(exist){
+			findTable();
+			return false;
+		}else{
+			alert('No value found.');
+		}
+	}
 
 }
 
