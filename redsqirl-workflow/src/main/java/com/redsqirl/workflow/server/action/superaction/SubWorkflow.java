@@ -530,9 +530,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			}else if(name.equals(saIn.getName())){
 				addElement(name, id);
 				SubWorkflowInput inCur = (SubWorkflowInput) getElement(id); 
-				error = inCur.readValuesXml(
-						((Element) compCur)
-						.getElementsByTagName("interactions").item(0));
+				error = inCur.readValuesXml(compCur);
 				if(error == null){
 					error = inCur.updateOut();
 				}

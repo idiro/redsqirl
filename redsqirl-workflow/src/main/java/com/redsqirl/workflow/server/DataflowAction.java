@@ -30,6 +30,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -60,6 +61,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowCoordinator;
+import com.redsqirl.workflow.server.interfaces.DataFlowCoordinatorVariable;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.OozieAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -128,6 +130,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	private Set<String> lastRunOozieElementNames = new LinkedHashSet<String>();
 	
 	protected String coordinatorName = "";
+	
+	/**
+	 * Map that can keep internal variable from one session to the next
+	 */
+	protected Map<String,String> internalStateProperty = new HashMap<String,String>();
 
 	/**
 	 * Constructor that takes a type of
@@ -449,14 +456,31 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Read the values for a Node stored in the XML
 	 * 
-	 * @param n
+	 * @param parent
 	 *            Node to read XML for
 	 * @return Error Message
 	 */
-	public String readValuesXml(Node n) {
+	public String readValuesXml(Node parent) {
 		String error = null;
 
-		NodeList nl = n.getChildNodes();
+		NodeList props = ((Element) ((Element) parent).getElementsByTagName("properties").item(0)).getElementsByTagName("property");
+		for (int temp = 0; temp < props.getLength(); ++temp) {
+			Node compCur = props.item(temp);
+			String key = null;
+			String value = null;
+			try{
+				key = ((Element) compCur).getElementsByTagName("name").item(0)
+						.getChildNodes().item(0).getNodeValue();
+				value = ((Element) compCur).getElementsByTagName("value").item(0)
+						.getChildNodes().item(0).getNodeValue();
+			}catch(Exception e){}
+			if(key != null){
+				internalStateProperty.put(key, value);
+			}
+		}
+		
+		NodeList nl = ((Element) parent).getElementsByTagName("interactions")
+				.item(0).getChildNodes();
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
 			if(cur.getNodeType() == Node.ELEMENT_NODE){
@@ -497,15 +521,33 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			throws RemoteException {
 		String error = null;
 		try {
+			Iterator<Entry<String,String>> itVar = internalStateProperty.entrySet().iterator();
+			Element properties = doc.createElement("properties");
+			while(itVar.hasNext()){
+				Entry<String,String> curVar = itVar.next();
+				Element elProp = doc.createElement("property");
+				
+				Element elName = doc.createElement("name");
+				elName.appendChild(doc.createTextNode(curVar.getKey()));
+				elProp.appendChild(elName);
 
+				Element elValue = doc.createElement("value");
+				elValue.appendChild(doc.createTextNode(curVar.getValue()));
+				
+				properties.appendChild(elProp);
+			}
+			parent.appendChild(properties);
+
+			Element interactions = doc.createElement("interactions");
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
 				waLogger.debug("action name to write xml: " + interCur.getId());
 				Element inter = doc.createElement(interCur.getId());
 				interCur.writeXml(doc, inter);
-				parent.appendChild(inter);
+				interactions.appendChild(inter);
 			}
+			parent.appendChild(interactions);
 
 		} catch (DOMException dme) {
 			error = LanguageManagerWF.getText(

@@ -54,6 +54,13 @@ public interface FieldList extends Remote {
 	 * @throws RemoteException
 	 */
 	public void addField(String name, FieldType type) throws RemoteException;
+	
+	/**
+	 * Add new fields to the list
+	 * @param fl
+	 * @throws RemoteException
+	 */
+	public void addFields(FieldList fl) throws RemoteException;
 	/**
 	 * Get all fields names that are in the list
 	 * @return List of field names

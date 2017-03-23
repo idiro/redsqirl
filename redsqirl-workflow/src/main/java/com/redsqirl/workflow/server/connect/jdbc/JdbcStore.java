@@ -603,9 +603,10 @@ public class JdbcStore extends Storage {
 						try {
 							String statement = ((RedSqirlBasicStatement) getConnection(connectionAndTable[0]).getBs()).select(connectionAndTable[1],1);
 							ResultSet rs = getConnection(connectionAndTable[0]).executeQuery(statement,1);
+							ok = rs.next();
 							rs.close();
-							ok = true;
 						}catch(Exception e){
+							ok = false;
 							logger.debug(e,e);
 						}
 					}

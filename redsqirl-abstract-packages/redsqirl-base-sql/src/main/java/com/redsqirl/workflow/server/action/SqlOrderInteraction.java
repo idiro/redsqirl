@@ -49,6 +49,7 @@ public abstract class SqlOrderInteraction extends AppendListInteraction{
 			int column, int placeInColumn, SqlElement el) throws RemoteException {
 		super(id, name, legend, column, placeInColumn, true);
 		this.el = el;
+		setNonEmptyChecker();
 	}
 	
 	/**
