@@ -20,10 +20,14 @@
 package com.redsqirl.workflow.server;
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -33,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -59,10 +64,12 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 
 	private static final long serialVersionUID = -7151397795232865426L;
 	private static Logger logger = Logger.getLogger(LocalProperties.class);
-	
+
 	private SettingMenuInt settingMenu = null;
 	private SettingMenuInt defaultsettingMenu = null;
-	
+
+	static final String settingsJsonPath = "/settings.json";
+
 
 	/**
 	 * Read the entire package setting tree for a given user.
@@ -72,19 +79,19 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 
 		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
 		try {
-			
+
 			logger.info("readSettingMenu " + user);
-			
+
 			List<RedSqirlPackage> rp = new PackageManager().getAvailablePackages(user);
 			for (RedSqirlPackage redSqirlPackage : rp) {
 				try{
-					
+
 					logger.info("readSettingMenu " + redSqirlPackage.getName());
 					logger.info("readSettingMenu " + redSqirlPackage.getPackageFile().getAbsoluteFile());
-					
+
 					Reader r = new FileReader(new File(redSqirlPackage.getPackageFile().getAbsoluteFile(),"settings.json"));
 					JSONTokener tokener = new JSONTokener(r);
-					
+
 					if(tokener.more()){
 						JSONObject json = new JSONObject(tokener);
 						ans.put(redSqirlPackage.getName(), new SettingMenu(redSqirlPackage.getName(), json));
@@ -104,17 +111,61 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		settingMenu = new SettingMenu(ans);
 	}
 
+	public Map<String, SettingMenuInt> readSettingMenu(String packageName, String packagePath) throws JSONException, IOException{
+
+		logger.info("readSettingMenu " + packagePath);
+
+		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
+
+		Reader r = new FileReader(new File(packagePath));
+		JSONTokener tokener = new JSONTokener(r);
+
+		if(tokener.more()){
+			JSONObject json = new JSONObject(tokener);
+			ans.put(packageName, new SettingMenu(packageName, json));
+		}else{
+			JSONObject json = new JSONObject();
+			ans.put(packageName, new SettingMenu(packageName, json));
+		}
+		r.close();
+
+		settingMenu = new SettingMenu(ans);
+		return ans;
+	}
+
+	public Map<String, SettingMenuInt> readSettingMenu(String packageName, InputStream is) throws JSONException, IOException{
+		logger.info("readSettingMenu");
+
+		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
+		Reader r = new InputStreamReader(is);
+		JSONTokener tokener = new JSONTokener(r);
+		if(tokener.more()){
+			JSONObject json = new JSONObject(tokener);
+			ans.put(packageName, new SettingMenu(packageName, json));
+		}else{
+			JSONObject json = new JSONObject();
+			ans.put(packageName, new SettingMenu(packageName, json));
+		}
+		r.close();
+
+		settingMenu = new SettingMenu(ans);
+		return ans;
+	}
+
 	/**
 	 * Read the core setting menu.
 	 */
 	public void readDefaultSettingMenu() throws RemoteException{
+		readDefaultSettingMenuInput();
+	}
+
+	public Map<String, SettingMenuInt> readDefaultSettingMenuInput() throws RemoteException{
+		InputStream is = SettingMenu.class.getResourceAsStream(settingsJsonPath);
+
 		Map<String, SettingMenuInt> ans = new HashMap<String,SettingMenuInt>();
 
-		logger.info("read setting path " + WorkflowPrefManager.pathSystemPref);
-
-		File sysPackages = new File(WorkflowPrefManager.pathSystemPref);
 		try{
-			Reader r = new FileReader(new File(sysPackages,"settings.json"));
+			Reader r = new InputStreamReader(is);
 			JSONTokener tokener = new JSONTokener(r);
 			JSONObject json = new JSONObject(tokener);
 			ans.put("core", new SettingMenu("core", json));
@@ -122,10 +173,11 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		}catch(Exception e){
 			logger.info("read error " + e,e);
 		}
-		
+
 		defaultsettingMenu = new SettingMenu(ans);
+		return defaultsettingMenu.getMenu();
 	}
-	
+
 	/**
 	 * Get the package setting menu
 	 * @return the package setting menu.
@@ -141,7 +193,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public SettingMenuInt getDefaultSettingMenu() throws RemoteException{
 		return defaultsettingMenu;
 	}
-	
+
 	/**
 	 * Get the setting value related to the given package.
 	 * @param name The setting name.
@@ -154,7 +206,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		return null;
 	}
 
-	
+
 	/**
 	 * Get the properties for System
 	 * 
@@ -172,7 +224,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		}
 		return prop;
 	}
-	
+
 	/**
 	 * Overwrite system properties
 	 */
@@ -181,7 +233,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		prop.store(fw, "");
 		fw.close();
 	}
-	
+
 	/**
 	 * Overwrite lang properties.
 	 * @param prop
@@ -192,8 +244,8 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		prop.store(fw, "");
 		fw.close();
 	}
-	
-	
+
+
 	/**
 	 * Get the property value 
 	 * @param key the property key
@@ -201,19 +253,19 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	 * @throws RemoteException
 	 */
 	public String getProperty(String key) throws RemoteException{
-		
+
 		if(defaultsettingMenu == null){
 			readDefaultSettingMenu();
 		}
-		
+
 		if(settingMenu == null){
 			readSettingMenu(System.getProperty("user.name"));
 		}
-		
+
 		SettingMenu sm = new SettingMenu();
 		sm.getMenu().putAll(defaultsettingMenu.getMenu());
 		sm.getMenu().putAll(getSettingMenu().getMenu());
-		
+
 		return sm.getPropertyValue(key);
 	}
 
@@ -252,7 +304,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		}
 		return prop;
 	}
-	
+
 	public void storeUserProperties(Properties prop) throws IOException{
 		File userProp = new File(WorkflowPrefManager.pathUserCfgPref);
 		FileWriter fw = new FileWriter(userProp);
@@ -263,7 +315,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		userProp.setReadable(true, true);
 		fw.close();
 	}
-	
+
 	/**
 	 * Get the user properties a given user.
 	 * 
@@ -334,4 +386,17 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public String getUserProperty(String key, String defaultValue) {
 		return getUserProperties().getProperty(key, defaultValue);
 	}
+
+	public SettingMenuInt getDefaultsettingMenu() {
+		return defaultsettingMenu;
+	}
+
+	public void setDefaultsettingMenu(SettingMenuInt defaultsettingMenu) {
+		this.defaultsettingMenu = defaultsettingMenu;
+	}
+
+	public void setSettingMenu(SettingMenuInt settingMenu) {
+		this.settingMenu = settingMenu;
+	}
+
 }

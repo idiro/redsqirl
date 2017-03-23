@@ -204,6 +204,8 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 	 */
 	@Override
 	public String delete(String path) throws RemoteException {
+		logger.info("delete " + path);
+		
 		String error = null;
 		boolean ok;
 		HdfsFileChecker fCh = new HdfsFileChecker(path);
@@ -213,23 +215,20 @@ public class HDFSInterface extends Storage implements HdfsDataStore{
 				ok = fs.delete(new Path(path), true);
 				// fs.close();
 				if (!ok) {
-					error = LanguageManagerWF.getText(
-							"HdfsInterface.deletefail", new Object[] { path });
+					error = LanguageManagerWF.getText("HdfsInterface.deletefail", new Object[] { path });
 				}
 			} catch (IOException e) {
 				ok = false;
-				error = LanguageManagerWF.getText("HdfsInterface.cannotdelete",
-						new Object[] { path });
+				error = LanguageManagerWF.getText("HdfsInterface.cannotdelete", new Object[] { path });
 				logger.error(error);
 				logger.error(e.getMessage());
 			}
 		} else {
-			error = LanguageManagerWF.getText("HdfsInterface.notdir",
-					new Object[] { path });
+			error = LanguageManagerWF.getText("HdfsInterface.notdir", new Object[] { path });
 		}
 		// fCh.close();
 		if (error != null) {
-			logger.debug(error);
+			logger.error("delete error " + error);
 		}
 		return error;
 	}
