@@ -145,6 +145,14 @@ FieldList {
 
 		field.put(name, type);
 	}
+	
+	public void addFields(FieldList fl) throws RemoteException {
+		Iterator<String> it = fl.getFieldNames().iterator();
+		while(it.hasNext()){
+			String fieldNameCur = it.next();
+			this.addField(fieldNameCur, fl.getFieldType(fieldNameCur));
+		}
+	}
 
 	/**
 	 * Get a list of the Field names in the list

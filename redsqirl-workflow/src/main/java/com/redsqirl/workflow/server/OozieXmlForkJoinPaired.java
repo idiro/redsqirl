@@ -534,6 +534,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		
 		CoordinatorTimeConstraint coordinatorTimeConstraint = coordinator.getTimeCondition();
 		logger.debug(coordinatorTimeConstraint.toString());
+		coordinator.setStartDate(startTime);
 		int coordinatorStartOffset = getCoordinatorStartOffset(df, coordinator, coordinatorTimeConstraint);
 		logger.debug(coordinatorTimeConstraint.toString());
 		coordinatorStartDate = coordinatorTimeConstraint.getTimeAfterReference(startTime,coordinator.getExecutionTime(),coordinatorStartOffset);
@@ -724,6 +725,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				startDate = coordinatorTimeConstraint.getTimeAfterReference(startDateBundle,coordinator.getExecutionTime(),coordinatorStartOffset);
 				//startDate = WfCoordTimeConstraint.addToDate(startDateBundle, coordinatorStartOffset, coordinatorTimeConstraint.getUnit());
 			}
+			coordinator.setStartDate(startDate);
 
 			{
 				Attr attrName = doc.createAttribute("name");
@@ -806,10 +808,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					}else if(PathType.MATERIALIZED.equals(datasetCur.getPathType())){
 						List<DataFlowElement> inputsDfe = cur.getAllInputComponent();
 						if(inputsDfe.isEmpty() ){
+							//Source Element
 							nameDataset = cur.getComponentId();
 							timeConstraintCur = datasetCur.getFrequency();
 							initialInstance = dateFormat.format(timeConstraintCur.getInitialInstance());
 						}else if(!inputsDfe.get(0).getCoordinatorName().equals(coordinator.getName())){
+							//Synchronous Sink Filter
 							if(inputsDone.add(datasetCur.getPath())){
 								nameDataset = inputsDfe.get(0).getComponentId();
 								timeConstraintCur = df.getCoordinator(inputsDfe.get(0).getCoordinatorName()).getDefaultTimeConstraint(df).getConstraint();
@@ -1164,7 +1168,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						Set<String> out = outEdges.get(cur);
 						if (cur.equals(startNode)) {
 
-						} else if (cur.startsWith("join")) {
+						} else if (cur.startsWith("join-")) {
 							if (out.size() != 1) {
 								error = LanguageManagerWF
 										.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
@@ -1174,7 +1178,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 								createJoinNode(doc, rootElement, cur, out
 										.iterator().next());
 							}
-						} else if (cur.startsWith("fork")) {
+						} else if (cur.startsWith("fork-")) {
 							createForkNode(doc, rootElement, cur, out);
 						} else {
 							if (out.size() != 1) {

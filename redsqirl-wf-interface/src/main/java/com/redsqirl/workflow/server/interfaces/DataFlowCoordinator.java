@@ -197,4 +197,18 @@ public interface DataFlowCoordinator extends Remote{
 	 * @throws RemoteException
 	 */
 	DefaultConstraint getDefaultTimeConstraint(DataFlow df) throws RemoteException;
+	
+	/**
+	 * Get the start Date set for this coordinator
+	 * @return
+	 * @throws RemoteException
+	 */
+	Date getStartDate() throws RemoteException;
+	
+	/**
+	 * Set the start date for this coordinator
+	 * @param startDate
+	 * @throws RemoteException
+	 */
+	void setStartDate(Date startDate) throws RemoteException;
 }

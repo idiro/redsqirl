@@ -60,6 +60,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 	protected List<DataFlowElement> elements = new LinkedList<DataFlowElement>();
 	protected WfCoordVariables variables = new WfCoordVariables();
 	protected Date executionTime = null;
+	protected Date startDate = null;
 	
 	public class WfDefaultConstraint implements DataFlowCoordinator.DefaultConstraint{
 		protected CoordinatorTimeConstraint constraint;
@@ -277,9 +278,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			component.appendChild(outputs);
 
 			// Element
-			Element interactions = doc.createElement("interactions");
-			error = cur.writeValuesXml(doc, interactions);
-			component.appendChild(interactions);
+			error = cur.writeValuesXml(doc, component);
 
 
 			if(error == null && cur.getOozieAction() != null && cur.getOozieAction().supportsExtraJobParameters()){
@@ -384,9 +383,7 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			}
 			getElement(id).setLastRunOozieElementNames(lastRunOozieElements);
 			
-			error = getElement(id).readValuesXml(
-					((Element) compCur).getElementsByTagName("interactions")
-							.item(0));
+			error = getElement(id).readValuesXml(compCur);
 
 		}
 
@@ -675,9 +672,8 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 			}
 			
 		}
-		CoordinatorTimeConstraint ansTimeCondition = null;
+		CoordinatorTimeConstraint ansTimeCondition = new WfCoordTimeConstraint();;
 		if(getTimeCondition() != null){
-			ansTimeCondition = new WfCoordTimeConstraint();
 			ansTimeCondition.setFrequency(getTimeCondition().getFrequency());
 			ansTimeCondition.setUnit(getTimeCondition().getUnit());
 			if(minCT != null){
@@ -690,7 +686,13 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 				}
 			}
 		}else{
-			ansTimeCondition = minCT;
+			ansTimeCondition.setFrequency(getTimeCondition().getFrequency());
+			ansTimeCondition.setUnit(getTimeCondition().getUnit());
+			ansTimeCondition.setInitialInstance(minCT.getInitialInstance());
+		}
+		
+		if(ansTimeCondition.getInitialInstance() == null){
+			ansTimeCondition.setInitialInstance(getStartDate());
 		}
 		return new WfDefaultConstraint(ansTimeCondition,offset);
 	}
@@ -706,6 +708,16 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 
 	public final void setExecutionTime(Date executionTime) {
 		this.executionTime = executionTime;
+	}
+
+	@Override
+	public Date getStartDate() throws RemoteException {
+		return startDate;
+	}
+
+	@Override
+	public void setStartDate(Date startDate) throws RemoteException {
+		this.startDate = startDate;
 	}
 
 }

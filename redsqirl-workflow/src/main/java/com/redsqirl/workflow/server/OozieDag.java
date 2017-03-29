@@ -264,7 +264,7 @@ public class OozieDag {
 		String found = null;
 		while (it.hasNext() && found == null) {
 			String cur = it.next();
-			if (!cur.startsWith("join")) {
+			if (!cur.startsWith("join-")) {
 				Set<String> in = graphIn.get(cur);
 				if (in != null && in.size() > 1) {
 					found = cur;
@@ -353,7 +353,7 @@ public class OozieDag {
 		String found = null;
 		while (it.hasNext() && found == null) {
 			String cur = it.next();
-			if (!cur.startsWith("fork")) {
+			if (!cur.startsWith("fork-")) {
 				Set<String> in = graphOut.get(cur);
 				if (in != null && in.size() > 1) {
 					found = cur;
@@ -440,7 +440,7 @@ public class OozieDag {
 	 *            to be added to join to identify join
 	 */
 	protected void placeForkAfter(String element, String join, String name) {
-		String forkName = "fork_" + name;
+		String forkName = "fork-" + name;
 		Set<String> outN = new LinkedHashSet<String>();
 		Set<String> inN = new LinkedHashSet<String>();
 
@@ -487,7 +487,7 @@ public class OozieDag {
 	 *            to be added to join to identify join
 	 */
 	protected void placeJoinBefore(String element, String fork, String name) {
-		String joinName = "join_" + name;
+		String joinName = "join-" + name;
 		Set<String> outN = new LinkedHashSet<String>();
 		Set<String> inN = new LinkedHashSet<String>();
 

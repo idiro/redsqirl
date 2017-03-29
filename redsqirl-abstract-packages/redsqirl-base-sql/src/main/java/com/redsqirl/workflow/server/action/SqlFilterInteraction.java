@@ -91,6 +91,8 @@ public abstract class SqlFilterInteraction extends EditorInteraction {
 					logger.info(msg);
 
 				}
+			}else{
+				msg = SqlLanguageManager.getText("sql.filter_interaction.cannotbeempty");
 			}
 		} catch (Exception e) {
 			msg = SqlLanguageManager.getText("sql.filter_interaction.checkexception");
