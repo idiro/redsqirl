@@ -45,7 +45,39 @@
 		</h:panelGrid>
 		
 		<a4j:commandButton value="#{messages.newUser_register_btn}" action="#{analyticsStoreNewUserBean.createUser}"
-			oncomplete="#{rich:component('registerNewUserModalPanel')}.hide();" styleClass="greenButton" />
+			oncomplete="if(#{requestScope['msnSuccessNewUser'] != null}){#{rich:component('registerNewUserModalPanel')}.hide();}" styleClass="greenButton" />
+	
+	<rich:modalPanel id="msnErrorNewUserModal" showWhenRendered="#{requestScope['msnErrorNewUser'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto; z-index: 1000; position: relative;">
+			<rich:messages id="msnErrorNewUser" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
+
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnErrorNewUserModal')}.hide(); return false;"
+				style="bottom:14%;position:relative;"
+				reRender="msnErrorNewUser,msnErrorNewUserModal" />
+
+		</div>
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="msnSuccessNewUserModal" showWhenRendered="#{requestScope['msnSuccessNewUser'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto; z-index: 1000; position: relative;">
+			<rich:messages id="msnSuccessNewUser" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
+
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnSuccessNewUserModal')}.hide(); return false;"
+				style="bottom:14%;position:relative;"
+				reRender="msnSuccessNewUser, msnSuccessNewUserModal" />
+
+		</div>
+	</rich:modalPanel>
 	
 	</h:form>
     

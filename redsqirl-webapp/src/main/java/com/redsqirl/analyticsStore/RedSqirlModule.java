@@ -25,7 +25,7 @@ public class RedSqirlModule implements Serializable{
 
 	private static final long serialVersionUID = -8664811047061760742L;
 	
-	private int id;
+	private Integer id;
 	private String idVersion;
 	private String name;
 	private String tags;
@@ -37,6 +37,7 @@ public class RedSqirlModule implements Serializable{
 	private String versionNote;
 	private String htmlDescription;
 	private String date;
+	private String dateFull;
 	private String ownerName;
 	private String versionName;
 	private String price;
@@ -50,11 +51,11 @@ public class RedSqirlModule implements Serializable{
 	private String softwareVersionStar;
 	private String softwareVersionEnd;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	
@@ -246,6 +247,14 @@ public class RedSqirlModule implements Serializable{
 
 	public void setSoftwareVersionEnd(String softwareVersionEnd) {
 		this.softwareVersionEnd = softwareVersionEnd;
+	}
+
+	public String getDateFull() {
+		return dateFull;
+	}
+
+	public void setDateFull(String dateFull) {
+		this.dateFull = dateFull;
 	}
 	
 }

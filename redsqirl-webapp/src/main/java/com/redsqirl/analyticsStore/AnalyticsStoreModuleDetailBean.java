@@ -31,6 +31,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,13 +78,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
 	private List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependency;
-
 	private boolean installed;
 	private boolean userInstall;
-
 	private String showRestartMSG;
-
 	private List<RedSqirlModule> versionList;
+	private String showHideDependency;
 
 	@PostConstruct
 	public void init() {
@@ -129,6 +129,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					pck.setVersionNote(getString(pckObj, "versionNote"));
 					pck.setHtmlDescription(getString(pckObj, "htmlDescription"));
 					pck.setDate(getString(pckObj, "date"));
+					pck.setDateFull(getString(pckObj, "dateFull"));
 					pck.setOwnerName(getString(pckObj, "ownerName"));
 					pck.setVersionName(getString(pckObj, "versionName"));
 					pck.setPrice(getString(pckObj, "price"));
@@ -175,18 +176,14 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				}
 			}
 
-			//dependency
-			JSONArray jsonArray = new JSONArray(moduleVersion.getJson().substring(moduleVersion.getJson().indexOf("["), moduleVersion.getJson().lastIndexOf("]")+1));
-			List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependencyList = new ArrayList<RedSqirlModuleVersionDependency>();
-			for(int j = 0; j < jsonArray.length();++j){
-				JSONObject jsonObject = jsonArray.getJSONObject(j);
-				RedSqirlModuleVersionDependency redSqirlModuleVersionDependency = new RedSqirlModuleVersionDependency();
-				redSqirlModuleVersionDependency.setModuleName(getString(jsonObject, "moduleName"));
-				redSqirlModuleVersionDependency.setValueStart(getString(jsonObject, "valueStart"));
-				redSqirlModuleVersionDependency.setValueEnd(getString(jsonObject, "valueEnd"));
-				redSqirlModuleVersionDependencyList.add(redSqirlModuleVersionDependency);
-			}
-			setRedSqirlModuleVersionDependency(redSqirlModuleVersionDependencyList);
+			initDependency();
+			
+			Collections.sort(versionList, new Comparator<RedSqirlModule>(){
+				@Override
+				public int compare(RedSqirlModule s1, RedSqirlModule s2) {
+					return s2.getId().compareTo(s1.getId());
+				}
+			});
 
 
 			String user = null;
@@ -217,17 +214,85 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			logger.warn(e,e);
 		}
 	}
+	
+	public void initDependency() throws JSONException{
+		
+		//dependency
+		JSONArray jsonArray = new JSONArray(moduleVersion.getJson().substring(moduleVersion.getJson().indexOf("["), moduleVersion.getJson().lastIndexOf("]")+1));
+		List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependencyList = new ArrayList<RedSqirlModuleVersionDependency>();
+		for(int j = 0; j < jsonArray.length();++j){
+			JSONObject jsonObject = jsonArray.getJSONObject(j);
+			RedSqirlModuleVersionDependency redSqirlModuleVersionDependency = new RedSqirlModuleVersionDependency();
+			redSqirlModuleVersionDependency.setModuleName(getString(jsonObject, "moduleName"));
+			redSqirlModuleVersionDependency.setValueStart(getString(jsonObject, "valueStart"));
+			redSqirlModuleVersionDependency.setValueEnd(getString(jsonObject, "valueEnd"));
+			redSqirlModuleVersionDependency.setLine(" [ " + getString(jsonObject, "valueStart") + (getString(jsonObject, "valueEnd") != null && !getString(jsonObject, "valueEnd").isEmpty() ? " , " + getString(jsonObject, "valueEnd") + " ]" : " ,∞[ "));
+			redSqirlModuleVersionDependency.setLineTooltip("Requires " + getString(jsonObject, "moduleName") +" "+ getString(jsonObject, "valueStart") + (getString(jsonObject, "valueEnd") != null && !getString(jsonObject, "valueEnd").isEmpty() ? " to " + getString(jsonObject, "valueEnd") : " onward"));
+			redSqirlModuleVersionDependencyList.add(redSqirlModuleVersionDependency);
+			if(getString(jsonObject, "moduleName") != null && !getString(jsonObject, "moduleName").isEmpty()){
+				setShowHideDependency("S");
+			}else{
+				setShowHideDependency("H");
+			}
+			redSqirlModuleVersionDependency.setIdModuleVersion(getString(jsonObject, "idmoduleversion"));
+		}
+		setRedSqirlModuleVersionDependency(redSqirlModuleVersionDependencyList);
+		
+	}
 
-	public void selectVersion(){
+	public void selectVersion() throws JSONException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String version = params.get("version");
 		for (RedSqirlModule redSqirlModule : versionList) {
 			if(redSqirlModule.getIdVersion().equals(version)){
 				moduleVersion = redSqirlModule;
+				initDependency();
 			}
 		}
 
+	}
+	
+	public void selectDependency() throws JSONException{
+	
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String moduleName = params.get("moduleName");
+		String valueStart = params.get("valueStart");
+		String valueEnd = params.get("valueEnd");
+		String idModuleVersion = params.get("idModuleVersion");
+		
+		String uri = getRepoServer()+"rest/moduledetaildependency";
+		JSONObject object = new JSONObject();
+		object.put("id", idModuleVersion);
+		
+		Client client = Client.create();
+		WebResource webResource = client.resource(uri);
+
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+		String ansServer = response.getEntity(String.class);
+		
+		JSONObject pckObj = new JSONObject(ansServer);
+		RedSqirlModule pck = new RedSqirlModule();
+		pck.setId(Integer.valueOf(getString(pckObj, "id")));
+		pck.setIdVersion(getString(pckObj, "idVersion"));
+		pck.setName(getString(pckObj, "name"));
+		pck.setTags(getString(pckObj, "tags"));
+		pck.setImage(getRepoServer() + getString(pckObj, "image"));
+		pck.setType(getString(pckObj, "type"));
+		pck.setVersionNote(getString(pckObj, "versionNote"));
+		pck.setHtmlDescription(getString(pckObj, "htmlDescription"));
+		pck.setDate(getString(pckObj, "date"));
+		pck.setOwnerName(getString(pckObj, "ownerName"));
+		pck.setVersionName(getString(pckObj, "versionName"));
+		pck.setPrice(getString(pckObj, "price"));
+		pck.setValidated(getString(pckObj, "validated"));
+		pck.setSoftwareVersionStar(getString(pckObj, "softwareVersionStar"));
+		pck.setSoftwareVersionEnd(getString(pckObj, "softwareVersionEnd"));
+		pck.setJson(getString(pckObj, "jsonObject"));
+		
+		moduleVersion = pck;
+		
+		initDependency();
 	}
 
 	private String getString(JSONObject pckObj, String object) throws JSONException{
@@ -704,4 +769,12 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		this.showRestartMSG = showRestartMSG;
 	}
 
+	public String getShowHideDependency() {
+		return showHideDependency;
+	}
+
+	public void setShowHideDependency(String showHideDependency) {
+		this.showHideDependency = showHideDependency;
+	}
+	
 }

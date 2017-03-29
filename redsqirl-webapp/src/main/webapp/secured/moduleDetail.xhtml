@@ -49,37 +49,22 @@
 									<h:outputText value="#{analyticsStoreModuleDetailBean.moduleVersion.versionNote}"/>
 								</rich:panel>
 								
-								<h:outputText value="#{messages.moduleDetail_depenedncy}" />
-								
-								<rich:extendedDataTable 
-									value="#{analyticsStoreModuleDetailBean.redSqirlModuleVersionDependency}" var="value"
-									width="100%" height="100px" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
-									enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-									rowClasses="even-row, odd-row" >
-								
-									<rich:column>
-										<f:facet name="header">
-											<h:outputText value="#{messages.search_version}" style="padding-right:20px;" />
-										</f:facet>
-										<h:outputText value="#{value.moduleName}" style="padding-right:20px;" />
-									</rich:column>
-									<rich:column>
-										<f:facet name="header">
-											<h:outputText value="#{messages.search_start}" style="padding-right:20px;" />
-										</f:facet>
-									    <h:outputText value="#{value.valueStart}" style="padding-right:20px;" />
-									</rich:column>
-									<rich:column>
-										<f:facet name="header">
-											<h:outputText value="#{messages.search_end}" style="padding-right:20px;" />
-										</f:facet>
-									    <h:outputText value="#{value.valueEnd}" style="padding-right:20px;" />
-									</rich:column>
-					    		</rich:extendedDataTable>
+								<rich:panel header="#{messages.moduleDetail_dependency}" id="dependencies" rendered="#{analyticsStoreModuleDetailBean.showHideDependency == 'S'}" >
+									<ui:repeat value="#{analyticsStoreModuleDetailBean.redSqirlModuleVersionDependency}" var="value">
+										<h:commandLink value="#{value.moduleName}" action="#{analyticsStoreModuleDetailBean.selectDependency}" title="#{value.lineTooltip}" >
+											<f:param name="moduleName" value="#{value.moduleName}"/>
+											<f:param name="valueStart" value="#{value.valueStart}"/>
+											<f:param name="valueEnd" value="#{value.valueEnd}"/>
+											<f:param name="idModuleVersion" value="#{value.idModuleVersion}"/>
+										</h:commandLink>
+										<h:outputText value="#{value.line}" />
+										<br />
+									</ui:repeat>
+								</rich:panel>
 								
 								<br/>
 													
-								<rich:panel header="#{messages.moduleDetail_versions}">
+								<rich:panel header="#{messages.moduleDetail_versions}" id="versions" >
 									<ui:repeat value="#{analyticsStoreModuleDetailBean.moduleVersionList}" var="value">
 										<h:commandLink value="#{value.versionName}" action="#{analyticsStoreModuleDetailBean.selectVersion}">
 											<f:param name="version" value="#{value.idVersion}"/>
@@ -90,21 +75,27 @@
 							</td>
 							<td style="display:table;">
 								
-			                	<h:graphicImage value="#{analyticsStoreModuleDetailBean.moduleVersion.image}" 
-			                		width="100" height="100" styleClass="image"/><br/>
-										
-								<h:outputText value="#{messages.moduleDetail_date}: #{analyticsStoreModuleDetailBean.moduleVersion.date}" /><br/>
-								<h:outputText value="#{messages.moduleDetail_version}: #{analyticsStoreModuleDetailBean.moduleVersion.versionName}" /><br/>
-								<h:outputText value="#{messages.moduleDetail_owner}: #{analyticsStoreModuleDetailBean.moduleVersion.ownerName}" /><br/>
-								<h:outputText value="#{messages.moduleDetail_price}: #{analyticsStoreModuleDetailBean.moduleVersion.price}" /><br/>
-								<h:outputText value="Installed"
-									rendered="#{analyticsStoreModuleDetailBean.installed}" /><br/>
+			                	<h:graphicImage value="#{analyticsStoreModuleDetailBean.moduleVersion.image}" width="100" height="100" styleClass="image"/>
+			                	<br/><br/>
+								<h:outputText value="#{messages.moduleDetail_date}: #{analyticsStoreModuleDetailBean.moduleVersion.date}" title="#{analyticsStoreModuleDetailBean.moduleVersion.dateFull}" /><br/>
+								<a href="#" onclick="scrollToAnchorVersion();" title="#{messages.moduleDetail_version}" >
+									<h:outputText value="#{messages.moduleDetail_version}" />
+								</a>
+								<h:outputText value="#{analyticsStoreModuleDetailBean.moduleVersion.versionName}" />
+								<br/>
+								<h:outputText value="#{messages.moduleDetail_owner}: #{analyticsStoreModuleDetailBean.moduleVersion.ownerName}" title="#{messages.moduleDetail_owner}" /><br/>
+								<h:outputText value="#{messages.moduleDetail_software_compatibility}: [ #{analyticsStoreModuleDetailBean.moduleVersion.softwareVersionStar} , #{analyticsStoreModuleDetailBean.moduleVersion.softwareVersionEnd} ]" title="#{messages.moduleDetail_compatible_software_version} From: #{analyticsStoreModuleDetailBean.moduleVersion.softwareVersionStar} to: #{analyticsStoreModuleDetailBean.moduleVersion.softwareVersionEnd}"/>
+								<br/>
+								
+								<h:commandLink onclick="scrollToAnchorDependency();" title="#{messages.moduleDetail_dependency}" rendered="#{analyticsStoreModuleDetailBean.showHideDependency == 'S'}" >
+									<h:outputText value="#{messages.moduleDetail_dependency}" />
+								</h:commandLink>
+								<h:outputText value="Installed" rendered="#{analyticsStoreModuleDetailBean.installed}" />
+								<br/><br/>
 								
 								<a4j:commandButton id="installButton" value="#{messages.moduleDetail_install}"
 									action="#{analyticsStoreModuleDetailBean.installPackage}" 
-									rendered="#{!analyticsStoreModuleDetailBean.installed 
-										and analyticsStoreModuleDetailBean.moduleVersion.type == 'package'}"
-									rerender="panel"
+									rendered="#{!analyticsStoreModuleDetailBean.installed and analyticsStoreModuleDetailBean.moduleVersion.type == 'package'}" rerender="panel"
 									onclick="jQuery('#moduleDetailDiv').block({ message: jQuery('#domMessageDivCanvas1')});"
 									oncomplete="jQuery('#moduleDetailDiv').unblock();if(#{analyticsStoreModuleDetailBean.showRestartMSG == 'Y'}){alert('To see the changes it is necessary to restart the system');}">
 									<f:param name="id" value="#{param['id']}"/>
@@ -121,15 +112,9 @@
 									<f:param name="id" value="#{param['id']}"/>
 									<f:param name="userInstall" value="#{param['userInstall']}"/>
 								</a4j:commandButton>
-										    
-								<h:graphicImage value="/image/verified.png" width="50" height="50"
-									rendered="#{analyticsStoreModuleDetailBean.moduleVersion.validated}"
-									title="#{messages.moduleDetail_verified}"/><br/>
-								<h:graphicImage value="/image/not_verified.png" width="50" height="50" 
-									rendered="#{!analyticsStoreModuleDetailBean.moduleVersion.validated}"
-									title="#{messages.moduleDetail_not_verified}"/><br/>
 									
-									<h:messages></h:messages>
+								<h:messages></h:messages>
+								
 							</td>	
 						</tr>
 					</table>

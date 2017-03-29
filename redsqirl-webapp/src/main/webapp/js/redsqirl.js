@@ -1148,3 +1148,13 @@ function resetValuesReplace(){
 	jQuery('[id$="stringToReplace"]').val('');
 	jQuery('[id$="replaceValue"]').val('');
 }
+
+function scrollToAnchorVersion(){
+    var aTag = jQuery("[id$='versions']");
+    jQuery('#divScrollModuleDetail').animate({scrollTop: aTag.offset().top},'slow');
+}
+
+function scrollToAnchorDependency(){
+    var aTag = jQuery("[id$='dependencies']");
+    jQuery('#divScrollModuleDetail').animate({scrollTop: aTag.offset().top},'slow');
+}

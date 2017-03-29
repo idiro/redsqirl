@@ -3281,7 +3281,7 @@ function createPolygonVoronoi(canvasName, idElement, list, voranoiPolygonTitle) 
 			name : pname,
 			points: list[i],
 			fill: colour,
-			opacity: 0.1
+			opacity: 0.2
 		});
 		poly.voronoiTitle = voranoiPolygonTitle;
 		
