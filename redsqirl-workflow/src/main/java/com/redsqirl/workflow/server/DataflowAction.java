@@ -463,21 +463,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public String readValuesXml(Node parent) {
 		String error = null;
 
-		NodeList props = ((Element) ((Element) parent).getElementsByTagName("properties").item(0)).getElementsByTagName("property");
-		for (int temp = 0; temp < props.getLength(); ++temp) {
-			Node compCur = props.item(temp);
-			String key = null;
-			String value = null;
-			try{
-				key = ((Element) compCur).getElementsByTagName("name").item(0)
-						.getChildNodes().item(0).getNodeValue();
-				value = ((Element) compCur).getElementsByTagName("value").item(0)
-						.getChildNodes().item(0).getNodeValue();
-			}catch(Exception e){}
-			if(key != null){
-				internalStateProperty.put(key, value);
+		try{
+			NodeList props = ((Element) ((Element) parent).getElementsByTagName("properties").item(0)).getElementsByTagName("property");
+			for (int temp = 0; temp < props.getLength(); ++temp) {
+				Node compCur = props.item(temp);
+				String key = null;
+				String value = null;
+				try{
+					key = ((Element) compCur).getElementsByTagName("name").item(0)
+							.getChildNodes().item(0).getNodeValue();
+					value = ((Element) compCur).getElementsByTagName("value").item(0)
+							.getChildNodes().item(0).getNodeValue();
+				}catch(Exception e){}
+				if(key != null){
+					internalStateProperty.put(key, value);
+				}
 			}
-		}
+		}catch(Exception e){}
 		
 		NodeList nl = ((Element) parent).getElementsByTagName("interactions")
 				.item(0).getChildNodes();
