@@ -10,6 +10,7 @@
 <script src="javascript/jquery.jqGrid.min.js"></script>
 <script src="javascript/grid.locale-en.js"></script>
 <script type="text/javascript" src="javascript/move-top.js"></script>
+<script type="text/javascript" src="javascript/easing.js"></script>
 
 <link rel="stylesheet" href="css/table-style.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
@@ -45,6 +46,9 @@ jQuery(document).ready(function () {
 	setTimeout(function(){
 		checkMenu();
 	},200);
+
+	$().UItoTop({ easingType: 'easeOutQuart' });
+
 });
 
 
@@ -66,8 +70,8 @@ function doSearch(val, version) {
 		data: val
 	}).then(function(data) {
 
-		var lVersion = listVersion(data, 'versionName');
-		var lIdVersion = listVersion(data, 'idVersion');
+		var hasDependencies = false;
+		var listData = data;
 		
 		data = removeDuplicate(data, 'name');
 
@@ -76,20 +80,36 @@ function doSearch(val, version) {
 			var obj = jQuery.parseJSON(data[i].jsonObject);
 			jQuery.each(obj.jsonArray, function(idx,value) {
 
-				jQuery("#dependency").append(" " + (value.moduleName !== undefined ? value.moduleName+ " " : "") + (value.valueStart !== undefined ? value.valueStart : "") + (value.valueEnd !== undefined ? value.valueEnd : ""));
+				jQuery("#dependency").append(" " + (value.moduleName !== undefined ? "<a href='moduleDetail.html?id="+ value.idmodule +"&idmv="+value.idmoduleversion+"' title='Requires "+ value.moduleName +" "+ value.valueStart + (value.valueEnd !== undefined ? " to "+value.valueEnd : " onward" ) + "'>"+ value.moduleName+ " </a> " : "") + (value.valueStart !== undefined ? "[ "+value.valueStart : "") + (value.valueEnd !== undefined ? " ,"+value.valueEnd+" ]" : " ,\u221E ["));
+				if(value.moduleName !== undefined){
+					hasDependencies = true;
+				}
 
 			});
 
 			jQuery("#desc").append(data[i].htmlDescription);
 
-			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br>Date: "+ data[i].date +"<br>Licence: "+ data[i].license +"<br>Version: "+ data[i].versionName +"<br>Owner: "+ data[i].ownerName +"<br>Price: "+ data[i].price +"<br><br><img height='50' width='50' title='"+ (data[i].validated == 'false' ? "not verified package" : "verified package") +"' src='"+ (data[i].validated == 'false' ? "images/not_verified_package.png" : "images/verified_package.png") +"'><br>"+ (getsessionToken() !== null ? "<input type='submit' value='Request Key' class='contentbutton' onclick='event.preventDefault();installationPopUp("+ data[i].id +","+ data[i].idVersion +");' >" : "") );
-
+			jQuery("#detail").append("<img height='100' width='100' class='image' src='data:image/jpg;base64,"+data[i].imgBytes+"'><br><br><label style='font-weight:normal;vertical-align:0;' title='"+ data[i].dateFull +"'>Date:</label> "+ data[i].date +"<br> <a href='#' onclick='scrollToAnchorVersion();' title='Version' >Version</a>: "+ data[i].versionName +"<br><label style='font-weight:normal;vertical-align:0;' title='Owner'>Owner:</label> "+ data[i].ownerName +"<br><label style='font-weight:normal;vertical-align:0;' title='Compatible with Red Sqirl From: "+ data[i].softwareVersionStar +" To:"+ data[i].softwareVersionEnd +"'>Red Sqirl:</label> ["+ data[i].softwareVersionStar +" , "+ data[i].softwareVersionEnd +" ]<br>");
 		});
 
+		if(hasDependencies){
+			jQuery("#dependencies").show();
+			jQuery("#detail").append("<a href='#' onclick='scrollToAnchorDependency();' title='Dependencies' >Dependencies</a>");
+		}else{
+			jQuery("#dependencies").hide();
+		}
+
 		if(version){
-			jQuery.each(lVersion, function(i) {
-				jQuery("#version").append("<a onclick='reload("+ lIdVersion[i] +");' href='#'>"+ lVersion[i] +"</a></br>");
+			listData = sortByKey(listData, 'idVersion');
+			jQuery.each(listData, function(i) {
+				jQuery("#version").append("<a onclick='reload("+ listData[i].idVersion +");' href='#'>"+ listData[i].versionName +"</a></br>");
 			});
+		}
+
+		var idmv = getUrlParameter('idmv');
+		if(idmv !== undefined ){
+			removeParam('idmv');
+			reload(idmv);
 		}
 
 	});
@@ -124,6 +144,24 @@ function reload(val) {
 	doSearch(JSON.stringify({id: getUrlParameter('id'), version: val}) , false);
 }
 
+function scrollToAnchorVersion(){
+    var aTag = $("a[name='version']");
+    jQuery('html,body').animate({scrollTop: aTag.offset().top},'slow');
+}
+
+function scrollToAnchorDependency(){
+    var aTag = $("a[name='dependency']");
+    jQuery('html,body').animate({scrollTop: aTag.offset().top},'slow');
+}
+
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key];
+	var y = b[key];
+        return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+    });
+}
+
 </script>
 
 <div id="menudiv"></div>
@@ -145,10 +183,10 @@ function reload(val) {
 <p id="desc"></p>
 
 
-<div class="rf-p-hdr ">Dependency</div>
+<div class="rf-p-hdr " id="dependencies" ><a href="#" name="dependency" onclick='scrollToAnchorDependency();' >Dependencies</a></div>
 <div id="dependency"></div>
 &nbsp;
-<div class="rf-p-hdr ">Versions</div>
+<div class="rf-p-hdr "><a href="#" name="version" onclick='scrollToAnchorVersion();' >Versions</a></div>
 <div id="version"></div>
 
 
@@ -205,12 +243,6 @@ function reload(val) {
 		</p>
 
 	 </div>
-
-	 <script type="text/javascript">
-		$(document).ready(function() {
-			$().UItoTop({ easingType: 'easeOutQuart' });
-		});
-	</script>
 
 <a href="#" id="toTop" style="display: block;"><span id="toTopHover" style="opacity: 1;"></span></a>
 

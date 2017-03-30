@@ -26,7 +26,9 @@ public class RedSqirlModuleVersionDependency implements Serializable{
 	private String valueStart;
 	private String valueEnd;
 	private String moduleName;
-	
+	private String line;
+	private String lineTooltip;
+	private String idModuleVersion;
 	
 	public String getModuleName() {
 		return moduleName;
@@ -50,6 +52,30 @@ public class RedSqirlModuleVersionDependency implements Serializable{
 	
 	public void setValueEnd(String valueEnd) {
 		this.valueEnd = valueEnd;
+	}
+
+	public String getLine() {
+		return line;
+	}
+
+	public void setLine(String line) {
+		this.line = line;
+	}
+
+	public String getIdModuleVersion() {
+		return idModuleVersion;
+	}
+
+	public void setIdModuleVersion(String idModuleVersion) {
+		this.idModuleVersion = idModuleVersion;
+	}
+
+	public String getLineTooltip() {
+		return lineTooltip;
+	}
+
+	public void setLineTooltip(String lineTooltip) {
+		this.lineTooltip = lineTooltip;
 	}
 	
 }

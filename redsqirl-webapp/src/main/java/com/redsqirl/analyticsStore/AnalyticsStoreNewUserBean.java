@@ -94,25 +94,19 @@ public class AnalyticsStoreNewUserBean extends BaseBean implements Serializable{
 					ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
 					String ansServer = response.getEntity(String.class);
 
-					try{
-						JSONObject pckObj = new JSONObject(ansServer);
-						String errorBackEnd = pckObj.getString("error");
+					JSONObject pckObj = new JSONObject(ansServer);
+					String errorBackEnd = pckObj.getString("error");
 
-					} catch (JSONException e){
-						e.printStackTrace();
+					if(errorBackEnd.contains("successfully")){
+						MessageUseful.addInfoMessage(errorBackEnd);
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnSuccessNewUser", "msnSuccessNewUser");
+					}else{
+						MessageUseful.addErrorMessage(errorBackEnd);
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnErrorNewUser", "msnErrorNewUser");
 					}
-
-					ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-					String originalUrl = (String) externalContext.getRequestParameterMap().get("originalURL");
-					String queryString = (String) externalContext.getRequestParameterMap().get("originalQuery");
-					String url = originalUrl != null && !originalUrl.isEmpty() ? originalUrl : "secured/search.xhtml";
-					if (queryString != null && !queryString.isEmpty()){
-						url += "?" + queryString;
-					}
-
-					ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-					ec.redirect(url);
-
+					
 				}
 
 			}catch(Exception e){

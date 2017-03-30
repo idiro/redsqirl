@@ -131,7 +131,7 @@ jQuery(function() {
         if(url == current){
         	jQuery(this).addClass('active');
         };
-    });         
+    });
 });
 
 function goToUrl(event, component){
