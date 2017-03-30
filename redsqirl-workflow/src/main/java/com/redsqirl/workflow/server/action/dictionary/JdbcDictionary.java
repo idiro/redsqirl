@@ -692,11 +692,16 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		orderByExpr = orderByExpr.substring(1,orderByExpr.lastIndexOf(")")).trim();
 		String partitionExpr = null;
 		if(orderByExpr.toUpperCase().startsWith("PARTITION BY ")){
-			partitionExpr = orderByExpr.substring("PARTITION BY ".length(), orderByExpr.indexOf("ORDER BY")).trim();
-			orderByExpr = orderByExpr.substring(orderByExpr.indexOf("ORDER BY")).trim();
+			if(orderByExpr.indexOf("ORDER BY") > 0){
+				partitionExpr = orderByExpr.substring("PARTITION BY ".length(), orderByExpr.indexOf("ORDER BY")).trim();
+				orderByExpr = orderByExpr.substring(orderByExpr.indexOf("ORDER BY")).trim();
+			}else{
+				partitionExpr = orderByExpr.substring("PARTITION BY ".length()).trim();
+				orderByExpr = null;
+			}
 		}
 		logger.debug(orderByExpr);
-		if(orderByExpr.toUpperCase().startsWith("ORDER BY ")){
+		if(orderByExpr != null && orderByExpr.toUpperCase().startsWith("ORDER BY ")){
 			orderByExpr = orderByExpr.substring("ORDER BY ".length());
 		}
 		
