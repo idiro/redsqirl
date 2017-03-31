@@ -1127,7 +1127,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				Iterator<String> firstElementsIt = firstElements.iterator();
 				while(firstElementsIt.hasNext()){
 					String cur = firstElementsIt.next();
-					if(cur.startsWith("delete_")){
+					if(cur.startsWith("delete-")){
 						firstElementsIt.remove();
 						outEdges.remove(cur);
 					}
@@ -1265,9 +1265,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 						DFEOutput o = mapO.get(key);
 						String attrNameStr = null;
 						if(mapO.size() > 1){
-							attrNameStr = "delete_" + cur.getComponentId()+"_"+index;
+							attrNameStr = "delete-" + cur.getComponentId()+"_"+index;
 						}else{
-							attrNameStr = "delete_" + cur.getComponentId();
+							attrNameStr = "delete-" + cur.getComponentId();
 						}
 						// Implement the action
 						Element action = o.oozieRemove(
@@ -1383,9 +1383,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					DFEOptimiser inOpt = in.getDFEOptimiser();
 					String elementName = null;
 					if (deleteList.contains(in.getComponentId())) {
-						elementName = "delete_" + in.getComponentId();
+						elementName = "delete-" + in.getComponentId();
 					}else if(inOpt != null && deleteList.contains(inOpt.getComponentId())){
-						elementName = "delete_" + inOpt.getComponentId();
+						elementName = "delete-" + inOpt.getComponentId();
 					}
 					if(elementName != null){
 						if(elements.containsKey(elementName)){
