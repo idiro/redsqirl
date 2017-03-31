@@ -37,7 +37,7 @@
             
             //alert("div");
             jQuery('[id$="quickNavigation"]').hide();
-            jQuery("#divTableInteraction").css("height","390");
+            jQuery("#divTableInteraction").css("height","420");
         }else{
             //alert("show all: "+minSize);
             
@@ -252,7 +252,7 @@
             rendered="#{canvasModalBean.listPageSize != 0}" 
             oncomplete="createOptionTitles();if(#{canvasModalBean.sourceNode}){resetCurrentOutputBrowser();}">
             
-        <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:485px;width:100%;padding-left:3px;padding-right:3px;-webkit-user-select:text;" >
+        <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:515px;width:100%;padding-left:3px;padding-right:3px;-webkit-user-select:text;" >
             
             
             <span id="canvasModalHeader">
@@ -669,7 +669,7 @@
             	oncomplete="setTimeout(function(){reLoadDisplayTable()},500);" >
                 
                 
-                <rich:panel id="dataOutputForm" style="height:485px;border:none;overflow:auto;padding-right: 3px;padding-left: 3px;">
+                <rich:panel id="dataOutputForm" style="height:515px;border:none;overflow:auto;padding-right: 3px;padding-left: 3px;">
                     
 	                <table style="width:100%;display:block;">
 	                    <tbody style="width:100%">
@@ -880,7 +880,7 @@
 			    </a4j:region>
 			
 			
-				<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:490px;width:100%;padding-left: 3px;padding-right: 3px;" >
+				<rich:panel id="modalVoronoi" style="border:none;overflow:auto;height:515px;width:100%;padding-left: 3px;padding-right: 3px;" >
 				
 					
 					 <h1><h:outputText value="#{messages.label_oozie_job_param}"/></h1>
