@@ -67,38 +67,46 @@ public class HiveDictionary extends JdbcDictionary{
 		super("hive");
 	}
 	
+	@Override
 	protected void loadDefaultFunctions() {
 		super.loadDefaultFunctions();
 		
 		functionsMap.put(castMethods, new String[][] {
 					new String[] { "CAST( AS INT)", "ANY", "INT",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS INT)"
 					+ "@short:returns an integer value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST('3' AS INT) returns 3"},
 					new String[] { "CAST( AS FLOAT)", "ANY", "FLOAT",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS FLOAT)"
 					+ "@short:returns a double value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST('3.1' AS FLOAT) returns 3.1" },
 					new String[] { "CAST( AS DOUBLE)", "ANY", "DOUBLE",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS DOUBLE)"
 					+ "@short:returns a double value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST('3.1' AS DOUBLE) returns 3.1" },
 					new String[] { "CAST( AS STRING)", "ANY", "STRING",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS STRING)"
 					+ "@short:returns a string value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST(3 AS STRING) returns '3'"},
 					new String[] { "CAST( AS DATE)", "ANY", "DATETIME",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS DATE)"
 					+ "@short:returns a date value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST('2017-02-31' AS DATE) returns 2017-02-31"},
 					new String[] { "CAST( AS TIMESTAMP)", "DATETIME", "TIMESTAMP",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS TIMESTAMP)"
 					+ "@short:returns a string value."
+					+ "@param: the value to be converted"
 					+ "@example: CAST(MYDATE AS TIMESTAMP)"},
 					new String[] { "CAST( AS BIGINT)", "ANY", "LONG",
-					"@function:CAST"
+					"@function:CAST(MYVALUE AS BIGINT)"
 					+ "@short:returns an integer value."
-					+ "@example: CAST('3' AS INT) returns 3"}
+					+ "@param: the value to be converted"
+					+ "@example: CAST('3' AS BIGINT) returns 3"}
 				});
 		
 		String[][] hiveStringMethods = new String[][] {
@@ -366,7 +374,7 @@ public class HiveDictionary extends JdbcDictionary{
 		addToFunctionsMap(utilsMethods,hiveUtilMethods);
 		
 		String[][] hiveAnalyticMethods = new String[][] {
-			new String[] { "NTILE(10) OVER (ORDER BY EXPR ASC)", "INT", "INT",
+			new String[] { "NTILE() OVER (ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE(X) OVER (ORDER BY MYCOLUMN ASC)"
 			+ "@short:Divides an ordered partition into x groups called buckets and assigns a bucket number to each row in the partition."
 			+ "@param:X the number of buckets"
@@ -374,7 +382,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@description:This allows easy calculation of tertiles, quartiles, deciles, percentiles and other common summary statistics."
 			+ "@example:NTILE(10) OVER (ORDER BY AGE DESC)",
 			},
-			new String[] { "NTILE(10) OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
+			new String[] { "NTILE() OVER (PARTITION BY EXPR ORDER BY EXPR ASC)", "INT", "INT",
 			"@function:NTILE(NB_BUCKETS) OVER (PARTITION BY MYCOLUMN1 ORDER BY MYCOLUMN2 ASC)"
 			+ "@short:Divides an ordered partition into x groups called buckets and assigns a bucket number to each row in the partition."
 			+ "@param:X the number of buckets"
@@ -428,7 +436,7 @@ public class HiveDictionary extends JdbcDictionary{
 			},
 			
 			//WindowMethods
-			new String[] { "LEAD(MYCOLUMN,MYOFFSET,MYDEFAULT) OVER (ORDER BY EXPR ASC)", "ANY,INT,ANY", "ANY",
+			new String[] { "LEAD() OVER (ORDER BY EXPR ASC)", "ANY,INT,ANY", "ANY",
 			"@function:LEAD(MYCOLUMN,MYOFFSET,MYDEFAULT) OVER (ORDER BY EXPR ASC)"
 			+ "@short:Provides access to a row ahead"
 			+ "@param:EXPR the expression to calculate on the target row"
@@ -438,7 +446,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@example:LEAD(age,1,null) OVER (ORDER BY age ASC)"
 			+ "@example:LEAD(age,1,null) OVER (ORDER BY age DESC)",
 			},
-			new String[] { "LEAD(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY,INT,ANY", "ANY",
+			new String[] { "LEAD() OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY,INT,ANY", "ANY",
 			"@function:LEAD(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to a row ahead within a group"
 			+ "@param:MYCOLUMN1 The expression to calculate on the target row"
@@ -449,7 +457,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@example:LEAD(age,1,null) OVER (PARTITION BY city ORDER BY age ASC)"
 			+ "@example:LEAD(age,1,null) OVER (PARTITION BY city ORDER BY age DESC)",
 			},
-			new String[] { "LAG(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (ORDER BY MYCOLUMN2 ASC)", "ANY,INT,ANY", "ANY",
+			new String[] { "LAG() OVER (ORDER BY MYCOLUMN2 ASC)", "ANY,INT,ANY", "ANY",
 			"@function:LAG(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (ORDER BY MYCOLUMN2 ASC)"
 			+ "@short:Provides access to a row behind within a group"
 			+ "@param:MYCOLUMN1 The expression to calculate on the target row"
@@ -460,7 +468,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@example:LAG(age,1,null) OVER (ORDER BY age ASC)"
 			+ "@example:LAG(age,1,null) OVER (ORDER BY age DESC)",
 			},
-			new String[] { "LAG(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY,INT,ANY", "ANY",
+			new String[] { "LAG() OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY,INT,ANY", "ANY",
 			"@function:LAG(MYCOLUMN1,MYOFFSET,MYDEFAULT) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to a row behind within a group"
 			+ "@param:MYCOLUMN1 The expression to calculate on the target row"
@@ -471,14 +479,14 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@example:LAG(age,1,null) OVER (PARTITION BY city ORDER BY age ASC)"
 			+ "@example:LAG(age,1,null) OVER (PARTITION BY city ORDER BY age DESC)",
 			},
-			new String[] { "FIRST_VALUE(MYCOLUMN1) OVER (ORDER BY MYCOLUMN2 ASC)", "ANY", "ANY",
+			new String[] { "FIRST_VALUE() OVER (ORDER BY MYCOLUMN2 ASC)", "ANY", "ANY",
 			"@function:FIRST_VALUE(MYCOLUMN1) OVER (ORDER BY MYCOLUMN2 ASC)"
 			+ "@short:Provides access to the first record"
 			+ "@param:MYCOLUMN1 The expression to calculate of the first row"
 			+ "@param:MYCOLUMN2 The order of the rows"
 			+ "@example:FIRST_VALUE(age) OVER (ORDER BY age ASC)",
 			},
-			new String[] { "FIRST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY", "ANY",
+			new String[] { "FIRST_VALUE() OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY", "ANY",
 			"@function:FIRST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to the first record from the partition"
 			+ "@param:MYCOLUMN1 The expression to calculate of the first row"
@@ -486,14 +494,14 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@param:MYCOLUMN3 The order of the rows"
 			+ "@example:FIRST_VALUE(age) OVER (PARTITION BY city ORDER BY age DESC)",
 			},
-			new String[] { "LAST_VALUE(MYCOLUMN1) OVER (ORDER BY EXPR ASC)", "", "",
+			new String[] { "LAST_VALUE() OVER (ORDER BY EXPR ASC)", "", "",
 			"@function:FIRST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to the last record"
 			+ "@param:EXPR the expression to calculate of the first row"
 			+ "@param:EXPR the order of the rows"
 			+ "@example:LAST_VALUE(age) OVER (ORDER BY age ASC)",
 			},
-			new String[] { "LAST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY", "ANY",
+			new String[] { "LAST_VALUE() OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)", "ANY", "ANY",
 			"@function:LAST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to the last record from the partition"
 			+ "@param:MYCOLUMN1 The expression to calculate of the first row"
@@ -501,66 +509,66 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@param:MYCOLUMN3 The order of the rows"
 			+ "@example:LAST_VALUE(age) OVER (PARTITION BY city ORDER BY age DESC)",
 			},
-			new String[] { "COUNT(MYCOLUMN) OVER()", "ANY", "INT",
+			new String[] { "COUNT() OVER()", "ANY", "INT",
 			"@function:COUNT(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall number of non-null element"
 			+ "@param:MYCOLUMN The expression to count"
 			+ "@example:COUNT(FIELD1) OVER()",
 			},
-			new String[] { "COUNT(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)", "ANY", "INT",
+			new String[] { "COUNT() OVER(PARTITION BY MYCOLUMN2)", "ANY", "INT",
 			"@function:COUNT(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the number of non-null element over a window"
 			+ "@param:MYCOLUMN1 The expression to count"
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:COUNT(FIELD1) OVER(PARTITION BY MY_DATE)",
 			},
-			new String[] { "SUM(MYCOLUMN) OVER()", "NUMBER", "NUMBER",
+			new String[] { "SUM() OVER()", "NUMBER", "NUMBER",
 			"@function:SUM(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall sum of an expression"
 			+ "@param:MYCOLUMN The expression to sum"
 			+ "@example:SUM(FIELD1) OVER()",
 			},
-			new String[] { "SUM(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "NUMBER",
+			new String[] { "SUM() OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "NUMBER",
 			"@function:SUM(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the sum of an expression over a window"
 			+ "@param:MYCOLUMN1 The expression to sum"
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:SUM(FIELD1) OVER(PARTITION BY MY_DATE)",
 			},
-			new String[] { "MIN(MYCOLUMN) OVER()", "ANY", "ANY",
+			new String[] { "MIN() OVER()", "ANY", "ANY",
 			"@function:MIN(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall minimum of an expression"
 			+ "@param:MYCOLUMN The expression for which the minimum value is calculated"
 			+ "@example:MIN(FIELD1) OVER()",
 			},
-			new String[] { "MIN(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)", "ANY", "ANY",
+			new String[] { "MIN() OVER(PARTITION BY MYCOLUMN2)", "ANY", "ANY",
 			"@function:MIN(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the minimum of an expression over a window"
 			+ "@param:MYCOLUMN1 The expression for which the minimum value is calculated"
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:MIN(FIELD1) OVER(PARTITION BY MY_DATE)",
 			},
-			new String[] { "MAX(MYCOLUMN) OVER()", "ANY", "ANY",
+			new String[] { "MAX() OVER()", "ANY", "ANY",
 			"@function:MAX(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall maximum of an expression"
 			+ "@param:MYCOLUMN The expression for which the maximum value is calculated"
 			+ "@example:MAX(FIELD1) OVER()",
 			},
-			new String[] { "MAX(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)", "ANY", "ANY",
+			new String[] { "MAX() OVER(PARTITION BY MYCOLUMN2)", "ANY", "ANY",
 			"@function:MAX(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the maximum of an expression over a window"
 			+ "@param:MYCOLUMN1 The expression for which the maximum value is calculated"
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:MAX(FIELD1) OVER(PARTITION BY MY_DATE)",
 			},
-			new String[] { "AVG(MYCOLUMN) OVER()", "NUMBER", "NUMBER",
+			new String[] { "AVG() OVER()", "NUMBER", "NUMBER",
 			"@function:AVG(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall average of an expression"
 			+ "@param:MYCOLUMN The expression for which the average value is calculated"
 			+ "@param:EXPR The expression to count"
 			+ "@example:AVG(FIELD1) OVER()",
 			},
-			new String[] { "AVG(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "NUMBER",
+			new String[] { "AVG() OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "NUMBER",
 			"@function:AVG(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the average of an expression over a window"
 			+ "@param:MYCOLUMN1 The expression for which the average value is calculated"
@@ -594,7 +602,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@description:Returns the standard deviation of a numeric column in the group."
 			+ "@example:STDDEV(nb_article)",
 			},
-			new String[] { "PERCENTILE(MYLONG, MYPERCENTILE)", "", "",
+			new String[] { "PERCENTILE()", "", "",
 			"@function:PERCENTILE(MYLONG, MYPERCENTILE))"
 			+ "@short:Returns the value of the given percentile."
 			+ "@param:MYLONG"
@@ -602,7 +610,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@description:Returns the exact pth percentile of a column in the group (does not work with floating point types). p must be between 0 and 1. NOTE: A true percentile can only be computed for integer values. Use PERCENTILE_APPROX if your input is non-integral."
 			+ "@example:PERCENTILE(nb_article,0.9)",
 			},
-			new String[] { "PERCENTILE_APPROX(MYDOUBLE, MYPERCENTILE)", "", "",
+			new String[] { "PERCENTILE_APPROX()", "", "",
 			"@function:PERCENTILE_APPROX(MYDOUBLE, MYPERCENTILE)"
 			+ "@short:Returns the standard deviation of a column."
 			+ "@param:MYDOUBLE"

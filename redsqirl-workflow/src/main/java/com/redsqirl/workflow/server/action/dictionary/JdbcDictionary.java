@@ -593,12 +593,12 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("cast"),
+				functionsMap.get(castMethods)));
 		if(functionsMap.get(analyticMethods) != null && functionsMap.get(analyticMethods).length > 0){
 			help.add(createMenu(new TreeNonUnique<String>("analytics"),
 					functionsMap.get(analyticMethods)));
 		}
-		help.add(createMenu(new TreeNonUnique<String>("cast"),
-				functionsMap.get(castMethods)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
