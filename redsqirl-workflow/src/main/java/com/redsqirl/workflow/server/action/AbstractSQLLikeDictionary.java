@@ -106,29 +106,85 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
 		functionsMap.put(logicalOperators,
 				new String[][] { new String[] { "AND", "BOOLEAN,BOOLEAN", "BOOLEAN",
-						"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
+						"@function:AND"
+						+ "@short:Boolean AND"
+						+ "@param:boolean variable"
+						+ "@param:boolean variable"
+						+ "@description:Boolean logic that returns true if both the variables are true."
+						+ "@example:TRUE AND TRUE" },
 				new String[] { "OR", "BOOLEAN,BOOLEAN", "BOOLEAN",
-						"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
+						"@function:OR"
+						+ "@short:Boolean OR"
+						+ "@param:boolean variable"
+						+ "@param:boolean variable"
+						+ "@description:Boolean logic that returns true if one of the variables is true."
+						+ "@example:TRUE OR FALSE" },
 				new String[] { "NOT", ",BOOLEAN", "BOOLEAN",
-						"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
+						"@function:NOT"
+						+ "@short:Boolean NOT"
+						+ "@param:boolean variable"
+						+ "@param:boolean variable"
+						+ "@description:Boolean logic that returns true if the variables are not equal"
+						+ "@example:TRUE NOT FALSE" } });
 
 		functionsMap.put(relationalOperators,
 				new String[][] { new String[] { "<=", "ANY,ANY", "BOOLEAN",
-						"@function:<=@short:Less or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the right value is less or equal to the right@example:1<=5 returns TRUE" },
+						"@function:<="
+						+ "@short:Less or equal"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the right value is less or equal to the right."
+						+ "@example:1<=5 returns TRUE" },
 				new String[] { ">=", "ANY,ANY", "BOOLEAN",
-						"@function:>=@short:Greater or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
+						"@function:>="
+						+ "@short:Greater or equal"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the left value is greater or equal to the right."
+						+ "@example:5>=1 returns TRUE" },
 				new String[] { "<", "ANY,ANY", "BOOLEAN",
-						"@function:<@short:Less than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is less than the right@example:1<5 returns TRUE" },
+						"@function:<"
+						+ "@short:Less than"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the left value is less than the right."
+						+ "@example:1<5 returns TRUE" },
 				new String[] { ">", "ANY,ANY", "BOOLEAN",
-						"@function:>@short:Greater than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater than the right@example:1>5 returns TRUE" },
+						"@function:>"
+						+ "@short:Greater than"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the left value is greater than the right."
+						+ "@example:1>5 returns TRUE" },
 				new String[] { "!=", "ANY,ANY", "BOOLEAN",
-						"@function:!=@short:Not Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is not equal the right@example:1!=5 returns TRUE" },
+						"@function:!="
+						+ "@short:Not Equal"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the left value is not equal the right."
+						+ "@example:1!=5 returns TRUE" },
 				new String[] { operatorEqual, "ANY,ANY", "BOOLEAN",
-						"@function:==@short:Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is equal the right@example:5==5 returns TRUE" },
+						"@function:=="
+						+ "@short:Equal"
+						+ "@param:Any value"
+						+ "@param:Any value"
+						+ "@description:Compare the left value to the right and checks if the left value is equal the right."
+						+ "@example:5==5 returns TRUE" },
 				new String[] { "IS NOT NULL", "ANY,", "BOOLEAN",
-						"@function:IS NOT NULL@short:Is not empty/null@param:Any value@description:Checks the value if it is not null@example:x IS NOT NULL" },
+						"@function:IS NOT NULL"
+						+ "@short:Is not empty/null"
+						+ "@param:Any value"
+						+ "@description:Checks the value if it is not null."
+						+ "@example:5 IS NOT NULL return TRUE"
+						+ "@example:null  IS NOT NULL return FALSE"},
 				new String[] { "IS NULL", "ANY,", "BOOLEAN",
-						"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" } });
+						"@function:IS NULL"
+						+ "@short:Is empty/null"
+						+ "@param:Any value"
+						+ "@description:Checks the value if it is null."
+						+ "@example:5 IS NULL return FALSE"
+						+ "@example:null  IS NULL return TRUE"} 
+				});
 
 		functionsMap.put(arithmeticOperators,
 				new String[][] { new String[] { "+", "NUMBER,NUMBER...", "NUMBER" },

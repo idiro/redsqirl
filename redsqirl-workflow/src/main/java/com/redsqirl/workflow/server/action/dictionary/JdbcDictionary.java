@@ -160,170 +160,216 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		functionsMap
 		.put(mathMethods,
 				new String[][] {
-			new String[] {
-					"ROUND()",
-					"DOUBLE",
-					"INT",
-			"@function:ROUND()@short:Returns the value of an expression rounded to an integer@param:DOUBLE@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)@example:ROUND(4.6) returns 5@example:ROUND(2.3) returns 2" },
-			new String[] {
-					"FLOOR()",
-					"DOUBLE",
-					"INT",
-			"@function:FLOOR()@short:Returns the value of an expression rounded down to the nearest integer@param:DOUBLE@description:Use the FLOOR function to return the value of an expression rounded down to the nearest integer. This function never increases the result value@example:FLOOR(4.6) returns 4@example:FLOOR(2.3) returns 2" },
-			new String[] {
-					"CEIL()",
-					"DOUBLE",
-					"INT",
-			"@function:CEIL()@short:Returns the value of an expression rounded up to the nearest integer@param:DOUBLE@description:Use the CEIL function to return the value of an expression rounded up to the nearest integer. This function never decreases the result value@example:CEIL(4.6) returns 5@example:CEIL(2.3) returns 3" },
-			new String[] {
-					"ABS()",
-					"NUMBER",
-					"NUMBER",
-			"@function:ABS()@short:Returns the absolute value of an expression@param:DOUBLE@description:Use the ABS function to return the absolute value of an expression. If the result is not negative (x ≥ 0), the result is returned. If the result is negative (x < 0), the negation of the result is returned@example:ABS(-36) returns 36@example:CEIL(5-7) returns 2" },
-			new String[] {
-					"ACOS()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:ACOS()@short:Returns the arc cosine of an expression@param:DOUBLE@description:Use the ACOS function to return the arc cosine of an expression.@example:ACOS(0) returns 90@example:ACOS(0.5) returns 60" },
-			new String[] {
-					"ASIN()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:ASIN()@short:Returns the arc sine of an expression@param:DOUBLE@description:Use the ASIN function to return the arc sine of an expression@example:ASIN(1) returns 90@example:ASIN(0.7071068) returns 45" },
-			new String[] {
-					"ATAN()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:ATAN()@short:Returns the arc tangent of an expression@param:DOUBLE@description:Use the ASIN function to return the arc tangent of an expression@example:ATAN(1) returns 45@example:ATAN(-0.5) returns -26.56505118" },
-			new String[] {
-					"COS()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:COS()@short:Returns the trigonometric cosine of an expression@param:DOUBLE@description:Use the COS function to return the trigonometric cosine of an expression@example:COS(45) returns  0.70710678 @example:COS(89) returns 0.01745241" },
-			new String[] {
-					"COSH()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:COSH()@short:Returns the hyperbolic cosine of an expression@param:DOUBLE@description:Use the COSH function to return the hyperbolic cosine of an expression@example:COSH(45) returns  1.3246106846575 @example:COSH(89) returns 0.01745241" },
-			new String[] {
-					"EXP()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:COSH()@short:Returns Euler's number e raised to the power of x@param:DOUBLE@description:Use the EXP function to return the value of Euler's number e raised to the power of x (where x is the result value of the expression)@example:EXP(2) returns  7.3890560991533 @example:EXP(89) returns  4.4896128251945E+38" },
-			new String[] {
-					"LN()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:LOG()@short:Returns the natural logarithm (base e) of an expression@param:DOUBLE@description:Use the LOG function to return the natural logarithm (base e) of an expression@example:LOG(1) returns  0 @example:EXP(89) returns  4.4886363697" },
-			new String[] {
-					"LOG()",
-					"DOUBLE,INT",
-					"DOUBLE",
-			"@function:LOG()@short:Returns the logarithm of an expression@param: EXPR DOUBLE@param: BASE INT@description:Use the LOG function to return thelogarithm of an expression@example:LOG(10,10) returns  1" },
-			new String[] {
-					"SIN()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:SIN()@short:Returns the sine of an expression@param:DOUBLE@description:Use the SIN function to return the sine of an expession@example:SIN(90) returns  1 @example:SIN(45) returns  0.70710678" },
-			new String[] {
-					"SINH()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:SINH()@short:Returns the hyperbolic sine of an expression@param:DOUBLE@description:Use the SINH function to return the hyperbolic sine of an expression@example:SINH(90) returns 2.301298902307@example:SIN(45) returns  0.868670961486" },
-			new String[] {
-					"SQRT()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:SQRT()@short:Returns the positive square root of an expression@param:DOUBLE@description:Use the SQRT function to return the positive square root of an expression@example:SQRT(5) returns 2.2360679775@example:SQRT(45) returns  6.7082039325" },
-			new String[] {
-					"TAN()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:TAN()@short:Returns the trignometric tangent of an angle@param:DOUBLE@description:Use the TAN function to return the trignometric tangent of an angle@example:TAN(45) returns 1@example:TAN(30) returns  0.57735027" },
-			new String[] {
-					"TANH()",
-					"DOUBLE",
-					"DOUBLE",
-			"@function:TANH()@short:Returns the hyperbolic tangent of an expression@param:DOUBLE@description:Use the TANH function to return the hyperbolic tangent of an expression@example:TANH(45) returns 0.655794202633@example:TAN(90) returns  0.917152335667" }, });
+			new String[] { "ROUND()", "DOUBLE",	"INT",
+			"@function:ROUND(MYFLOAT)"
+			+ "@short:Returns the value of an expression rounded to an integer."
+			+ "@param:DOUBLE"
+			+ "@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)."
+			+ "@example:ROUND(4.5) returns 5"
+			+ "@example:ROUND(2.3) returns 2" },
+			new String[] { "FLOOR()", "DOUBLE",	"INT",
+			"@function:FLOOR(MYFLOAT)"
+			+ "@short:Returns the value of an expression rounded down to the nearest integer."
+			+ "@param:DOUBLE"
+			+ "@description:Use the FLOOR function to return the value of an expression rounded down to the nearest integer. This function never increases the result value."
+			+ "@example:FLOOR(4.6) returns 4"
+			+ "@example:FLOOR(2.3) returns 2" },
+			new String[] { "CEIL()", "DOUBLE", "INT",
+			"@function:CEIL(MYFLOAT)"
+			+ "@short:Returns the value of an expression rounded up to the nearest integer."
+			+ "@param:DOUBLE"
+			+ "@description:Use the CEIL function to return the value of an expression rounded up to the nearest integer. This function never decreases the result value."
+			+ "@example:CEIL(4.6) returns 5"
+			+ "@example:CEIL(2.3) returns 3" },
+			new String[] { "ABS()",	"NUMBER", "NUMBER",
+			"@function:ABS(MYFLOAT)"
+			+ "@short:Returns the absolute value of an expression."
+			+ "@param:DOUBLE"
+			+ "@description:Use the ABS function to return the absolute value of an expression. If the result is negative (x < 0), the negation of DOUBLE is returned, otherwise DOUBLE is returned."
+			+ "@example:ABS(0) returns 0"
+			+ "@example:ABS(-36) returns 36"
+			+ "@example:CEIL(5-7) returns 2" },
+			new String[] { "ACOS()", "DOUBLE", "DOUBLE",
+			"@function:ACOS(MYFLOAT)"
+			+ "@short:Returns the arccosine."
+			+ "@param:DOUBLE"
+			+ "@description:Returns the arccosine of DOUBLE if -1<=DOUBLE<=1 or NULL otherwise."
+			+ "@example:ACOS(-1) returns pi"
+			+ "@example:ACOS(0) returns pi/2" },
+			new String[] { "ASIN()", "DOUBLE", "DOUBLE",
+			"@function:ASIN(MYFLOAT)"
+			+ "@short:Returns the arcsine of an expression."
+			+ "@param:DOUBLE"
+			+ "@description:Use the ASIN function to return the arc sine of an expression."
+			+ "@example:ASIN(1) returns pi/2"
+			+ "@example:ASIN(0.) returns 0" },
+			new String[] { "ATAN()", "DOUBLE", "DOUBLE",
+			"@function:ATAN(MYFLOAT)"
+			+ "@short:Returns the arctangent of an expression."
+			+ "@param:DOUBLE"
+			+ "@description:Use the ATAN function to return the arctangent of an expression."
+			+ "@example:ATAN(1) returns pi/4"
+			+ "@example:ATAN(0) returns 0" },
+			new String[] { "COS()",	"DOUBLE", "DOUBLE",
+			"@function:COS(MYANGLE)"
+			+ "@short:Returns the trigonometric cosine of an expression."
+			+ "@param:MYANGLE expressed in radian"
+			+ "@description:Use the COS function to return the trigonometric cosine of an expression."
+			+ "@example:COS(0) returns  1"
+			+ "@example:COS(PI()) returns -1" },
+			new String[] { "COSH()", "DOUBLE", "DOUBLE",
+			"@function:COSH()"
+			+ "@short:Returns the hyperbolic cosine of an expression"
+			+ "@param:DOUBLE"
+			+ "@description:Use the COSH function to return the hyperbolic cosine of an expression"
+			+ "@example:COSH(45) returns  1.3246106846575 "
+			+ "@example:COSH(89) returns 0.01745241" },
+			new String[] { "EXP()", "DOUBLE", "DOUBLE",
+			"@function:COSH()"
+			+ "@short:Returns Euler's number e raised to the power of x"
+			+ "@param:DOUBLE"
+			+ "@description:Use the EXP function to return the value of Euler's number e raised to the power of x (where x is the result value of the expression)"
+			+ "@example:EXP(2) returns  7.3890560991533 "
+			+ "@example:EXP(89) returns  4.4896128251945E+38" },
+			new String[] { "LN()", "DOUBLE", "DOUBLE",
+			"@function:LN(MYFLOAT)"
+			+ "@short:Returns the natural logarithm (base e) of an expression."
+			+ "@param:MYFLOAT"
+			+ "@description:Use the LN function to return the natural logarithm (base e) of an expression."
+			+ "@example:LN(1) returns  0 " },
+			new String[] { "LOG()",	"DOUBLE,INT", "DOUBLE",
+			"@function:LOG(MYBASE,EXPR)"
+			+ "@short:Returns the logarithm of an expression."
+			+ "@param: BASE"
+			+ "@param: EXPR"
+			+ "@description:Use the LOG function to return the logarithm of an expression."
+			+ "@example:LOG(10,10) returns  1" },
+			new String[] { "SIN()",	"DOUBLE", "DOUBLE",
+			"@function:SIN(MYANGLE)"
+			+ "@short:Returns the sine of an expression."
+			+ "@param:MYANGLE expressed in radian"
+			+ "@description:Use the SIN function to return the sine of an expression."
+			+ "@example:SIN(PI()) returns 0 "
+			+ "@example:SIN(PI()/2) returns  1.0" },
+			new String[] { "SINH()", "DOUBLE", "DOUBLE",
+			"@function:SINH()"
+			+ "@short:Returns the hyperbolic sine of an expression"
+			+ "@param:DOUBLE"
+			+ "@description:Use the SINH function to return the hyperbolic sine of an expression"
+			+ "@example:SINH(90) returns 2.301298902307"
+			+ "@example:SIN(45) returns  0.868670961486" },
+			new String[] { "SQRT()", "DOUBLE", "DOUBLE",
+			"@function:SQRT(MYFLOAT)"
+			+ "@short:Returns the positive square root of an expression."
+			+ "@param:MYFLOAT"
+			+ "@description:Use the SQRT function to return the positive square root of an expression."
+			+ "@example:SQRT(5) returns 2.2360679775"
+			+ "@example:SQRT(45) returns 6.7082039325" },
+			new String[] { "TAN()", "DOUBLE", "DOUBLE",
+			"@function:TAN(MYFLOAT)"
+			+ "@short:Returns the trigonometric tangent of an angle."
+			+ "@param:MYFLOAT"
+			+ "@description:Use the TAN function to return the trigonometric tangent of an angle."
+			+ "@example:TAN(PI()/4) returns 1" },
+			new String[] { "TANH()", "DOUBLE", "DOUBLE",
+			"@function:TANH()"
+			+ "@short:Returns the hyperbolic tangent of an expression"
+			+ "@param:DOUBLE"
+			+ "@description:Use the TANH function to return the hyperbolic tangent of an expression"
+			+ "@example:TANH(45) returns 0.655794202633"
+			+ "@example:TAN(90) returns  0.917152335667" }, 
+			});
 
 		functionsMap
 		.put(stringMethods,
 				new String[][] {
 			new String[] { "LENGTH()", "STRING", "INT",
 			"@function:CHR@short:returns the length of the specified string.@example: LENGTH('abc') returns 3"},
-			new String[] {
-					"SUBSTR()",
-					"STRING,INT",
-					"STRING",
-			"@function:SUBSTRING( MYSTRING , INDEX )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring.The index of a string begins with zero (0)@description:Use the SUBSTRING function to return a substring from a given string.Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,2). Note that 1 is the index of A@example:SUBSTR(\"help\",2) returns \"elp\"; @example:SUBSTR(\"example\",6) returns  \"le\"" },
-			new String[] {
-					"SUBSTR()",
-					"STRING,INT,INT",
-					"STRING",
-					"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )"
-							+"@short:Returns a substring from a given string"
-							+"@param:MYSTRING The string from which a substring will be extracted"
-							+"@param: INDEX The index (type integer) of the first character of the substring."
-							+ "The index of a string starts at one (1)"
-							+"@param:LENGTH The index (type integer) of the character following the last character of the substring"
-							+"@description:Use the SUBSTRING function to return a substring from a given string."
-							+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)"
-							+"@example:SUBSTR(\"help\",1,4) returns \"help\"; @example:SUBSTR(\"example\",6,2) returns  \"le\"" },
-			new String[] {
-					"UPPER()",
-					"STRING",
-					"STRING",
-			"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER(\"hello\") returns \"HELLO\"@example:UPPER(\"Example\") returns  \"EXAMPLE\"" },
-			new String[] {
-					"LOWER()",
-					"STRING",
-					"STRING",
-			"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER(\"HELLO\") returns \"hello\"@example:LOWER(\"Example\") returns  \"example\"" },
-			new String[] {
-					"TRIM()",
-					"STRING",
-					"STRING",
-			"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(\" hello \") returns \"hello\"@example:TRIM(\" example \") returns  \"example\"" },
-			new String[] {
-					"LTRIM()",
-					"STRING",
-					"STRING",
-			"@function:LTRIM( MYSTRING )@short:Returns a copy of a string with leading white space removed@param:MYSTRING@description:Use the LTRIM function to remove leading white space from a string@example:LTRIM(\" hello \") returns \"hello \"@example:LTRIM(\" example \") returns  \"example \"" },
-			new String[] {
-					"RTRIM()",
-					"STRING",
-					"STRING",
-			"@function:RTRIM( MYSTRING )@short:Returns a copy of a string with trailing white space removed@param:MYSTRING@description:Use the RTRIM function to remove trailing white space from a string@example:RTRIM(\" hello \") returns \" hello\"@example:RTRIM(\" example \") returns  \" example\"" },
-			new String[] {
-					"REPLACE()",
-					"STRING,STRING,STRING",
-					"INT",
-			"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" },
-			new String[] {
-					"REGEXP_REPLACE()",
-					"STRING,STRING,STRING",
-					"STRING",
-			"@function:REGEX_REPLACE( MYSTRING , OLDSTRING , NEWSTRING )@short:Performs regular expression matching and replaces the matched group defined by an index parameter@param:MYSTRING string to search@param:OLDSTRING The regular expression to find@param:NEWSTRING The replacement string@description:Use the REGEX_REPLACE function to perform regular expression matching and to REPLACE the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form. The function returns a string that corresponds to the matched group in the position specified by the index. @example:REGEX_REPLACE(\"helloworld\", \"ello|orld\", \"\") returns \"hw\"" },
-			new String[] {
-					"CONCAT()",
-					"STRING,STRING,STRING...",
-					"STRING",
-			"@function:CONCAT( STRING , OTHERSTRING )@short:Adds two strings together@param:STRING the string that is added to @param:OTHERSTRING the string that is added to STRING@description:Adds two strings together to make a larger on@example: CONCAT(\"hello \", \"world\") returns \"hello world\"" } });
+			new String[] { "SUBSTR()", "STRING,INT", "STRING",
+			"@function:SUBSTRING( MYSTRING , INDEX )@short:Returns the substring of MYSTRING starting from INDEX position till the end of the string@param:MYSTRING The string from which a substring will be extracted.@param:INDEX The index (type integer) of the first character of the substring.The index of a string begins with one (1).@description:Use the SUBSTRING function to return a substring from a given string.@example:SUBSTR(\"help\",2) returns \"elp\"; @example:SUBSTR(\"example\",6) returns \"le\"" },
+			new String[] { "SUBSTR()", "STRING,INT,INT", "STRING",
+			"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )"
+			+"@short:Returns the substring MYSTRING starting from INDEX position with length LENGTH."
+			+"@param:MYSTRING The string from which a substring will be extracted."
+			+"@param:INDEX The index (type integer) of the first character of the substring.The index of a string starts at one (1)."
+			+"@param:LENGTH The number of characters you want to capture."
+			+"@description:Use the SUBSTRING function to return a substring from a given string."
+			+"@example:SUBSTR(\"help\",1,4) returns \"help\";"
+			+ "@example:SUBSTR(\"example\",6,2) returns  \"le\"" },
+			new String[] { "UPPER()", "STRING", 	"STRING",
+			"@function:UPPER( MYSTRING )"
+			+ "@short:Returns a string converted to uppercase."
+			+ "@param:MYSTRING"
+			+ "@description:Use the UPPER function to convert all characters in a string to uppercase."
+			+ "@example:UPPER(\"hello\") returns \"HELLO\""
+			+ "@example:UPPER(\"Example\") returns  \"EXAMPLE\"" },
+			new String[] { "LOWER()", "STRING",	"STRING",
+			"@function:LOWER( MYSTRING )"
+			+ "@short:Converts all characters in a string to lower case"
+			+ "@param:MYSTRING"
+			+ "@description:Use the LOWER function to convert all characters in a string to lowercase."
+			+ "@example:LOWER(\"HELLO\") returns \"hello\""
+			+ "@example:LOWER(\"Example\") returns  \"example\"" },
+			new String[] { "TRIM()", "STRING", "STRING",
+			"@function:TRIM( MYSTRING )"
+			+ "@short:Returns a copy of a string with leading and trailing whitespace removed."
+			+ "@param:MYSTRING"
+			+ "@description:Use the TRIM function to remove leading and trailing whitespace from MYSTRING."
+			+ "@example:TRIM(\" hello \") returns \"hello\""
+			+ "@example:TRIM(\" example \") returns  \"example\"" },
+			new String[] { "LTRIM()", "STRING",	"STRING",
+			"@function:LTRIM( MYSTRING )"
+			+ "@short:Returns a copy of a string with leading whitespace removed."
+			+ "@param:MYSTRING"
+			+ "@description:Use the LTRIM function to remove leading whitespace from MYSTRING."
+			+ "@example:LTRIM(\" hello \") returns \"hello \""
+			+ "@example:LTRIM(\" example \") returns  \"example \"" },
+			new String[] { "RTRIM()", "STRING",	"STRING",
+			"@function:RTRIM( MYSTRING )"
+			+ "@short:Returns a copy of a string with trailing whitespace removed."
+			+ "@param:MYSTRING"
+			+ "@description:Use the RTRIM function to remove trailing whitespace from MYSTRING."
+			+ "@example:RTRIM(\" hello \") returns \" hello\""
+			+ "@example:RTRIM(\" example \") returns  \" example\"" },
+			new String[] { "REPLACE()", "STRING,STRING,STRING", "INT",
+			"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)"
+			+ "@short:Replaces existing characters in a string with new characters"
+			+ "@param:MYSTRING string to replace"
+			+ "@param:OLDCHAR String to search"
+			+ "@param:NEWCHAR String to replace with"
+			+ "@description:Use the REPLACE function to replace existing characters in a string with new characters."
+			+ "@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" },
+			new String[] { "REGEXP_REPLACE()", "STRING,STRING,STRING", "STRING",
+			"@function:REGEX_REPLACE( MYSTRING , OLDSTRING , NEWSTRING )"
+			+ "@short:Performs regular expression matching and replaces the matched group defined by an index parameter."
+			+ "@param:MYSTRING string to search"
+			+ "@param:OLDSTRING The regular expression to search"
+			+ "@param:NEWSTRING The replacement string"
+			+ "@description:Use the REGEX_REPLACE function to perform regular expression matching and to REPLACE the matched group defined by the index parameter (where the index is a 1-based parameter). The function uses Java regular expression form. The function returns a string that corresponds to the matched group in the position specified by the index."
+			+ "@example:REGEX_REPLACE(\"helloworld\", \"ello|orld\", \"\") returns \"hw\"" },
+			new String[] { "CONCAT()", "STRING,STRING,STRING...", "STRING",
+			"@function:CONCAT( STRING , OTHERSTRING, ... )"
+			+ "@short:Adds strings together."
+			+ "@param:STRING the string that is added to"
+			+ "@param:OTHERSTRING the string that is added to STRING"
+			+ "@description:Adds several strings together to make a larger on. The function takes at least two arguments."
+			+ "@example: CONCAT(\"hello\", \"world\") returns \"helloworld\""
+			+ "@example: CONCAT(\"hello\", \" \", \"world\") returns \"hello world\"" } 
+			
+		});
 
 		functionsMap
 		.put(dateMethods,
 				new String[][] {
 			new String[] {
-					"CURRENT_DATE",
-					"",
-					"DATETIME",
-					"@function:CURRENT_DATE@short:Get the running time"
+					"CURRENT_DATE",	"",	"DATETIME",
+					"@function:CURRENT_DATE"
+					+ "@short:Get the time at running time."
 			},
 			new String[] {
-					"CURRENT_TIMESTAMP",
-					"",
-					"TIMESTAMP",
-					"@function:CURRENT_TIMESTAMP@short:Get the running timestamp"
+					"CURRENT_TIMESTAMP", "", "TIMESTAMP",
+					"@function:CURRENT_TIMESTAMP"
+					+ "@short:Get the timestamp at running time."
 					}
 		});
 
@@ -334,87 +380,148 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 					"COUNT()",
 					"ANY",
 					"INT",
-					"@function:COUNT( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the COUNT function to compute the number of elements in a bag. COUNT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-							+ "The COUNT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
-							+ "Note: You cannot use the tuple designator (*) with COUNT; that is, COUNT(*) will not work.@example: COUNT(A) returns the frequency of A" },
+					"@function:COUNT( MYELEMENT )"
+					+ "@short:Computes the number of elements."
+					+ "@param:MYELEMENT Item to count"
+					+ "@description:Use the COUNT function to compute the number of non-null elements."
+					+ "@example:" },
 			new String[] {
 					"SUM()",
 					"NUMBER",
 					"NUMBER",
-					"@function:SUM( ELEMENT )@short:Use the SUM function to compute the sum of a set of numeric values in a single-column bag@param: ELEMENT item to sum@description:Use the SUM function to compute the sum of the numeric values in a single-column bag. SUM requires a preceding GROUP ALL statement for global averages and a GROUP BY statement for group averages."
-							+ "The SUM function now ignores NULL values.@example: SUM(A.id) returns the sum value of A.id" },
+					"@function:SUM( MYNUMBER )"
+					+ "@short:Use the SUM function to compute the sum of a set of numeric values."
+					+ "@param:MYNUMBER item to sum"
+					+ "@description:The SUM function ignores NULL values."
+					+ "@example:SUM(price) returns the sum value of the price column" },
 			new String[] {
 					"AVG()",
 					"NUMBER",
 					"NUMBER",
-			"@function:AVG( ELEMENT )@short:Use the AVG function to compute the average of a set of numeric values in a single-column bag@param: ELEMENT item to average@description:Computes the average of the numeric values in a single-column bag. AVG requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: AVG(A.id) returns the average value of A.id" },
+			"@function:AVG( MYELEMENT )"
+			+ "@short:Use the AVG function to compute the average of a set of numeric values in a single-column bag."
+			+ "@param:MYELEMENT item to average"
+			+ "@description:The AVG function ignores NULL values."
+			+ "@example:AVG(total_price) returns the average value of total_price" },
 			new String[] {
 					"MIN()",
 					"NUMBER",
 					"NUMBER",
-			"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
+			"@function:MIN( MYELEMENT )"
+			+ "@short:Use the MIN function to compute the minimum of a set of numeric values."
+			+ "@param:MYELEMENT item to get the minimum"
+			+ "@description:The MIN function ignores NULL values."
+			+ "@example:MIN(price) returns the minimum value of price" },
 			new String[] {
 					"MAX()",
 					"NUMBER",
 					"NUMBER",
-			"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
+			"@function:MAX( MYELEMENT )"
+			+ "@short:Use the MAX function to compute the maximum of a set of numeric values."
+			+ "@param:MYELEMENT item to get the maximum"
+			+ "@description:The MAX function ignores NULL values."
+			+ "@example:MAX(price) returns the maximum value of price" },
 			new String[] {
 					"MIN()",
 					"STRING",
 					"STRING",
-			"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
+			"@function:MIN( MYELEMENT )"
+			+ "@short:Use the MIN function to compute the minimum of a set of string values."
+			+ "@param:MYELEMENT item to get the minimum"
+			+ "@description:The MIN function ignores NULL values. The order is calculated as alphabetic order more precisely as ASCII order (digit < uppercase < lowercase)."
+			+ "@example:MIN(id) returns the minimum value of id" },
 			new String[] {
 					"MAX()",
 					"STRING",
 					"STRING",
-			"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" }
+			"@function:MAX( MYELEMENT )"
+			+ "@short:Use the MAX function to compute the maximum of a set of string values bag."
+			+ "@param:MYELEMENT item to get the maximum"
+			+ "@description:The MIN function ignores NULL values. The order is calculated as alphabetic order more precisely as ASCII order (digit < uppercase < lowercase)."
+			+ "@example:MAX(id) returns the maximum value of id" }
 		});
 
 		functionsMap
 		.put(utilsMethods,
 				new String[][] {
 			new String[] { "COALESCE()", "ANY,ANY,ANY...", "ANY",
-					"@function:COALESCE@short:returns the first non-null expression in the list.",
+			"@function:COALESCE(MYVALUE1,MYVALUE2,...)"
+			+ "@short:Returns the first non-null expression in the list."
+			+ "@example:COALESCE(1,null,2) returns 1"
+			+ "@example:COALESCE(null,'abc') returns 'abc'"
 			},
 			new String[] { "GREATEST()", "NUMBER,NUMBER,NUMBER...", "NUMBER",
-					"@function:GREATEST@short:returns the greatest value of the list of values.",
-			},
-			new String[] { "LEAST()", "NUMBER,NUMBER,NUMBER...", "NUMBER",
-					"@function:COALESCE@short:returns the least value of the list of values.",
+			"@function:GREATEST(MYNUMBER1,MYNUMBER2,...)"
+			+ "@short:Returns the greatest value of the list of numbers."
+			+ "@example:GREATEST(3,null) returns 3"
+			+ "@example:GREATEST(2.1,-1.3,null) returns 2.1"
 			},
 			new String[] { "GREATEST()", "STRING,STRING,STRING...", "STRING",
-					"@function:GREATEST@short:returns the greatest value of the list of values.",
+			"@function:GREATEST(MYSTRING1,MYSTRING2,...)"
+			+ "@short:Returns the greatest value of the list of string. The order is calculated as alphabetic order more precisely as ASCII order (digit < uppercase < lowercase).."
+			+ "@example:GREATEST('abc',null) returns 'abc'"
+			+ "@example:GREATEST('ab','ad',null) returns 'ad'"
+			},
+			new String[] { "LEAST()", "NUMBER,NUMBER,NUMBER...", "NUMBER",
+			"@function:LEAST(MYNUMBER1,MYNUMBER2,...)"
+			+ "@short:Returns the least value of the list of numbers."
+			+ "@example:LEAST(1,null) returns 1"
+			+ "@example:LEAST(2.1,-1.3,null) returns -1.3"
 			},
 			new String[] { "LEAST()", "STRING,STRING,STRING...", "STRING",
-					"@function:COALESCE@short:returns the least value of the list of values.",
+			"@function:LEAST(MYSTRING1,MYSTRING2,...)"
+			+ "@short:Returns the least value of the list of string."
+			+ "@example:LEAST('abc',null) returns 'abc'"
+			+ "@example:LEAST('abc',null,'ab') returns 'ab'"
 			},
-			new String[] {
-					"CASE END",
-					"",
-					"",
-			"@function:CASE END@short:Conditional expression@example: CASE WHEN (A==1) THEN ('A') END" },
-			new String[] {
-					"WHEN THEN",
-					"",
-					"",
-			"@function:WHEN (test) THEN (value)@short: Conditional expression to be used inside a CASE END@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true" },
-			new String[] {
-					"ELSE ",
-					"",
-					"",
-			"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" },
-			new String[] {
-					"DISTINCT()",
-					"ANY",
-					"ANY",
-			"@function:DISTINCT()@short: Get the distinct value of a column.@description:This function can be used with a COUNT." }});
+			new String[] { "CASE END", "", "",
+			"@function:CASE WHEN (MYTEST) THEN MYRESULT_IF_TRUE END"
+			+ "@short:Conditional expression."
+			+ "@example: CASE WHEN (A==1) THEN ('A') END" },
+			new String[] { "WHEN THEN", "",	"",
+			"@function:WHEN (MYTEST) THEN MYRESULT_IF_TRUE"
+			+ "@short:Conditional expression to be used inside a CASE END"
+			+ "@param:TEST Any Boolean expression"
+			+ "@param:EXPRESSION1 An expression returned if test is true" },
+			new String[] { "ELSE ",	"",	"",
+			"@function:ELSE MY_DEFAULT_VALUE"
+			+ "@short:Value to return when no condition inside a CASE END is found to be true."
+			+ "@example:CASE WHEN (A==1) THEN ('A') ELSE ‘B’ END"
+			},
+			new String[] { "DISTINCT()", "ANY",	"ANY",
+			"@function:DISTINCT(MYFIELD)"
+			+ "@short:Get the distinct value of a column."
+			+ "@param:FIELD The field to distinct"
+			+ "@description:This function can only be used in combination with a COUNT or on its own in a Select. For distinct on several fields, please use an aggregator action."
+			+ "@example:DISTINCT(FIELD1) COUNT(DISTINCT(FIELD1))"
+			}
+		});
 
 
 		String[][] extraRelationalOperators = new String[][] {
 			new String[] { "LIKE", "STRING,STRING", "BOOLEAN",
-			"@function:LIKE@short:Boolean LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns true." },
+			"@function:LIKE"
+			+ "@short:Boolean LIKE"
+			+ "@param:string variable"
+			+ "@param:string regular expression"
+			+ "@description:If the variable matches the regular expression returns true."
+			+ "@example:'abc' LIKE 'abc' returns true"
+			+ "@example:'abc' LIKE 'abc%' returns true"
+			+ "@example:'abcde' LIKE 'abc%' returns true"
+			+ "@example:'abc' LIKE 'abc_' returns false"
+			+ "@example:'abcd' LIKE 'abc_' returns true"
+			+ "@example:'abcde' LIKE 'abc_' returns false"
+			+ "@example:'abcde' LIKE 'abc_e' returns true"
+			},
 			new String[] { "NOT LIKE", "STRING,STRING", "BOOLEAN",
-			"@function:LIKE@short:Boolean NOT LIKE@param:string variable@param:string regular expression@description:if the variable matches the regular expression returns false." }
+			"@function:LIKE"
+			+ "@short:Boolean NOT LIKE"
+			+ "@param:string variable"
+			+ "@param:string regular expression"
+			+ "@description:If the variable matches the regular expression returns false."
+			+ "@example:'abc' NOT LIKE 'abc' returns false"
+			+ "@example:'abc' NOT LIKE 'abc%' returns false"
+			}
 		};
 		addToFunctionsMap(relationalOperators,extraRelationalOperators);
 		if(jdbcDeclaredFcts != null){
