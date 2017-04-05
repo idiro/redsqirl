@@ -163,8 +163,8 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			new String[] { "ROUND()", "DOUBLE",	"INT",
 			"@function:ROUND(MYFLOAT)"
 			+ "@short:Returns the value of an expression rounded to an integer."
-			+ "@param:DOUBLE"
-			+ "@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)."
+			+ "@param:MYFLOAT"
+			+ "@description:Returns the value of a number rounded to the nearest integer."
 			+ "@example:ROUND(4.5) returns 5"
 			+ "@example:ROUND(2.3) returns 2" },
 			new String[] { "FLOOR()", "DOUBLE",	"INT",
@@ -217,20 +217,6 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@description:Use the COS function to return the trigonometric cosine of an expression."
 			+ "@example:COS(0) returns  1"
 			+ "@example:COS(PI()) returns -1" },
-			new String[] { "COSH()", "DOUBLE", "DOUBLE",
-			"@function:COSH()"
-			+ "@short:Returns the hyperbolic cosine of an expression"
-			+ "@param:DOUBLE"
-			+ "@description:Use the COSH function to return the hyperbolic cosine of an expression"
-			+ "@example:COSH(45) returns  1.3246106846575 "
-			+ "@example:COSH(89) returns 0.01745241" },
-			new String[] { "EXP()", "DOUBLE", "DOUBLE",
-			"@function:COSH()"
-			+ "@short:Returns Euler's number e raised to the power of x"
-			+ "@param:DOUBLE"
-			+ "@description:Use the EXP function to return the value of Euler's number e raised to the power of x (where x is the result value of the expression)"
-			+ "@example:EXP(2) returns  7.3890560991533 "
-			+ "@example:EXP(89) returns  4.4896128251945E+38" },
 			new String[] { "LN()", "DOUBLE", "DOUBLE",
 			"@function:LN(MYFLOAT)"
 			+ "@short:Returns the natural logarithm (base e) of an expression."
@@ -251,13 +237,6 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@description:Use the SIN function to return the sine of an expression."
 			+ "@example:SIN(PI()) returns 0 "
 			+ "@example:SIN(PI()/2) returns  1.0" },
-			new String[] { "SINH()", "DOUBLE", "DOUBLE",
-			"@function:SINH()"
-			+ "@short:Returns the hyperbolic sine of an expression"
-			+ "@param:DOUBLE"
-			+ "@description:Use the SINH function to return the hyperbolic sine of an expression"
-			+ "@example:SINH(90) returns 2.301298902307"
-			+ "@example:SIN(45) returns  0.868670961486" },
 			new String[] { "SQRT()", "DOUBLE", "DOUBLE",
 			"@function:SQRT(MYFLOAT)"
 			+ "@short:Returns the positive square root of an expression."
@@ -271,13 +250,6 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@param:MYFLOAT"
 			+ "@description:Use the TAN function to return the trigonometric tangent of an angle."
 			+ "@example:TAN(PI()/4) returns 1" },
-			new String[] { "TANH()", "DOUBLE", "DOUBLE",
-			"@function:TANH()"
-			+ "@short:Returns the hyperbolic tangent of an expression"
-			+ "@param:DOUBLE"
-			+ "@description:Use the TANH function to return the hyperbolic tangent of an expression"
-			+ "@example:TANH(45) returns 0.655794202633"
-			+ "@example:TAN(90) returns  0.917152335667" }, 
 			});
 
 		functionsMap
@@ -521,6 +493,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@description:If the variable matches the regular expression returns false."
 			+ "@example:'abc' NOT LIKE 'abc' returns false"
 			+ "@example:'abc' NOT LIKE 'abc%' returns false"
+			+ "@example:'abc' NOT LIKE 'abcde' returns true"
 			}
 		};
 		addToFunctionsMap(relationalOperators,extraRelationalOperators);

@@ -662,8 +662,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		}
 		typeGiven = typeGiven.trim();
 		typeToBe = typeToBe.trim();
-		
-		if (typeGiven.equalsIgnoreCase("ANY") && typeToBe != null) {
+		if (typeToBe.equalsIgnoreCase(typeGiven)) {
+			ok = true;
+		}else if (typeGiven.equalsIgnoreCase("ANY")) {
 			ok = true;
 		}else if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
@@ -697,15 +698,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 			ok = typeGiven.equals("STRING") || typeGiven.equals("CHAR") || typeGiven.equals("INT");
 		} else if (typeToBe.equalsIgnoreCase("STRING")) {
 			ok = typeGiven.equals("CATEGORY") || typeGiven.equals("CHAR");
-		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
-			ok = false;
 		}
 
-		
-
-		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
-			ok = true;
-		}
 		return ok;
 	}
 
