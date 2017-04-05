@@ -574,7 +574,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@param:MYCOLUMN1 The expression for which the average value is calculated"
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:AVG(FIELD1) OVER(PARTITION BY MY_DATE)",
-			}		
+			}
 			
 		};
 		addToFunctionsMap(analyticMethods,hiveAnalyticMethods);

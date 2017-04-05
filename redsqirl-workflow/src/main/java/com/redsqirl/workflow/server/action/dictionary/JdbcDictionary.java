@@ -277,7 +277,27 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@param:DOUBLE"
 			+ "@description:Use the TANH function to return the hyperbolic tangent of an expression"
 			+ "@example:TANH(45) returns 0.655794202633"
-			+ "@example:TAN(90) returns  0.917152335667" }, 
+			+ "@example:TAN(90) returns  0.917152335667" },
+			new String[] { "PI()", "", "NUMBER",
+			"@function:PI()"
+			+ "@short:Returns pi (3.141592653589793)" },
+			new String[] { "PMOD()", "NUMBER,NUMBER", "DOUBLE",
+			"@function:PMOD()"
+			+ "@short:Returns the positive value of a mod b."
+			+ "@param:A, a number"
+			+ "@param:B, a number"
+			+ "@description:Returns the remainder of a euclidian division."
+			+ "@example:PMOD(5,3) returns 2"
+			+ "@example:PMOD(5.1,3.2) return 1.9" },
+			new String[] { "POW()", "NUMBER,NUMBER", "DOUBLE",
+			"@function:POW()"
+			+ "@short:Returns a raised to the p power."
+			+ "@param:A, a number"
+			+ "@param:P, a number"
+			+ "@description:Returns A exponent P."
+			+ "@example:POW(5,2) returns 25"
+			+ "@example:POW(25,0.5) returns 5" },
+			
 			});
 
 		functionsMap
@@ -376,64 +396,43 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		functionsMap
 		.put(agregationMethods,
 				new String[][] {
-			new String[] {
-					"COUNT()",
-					"ANY",
-					"INT",
-					"@function:COUNT( MYELEMENT )"
-					+ "@short:Computes the number of elements."
-					+ "@param:MYELEMENT Item to count"
-					+ "@description:Use the COUNT function to compute the number of non-null elements."
-					+ "@example:" },
-			new String[] {
-					"SUM()",
-					"NUMBER",
-					"NUMBER",
-					"@function:SUM( MYNUMBER )"
-					+ "@short:Use the SUM function to compute the sum of a set of numeric values."
-					+ "@param:MYNUMBER item to sum"
-					+ "@description:The SUM function ignores NULL values."
-					+ "@example:SUM(price) returns the sum value of the price column" },
-			new String[] {
-					"AVG()",
-					"NUMBER",
-					"NUMBER",
+			new String[] { "COUNT()", "ANY", "INT",
+			"@function:COUNT( MYELEMENT )"
+			+ "@short:Computes the number of elements."
+			+ "@param:MYELEMENT Item to count"
+			+ "@description:Use the COUNT function to compute the number of non-null elements."
+			+ "@example:" },
+			new String[] { "SUM()", "NUMBER", "NUMBER",
+			"@function:SUM( MYNUMBER )"
+			+ "@short:Use the SUM function to compute the sum of a set of numeric values."
+			+ "@param:MYNUMBER item to sum"
+			+ "@description:The SUM function ignores NULL values."
+			+ "@example:SUM(price) returns the sum value of the price column" },
+			new String[] { "AVG()", "NUMBER", "NUMBER",
 			"@function:AVG( MYELEMENT )"
 			+ "@short:Use the AVG function to compute the average of a set of numeric values in a single-column bag."
 			+ "@param:MYELEMENT item to average"
 			+ "@description:The AVG function ignores NULL values."
 			+ "@example:AVG(total_price) returns the average value of total_price" },
-			new String[] {
-					"MIN()",
-					"NUMBER",
-					"NUMBER",
+			new String[] { "MIN()", "NUMBER", "NUMBER",
 			"@function:MIN( MYELEMENT )"
 			+ "@short:Use the MIN function to compute the minimum of a set of numeric values."
 			+ "@param:MYELEMENT item to get the minimum"
 			+ "@description:The MIN function ignores NULL values."
 			+ "@example:MIN(price) returns the minimum value of price" },
-			new String[] {
-					"MAX()",
-					"NUMBER",
-					"NUMBER",
+			new String[] { "MAX()", "NUMBER", "NUMBER",
 			"@function:MAX( MYELEMENT )"
 			+ "@short:Use the MAX function to compute the maximum of a set of numeric values."
 			+ "@param:MYELEMENT item to get the maximum"
 			+ "@description:The MAX function ignores NULL values."
 			+ "@example:MAX(price) returns the maximum value of price" },
-			new String[] {
-					"MIN()",
-					"STRING",
-					"STRING",
+			new String[] { "MIN()", "STRING", "STRING",
 			"@function:MIN( MYELEMENT )"
 			+ "@short:Use the MIN function to compute the minimum of a set of string values."
 			+ "@param:MYELEMENT item to get the minimum"
 			+ "@description:The MIN function ignores NULL values. The order is calculated as alphabetic order more precisely as ASCII order (digit < uppercase < lowercase)."
 			+ "@example:MIN(id) returns the minimum value of id" },
-			new String[] {
-					"MAX()",
-					"STRING",
-					"STRING",
+			new String[] { "MAX()", "STRING", "STRING",
 			"@function:MAX( MYELEMENT )"
 			+ "@short:Use the MAX function to compute the maximum of a set of string values bag."
 			+ "@param:MYELEMENT item to get the maximum"
@@ -798,7 +797,9 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		}
 		orderByExpr = orderByExpr.substring(1,orderByExpr.lastIndexOf(")")).trim();
 		String partitionExpr = null;
+		boolean over = false;
 		if(orderByExpr.toUpperCase().startsWith("PARTITION BY ")){
+			over = true;
 			if(orderByExpr.indexOf("ORDER BY") > 0){
 				partitionExpr = orderByExpr.substring("PARTITION BY ".length(), orderByExpr.indexOf("ORDER BY")).trim();
 				orderByExpr = orderByExpr.substring(orderByExpr.indexOf("ORDER BY")).trim();
@@ -809,6 +810,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 		}
 		logger.debug(orderByExpr);
 		if(orderByExpr != null && orderByExpr.toUpperCase().startsWith("ORDER BY ")){
+			over = true;
 			orderByExpr = orderByExpr.substring("ORDER BY ".length());
 		}
 		
@@ -824,6 +826,10 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 				if(getReturnType(argOrderCur, fields, fieldAggreg) == null){
 					throw new Exception("Error in expression "+args[j]);
 				}
+			}
+			
+			if(!over){
+				throw new Exception("An OVER clause should be empty or start with PARTITION BY or ORDER BY");
 			}
 		}
 		

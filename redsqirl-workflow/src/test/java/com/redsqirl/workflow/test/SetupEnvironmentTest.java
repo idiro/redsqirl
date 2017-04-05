@@ -57,6 +57,7 @@ import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceTests;
 import com.redsqirl.workflow.server.connect.interfaces.WorkflowInterfaceTests;
 import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
 import com.redsqirl.workflow.utils.AbstractDictionaryTests;
+import com.redsqirl.workflow.utils.JdbcDictionaryTests;
 import com.redsqirl.workflow.utils.PackageManagerTests;
 
 
@@ -81,7 +82,7 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	AbstractDictionaryTests.class,
 //	SendEmailTests.class,
 //	WorkflowInterfaceTests.class,
-	SubWorkflowTests.class,
+//	SubWorkflowTests.class,
 	
 //	//FIXME To update PackageManagerTests.class,
 //	//FIXME SuperActionTests.class,
@@ -90,6 +91,9 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 	//HDFSTypeTests.class,
 	//SuperActionTests.class
 	//PackageManagerTests.class
+	
+	
+	JdbcDictionaryTests.class
 	
 })
 public class SetupEnvironmentTest {
