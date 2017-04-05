@@ -463,8 +463,7 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@param:MYCOLUMN1 The expression to calculate on the target row"
 			+ "@param:MYOFFSET The relative position of the row going backward"
 			+ "@param:MYDEFAULT The default value for the first rows"
-			+ "@param:MYCOLUMN2 Calculates lag on sections"
-			+ "@param:MYCOLUMN3 The order of the rows"
+			+ "@param:MYCOLUMN2 The order of the rows"
 			+ "@example:LAG(age,1,null) OVER (ORDER BY age ASC)"
 			+ "@example:LAG(age,1,null) OVER (ORDER BY age DESC)",
 			},
@@ -497,7 +496,7 @@ public class HiveDictionary extends JdbcDictionary{
 			new String[] { "LAST_VALUE() OVER (ORDER BY EXPR ASC)", "", "",
 			"@function:FIRST_VALUE(MYCOLUMN1) OVER (PARTITION BY MYCOLUMN2 ORDER BY MYCOLUMN3 ASC)"
 			+ "@short:Provides access to the last record"
-			+ "@param:EXPR the expression to calculate of the first row"
+			+ "@param:EXPR the expression to calculate of the last row"
 			+ "@param:EXPR the order of the rows"
 			+ "@example:LAST_VALUE(age) OVER (ORDER BY age ASC)",
 			},
@@ -561,14 +560,13 @@ public class HiveDictionary extends JdbcDictionary{
 			+ "@param:MYCOLUMN2 The section for which it is calculated"
 			+ "@example:MAX(FIELD1) OVER(PARTITION BY MY_DATE)",
 			},
-			new String[] { "AVG() OVER()", "NUMBER", "NUMBER",
+			new String[] { "AVG() OVER()", "NUMBER", "DOUBLE",
 			"@function:AVG(MYCOLUMN) OVER()"
 			+ "@short:Provides the overall average of an expression"
 			+ "@param:MYCOLUMN The expression for which the average value is calculated"
-			+ "@param:EXPR The expression to count"
 			+ "@example:AVG(FIELD1) OVER()",
 			},
-			new String[] { "AVG() OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "NUMBER",
+			new String[] { "AVG() OVER(PARTITION BY MYCOLUMN2)", "NUMBER", "DOUBLE",
 			"@function:AVG(MYCOLUMN1) OVER(PARTITION BY MYCOLUMN2)"
 			+ "@short:Provides the average of an expression over a window"
 			+ "@param:MYCOLUMN1 The expression for which the average value is calculated"

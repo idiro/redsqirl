@@ -684,6 +684,10 @@ public class WorkflowCoordinator extends UnicastRemoteObject implements DataFlow
 							getExecutionTime()== null? new Date():getExecutionTime(),
 									0));
 				}
+				if(!minCT.getUnit().equals(getTimeCondition().getUnit())
+						|| minCT.getFrequency() != getTimeCondition().getFrequency()){
+					offset = 0;
+				}
 			}
 		}else{
 			ansTimeCondition.setFrequency(getTimeCondition().getFrequency());
