@@ -1015,17 +1015,10 @@ function findReplaceAllTable(){
 						if(jQuery(this).attr('id') === jQuery(inputFocus).attr('id')){
 
 							if(jQuery(this).val().match(jQuery(inputFocus).val())){
-								
-								if(inputFocus.selectionStart == inputFocus.selectionEnd){
-									alert('Please select something after');
-									found = true;
-									return false;
-								}
-								
+																
 								var value = jQuery(inputFocus).val();
 								var size = value.length;
 								jQuery(this).val( jQuery(inputFocus).val().substr(0, inputFocus.selectionStart) + jQuery('[id$="replaceValue"]').val() + jQuery(inputFocus).val().substr(inputFocus.selectionEnd, size) );
-								
 
 								if(jQuery(inputFocus).val().match(jQuery('[id$="stringToReplace"]').val())){
 
