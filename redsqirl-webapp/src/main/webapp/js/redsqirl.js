@@ -995,6 +995,10 @@ function findReplaceAllTable(){
 		alert('No value found.');
 		return false;
 	}
+	
+	inputFocus = "";
+	inputLastPosition = "";
+	inputIndex = "";
 
 	var check = false;
 	var found = false;
@@ -1107,26 +1111,18 @@ function findReplaceAllTable(){
 
 		});
 		
+		if(jQuery(inputFocus).val() != undefined){
+			if(jQuery(this).val().match(jQuery(inputFocus).val())){
+				var value = jQuery(inputFocus).val();
+				var size = value.length;
+				jQuery(this).val( jQuery(inputFocus).val().substr(0, inputFocus.selectionStart) + jQuery('[id$="replaceValue"]').val() + jQuery(inputFocus).val().substr(inputFocus.selectionEnd, size) );
+			}
+		}
+		
 	});
 	
 	if(!found){
-		inputFocus = "";
-		inputLastPosition = "";
-		inputIndex = "";
-		
-		var exist = false;
-		jQuery('#divTableInteraction input:text').each(function(idx){
-			if(jQuery(this).val().match(jQuery('[id$="stringToReplace"]').val())){
-				exist = true;
-				return false;
-			}
-		});
-		if(exist){
-			findTable();
-			return false;
-		}else{
-			alert('No value found.');
-		}
+		alert('No value found.');
 	}
 
 }
