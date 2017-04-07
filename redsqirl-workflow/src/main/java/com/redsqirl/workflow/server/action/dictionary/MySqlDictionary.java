@@ -132,6 +132,14 @@ public class MySqlDictionary extends JdbcDictionary{
 			+ "@description:Returns the DAY part of a timestamp string"
 			+ "@example: DAY(\"1970-11-15 \") returns \"15\"" 
 			},
+			new String[] { "CONCAT()", "STRING,STRING,STRING...", "STRING",
+			"@function:CONCAT( STRING , OTHERSTRING, ... )"
+			+ "@short:Adds strings together."
+			+ "@param:STRING the string that is added to"
+			+ "@param:OTHERSTRING the string that is added to STRING"
+			+ "@description:Adds several strings together to make a larger on. The function takes at least two arguments."
+			+ "@example: CONCAT(\"hello\", \"world\") returns \"helloworld\""
+			+ "@example: CONCAT(\"hello\", \" \", \"world\") returns \"hello world\"" }
 		};
 		addToFunctionsMap(stringMethods,mySqlStringMethods);
 		

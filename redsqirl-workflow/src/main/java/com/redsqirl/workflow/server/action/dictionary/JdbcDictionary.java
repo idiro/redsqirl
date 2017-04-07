@@ -345,15 +345,7 @@ public class JdbcDictionary extends AbstractSQLLikeDictionary implements SqlDict
 			+ "@param:OLDSTRING The regular expression to search"
 			+ "@param:NEWSTRING The replacement string"
 			+ "@description:Use the REGEX_REPLACE function to perform regular expression matching and to REPLACE the matched group defined by the index parameter (where the index is a 1-based parameter). The function uses Java regular expression form. The function returns a string that corresponds to the matched group in the position specified by the index."
-			+ "@example:REGEX_REPLACE(\"helloworld\", \"ello|orld\", \"\") returns \"hw\"" },
-			new String[] { "CONCAT()", "STRING,STRING,STRING...", "STRING",
-			"@function:CONCAT( STRING , OTHERSTRING, ... )"
-			+ "@short:Adds strings together."
-			+ "@param:STRING the string that is added to"
-			+ "@param:OTHERSTRING the string that is added to STRING"
-			+ "@description:Adds several strings together to make a larger on. The function takes at least two arguments."
-			+ "@example: CONCAT(\"hello\", \"world\") returns \"helloworld\""
-			+ "@example: CONCAT(\"hello\", \" \", \"world\") returns \"hello world\"" } 
+			+ "@example:REGEX_REPLACE(\"helloworld\", \"ello|orld\", \"\") returns \"hw\"" } 
 			
 		});
 

@@ -111,7 +111,7 @@ public class HiveAction extends OozieUniqueActionAbs{
 			String[] options = urlStr.substring(urlStr.indexOf(';')+1).split(";");
 			String newOptions = "";
 			for(int i = 0; i < options.length;++i){
-				if(!options[i].startsWith("kerberos") && !options[i].startsWith("kerberosAuthType")){
+				if(!options[i].startsWith("kerberos")){
 					newOptions += ";"+options[i];
 				}
 			}
