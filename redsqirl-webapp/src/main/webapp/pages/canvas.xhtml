@@ -4094,10 +4094,10 @@
 				
 				<rich:panel style="border:none;float:right;background:transparent;">
 					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_find}" onclick="jQuery('#divTableInteraction').focus();findTable();" reRender="divTableInteraction" />
-					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_find_replace}" onclick="jQuery('#divTableInteraction').focus();findReplaceTable();" reRender="divTableInteraction" />
+					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_find_replace}" onclick="jQuery('#divTableInteraction').focus();replacefindTable();" reRender="divTableInteraction" />
 					<br/>
 					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_replace}" onclick="jQuery('#divTableInteraction').focus();replaceTable();" reRender="divTableInteraction" />
-					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_replace_all}" onclick="jQuery('#divTableInteraction').focus();findReplaceAllTable();" reRender="divTableInteraction" />
+					<a4j:commandButton styleClass="greenButton" style="width:95px;" value="#{messages.button_replace_all}" onclick="jQuery('#divTableInteraction').focus();replaceAllTable();" reRender="divTableInteraction" />
 					<br/>
 					<a4j:commandButton styleClass="greenButton" style="width:95px;float:right;" value="#{messages.label_menu_close}" oncomplete="setInputFocus();#{rich:component('replacePanel')}.hide();" />
 				</rich:panel>
