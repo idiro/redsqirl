@@ -188,6 +188,13 @@ public class OracleDictionary extends JdbcDictionary{
 			+ "@param:OCCURRENCE Number of occurrence."
 			+ "@example:REGEXP_INSTR('Hello world!', 'l',1,2) returns 4 (second l)"
 			},
+			new String[] { "CONCAT()", "STRING,STRING", "STRING",
+			"@function:CONCAT( STRING , OTHERSTRING)"
+			+ "@short:Adds strings together."
+			+ "@param:STRING the string that is added to"
+			+ "@param:OTHERSTRING the string that is added to STRING"
+			+ "@description:Adds several strings together to make a larger on. The function takes at least two arguments."
+			+ "@example: CONCAT(\"hello\", \"world\") returns \"helloworld\""}
 		};
 		addToFunctionsMap(stringMethods,oracleStringMethods);
 		
