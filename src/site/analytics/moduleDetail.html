@@ -80,7 +80,7 @@ function doSearch(val, version) {
 			var obj = jQuery.parseJSON(data[i].jsonObject);
 			jQuery.each(obj.jsonArray, function(idx,value) {
 
-				jQuery("#dependency").append(" " + (value.moduleName !== undefined ? "<a href='moduleDetail.html?id="+ value.idmodule +"&idmv="+value.idmoduleversion+"' title='Requires "+ value.moduleName +" "+ value.valueStart + (value.valueEnd !== undefined ? " to "+value.valueEnd : " onward" ) + "'>"+ value.moduleName+ " </a> " : "") + (value.valueStart !== undefined ? "[ "+value.valueStart : "") + (value.valueEnd !== undefined ? " ,"+value.valueEnd+" ]" : " ,\u221E ["));
+				jQuery("#dependency").append(" " + (value.moduleName !== undefined ? "<a href='moduleDetail.html?id="+ value.idmodule +"&idmv="+value.idmoduleversion+"' title='Requires "+ value.moduleName +" "+ value.valueStart + (value.valueEnd !== undefined ? " to "+value.valueEnd : " onward" ) + "'>"+ value.moduleName+ " </a> " : "") + (value.valueStart !== undefined ? "[ "+value.valueStart : "") + (value.moduleName !== undefined ? (value.valueEnd !== undefined ? " ,"+value.valueEnd+" ]" : " ,\u221E [") : ""));
 				if(value.moduleName !== undefined){
 					hasDependencies = true;
 				}
